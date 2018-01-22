@@ -15,57 +15,61 @@
       {{/if}}
     </ul>
   </div>
-  {{#if hasWorkStatus}}
-  <ul class="employeeLists">
-    {{#each lists}}
-    <li class="employeeItem">
-      <div class="container">
-        <div class="pull-left">
-          <div class="icon">
-            <img src="{{getIcon}}"/>
-          </div>
-          <div class="status-bar">
-            <span class="{{bind_app_user}}"><i class="fa fa-user fa-fw"></i></span>
-            <span class="{{enable_push}}"><i class="fa fa-bell fa-fw"></i></span>
-          </div>
-        </div>
-        <h2><span class="in-out-status {{getInOutStatus}}"></span> {{person_name}} </h2>
-        <p><span class="in-out-status {{getStatus 'in'}}"></span> 上班时间: {{getTime 'in'}}</p>
-        <p><span class="in-out-status {{getStatus 'out'}}"></span> 下班时间: {{getTime 'out'}}</p>
-        <div class="whats-up">
-          <p>
-            工作安排： 
-            <span class="toggle" data-toggle="collapse" data-target="#collapse_{{_id}}" aria-expanded="false" aria-controls="collapse_{{_id}}">
-              <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </span>
-          </p>
-          <div class="collapse editWhatsup" id="collapse_{{_id}}">            
-            {{#if whats_up}}
-              {{#each whats_up}}
-              <p style="white-space: pre-wrap;"><strong>{{person_name}}</strong>[{{getShortTime}}]: {{content}}</p>
-              {{/each}}
-            {{else}}
-            暂无工作安排...
-            {{/if}}
-          </div>
-        </div>
-      </div>
-      <div class="dropdown">
-        <span class="dropdown-toggle" type="button" id="dropdown_{{_id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-          <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-        </span>
-        <ul class="dropdown-menu" aria-labelledby="dropdown_{{_id}}">
-          <li class="editInTime"><a href="javascript:void(0);">修改上班时间</a></li>
-          <li class="editOutTime"><a href="javascript:void(0);">修改下班时间</a></li>
-          <li role="separator" class="divider"></li>
-          <li class="editWhatsup"><a href="javascript:void(0);">编辑今日简述</a></li>
-        </ul>
-      </div>
-    </li>
-    {{/each}}
-  </ul>
+  {{#if isLoading}}
+    <div class="loading">加载中</div>
   {{else}}
-  <div class="noData">暂无数据</div>
+    {{#if hasWorkStatus}}
+    <ul class="employeeLists">
+      {{#each lists}}
+      <li class="employeeItem">
+        <div class="container">
+          <div class="pull-left">
+            <div class="icon">
+              <img src="{{getIcon}}"/>
+            </div>
+            <div class="status-bar">
+              <span class="{{bind_app_user}}"><i class="fa fa-user fa-fw"></i></span>
+              <span class="{{enable_push}}"><i class="fa fa-bell fa-fw"></i></span>
+            </div>
+          </div>
+          <h2><span class="in-out-status {{getInOutStatus}}"></span> {{person_name}} </h2>
+          <p><span class="in-out-status {{getStatus 'in'}}"></span> 上班时间: {{getTime 'in'}}</p>
+          <p><span class="in-out-status {{getStatus 'out'}}"></span> 下班时间: {{getTime 'out'}}</p>
+          <div class="whats-up">
+            <p>
+              工作安排： 
+              <span class="toggle" data-toggle="collapse" data-target="#collapse_{{_id}}" aria-expanded="false" aria-controls="collapse_{{_id}}">
+                <i class="fa fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </p>
+            <div class="collapse editWhatsup" id="collapse_{{_id}}">            
+              {{#if whats_up}}
+                {{#each whats_up}}
+                <p style="white-space: pre-wrap;"><strong>{{person_name}}</strong>[{{getShortTime}}]: {{content}}</p>
+                {{/each}}
+              {{else}}
+              暂无工作安排...
+              {{/if}}
+            </div>
+          </div>
+        </div>
+        <div class="dropdown">
+          <span class="dropdown-toggle" type="button" id="dropdown_{{_id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+          </span>
+          <ul class="dropdown-menu" aria-labelledby="dropdown_{{_id}}">
+            <li class="editInTime"><a href="javascript:void(0);">修改上班时间</a></li>
+            <li class="editOutTime"><a href="javascript:void(0);">修改下班时间</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="editWhatsup"><a href="javascript:void(0);">编辑今日简述</a></li>
+          </ul>
+        </div>
+      </li>
+      {{/each}}
+    </ul>
+    {{else}}
+    <div class="noData">暂无数据</div>
+    {{/if}}
   {{/if}}
   <div id="closeStausPop"><i class="fa fa-close fa-fw"></i></div>
 

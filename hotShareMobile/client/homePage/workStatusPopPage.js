@@ -1,6 +1,6 @@
 var view = null;
 
-var isLoading = new ReactiveVar(true);
+var isLoading = new ReactiveVar(false);
 var group = new ReactiveVar({});
 var theCurrentDay = new ReactiveVar(null);
 var theDisplayDay = new ReactiveVar(null);
@@ -112,7 +112,7 @@ Template.workStatusPopPage.onRendered(function(){
   todayUTC.set(date);
   theDisplayDay.set(displayDate); // 当前显示日期
   today.set(displayDate); // 今天
-
+  isLoading.set(true);
   Meteor.subscribe('group_workstatus',data._id, date, function(){
     isLoading.set(false);
   });
@@ -132,6 +132,9 @@ Template.workStatusPopPage.helpers({
     _today.setDate(_today.getDate() + 2);
     _today = new Date(_today.getFullYear(), _today.getMonth(), _today.getDate()).getTime();
     return theDisplayDay.get() < _today;
+  },
+  isLoading: function() {
+    return isLoading.get();
   },
   hasWorkStatus: function () {
     return WorkStatus.find({group_id: group.get()._id,date: theCurrentDay.get()}).count() > 0;
@@ -363,10 +366,8 @@ Template.workStatusPopPage.events({
     theDisplayDay.set(displayDay);
     
     isLoading.set(true);
-    Meteor.subscribe('group_workstatus', group.get()._id, theCurrentDay.get(), {
-      onReady: function(){
-        isLoading.set(false);
-      }
+    Meteor.subscribe('group_workstatus', group.get()._id, theCurrentDay.get(), function() {
+      isLoading.set(false);
     });
   },
   // goPrevDay
@@ -379,10 +380,8 @@ Template.workStatusPopPage.events({
     theDisplayDay.set(displayDay);
     
     isLoading.set(true);
-    Meteor.subscribe('group_workstatus',group.get()._id, theCurrentDay.get(), {
-      onReady: function(){
-        isLoading.set(false);
-      }
+    Meteor.subscribe('group_workstatus',group.get()._id, theCurrentDay.get(), function() {
+      isLoading.set(false);
     });
   }
 });
