@@ -6,7 +6,7 @@ if Meteor.isClient
 
     if (group and group.group_intime)
       group_intime = group.group_intime
-  
+
     if (group && group.group_outtime)
       group_outtime = group.group_outtime
 
@@ -210,6 +210,8 @@ if Meteor.isClient
       Router.go(url)
     'click .groupAccuracy': (event)->
       Session.set("groupsProfileMenu","groupAccuracy")
+    'click .groupEmail': (event)->
+      Session.set("groupsProfileMenu","groupEmail")
     'click .editName': (event)->
       Session.set("groupsProfileMenu","setGroupname")
     'click .barcode': (event)->
@@ -503,6 +505,32 @@ if Meteor.isClient
         Session.set('fromCreateNewGroups',false);
         Router.go('/');
       Session.set("groupsProfileMenu","groupInformation")
+     'click .selectAccuracy':(event)->
+       groupAccuracyType =event.currentTarget.id;
+       Meteor.call('updateGroupAccuracyType',Session.get('groupsId'),groupAccuracyType)
+       if Session.equals('fromCreateNewGroups',true)
+         Session.set('fromCreateNewGroups',false);
+         Router.go('/');
+      Session.set("groupsProfileMenu","groupInformation")
+  Template.groupEmail.events
+    'click .left-btn':(event)->
+      if Session.equals('fromCreateNewGroups',true)
+        Session.set('fromCreateNewGroups',false);
+        Router.go('/');
+      Session.set("groupsProfileMenu","groupInformation")
+     'click .adE':(event)->
+       ss = $(".inpEmail").val()
+       $("ul").append(' <li class="deleEmaile" id="dele" >
+                <!-- <label>添加邮箱</label> -->
+                <div>
+                    <span style="padding-left:10px;width: 70%;display: inline-block">'+ss+'</span>
+                    <span style=" width: 20%; float: right; border:1px solid #47A7FE; color: #47A7FE;
+    text-align: center;border-radius: 15px;line-height: 20px;font-size: 12px" >删除邮箱</span> 
+                </div>');
+       $(".inpEmail").val("")
+      'click .deleEmaile':(event)->
+        $(event.currentTarget).remove();
+      # $(event.currentTarget).remove()
     'click .selectAccuracy':(event)->
       groupAccuracyType =event.currentTarget.id;
       Meteor.call('updateGroupAccuracyType',Session.get('groupsId'),groupAccuracyType)
