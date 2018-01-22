@@ -33,9 +33,7 @@
       <div class="box">
         <ul class="group-list">
           {{#each getMsg}}
-          {{#if showUnknowMember to.id}}
             {{> _simpleChatToChatItem}}
-          {{/if}}
           {{/each}}
         </ul>
         {{#if hasNewMsg}}
