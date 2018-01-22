@@ -1254,6 +1254,29 @@ Meteor.methods({
     }
     return Person.remove({_id: _id});
   },
+  // remove Person
+  'renamePerson': function(_id, name) {
+    var person = Person.findOne({_id: _id});
+    console.log('==sr==. person is '+JSON.stringify(person))
+    
+    if(person && person.name) {
+      // update person 
+      Person.update({_id: _id},{$set:{name: name}});
+
+      if(person.name) {
+        // update personNames 
+        PersonNames.update({group_id:person.group_id, name:person.name},{$set:{name: name}}, function(err,res){
+          console.log('==sr==. err is '+ err);
+          console.log('==sr==. res is ' + res)
+        });
+      }
+
+      // update relations
+      WorkAIUserRelations.update({'ai_persons.id': _id},{$set:{person_name: name}});
+      // update workStatus1
+      WorkStatus.update({'person_id.id': _id},{$set:{person_name: name}});
+    }
+  },
   'send-person-to-web': function(person){
       personItem = Person.findOne({faceId:person.id,group_id:person.group_id});
       person.id = personItem._id;
