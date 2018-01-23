@@ -12,31 +12,17 @@
 	}
 	header,section{
 		/*height: 50px;*/
-		width: 60%;
+		width: 50%;
 		margin: 10px auto;
 		overflow: hidden;
 	}
 	header{
 		font-size: 18px;
 		width: 40%;
-		/*border: 1px solid;
-*/	}
-	header .name{
-		/*padding-left: 20px;*/
-		float: left;
-		width: 50%;
-	}
-	header .des{
-		float: right;
-		width: 50%
 	}
 	ul li{
-		border: 1px solid;
-		border-top: none;
-		padding: 10px;
-	}
-	ul li:nth-child(1){
-		border-top :1px solid;
+		padding: 10px 20px;
+		line-height: 40px;
 	}
 	.clock-in , .clock-out {
 		width: 50%;
@@ -44,30 +30,30 @@
 	}
 	.clock {
 		color: red;
-		margin-bottom: 10px;
-		font-size: 18px;
+		margin-bottom: 30px;
+		font-size: 16px;
             }
             .summary{
             	height: 60px;
-            	border: 1px solid;
+            	border: 1px solid #999;
             	margin-top: 15px;
             }
             img{
             	width: 10%;
             	height:10%;
             	vertical-align:middle;
-            	padding-left:15px;
+            	padding-left:35px;
             }
 </style>
 </head>
 <div>
-	<header id="header" class="">
-		<div class="name">{{company_name}}</div>
-		<div class="des"><span>每日考勤报告</span></div>
+	<header id="header" style='margin:10px ;width:40%'>
+		<div class="name" style="float: left;width:40%;text-align: right;margin:10px 0;font-size: 18px">{{company_name}}</div>
+		<div class="des" style="float: left;width:50%; text-align:center;margin:10px 0;font-size: 18px"><span>每日考勤报告</span></div>
 	</header>
-	<section>
-		<div class="time">{{job_date}}</div>
-		<ul>
+	<section style="width:40%">
+		<div class="time" style="clear:both; width: 70%;margin:0 auto;margin-bottom: 5px;">{{job_date}}</div>
+		<ul style="border:1px solid; border-top: none;width: 70%;margin:0 auto">
 			{{job_content}}
 		</ul>
 	</section>
