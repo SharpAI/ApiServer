@@ -463,7 +463,7 @@ Template.groupPhotoImg1.events({
           var promptTitle = '重命名「'+self.name+'」';
           navigator.notification.prompt(promptTip, function(results) {
             var newName = results.input1;
-            newName = newName.replace(/\s/gim,'');
+            newName = newName.replace(/(^\s*)|(\s*$)/g,"");
             if (results.buttonIndex == 2) {
               if (!newName) {
                 return PUB.toast('请输入姓名');
