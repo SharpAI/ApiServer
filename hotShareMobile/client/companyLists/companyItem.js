@@ -1,4 +1,11 @@
+var showLen = new ReactiveVar(30);
 
+var getHourMinutesTime = function(value) {
+    var val = value.toString().split('.');
+    var h = val[0];
+    var m = val[1] * 60 / 100;
+    return h+' 小时'+ Math.floor(m) + ' 分';
+}
 var options = {
   title : {
       show: false,
@@ -9,10 +16,11 @@ var options = {
   tooltip : {
       trigger: 'axis',
       formatter: function (params,ticket,callback) {
-          var res = '时间 : ' + params[0].name;
+          var res = '日期: ' + params[0].name;
           for (var i = 0, l = params.length; i < l; i++) {
-              // res += '<br/>' + params[i].seriesName + ' : ' + getHourMinutesTime(params[i].value);
-              res += '<br/>' + params[i].seriesName + ' : ' + params[i].value;
+              if(params[i].seriesType == 'bar'){
+                res += '<br/>工作时间: ' + getHourMinutesTime(params[i].value);
+              }
           }
           return res;
       }
@@ -30,7 +38,7 @@ var options = {
   xAxis : [
       {
           type : 'category',
-          boundaryGap : false,
+          boundaryGap : '5px',
           data:[]
       }
   ],
@@ -76,7 +84,7 @@ var fillChartData = function(group_id) {
     data:[]
   };
 
-  for(var i = 0; i < 30 ; i++){
+  for(var i = showLen.get(); i >= 0 ; i--){
     var d = date - (i * 24 * 60 * 60 * 1000);
 
     var status = WorkStatus.find({group_id: group_id, date:d}).fetch();
@@ -120,3 +128,22 @@ Template.companyItem.onRendered(function () {
   fillChartData(this.data.group_id);
 });
 
+Template.companyItem.helpers({
+	getActiveShow: function(len) {
+		if( len == showLen.get() ) {
+			return 'active';
+		}
+		return '';
+	}
+});
+
+Template.companyItem.events({
+  'click .weekly': function(e){
+		showLen.set(7);
+		fillChartData(this.group_id);
+	},
+	'click .monthly': function(e){
+		showLen.set(30);
+		fillChartData(this.group_id);
+	}
+})
