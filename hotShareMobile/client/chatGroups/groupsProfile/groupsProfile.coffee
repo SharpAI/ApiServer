@@ -194,6 +194,14 @@ if Meteor.isClient
       return false      
 
   Template.groupInformation.events
+    'click #groupDevice': (event)->
+      group_id = Session.get('groupsId')
+      group =  SimpleChat.Groups.findOne({_id:group_id})
+      group_name = '公司'
+      if group and group.name
+        group_name = group.name
+      Session.set('deviceDashboardTitle', group_name)
+      PUB.page '/device/dashboard/'+group_id
     'click #clusteringFix': (event)->
       group_id = Session.get('groupsId')
       PUB.page('/clusteringFix/'+ group_id)

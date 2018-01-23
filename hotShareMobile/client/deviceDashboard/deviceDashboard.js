@@ -3,7 +3,7 @@ var today         = new ReactiveVar(null);
 var time_offset = new ReactiveVar(8);
 
 var lists         = new ReactiveVar([]);
-var isOut        = new ReactiveVar(false);
+var isOut        = new ReactiveVar(true);
 
 Template.deviceDashboard.onRendered(function () {
   var now = new Date();
