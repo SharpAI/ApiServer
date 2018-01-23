@@ -1,14 +1,14 @@
-<li>
+<li style="border-top:1px solid">
   <div class="clock">
-    <div>姓名:     {{person_name}}</div>
-    <div class="clock-in">上班:     {{person_in_time}}</div>
+    <div style="margin-bottom:10px;font-size: 18px">姓名:     {{person_name}}</div>
+    <div class="clock-in" style="color: #666">上班:     {{person_in_time}}</div>
     <div class="clock-image"><img src="{{person_in_image}}" alt=""></div>
   </div>
   <div class="clock">
-    <div class="clock-out">下班:    {{person_out_time}}</div>
+    <div class="clock-out" style="color: #666">下班:    {{person_out_time}}</div>
     <div><img src="{{person_out_image}}" alt=""></div>
   </div>
-  <div class="summary">
+  <div class="summary" style="color: #666">
     {{person_summary}}
   </div>
 </li>
