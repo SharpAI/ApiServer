@@ -1,11 +1,80 @@
-var showLen = new ReactiveVar(30);
 
 var getHourMinutesTime = function(value) {
     var val = value.toString().split('.');
     var h = val[0];
     var m = val[1] * 60 / 100;
     return h+' 小时'+ Math.floor(m) + ' 分';
-}
+};
+
+var DateTimezone = function(d, time_offset) {
+		if (time_offset == undefined){
+				if (d.getTimezoneOffset() == 420){
+						time_offset = -7
+				}else {
+						time_offset = 8
+				}
+		}
+		// 取得 UTC time
+		var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+		var local_now = new Date(utc + (3600000*time_offset))
+		var today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+		local_now.getHours(), local_now.getMinutes());
+	
+		return today_now;
+};
+
+window.inCompanyTimeLength = function(time_offset, status){
+	var self = status;
+
+	var diff = 0;
+	var out_time = self.out_time;
+	var today_end = self.out_time;
+
+	if(self.in_time) {
+		var date = new Date(self.in_time);
+		var fomatDate = date.shortTime(time_offset);
+		var isToday = fomatDate.indexOf('今天') > -1 ? true : false;
+
+	//不是今天的时间没有out_time的或者是不是今天时间，最后一次拍到的是进门的状态的都计算到当天结束
+		if((!out_time && !isToday) || (self.status === 'in' && !isToday)) {
+			date = DateTimezone(date,time_offset);
+			day_end = new Date(date).setHours(23,59,59);
+			//day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
+			out_time = day_end;
+			self.in_time = date.getTime();
+		}
+		//今天的时间（没有离开过公司）
+		else if(!out_time && isToday) {
+			var now_time = Date.now();
+			out_time = now_time;
+		}
+		//今天的时间（离开公司又回到公司）
+		else if(out_time && this.status === 'in' && isToday) {
+			var now_time = Date.now();
+			out_time = now_time;
+		}
+	}
+
+	if(self.in_time && out_time){
+		diff = out_time - self.in_time;
+	}
+
+	if(diff > 24*60*60*1000) {
+		if(self.in_time) {
+			var date = DateTimezone(date,time_offset);
+			var day_end = new Date(date).setHours(23,59,59);
+			out_time = day_end;
+			diff = out_time - self.in_time;
+		} else {
+			diff = 16 * 60 * 60 * 1000;
+		}
+	} else if(diff < 0) {
+		diff = 0;
+	}
+
+	return diff;
+};
+
 var options = {
   title : {
       show: false,
@@ -59,6 +128,10 @@ var options = {
 
 var fillChartData = function(group_id) {
   console.log(group_id);
+	var showLen = 30;
+	if( Session.get('showLen-'+group_id) == 'weekly') {
+		showLen = 7;
+	}
 
   var group = SimpleChat.Groups.findOne({_id: group_id});
   var time_offset = 8;
@@ -84,30 +157,23 @@ var fillChartData = function(group_id) {
     data:[]
   };
 
-  for(var i = showLen.get(); i >= 0 ; i--){
+  for(var i = showLen; i >= 0 ; i--){
     var d = date - (i * 24 * 60 * 60 * 1000);
 
     var status = WorkStatus.find({group_id: group_id, date:d}).fetch();
-    console.log(status)
     var counts = status.length;
 
     var timeLen = 0;
     status.forEach(function(item) {
-      var in_time = item.in_time;
-      var out_time = item.out_time;
-
-      if(!out_time) {
-        out_time = d + 12 * 60 * 60 * 1000; // TODO: time_offset
-      }
-      if(in_time && out_time ){
-        var diff = out_time - in_time;
-        timeLen += diff;
-      }
+			var diff = inCompanyTimeLength(time_offset, item);
+			timeLen += diff;
     });
 
     if(counts > 0){
       timeLen = timeLen / counts;
-    }
+    } else {
+			timeLen = 0;
+		}
     
     var ts = new Date(d).parseDate('MM-DD'); // TODO: time_offset
     timeLen = timeLen / (60 * 60 * 1000);
@@ -123,14 +189,19 @@ var fillChartData = function(group_id) {
 };
 
 Template.companyItem.onRendered(function () {
-  console.log(this.data)
-  // initChart();
-  fillChartData(this.data.group_id);
+  console.log(this.data);
+	var group_id = this.data.group_id;
+	Session.set('showLen-'+group_id, 'monthly');
+	Meteor.subscribe('get-group',group_id , {
+		onReady: function() {
+			fillChartData(group_id);
+		}
+	});
 });
 
 Template.companyItem.helpers({
-	getActiveShow: function(len) {
-		if( len == showLen.get() ) {
+	getActiveShow: function(str) {
+		if( str == Session.get('showLen-'+this.group_id) ) {
 			return 'active';
 		}
 		return '';
@@ -139,11 +210,11 @@ Template.companyItem.helpers({
 
 Template.companyItem.events({
   'click .weekly': function(e){
-		showLen.set(7);
+		Session.set('showLen-'+this.group_id, 'weekly');
 		fillChartData(this.group_id);
 	},
 	'click .monthly': function(e){
-		showLen.set(30);
+		Session.set('showLen-'+this.group_id, 'monthly');
 		fillChartData(this.group_id);
 	}
 })
