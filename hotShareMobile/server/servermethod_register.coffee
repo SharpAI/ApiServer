@@ -28,7 +28,7 @@ if Meteor.isServer
     cdn.refreshObjectCaches({
       ObjectType: 'File',
       ObjectPath: objectPath
-    }, (err, res)-> 
+    }, (err, res)->
       console.log(err, res)
     )
 
@@ -195,7 +195,7 @@ if Meteor.isServer
                 createdAt: new Date()
               }
               Recommends.insert(recommendItem)
-          )          
+          )
         true
       'getRecommendStorys': (userId,limit,skip,isFav)->
         if isFav
@@ -237,7 +237,7 @@ if Meteor.isServer
       'updateSubscribeAutorEmail':(author,userId,email)->
         if !Match.test(author, String) or !Match.test(userId, String) or !Match.test(email, String)
             return {msg: 'failed'}
-        try 
+        try
           followerCount = Follower.find({followerId: author, userId: userId,userEmail: {$exists: true}}).count()
           owner = Meteor.users.findOne({_id: author})
           ownerName = if owner.profile.fullname and owner.profile.fullname isnt '' then owner.profile.fullname else owner.username
@@ -248,8 +248,8 @@ if Meteor.isServer
             },
             {
               $set:{
-                userEmail: email 
-                fromWeb: true 
+                userEmail: email
+                fromWeb: true
               }
             }
             if result is 1
@@ -265,14 +265,14 @@ if Meteor.isServer
               userIcon: user.profile.icon
               userDesc: user.profile.desc
               # 存放关注者的Email
-              userEmail: email 
+              userEmail: email
               followerId: author
               #这里存放fullname
               followerName: ownerName
               followerIcon: owner.profile.icon
               followerDesc: owner.profile.desc
               # 存放关注来源
-              fromWeb: true 
+              fromWeb: true
               createAt: new Date()
             }
             if Match.test(result, String)
@@ -401,7 +401,7 @@ if Meteor.isServer
           addToUserFavPosts(postId, userId)
         post = Posts.findOne({_id: postId})
         user = Meteor.users.findOne({_id: userId})
-        if user 
+        if user
           userIcon = user.profile.icon
           if user.profile and user.profile.fullname
             userName = user.profile.fullname
@@ -414,7 +414,7 @@ if Meteor.isServer
           userId: userId,
           username: userName
         }
-        if post 
+        if post
           pub = post.pub
           if pub and pub[pindex]
             if !pub[pindex].pcomments
@@ -718,7 +718,7 @@ if Meteor.isServer
         pushTokenObj = PushTokens.findOne({type: type,token: token})
         if pushTokenObj is undefined
           try
-            PushTokens.insert(data) 
+            PushTokens.insert(data)
           catch error
             console.log error
         else
@@ -758,13 +758,13 @@ if Meteor.isServer
               browseTimes = post.browse + 1
             Meteor.defer ()->
               Posts.update({_id:postId},{$set:{browse:browseTimes}})
-              Viewers.update({postId: postId, userId: userId}, {$inc: {count: 1}, $set: {owner: post.owner}}); 
+              Viewers.update({postId: postId, userId: userId}, {$inc: {count: 1}, $set: {owner: post.owner}});
               if owner_user
                 waitReadCount = owner_user.profile.waitReadCount
               if waitReadCount is undefined or isNaN(waitReadCount)
                 waitReadCount = 0
               Meteor.users.update({_id:post.owner}, {$set: {'profile.waitReadCount': waitReadCount+1}});
-              console.log  'read waitReadCount' 
+              console.log  'read waitReadCount'
               pushnotification("read",post,userId)
               ###
               if(browseTimes < 11)
@@ -908,7 +908,7 @@ if Meteor.isServer
                 createdAt: new Date()
               }
               Recommends.insert(recommendItem)
-          )          
+          )
         true
 
       'pushPostToHotPostGroups': (feed, groups)->
@@ -1209,6 +1209,8 @@ if Meteor.isServer
             }}, {multi: true})
           1000
         )
+      'updateGroupReportEmails':(groupId,emails)->
+        SimpleChat.Groups.update({_id:groupId},{$set:{report_emails:emails}})
       'updateGroupName':(groupId,name)->
         SimpleChat.Groups.update({_id:groupId},{$set:{name:name}})
         SimpleChat.GroupUsers.update({group_id:groupId},{$set:{group_name:name}},{multi: true})

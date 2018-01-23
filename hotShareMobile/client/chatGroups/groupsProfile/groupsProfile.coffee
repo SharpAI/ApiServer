@@ -1,4 +1,4 @@
-if Meteor.isClient 
+if Meteor.isClient
   initGroupInOutTimeSet = ()->
     group_intime = '09:00'
     group_outtime = '18:00'
@@ -17,8 +17,8 @@ if Meteor.isClient
       defaultVaule: [new Date(),new Date()],
       theme: 'material',
       lang: 'zh',
-      display: 'bottom', 
-      controls: ['time'], 
+      display: 'bottom',
+      controls: ['time'],
       maxWidth: 100,
       setText: '设置',
       fromText: '上班时间',
@@ -104,7 +104,7 @@ if Meteor.isClient
         groupAccuracyType = group.groupAccuracyType
       if groupAccuracyType is 'accurate'
         return '精确匹配'
-      else 
+      else
         return '宽松匹配'
     rejectUnknowMember: ()->
       groupUser = SimpleChat.GroupUsers.findOne({group_id: Session.get('groupsId'), user_id: Meteor.userId()})
@@ -191,7 +191,7 @@ if Meteor.isClient
       groupUser = SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'), user_id: Meteor.userId()})
       if groupUser and groupUser.isGroupAdmin
         return true
-      return false      
+      return false
 
   Template.groupInformation.events
     'click #groupDevice': (event)->
@@ -520,29 +520,51 @@ if Meteor.isClient
          Session.set('fromCreateNewGroups',false);
          Router.go('/');
       Session.set("groupsProfileMenu","groupInformation")
+  Template.groupEmail.helpers
+    reportEmails: ()->
+      emails = []
+      groupId = Session.get 'groupsId'
+      group = SimpleChat.Groups.findOne({_id: groupId})
+      if group.report_emails
+        report_emails = group.report_emails
+        rmails = report_emails.split(',')
+        for emailAddr in rmails
+          emails.push({ reportEmailAddr: emailAddr })
+      emails
   Template.groupEmail.events
     'click .left-btn':(event)->
       if Session.equals('fromCreateNewGroups',true)
         Session.set('fromCreateNewGroups',false);
         Router.go('/');
       Session.set("groupsProfileMenu","groupInformation")
-     'click .adE':(event)->
-       ss = $(".inpEmail").val()
-       $("ul").append(' <li class="deleEmaile" id="dele" >
-                <!-- <label>添加邮箱</label> -->
-                <div>
-                    <span style="padding-left:10px;width: 70%;display: inline-block">'+ss+'</span>
-                    <span style=" width: 20%; float: right; border:1px solid #47A7FE; color: #47A7FE;
-    text-align: center;border-radius: 15px;line-height: 20px;font-size: 12px" >删除邮箱</span> 
-                </div>');
-       $(".inpEmail").val("")
-      'click .deleEmaile':(event)->
-        $(event.currentTarget).remove();
-      # $(event.currentTarget).remove()
-    'click .selectAccuracy':(event)->
-      groupAccuracyType =event.currentTarget.id;
-      Meteor.call('updateGroupAccuracyType',Session.get('groupsId'),groupAccuracyType)
-      if Session.equals('fromCreateNewGroups',true)
-        Session.set('fromCreateNewGroups',false);
-        Router.go('/');
-      Session.set("groupsProfileMenu","groupInformation")
+    'click .adE':(event)->
+      ss = $(".inpEmail").val()
+      ret = ss.match(/^\w+@[a-z0-9]+(\.[a-z]+){1,3}$/)
+      if not ret
+        PUB.toast '无效邮箱地址!'
+        return
+      groupId = Session.get 'groupsId'
+      group = SimpleChat.Groups.findOne({_id: groupId})
+      if group.report_emails
+        report_emails = group.report_emails + ',' + ss
+      else
+        report_emails = ss
+
+      Meteor.call('updateGroupReportEmails', groupId, report_emails)
+
+      $(".inpEmail").val("")
+    'click .deleEmaile':(event)->
+      groupId = Session.get 'groupsId'
+      newEmails = ''
+      isFirst = true
+      group = SimpleChat.Groups.findOne({_id: groupId})
+      if group.report_emails
+        aMails = group.report_emails.split(',')
+        for em in aMails
+          if em isnt this.reportEmailAddr
+            if isFirst
+              isFirst = false
+              newEmails = newEmails + em
+            else
+              newEmails = newEmails + ',' + em
+      Meteor.call('updateGroupReportEmails', groupId, newEmails)

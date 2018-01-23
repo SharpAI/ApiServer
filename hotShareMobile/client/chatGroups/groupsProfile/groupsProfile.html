@@ -124,7 +124,7 @@
                 <!--div class="scanPerfBarcode">扫描绩效二维码</div-->
                 <!--div class="checkPerf">查看绩效</div-->
                 {{/if}}
-                 <div class="groupEmail">邮箱</div>
+                 <div class="groupEmail">报告接收邮箱</div>
                 {{#if isGroupAdmin}}
                 <div class="emptyMessages">清空训练记录</div>
                 {{/if}}
@@ -303,23 +303,25 @@
     <div class="content">
         <div id="wrapper">
         <div class="addEmaile" style="position: fixed; top:60px; left:10px; right:0;">
-                <input class="inpEmail" type="" name="" placeholder="examole: admin@163.com" value="" style="width: 70% ;height:30px;text-indent: 5px">
+                <input class="inpEmail" type="" name="" placeholder="example: admin@163.com" value="" style="width: 70% ;height:30px;text-indent: 5px">
                 <span class="adE" style="    width: 20%;
     display: inline-block;
     line-height: 25px;
     border: 1px solid #ccc;
-     border-radius: 2px; 
+     border-radius: 2px;
     text-align: center;
     margin-right: 10px;float:right">添加邮箱</span>
-        </div>  
+        </div>
         <ul id="ulEmail" class="set-emaile set-up comFadeIn" style="padding-left:0;position: fixed; top:100px; left:0; right:0;">
+          {{#each reportEmails}}
             <li class="deleEmaile" id="dele" >
                 <div>
-                    <span style="padding-left:10px;width: 70%;display: inline-block">123@163.c0m</span>
+                    <span style="padding-left:10px;width: 70%;display: inline-block">{{reportEmailAddr}}</span>
                     <span style=" width: 20%; float: right; border:1px solid #47A7FE; color: #47A7FE;
-    text-align: center;border-radius: 15px;line-height: 20px;font-size: 12px" >删除邮箱</span> 
+    text-align: center;border-radius: 15px;line-height: 20px;font-size: 12px" >删除邮箱</span>
                 </div>
             </li>
+          {{/each}}
         </ul>
         </div>
     </div>
