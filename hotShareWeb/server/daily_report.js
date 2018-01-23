@@ -6,6 +6,7 @@ if(Meteor.isServer){
       if (millisTill23 < 0) {
         millisTill23 += 86400000; // it's after 10am, try 10am tomorrow.
       }
+      console.log('millisTill23:', millisTill23);
       return millisTill23;
     }
 
@@ -65,16 +66,26 @@ if(Meteor.isServer){
       }
     }
 
+    function delay3HourThenScheduleAgain() {
+      console.log('delay3HourThenScheduleAgain');
+      Meteor.setTimeout(sendJobReport, calcTimeStamp23());
+    }
+
     function sendJobReport() {
       console.log('sendJobReport');
 
-      var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
-      groups.forEach(function(group) {
-        console.log(group._id, group.report_emails);
-        sendGroupJobReport(group);
-      });
+      try {
+        var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
+        groups.forEach(function(group) {
+          console.log(group._id, group.report_emails);
+          sendGroupJobReport(group);
+        });
+      }
+      catch(ex) {
+        console.log("exception in sendJobReport", ex);
+      }
 
-      Meteor.setTimeout(sendJobReport, calcTimeStamp23());
+      Meteor.setTimeout(delay3HourThenScheduleAgain, 3*60*60*1000);
     }
 
     Meteor.setTimeout(sendJobReport, calcTimeStamp23());
