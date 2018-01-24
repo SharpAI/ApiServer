@@ -28,10 +28,16 @@ if(Meteor.isServer){
       if (workStatus) {
         workStatus.forEach(function(ws) {
           var pContent = Assets.getText('email/job-item.html');
+          var strInTime = '--|--';
+          var strOutTime = '--|--';
           pContent = pContent.replace('{{person_name}}', ws.person_name);
-          pContent = pContent.replace('{{person_in_time}}', new Date(ws.in_time).toLocaleString().substr(11, 8));
+          if (ws.in_time != 0)
+            strInTime = new Date(ws.in_time).toLocaleString().substr(11, 8);
+          if (ws.out_time != 0)
+            strOutTime = new Date(ws.out_time).toLocaleString().substr(11, 8);
+          pContent = pContent.replace('{{person_in_time}}', strInTime);
           pContent = pContent.replace('{{person_in_image}}', ws.in_image);
-          pContent = pContent.replace('{{person_out_time}}', new Date(ws.out_time).toLocaleString().substr(11, 8));
+          pContent = pContent.replace('{{person_out_time}}', strOutTime);
           pContent = pContent.replace('{{person_out_image}}', ws.out_image);
           var summary = ws.whats_up;
           if (!summary)
