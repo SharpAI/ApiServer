@@ -1,11 +1,11 @@
 if Meteor.isClient
   Template.companyLists.rendered=->
     #$('.content').css 'min-height',$(window).height()
-  Template.companyLists.onRendered ()->
-    Meteor.subscribe('get-my-group', Meteor.userId(), {
-      onReady: ()->
-        Session.set('companyListLoading', false)
-      });
+  # Template.companyLists.onRendered ()->
+  #   Meteor.subscribe('get-my-group', Meteor.userId(), {
+  #     onReady: ()->
+  #       Session.set('companyListLoading', false)
+  #     });
   getBoundCompany = ()->
     company_array = []
     groups = SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).fetch();

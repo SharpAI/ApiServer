@@ -128,10 +128,10 @@ var options = {
 
 var fillChartData = function(group_id) {
   console.log(group_id);
-	var showLen = 30;
-	if( Session.get('showLen-'+group_id) == 'weekly') {
-		showLen = 7;
-	}
+    var showLen = 30;
+    if( Session.get('showLen-'+group_id) == 'weekly') {
+        showLen = 7;
+    }
 
   var group = SimpleChat.Groups.findOne({_id: group_id});
   var time_offset = 8;
@@ -184,14 +184,16 @@ var fillChartData = function(group_id) {
   };
 
   console.log(options);
-  var chartLine = echarts.init(document.getElementById('lineChart-'+group_id));
-  chartLine.setOption(options);
+  window.companyCharts['char-'+group_id].setOption(options);
+  window.companyCharts['char-'+group_id].hideLoading();
 };
 
 Template.companyItem.onRendered(function () {
   console.log(this.data);
 	var group_id = this.data.group_id;
 	Session.set('showLen-'+group_id, 'monthly');
+    window.companyCharts['char-'+group_id] = echarts.init(document.getElementById('lineChart-'+group_id));
+    window.companyCharts['char-'+group_id].showLoading();
 	Meteor.subscribe('get-group',group_id , {
 		onReady: function() {
 			fillChartData(group_id);
@@ -211,10 +213,12 @@ Template.companyItem.helpers({
 Template.companyItem.events({
   'click .weekly': function(e){
 		Session.set('showLen-'+this.group_id, 'weekly');
+        window.companyCharts['char-'+this.group_id].showLoading();
 		fillChartData(this.group_id);
 	},
 	'click .monthly': function(e){
 		Session.set('showLen-'+this.group_id, 'monthly');
+        window.companyCharts['char-'+this.group_id].showLoading();
 		fillChartData(this.group_id);
 	}
 })

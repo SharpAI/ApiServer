@@ -1,13 +1,10 @@
 var theCurrentDay = new ReactiveVar(null);
 var theDisplayDay = new ReactiveVar(null);
 var groupsData = new ReactiveVar([]);
-
+window.companyCharts = {};
 Template.companyLists.onRendered(function () {
-  Meteor.subscribe('get-my-group', Meteor.userId(), {
-    onReady: function(){
-      Session.set('companyListLoading', false)
-    }
-  });
+  window.companyCharts = {};
+  Meteor.subscribe('get-my-group', Meteor.userId());
 
   var now = new Date();
   var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -15,7 +12,7 @@ Template.companyLists.onRendered(function () {
 
   theCurrentDay.set(date); // UTC日期
   theDisplayDay.set(displayDate); // 当前显示日期
-
+  Session.set('companyListLoading', true);
   Meteor.subscribe('userGroupsWorkstatusLists', date, {
     onReady: function() {
       Session.set('companyListLoading', false)
@@ -23,6 +20,6 @@ Template.companyLists.onRendered(function () {
   });
 });
 
-Template.companyLists.helpers({
-
-})
+Template.companyLists.onDestroyed(function() {
+  window.companyCharts = null;
+});
