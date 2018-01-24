@@ -38,6 +38,7 @@ var modifyStatusFun = function(group_id,in_out,taId){
       return PUB.toast('未找到该群组下，方向为"'+in_out+'"的设备');
     }
     if(deviceCount === 1){
+      workStatusPopPage.close();
       var device = Devices.findOne({groupId: group_id,in_out:in_out},{sort:{createAt:-1}})
       Session.set('wantModify',true);
       if(taId){
@@ -141,6 +142,11 @@ Template.workStatusPopPage.helpers({
   },
   lists: function(){
     return WorkStatus.find({group_id: group.get()._id,date: theCurrentDay.get()}).fetch();
+  },
+  devices: function(){
+    var group_id = Session.get('modifyMyStatus_group_id') || group.get()._id;
+    var in_out = Session.get('modifyMyStatus_in_out');
+    return Devices.find({groupId: group_id,in_out:in_out},{sort:{createAt:-1}}).fetch();
   },
   getIcon: function(){
     return this.out_image || this.in_image;
@@ -332,7 +338,6 @@ Template.workStatusPopPage.events({
     } else {
       modifyStatusFun(group_id, 'in', this.app_user_id);
     }
-    workStatusPopPage.close();
   },
   // 修改下班时间
   'click .editOutTime': function(e) {
@@ -354,7 +359,6 @@ Template.workStatusPopPage.events({
     } else {
       modifyStatusFun(group_id, 'out', this.app_user_id);
     }
-    workStatusPopPage.close();
   },
   // goNextDay
   'click .nextDay': function(e) {
@@ -383,5 +387,19 @@ Template.workStatusPopPage.events({
     Meteor.subscribe('group_workstatus',group.get()._id, theCurrentDay.get(), function() {
       isLoading.set(false);
     });
-  }
+  },
+  'click .deviceItem': function(e){
+    $('#selectDevicesInOut').modal('hide');
+    $('.homePage .content').removeClass('content_box');
+    var taId = Session.get('modifyMyStatus_ta_id');
+    var pageUrl = '/timelineAlbum/'+e.currentTarget.id;
+    Session.set('wantModify',true);
+    if(taId){
+      pageUrl = '/timelineAlbum/'+e.currentTarget.id+'?taId='+taId;
+    }
+    setTimeout(function(){
+      PUB.page(pageUrl);
+      workStatusPopPage.close();
+    },1000);
+  },
 });
