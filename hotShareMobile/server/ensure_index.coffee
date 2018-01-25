@@ -75,3 +75,4 @@ if Meteor.isServer
     WorkAIUserRelations._ensureIndex({app_user_id: 1})
     DeviceTimeLine._ensureIndex({uuid: 1})
     DeviceTimeLine._ensureIndex({uuid: 1, group_id: 1})
+    DeviceTimeLine._ensureIndex({hour: 1})

@@ -194,6 +194,9 @@ if Meteor.isClient
       return false
 
   Template.groupInformation.events
+    'click #recognitionCounts': (event)->
+      group_id = Session.get('groupsId')
+      PUB.page('/recognitionCounts/'+group_id)
     'click #groupDevice': (event)->
       group_id = Session.get('groupsId')
       group =  SimpleChat.Groups.findOne({_id:group_id})

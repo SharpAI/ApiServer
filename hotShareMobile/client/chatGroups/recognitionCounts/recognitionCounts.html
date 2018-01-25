@@ -1,0 +1,36 @@
+<template name="recognitionCounts">
+  <div class="head">
+      <div class="leftButton back">
+          <i class="fa fa-angle-left fa-fw"></i>
+      </div>
+      <strong>识别统计</strong>
+  </div>
+  <div class="content" style="margin-top: 40px;">
+    <div class="line" style="height: 40px;text-align: left;padding-left: 10px;color: #555;line-height: 40px;background: #f3f3f3;">识别次数统计</div>
+    <ul class="set-up comFadeIn" style="margin-bottom:0;">
+      <li>
+        <label style="color:#555;">姓名</label>
+        <div class="value">识别次数</div>
+      </li>
+      {{#each counts}}
+      <li>
+        <label style="color:#555;">{{name}}</label>
+        <div class="value">{{count}}</div>
+      </li>
+      {{/each}}
+    </ul>
+    <div class="line" style="height: 40px;text-align: left;padding-left: 10px;color: #555;line-height: 40px;background: #f3f3f3;">识别记录</div>
+    <ul class="set-up comFadeIn" style="margin-bottom:0;">
+      <li>
+        <label style="color:#555;">姓名</label>
+        <div class="value">识别时间</div>
+      </li>
+      {{#each lists}}
+      <li>
+        <label style="color:#555;">{{person_name}}</label>
+        <div class="value">{{getTime}}</div>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+</template>

@@ -355,6 +355,21 @@ Meteor.publish('group_workstatus', function(group_id, date){
          Meteor.users.find({username: uuid})
      ];
  });
+ 
+ Meteor.publish('group-device-timeline', function(group_id,timeRange){
+     if(!this.userId || !group_id || !timeRange) {
+         return this.ready();
+     }
+     var selector = {
+         group_id: group_id,
+         hour: {
+             $gte: timeRange[0],
+             $lte: timeRange[1]
+         }
+     };
+
+     return DeviceTimeLine.find(selector, {sort:{hour: -1}});
+ });
 
  Meteor.publish('device-timeline', function(uuid,limit){
     var limit = limit || 10;

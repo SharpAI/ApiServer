@@ -201,6 +201,9 @@ if Meteor.isClient
     Router.route '/device/dashboard/:group_id',()->
       this.render 'deviceDashboard'
       return
+    Router.route '/recognitionCounts/:group_id',()->
+      this.render 'recognitionCounts'
+      return
     Router.route '/explore',()->
       if Meteor.isCordova is true
         this.render 'explore'
