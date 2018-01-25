@@ -56,6 +56,9 @@ Template.recognitionCounts.onRendered(function(){
   Meteor.subscribe('group-device-timeline', group_id.get(),range, function() {
     isLoading.set(false);
   });
+  Meteor.setTimeout(function(){
+    $(document).scrollTop(0);
+  },50);
 });
 
 Template.recognitionCounts.helpers({
