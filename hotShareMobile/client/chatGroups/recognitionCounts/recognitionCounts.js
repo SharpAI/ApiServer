@@ -3,6 +3,43 @@ var timeRange = new ReactiveVar([]);
 var group_id = new ReactiveVar('');
 
 var personCounts = new ReactiveVar({});
+
+var initTimeRangeSet = function() {
+  var range = timeRange.get();
+  
+  $('#timeRange').mobiscroll().range({
+    defaultVaule: [new Date(),new Date()],
+    theme: 'material',
+    lang: 'zh',
+    display: 'bottom',
+    controls: ['time'],
+    maxWidth: 100,
+    setText: '设置',
+    fromText: '开始时间',
+    toText:'结束时间',
+    defaultValue: [
+        new Date(range[0]),new Date(range[1])
+    ],
+    onSet: function(value, inst){
+      var val = value.valueText;
+
+      var vals = val.split(' - ');
+      var startArr =  vals[0].split(":");
+      var endArr = vals[1].split(":");
+
+      var now = new Date();
+
+      var range = timeRange.get();
+      range[0] = new Date(now.getFullYear(),now.getMonth(), now.getDate() , 
+      Number(startArr[0]), Number(startArr[1]), 0, 0);
+      range[1] = new Date(now.getFullYear(),now.getMonth(), now.getDate() , 
+      Number(endArr[0]), Number(endArr[1]), 0, 0);
+
+      timeRange.set(range);
+    }
+  });
+};
+
 Template.recognitionCounts.onRendered(function(){
   isLoading.set(true);
   group_id.set(Router.current().params.group_id);
@@ -15,7 +52,7 @@ Template.recognitionCounts.onRendered(function(){
       23, 59, 59, 0);
   
   timeRange.set(range);
-
+  initTimeRangeSet();
   Meteor.subscribe('group-device-timeline', group_id.get(),range, function() {
     isLoading.set(false);
   });
@@ -81,11 +118,20 @@ Template.recognitionCounts.helpers({
   getTime: function() {
     var d = new Date(this.time);
     return d.parseDate('YYYY-MM-DD hh:mm');
+  },
+  getRange: function() {
+    var range = timeRange.get();
+    var start = new Date(range[0]);
+    var end = new Date(range[1]);
+    return start.parseDate('hh:mm') + ' - ' + end.parseDate('hh:mm');
   }
 });
 
 Template.recognitionCounts.events({
   'click .back': function(e) {
     return PUB.back();
+  },
+  'click #timeRange': function(e) {
+    return $('#timeRange').mobiscroll('show');
   }
 })
