@@ -3,8 +3,37 @@ var isMultiSelect = new ReactiveVar(false);
 var multiSelectIds = new ReactiveVar([]);
 var multiSelectLists = new ReactiveVar([]);
 
-var labelMultiPerson = function(lists){
+var timeRange = new ReactiveVar([]);
 
+var initTimeRangeSet = function() {
+  var now = new Date();
+  $('#timeRange').mobiscroll().range({
+    defaultVaule: [new Date(),new Date()],
+    theme: 'material',
+    lang: 'zh',
+    display: 'bottom',
+    controls: ['calendar', 'time'],
+    maxWidth: 100,
+    setText: '设置',
+    fromText: '开始时间',
+    toText:'结束时间',
+    defaultValue: [
+        new Date(now.getFullYear(),now.getMonth(), now.getDate() - 7),new Date()
+    ],
+    onSet: function(value, inst){
+      var val = value.valueText;
+
+      var vals = val.split(' - ');
+      var startArr =  new Date(vals[0]);
+      var endArr = new Date(vals[1]);
+      var range = timeRange.get();
+      range[0] = new Date(startArr.getFullYear(),startArr.getMonth(), startArr.getDate(),startArr.getHours(),0,0,0);
+      range[1] = new Date(endArr.getFullYear(),endArr.getMonth(), endArr.getDate(),endArr.getHours(),0,0,0);
+
+      timeRange.set(range);
+
+    }
+  });
 };
 
 function LazyImg(option){
@@ -171,7 +200,7 @@ subscribeTimelineDate = function(times){
 
   var hour = Session.get('wantModifyTime');
   var uuid = Router.current().params._uuid;
-  
+
   // subscribe
   if(count < 10 && times < 10){
     times += 1;
@@ -194,6 +223,8 @@ subscribeTimelineDate = function(times){
 };
 
 Template.timelineAlbum.onRendered(function(){
+  initTimeRangeSet();
+
   var taId = Router.current().params.query.taId;
   if(taId){
     Meteor.subscribe('usersById',taId);
@@ -335,7 +366,7 @@ Template.timelineAlbum.helpers({
     var lists = [];
     var hour = Session.get('wantModifyTime');
     if (hour) {
-      DeviceTimeLine.find({uuid: uuid,hour:{$lte:hour}},{sort:{hour:-1},limit:Session.get('timelineAlbumLimit')}).forEach(function(item){
+     DeviceTimeLine.find({uuid: uuid,hour:{$lte:hour}},{sort:{hour:-1},limit:Session.get('timelineAlbumLimit')}).forEach(function(item){
         var tmpArr = [];
         for(x in item.perMin){
           var hour = new Date(item.hour)
@@ -964,6 +995,9 @@ Template.timelineAlbum.events({
     };
 
     SimpleChat.show_label(group_id, call_back_handle);
+  },
+  'click #timeRange': function(e) {
+    return $('#timeRange').mobiscroll('show');
   }
 });
 
