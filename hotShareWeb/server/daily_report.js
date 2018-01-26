@@ -48,9 +48,7 @@ if(Meteor.isServer){
         });
       }
 
-      job_report = job_report.replace('{{job_content}}', job_content);
-
-      console.log(job_report);
+      job_report = job_report.replace('{{job_content}}', job_content)
 
       try {
           Email.send({
@@ -91,9 +89,22 @@ if(Meteor.isServer){
         console.log("exception in sendJobReport", ex);
       }
 
-      Meteor.setTimeout(delay3HourThenScheduleAgain, 3*60*60*1000);
+      //Meteor.setTimeout(delay3HourThenScheduleAgain, 3*60*60*1000);
     }
 
-    Meteor.setTimeout(sendJobReport, calcTimeStamp23());
+    //Meteor.setTimeout(sendJobReport, calcTimeStamp23());
+    SyncedCron.add({
+      name: 'send report email 11 pm every day',
+      schedule: function(parser){
+        // parser is later.parse pbject
+        return parser.text('at 11:00 pm');
+      },
+      job: function(){
+        sendJobReport();
+        return 1;
+      }
+    });
+
+    SyncedCron.start();
   });
 }
