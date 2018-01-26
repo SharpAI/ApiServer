@@ -279,7 +279,7 @@ if Meteor.isServer
   # 获取对应时区的时间
   getLocalTimeByOffset = (i)->
     if typeof i isnt 'number'
-      return 
+      return
     d = new Date()
     len = d.getTime()
     offset = d.getTimezoneOffset() * 60000
@@ -572,16 +572,16 @@ if Meteor.isServer
       if (time_offset == undefined)
         if (d.getTimezoneOffset() == 420)
             time_offset = -7
-        else 
+        else
             time_offset = 8
       # 取得 UTC time
       utc = d.getTime() + (d.getTimezoneOffset() * 60000);
       local_now = new Date(utc + (3600000*time_offset))
-      today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+      today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(),
       local_now.getHours(), local_now.getMinutes());
 
       return today_now;
-    
+
     self = time;
     now = new Date();
     result = '';
@@ -676,7 +676,7 @@ if Meteor.isServer
 
     sendMqttMessage('/msg/u/'+ relation.app_user_id, {
         _id: new Mongo.ObjectID()._str
-        # form: { 
+        # form: {
         #   id: "fTnmgpdDN4hF9re8F",
         #   name: "workAI",
         #   icon: "http://data.tiegushi.com/fTnmgpdDN4hF9re8F_1493176458747.jpg"
@@ -778,7 +778,7 @@ if Meteor.isServer
           ]
           to_type: "group"
           type: "text"
-          text: if !name then 'Work AI发现有人在活动' else 'Work AI认为它在刚刚经过的人中发现了 ' + name 
+          text: if !name then 'Work AI发现有人在活动' else 'Work AI认为它在刚刚经过的人中发现了 ' + name
           create_time: create_time
           people_id: id
           people_uuid: uuid
@@ -794,7 +794,7 @@ if Meteor.isServer
           person_id: id,
           person_name: name,
           img_url: url,
-          sqlid: sqlid, 
+          sqlid: sqlid,
           style: style,
           accuracy: Accuracy, # 准确度(分数)
           fuzziness: Fuzziness, # 模糊度
@@ -856,7 +856,7 @@ if Meteor.isServer
             # UserCheckoutEndLog.remove({userId: relation.app_user_id})
             # UserCheckoutEndLog.insert(checkout_msg)
             # sendUserCheckoutEvent(uuid, relation.app_user_id)
-            # return 
+            # return
             # 到下班时间后，不终止后续处理
             group_outtime = '18:00'
             time_offset = 8
@@ -875,7 +875,7 @@ if Meteor.isServer
             out_time_minutes = out_time_H * 60 + out_time_M
 
             # 到下班时间后，不自动 checkout(这里先取消， 目前：统一采用自动checkout的方式，但保留手动checkout)
-            # if (out_time_minutes < group_out_minutes)   
+            # if (out_time_minutes < group_out_minutes)
             #   return
 
           send_greeting_msg(msg_data);
@@ -926,7 +926,7 @@ if Meteor.isServer
   #     '0',
   #     'front',
   #     1506588441021,
-  #     1506588441021, 
+  #     1506588441021,
   #     ''
   #   )
 
@@ -1159,6 +1159,7 @@ if Meteor.isServer
       group_id = this.params.query.group_id
       msg_type = this.params.query.type
       msg_text = this.params.query.text
+      is_device_traing = this.params.query.is_device_traing
 
       unless uuid or group_id
         console.log '/restapi/workai-send2group get unless resturn'
@@ -1191,6 +1192,7 @@ if Meteor.isServer
           text: msg_text
           create_time: new Date()
           is_read: false
+          is_device_traing: is_device_traing
         })
 
       this.response.end('{"result": "ok"}\n')
@@ -1203,6 +1205,8 @@ if Meteor.isServer
         msg_type = this.request.body.type
       if this.request.body.hasOwnProperty('text')
         msg_text = this.request.body.text
+      if this.request.body.hasOwnProperty('is_device_traing')
+        is_device_traing = this.request.body.is_device_traing
 
       unless uuid or group_id
         console.log '/restapi/workai-send2group get unless resturn'
@@ -1235,6 +1239,7 @@ if Meteor.isServer
           text: msg_text
           create_time: new Date()
           is_read: false
+          is_device_traing: is_device_traing
         })
 
       this.response.end('{"result": "ok"}\n')
@@ -1720,7 +1725,7 @@ if Meteor.isServer
               "hide_it"     : if fields.hide_it then fields.hide_it else  false
             }
             #console.log('>>> new a WorkStatus ' + JSON.stringify(newWorkStatus))
-            
+
             WorkStatus.insert(newWorkStatus)
       )
 
@@ -1759,7 +1764,7 @@ if Meteor.isServer
       this.response.end(JSON.stringify({result: 'ok'}))
     )
 
- 
+
   # params = {
   #   uuid: 设备UUID,
   #   person_id: id,
@@ -1937,9 +1942,9 @@ if Meteor.isServer
         #取得 UTC time
         utc = d.getTime() + (d.getTimezoneOffset() * 60000);
         local_now = new Date(utc + (3600000*time_offset))
-        today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+        today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(),
         local_now.getHours(), local_now.getMinutes());
-      
+
         return today_now;
 
     #计算out_time
@@ -2086,7 +2091,7 @@ if Meteor.isServer
       subject = group.name + ' 每日出勤报告'+y_date_title
     else
       return
-    
+
       #console.log 'html:'+ JSON.stringify(text)
     SimpleChat.GroupUsers.find({group_id:group_id}).forEach(
       (fields)->
@@ -2144,7 +2149,7 @@ if Meteor.isServer
 
     this.response.end(JSON.stringify({result: 'ok'}))
   )
-  
+
   # 定义相应的mailgun webhook, dropped,hardbounces,unsubscribe 下次不再向相应的邮件地址发信
   # docs: https://documentation.mailgun.com/en/latest/user_manual.html#webhooks
   @mailGunSendHooks = (address, type, reason)->
