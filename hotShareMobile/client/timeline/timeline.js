@@ -33,6 +33,6 @@ Template.timeline.events({
     return PUB.back();
   },
   'click .deviceItem': function(e){
-    return PUB.page('/timelineAlbum/'+e.currentTarget.id+'?form=timeline');
+    return PUB.page('/timelineAlbum/'+e.currentTarget.id+'?from=timeline');
   }
 })

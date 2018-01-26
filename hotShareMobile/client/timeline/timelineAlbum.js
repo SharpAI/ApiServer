@@ -1,4 +1,12 @@
 var mergedExtendLists = new ReactiveVar([]);
+var isMultiSelect = new ReactiveVar(false);
+var multiSelectIds = new ReactiveVar([]);
+var multiSelectLists = new ReactiveVar([]);
+
+var labelMultiPerson = function(lists){
+
+};
+
 function LazyImg(option){
   this.settings = option || {};
   this.settings.selector = '.lazy';
@@ -338,6 +346,7 @@ Template.timelineAlbum.helpers({
           }
           var personIds = [];
           item.perMin[x].forEach(function(img){
+            img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
             var index = personIds.indexOf(img.person_id);
             if(index < 0){
               personIds.push(img.person_id)
@@ -368,6 +377,7 @@ Template.timelineAlbum.helpers({
             }
             var personIds = [];
             item.perMin[x].forEach(function(img){
+              img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
               var index = personIds.indexOf(img.person_id);
               if(index < 0){
                 personIds.push(img.person_id)
@@ -400,6 +410,7 @@ Template.timelineAlbum.helpers({
           }
           var personIds = [];
           item.perMin[x].forEach(function(img){
+            img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
             var index = personIds.indexOf(img.person_id);
             if(index < 0){
               personIds.push(img.person_id)
@@ -436,8 +447,18 @@ Template.timelineAlbum.helpers({
     }
     return date.shortTime(time_offset)
   },
+  // 是否显示多选模式
+  showMultiSelect: function() {
+    var formPage = Router.current().params.query.from;
+    // 只有直接从设备进入， 才启用多选
+    if (formPage && formPage == 'timeline') {
+      return true;
+    }
+    return false;
+  },
   isMultiSelect: function(){
-    return Session.equals('timelineAlbumMultiSelect',true);
+    // return Session.equals('timelineAlbumMultiSelect',true);
+    return isMultiSelect.get();
   },
   relations: function(){
     var device = Devices.findOne({uuid: Router.current().params._uuid});
@@ -476,6 +497,33 @@ Template.timelineAlbum.events({
   },
   'click .images-click-able, click .select-video-enable': function(e){
     e.stopImmediatePropagation();
+
+    // 如果是多选模式
+    if( isMultiSelect.get() ) {
+      var ids = multiSelectIds.get();
+      var lists = multiSelectLists.get();
+
+      var index = ids.indexOf(this._id);
+      // 多选模式, 不选择video
+      if(this.img_type == 'video') {
+        return PUB.toast('多选模式下，只能选择图片');
+      }
+      
+      if(index < 0) { // 还没有被选择
+        ids.push(this._id);
+        lists.push(this);
+        $(e.currentTarget).addClass('multi-selected');
+      } else {
+        ids.splice(index,1);
+        lists.splice(index,1);
+        $(e.currentTarget).removeClass('multi-selected');
+      }
+      console.log(lists);
+
+      multiSelectIds.set(ids);
+      multiSelectLists.set(lists);
+      return;
+    }
 
     // is_video
     var is_video = false;
@@ -818,5 +866,109 @@ Template.timelineAlbum.events({
       $('#picturePersonName').focus();
     },800);
     return $('#setPicturePersonName').modal('show');
+  },
+  // 启用多选
+  'click #multiSelect': function(e) {
+    isMultiSelect.set(true);
+  },
+  // 退出多选
+  'click #cancelSelect': function(e) {
+    isMultiSelect.set(false);
+    multiSelectIds.set([]);
+    multiSelectLists.set([]);
+    $('.images, .videos').removeClass('multi-selected');
+  },
+  // 完成多选, 同时完成标记， 不记录时间
+  'click #confirmSelect': function(e) {
+    isMultiSelect.set(false);
+    var _lists = multiSelectLists.get();
+
+    multiSelectIds.set([]);
+    multiSelectLists.set([]);
+    $('.images, .videos').removeClass('multi-selected');
+
+    // 公共变量准备
+    var uuid   = Router.current().params._uuid;
+    var device = Devices.findOne({uuid: uuid});
+    var group_id  = device.groupId;
+    
+    var call_back_handle = function(name){
+      if (!name) {
+        return;
+      }
+
+      PUB.showWaitLoading('处理中');
+      var setNames = [];
+
+      Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res){
+        if (err || !res){
+          return PUB.toast('标注失败，请重试~');
+        }
+        
+        _lists.forEach(function(item) {
+          // 发送消息给平板
+          var trainsetObj = {
+            group_id: group_id,
+            type: 'trainset',
+            url: item.img_url,
+            person_id: item.person_id,
+            device_id: uuid,
+            face_id: res ? res.faceId : item.person_id,
+            drop: false,
+            img_type: 'face',
+            style:item.style,
+            sqlid:item.sqlid
+          };
+          console.log("==sr==. timeLine multiSelect: " + JSON.stringify(trainsetObj));
+          sendMqttMessage('/device/'+group_id, trainsetObj);
+
+          setNames.push({
+            uuid: uuid, 
+            id: item.person_id, 
+            url: item.img_url, 
+            name: name,
+            sqlid:item.style,
+            style:item.sqlid
+          });
+        });
+
+        if (setNames.length > 0){
+          Meteor.call('set-person-names', group_id, setNames);
+        }
+
+        _lists.forEach(function(item) {
+          try {
+            var person_info = {
+              'uuid': uuid,
+              'name': name,
+              'group_id':group_id,
+              'img_url': item.img_url,
+              'type': 'face',
+              'ts': item.ts,
+              'accuracy': item.accuracy,
+              'fuzziness': item.fuzziness,
+              'sqlid':item.sqlid,
+              'style':item.style
+            };
+            var data = {
+              face_id: item.person_id,
+              person_info: person_info,
+              formLabel: true
+            };
+            
+            Meteor.call('ai-checkin-out',data,function(err,res){});
+          } catch(e){}
+        });
+        PUB.hideWaitLoading();
+      });
+    };
+
+    SimpleChat.show_label(group_id, call_back_handle);
   }
+});
+
+Template.timelineAlbum.onDestroyed(function() {
+  isMultiSelect.set(false);
+  multiSelectIds.set([]);
+  multiSelectLists.set([]);
 });

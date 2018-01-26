@@ -12,12 +12,14 @@
     <div class="leftButton back">
       <i class="fa fa-angle-left fa-fw"></i>
     </div>
-    <!--{{#if isMultiSelect}}
-    <div id="cancelSelect" class="rightButton" style="padding-top:0;right:48px;">取消</div>
-    <div id="confirmSelect" class="rightButton" style="padding-top:0;">确定</div>
-    {{else}}
-    <div id="multiSelect" class="rightButton" style="padding-top:0;">多选</div>
-    {{/if}}-->
+    {{#if showMultiSelect}}
+      {{#if isMultiSelect}}
+      <div id="cancelSelect" class="rightButton" style="padding-top:0;right:48px;">取消</div>
+      <div id="confirmSelect" class="rightButton" style="padding-top:0;">确定</div>
+      {{else}}
+      <div id="multiSelect" class="rightButton" style="padding-top:0;">多选</div>
+      {{/if}}
+    {{/if}}
   </div>
   <div class="content" style="position: absolute;top: 0;left: 0;bottom: 0;right: 0;overflow-x: hidden;overflow-y: auto;-webkit-overflow-scrolling: touch;">
     {{#if isLoading}}
