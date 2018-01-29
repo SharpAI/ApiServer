@@ -1269,12 +1269,14 @@ Meteor.methods({
           console.log('==sr==. err is '+ err);
           console.log('==sr==. res is ' + res)
         });
+        // update lableDadaSet
+        LableDadaSet.update({group_id:person.group_id, name:person.name},{$set:{name: name}},{multi: true});
       }
 
       // update relations
       WorkAIUserRelations.update({'ai_persons.id': _id},{$set:{person_name: name}});
       // update workStatus1
-      WorkStatus.update({'person_id.id': _id},{$set:{person_name: name}});
+      WorkStatus.update({'person_id.id': _id},{$set:{person_name: name}},{multi: true});
     }
   },
   'send-person-to-web': function(person){
