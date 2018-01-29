@@ -1,14 +1,20 @@
-<li style="border-top:1px solid">
-  <div class="clock">
-    <div style="margin-bottom:10px;font-size: 18px">姓名:     {{person_name}}</div>
-    <div class="clock-in" style="color: #666">上班:     {{person_in_time}}</div>
-    <div class="clock-image"><img src="{{person_in_image}}" alt=""></div>
-  </div>
-  <div class="clock">
-    <div class="clock-out" style="color: #666">下班:    {{person_out_time}}</div>
-    <div><img src="{{person_out_image}}" alt=""></div>
-  </div>
-  <div class="summary" style="color: #666">
-    {{person_summary}}
-  </div>
-</li>
+ <table align="center" border="0" bgcolor="#fff" width="600" border="0" cellpadding="0" cellspacing="0" align="center" style="border-color: #EAEAEA">
+ <tr><td style="height: 10px;background: #fff"></td></tr>
+                          <tr style="font-size: 18px;line-height: 35px;background: #F6F6F6"><td colspan="4" style="    border: 2px solid #EBEBEB;
+    border-top: 4px solid #699BE0;padding-left: 20px;text-align: center">姓名:  {{person_name}}</td></tr>
+                    <tr>
+                         <td   width="50" style="    padding: 10px 30px 5px 30px;
+    border: 2px solid #EAEAEA;
+    border-top: none;"><img src="{{person_in_image}}" alt="" style="width:60px"></td>
+                         <td style="border-bottom:2px solid #EAEAEA;border-right:2px solid #EAEAEA;font-size: 18px;padding-left: 15px"> 上 班:    {{person_in_time}}</td>
+
+                     </tr>
+                     <tr>
+                         <td   width="50" style="    padding: 10px 30px 5px 30px;
+    border: 2px solid #EAEAEA;
+    border-top: none;"><img src="{{person_in_image}}" alt="" style="width:60px"></td>
+                         <td style="border-bottom:2px solid #EAEAEA;border-right:2px solid #EAEAEA;font-size: 18px;padding-left: 15px"> 下 班:   {{person_out_time}}3</td>
+
+                     </tr>
+                     <tr><td colspan="2" style="border:2px solid #EAEAEA;border-top:none;height:60px;padding-left:15px">{{person_summary}}!</td></tr>
+ </table>
