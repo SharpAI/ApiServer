@@ -387,6 +387,19 @@ if(Meteor.isServer){
     ];
   });
 
+ Meteor.publish('device-timeline2', function(uuid,selector,limit){
+    var limit = limit || 10;
+    if(!this.userId || !uuid){
+      return this.ready();
+    }
+    var device = Devices.findOne({uuid: uuid});
+    return [
+        DeviceTimeLine.find(selector,{sort:{hour:-1},limit: limit}),
+        Meteor.users.find({username: uuid}),
+        SimpleChat.Groups.find({_id: device.groupId})
+    ];
+  });
+
  Meteor.publish('device-timeline-with-hour', function(uuid,options,sort,limit){
     var limit = limit || 10;
     if(!this.userId || !uuid){
