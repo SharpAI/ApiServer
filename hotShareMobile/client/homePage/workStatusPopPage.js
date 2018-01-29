@@ -164,7 +164,7 @@ Template.workStatusPopPage.helpers({
     return 'text-gray';
   },
   getInOutStatus: function(){
-    if (this.in_time > 0) {
+    if (this.in_time > 0) { // 不是今天一律算 out 
       var date = new Date(this.in_time);
       var time_offset = 8
       var _group = group.get();
@@ -177,7 +177,10 @@ Template.workStatusPopPage.helpers({
         return 'bg-gray';
       }
     }
-    return 'bg-success';
+    if(this.status == 'in'){
+      return 'bg-success';
+    }
+    return 'bg-gray';
   },
   getStatus: function(type){
     var status = '';
@@ -212,6 +215,9 @@ Template.workStatusPopPage.helpers({
     }
     if(type == 'out') {
       time = this.out_time;
+      if(this.status == 'in'){
+        time = null;
+      }
     }
     var time_offset = 8;
     var _group = group.get();
