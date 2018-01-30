@@ -7,6 +7,8 @@ var timeRange = new ReactiveVar([]);
 
 var limit = new ReactiveVar(5);
 
+var onlyShowUnknown = new ReactiveVar(false);
+
 var initTimeRangeSet = function() {
   var now = new Date();
   $('#timeRange').mobiscroll().range({
@@ -37,6 +39,8 @@ var initTimeRangeSet = function() {
       limit.set(5);
       // go back to top
       $('.content').scrollTop(0);
+
+      $('#btn-more').dropdown('toggle');
 
       var uuid = Router.current().params._uuid;
       var selector = getSelector();
@@ -344,13 +348,15 @@ Template.timelineAlbum.helpers({
         item.perMin[x].forEach(function(img){
           img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
           var index = personIds.indexOf(img.person_id);
-          if(index < 0){
-            personIds.push(img.person_id)
-            tmpObj.images.push(img);
-          } else {
-            var mergedImgs = tmpObj.images[index].mergedImgs || [];
-            mergedImgs.push(img);
-            tmpObj.images[index].mergedImgs = mergedImgs;
+          if( !(onlyShowUnknown.get() && img.person_name) ){
+            if(index < 0){
+              personIds.push(img.person_id)
+              tmpObj.images.push(img);
+            } else {
+              var mergedImgs = tmpObj.images[index].mergedImgs || [];
+              mergedImgs.push(img);
+              tmpObj.images[index].mergedImgs = mergedImgs;
+            }
           }
         });
         if(tmpObj.images.length > 0){
@@ -407,6 +413,16 @@ Template.timelineAlbum.helpers({
       return true;
     }
     return false;
+  },
+  onlyShowUnknown: function() {
+    return onlyShowUnknown.get();
+  },
+  filterTimeRange: function() {
+    var range = timeRange.get();
+    if(range.length > 0 && range[0] && range[1]) {
+      return true;
+    }
+    return false;
   }
 
 });
@@ -414,6 +430,29 @@ Template.timelineAlbum.helpers({
 Template.timelineAlbum.events({
   'click .back': function(){
     return PUB.back();
+  },
+  'click #onlyShowUnknown': function() {
+    if(onlyShowUnknown.get()) {
+      onlyShowUnknown.set(false);
+    } else {
+      onlyShowUnknown.set(true);
+    }
+  },
+  'click #clearFilter': function(e) {
+    onlyShowUnknown.set(false);
+    timeRange.set([]);
+    // reset limit
+    limit.set(5);
+    // go back to top
+    $('.content').scrollTop(0);
+
+    var uuid = Router.current().params._uuid;
+    var selector = getSelector();
+    Session.set('timelineAlbumLoading',true);
+    Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
+      Session.set('timelineAlbumLoading',false);
+      lazyTimelineImg();
+    });
   },
   // 展开合并的图片
   'click .images-merged': function(e){
