@@ -55,7 +55,7 @@ Template._simpleChatLabelDevice.open = function(msgObj){
   simple_chat_page_stack.push(view);
 
   if ( msgObj.need_show_label_now || (nas.length === 1 && imgs[0].images.length <= 1)){
-    show_label(msgObj.to.id, function(name){
+    show_label(msgObj.to.id, msgObj.images[0].url, function(name){
       if (!name)
         return;
       $('#device-input-name').val(name);
@@ -403,7 +403,7 @@ Template._simpleChatLabelDevice.events({
   },
   'click .select': function(e, t){
     var msg = message.get();
-    show_label(msg.to.id, function(name){
+    show_label(msg.to.id, msg.images[0].url, function(name){
       if (!name)
         return;
       t.$('#device-input-name').val(name);

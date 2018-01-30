@@ -934,7 +934,7 @@ Template.timelineAlbum.events({
       });
     };
 
-    SimpleChat.show_label(group_id, call_back_handle);
+    SimpleChat.show_label(group_id, _lists[0].img_url, call_back_handle);
   },
   'click #timeRange': function(e) {
     return $('#timeRange').mobiscroll('show');

@@ -2505,11 +2505,12 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
 // label
 var label_view = null;
 var label_limit = new ReactiveVar(0);
-show_label = function(group_id, callback){
+show_label = function(group_id, wait_lable_img, callback){
   if (label_view)
     Blaze.remove(label_view);
   label_view = Blaze.renderWithData(Template._simpleChatToChatLabelName, {
     group_id: group_id,
+    wait_lable_img: wait_lable_img,
     callback : callback || function(){}
   }, document.body);
   simple_chat_page_stack.push(label_view);

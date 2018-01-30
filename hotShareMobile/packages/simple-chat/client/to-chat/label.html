@@ -16,12 +16,18 @@
         <div class="content simple-chat-to-chat-label-name" style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;padding-bottom:0px;">
           <div id="wrapper">
             <div class="groupUsers">
-              <div class="contentList">
-                <div style="padding: 15px; padding-bottom: 5px;">
-                  <input id="label-input-name" type="text" placeholder="请选择或输入名字~" style="font-size:16px;height: 40px;line-height: 40px;padding: 0px 10px;width: 100%; border: 1px solid #515151; margin-bottom: 10px;" />
-                  <p style="font-size:12px;">Tips: 如果照片中的人已经被标记过， 可直接下面的列表中选择。</p>
+              <div class="contentList" style="position: relative;">
+                <div class="waitLabelHeader">
+                  <div class="imgHelper">
+                    <img src="{{wait_lable_img}}"/>
+                  </div>
+                  <div class="label-input-content" style="padding-left:80px;">
+                    <input id="label-input-name" type="text" placeholder="请选择或输入名字~" style="font-size:16px;height: 40px;line-height: 40px;padding: 0px 10px;width: 100%; border: 1px solid #515151; margin-bottom: 10px;" />
+                    <p style="font-size:12px;">Tips: 如果照片中的人已经被标记过， 可直接下面的列表中选择。</p>
+                  </div>
                 </div>
-                <ul style="padding: 0 0 30px 0;">
+                
+                <ul style="padding: 0 0 30px 0;margin-top:115px; background: #eee;">
                   {{#each names}}
                   <li>
                     {{> _simpleChatToChatLabelNameImg}}
