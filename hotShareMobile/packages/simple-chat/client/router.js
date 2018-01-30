@@ -2565,7 +2565,41 @@ Template._simpleChatToChatLabelName.helpers({
     return false;
   },
   names: function(){
-    return PersonNames.find({group_id: this.group_id}, {sort: {createAt: 1}, limit: label_limit.get()});
+    // return PersonNames.find({group_id: this.group_id}, {sort: {createAt: 1}, limit: label_limit.get()});
+
+    var arrEnglish = [];
+    var arrPinyin = [];
+    PersonNames.find({group_id: this.group_id}, {sort: {createAt: 1}, limit: label_limit.get()}).forEach(function(item){
+      if(item.name && item.name.charCodeAt(0) > 255){
+        item.pinyin = makePy(item.name)[0];
+        arrPinyin.push(item);
+      } else {
+        arrEnglish.push(item);
+      }
+    });
+    var compare = function (prop) {
+        return function (obj1, obj2) {
+            var val1 = obj1[prop];
+            var val2 = obj2[prop];
+            // 移除首尾空格
+            val1 = val1.replace(/(^\s*)|(\s*$)/g, ""); 
+            val2 = val2.replace(/(^\s*)|(\s*$)/g, ""); 
+            // 统一英文字符为大写
+            val1 = val1.toLocaleUpperCase();
+            val2 = val2.toLocaleUpperCase();
+            if (val1 < val2) {
+                return -1;
+            } else if (val1 > val2) {
+                return 1;
+            } else {
+                return 0;
+            }            
+        } 
+    }
+    arrEnglish = arrEnglish.sort(compare("name"));
+    arrPinyin = arrPinyin.sort(compare("pinyin"));
+    arrEnglish = arrEnglish.concat(arrPinyin);
+    return arrEnglish;
   }
 });
 Template._simpleChatToChatLabelName.events({
