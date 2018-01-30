@@ -132,7 +132,7 @@ DeviceTimeLine = new Meteor.Collection('device_timeline');
 
 
 LableDadaSet = new Meteor.Collection('label_dataset');
-ClusterLableDadaSet = = new Meteor.Collection('cluster_label_dataset');
+ClusterLableDadaSet = new Meteor.Collection('cluster_label_dataset');
 /*
 {
   "id":"",
