@@ -1,4 +1,5 @@
 var view = null;
+var clusterView = null;
 
 var isLoading = new ReactiveVar(false);
 var group = new ReactiveVar({});
@@ -254,6 +255,11 @@ Template.workStatusPopPage.helpers({
 
 
 Template.workStatusPopPage.events({
+  'click #switch': function() {
+    //console.log("Frank.switch: this="+JSON.stringify(this));
+    Session.set('clusterworkstatus_group', this);
+    return clusterWorkStatusPopPage.show();
+  },
   'click #closeStausPop': function(){
     return workStatusPopPage.close();
   },
@@ -408,4 +414,273 @@ Template.workStatusPopPage.events({
       workStatusPopPage.close();
     },1000);
   },
+});
+
+
+
+
+clusterWorkStatusPopPage = {
+  show: function(template, showClose){
+    if (view) {
+        $('.workStatusPopPage').hide();
+    }
+    clusterWorkStatusPopPage.close();
+    var data = Session.get('clusterworkstatus_group')
+    clusterView = Blaze.renderWithData(Template.clusterWorkStatusPopPage, data, document.body);
+  },
+  close: function(){
+    if (view) {
+        $('.workStatusPopPage').show();
+    }
+    if(clusterView){
+      Blaze.remove(clusterView);
+      clusterView = null;
+    }
+  },
+  isShow: function(){
+    return clusterView != null;
+  }
+};
+
+
+var limit = new ReactiveVar(0);
+var limitSetp = 20
+var lazyloadInterval = null;
+
+var initLazyload = function(){
+  if(lazyloadInterval){
+    window.clearInterval(lazyloadInterval);
+  }
+  window.setInterval(function(){
+    $('ul').find('img.lazy:not([src])').lazyload({
+      container: $('ul')
+    });
+  },100);
+}
+
+Template.clusterWorkStatusPopPage.onRendered(function(){
+  console.log("Template.clusterWorkStatusPopPage.onRendered")
+  limit.set(20);
+  var that = Template.currentData();
+  //console.log("that="+JSON.stringify(that));
+  //that={"_id":"69561431c099f4908de060ed","name":"AEI-SV","icon":"","describe":"","create_time":"2018-01-18T21:36:08.296Z","template":{},"offsetTimeZone":-8,"last_text":"","last_time":"2018-01-18T21:36:08.296Z","barcode":"http://workaicdn.tiegushi.com/restapi/workai-group-qrcode?group_id=69561431c099f4908de060ed","creator":{"id":"QXtP69enBsk2ipzkC","name":"Xing19"},"perf_info":{"companyId":"bb06315a5fa95d66b28d850e","companyName":"AEI-SV","reportUrl":"http://aixd.raidcdn.cn/reporter/bb06315a5fa95d66b28d850e"},"companyId":"bb06315a5fa95d66b28d850e","report_emails":"xfang@actiontec.com"}
+  var group_id = that._id;
+  console.log("workStatusPopPage.onRendered: group_id="+group_id);
+  Meteor.subscribe('group_cluster_person', group_id, limit.get(),function(){
+      Session.set('group_clusterperson_loaded',true);
+  });
+
+  // scroll Loading
+  $('.clusterWorkStatusPopPage .employeeLists').scroll(function(){
+    if($('ul').height() - document.body.clientHeight - $(document).scrollTop() + 50 <= 0){
+      console.log('start load more');
+      Session.set('group_clusterperson_loaded',false);
+      Session.set('group_clusterperson_loadmore','loading');
+      var limitCount = limit.get() + limitSetp;
+      Meteor.subscribe('group_cluster_person', group_id, limitCount,function(){
+        Session.set('group_clusterperson_loadmore','loaded');
+        limit.set(limitCount);
+      });
+    }
+  });
+  initLazyload();
+});
+
+Template.clusterWorkStatusPopPage.helpers({
+  has_day_before:function(group_id){
+    var lastday =  today.get() - 7 * 24 * 60 * 60 *1000; //7天前
+    return theDisplayDay.get() > lastday;
+  },
+  day_title:function(){
+    var currentDay = new Date(theDisplayDay.get());
+    return parseDate(currentDay);
+  },
+  has_day_after:function(group_id){
+    // 可以查看后面两天天数据
+    _today = new Date(today.get());
+    _today.setDate(_today.getDate() + 2);
+    _today = new Date(_today.getFullYear(), _today.getMonth(), _today.getDate()).getTime();
+    return theDisplayDay.get() < _today;
+  },
+  isLoading: function() {
+    //return isLoading.get();
+    return false;
+  },
+  hasWorkStatus: function () {
+    //return ClusterWorkStatus.find({group_id: group.get()._id,date: theCurrentDay.get()}).count() > 0;
+    return true;
+  },
+  lists: function(){
+    //return ClusterWorkStatus.find({group_id: group.get()._id,date: theCurrentDay.get()}).fetch();
+    //SimpleChat.GroupUsers.find, simplechat_groupusers
+    //{"_id":"69561431c099f4908de060ed","name":"AEI-SV","icon":"","describe":"","create_time":"2018-01-18T21:36:08.296Z","template":{},"offsetTimeZone":-8,"last_text":"","last_time":"2018-01-18T21:36:08.296Z","barcode":"http://workaicdn.tiegushi.com/restapi/workai-group-qrcode?group_id=69561431c099f4908de060ed","creator":{"id":"QXtP69enBsk2ipzkC","name":"Xing19"},"perf_info":{"companyId":"bb06315a5fa95d66b28d850e","companyName":"AEI-SV","reportUrl":"http://aixd.raidcdn.cn/reporter/bb06315a5fa95d66b28d850e"},"companyId":"bb06315a5fa95d66b28d850e","report_emails":"xfang@actiontec.com"}
+    return ClusterPerson.find({group_id:this._id});
+  },
+  devices: function(){
+    var group_id = Session.get('modifyMyStatus_group_id') || group.get()._id;
+    var in_out = Session.get('modifyMyStatus_in_out');
+    return Devices.find({groupId: group_id,in_out:in_out},{sort:{createAt:-1}}).fetch();
+  },
+  getIcon: function(){
+    //console.log("this.faces="+JSON.stringify(this.faces));
+    //this.faces=[{"id":"4541e6938d4dd867393bc7ab","url":"http://workaiossqn.tiegushi.com/3d322fc0-fcc4-11e7-a288-c894bb5f8c5f"}]
+    if (this.faces && this.faces.length > 0)
+        return this.faces[this.faces.length-1].url;
+    return '';
+  },
+  enable_push:function(){
+    if (this.app_notifaction_status && this.app_notifaction_status === 'on') {
+      return 'text-success';
+    }
+    return 'text-gray';
+  },
+  bind_app_user: function() {
+    if (this.app_user_id) {
+      return 'text-success';
+    }
+    return 'text-gray';
+  },
+  getInOutStatus: function(){
+    if (this.in_time > 0) {
+      var date = new Date(this.in_time);
+      var time_offset = 8
+      var _group = group.get();
+      if (_group && _group.offsetTimeZone) {
+        time_offset = _group.offsetTimeZone;
+      }
+      var fomatDate = date.shortTime(time_offset);
+      var isToday = fomatDate.indexOf('今天') > -1 ? true : false;
+      if (!isToday) {
+        return 'bg-gray';
+      }
+    }
+    return 'bg-success';
+  },
+  getStatus: function(type){
+    var status = '';
+    if(type == 'in'){
+      status = this.in_status;
+    }
+    if(type == 'out'){
+      status = this.out_status;
+    }
+    switch (status) {
+      case 'normal':
+        return 'bg-success';
+        break;
+      case 'warning':
+        return 'bg-warning';
+        break;
+      case 'error':
+        return 'bg-error';
+        break;
+      case 'unknown':
+        return 'bg-gray';
+        break;
+      default:
+        return 'bg-gray';
+        break;
+    }
+  },
+  getTime: function(type){
+    var time = null;
+    if(type == 'in'){
+      time = this.in_time;
+    }
+    if(type == 'out') {
+      time = this.out_time;
+    }
+    var time_offset = 8;
+    var _group = group.get();
+    if (_group && _group.offsetTimeZone) {
+      time_offset = _group.offsetTimeZone;
+    }
+    if(time){
+      time = new Date(time);
+      time = time.shortTime(time_offset)
+    } else {
+      time = '--:--';
+    }
+    return time;
+  },
+  getWhatsup: function(){
+    if(this.whats_up && this.whats_up.length > 0){
+      return this.whats_up[0];
+    }
+    return '今天还没有工作安排...';
+  },
+  whatsup: function(){
+    return whatsup.get();
+  },
+  getShortTime: function(ts,group_id){
+    var time_offset = 8
+    var _group = group.get();
+    if (_group && _group.offsetTimeZone) {
+      time_offset = _group.offsetTimeZone;
+    }
+    var time = new Date(this.ts);
+    return time.shortTime(time_offset,true);
+  },
+});
+
+Template.clusterWorkStatusPopPage.events({
+    'click #closeStausPop': function(){
+        clusterWorkStatusPopPage.close();
+        return;
+    },
+    'click .icon': function() {
+        var people_uuid = new Mongo.ObjectID()._str;
+        var dt = new Date();
+        var data = {
+            "_id": new Mongo.ObjectID()._str,
+            "to": {
+                "id": this.group_id,
+                "name": this.name,
+                "icon": ""
+            },
+            "images": [
+            ],
+            "to_type": "group",
+            "type": "text",
+            "text": "",
+            "create_time": new Date(),
+            "people_id": people_uuid+dt.getTime()+dt.getMilliseconds(),
+            "people_uuid": people_uuid,
+            //"people_his_id": "f5awGYvgEA94iCNFF",
+            "wait_lable": true,
+            "is_people": true,
+            "is_read": false,
+            "tid": people_uuid+dt.getTime()
+        };
+        if (this.faces && this.faces.length > 0) {
+            for (var i=0; i<this.faces.length; i++) {
+                var item = {
+                    "_id": new Mongo.ObjectID()._str,
+                    "id": this.faces[i].id,
+                    //"people_his_id": "f5awGYvgEA94iCNFF",
+                    "url": this.faces[i].url,
+                    "label": null,
+                    "img_type": "face",
+                    "accuracy": false,
+                    "fuzziness": "200",
+                    "sqlid": "0",
+                    "style": "front",
+                    "p_ids": [
+                    ]
+                };
+               data.images.push(item);
+            }
+        }
+        data.isClusterPerson = true;
+        data.need_show_label_now = false;
+        //PUB.showWaitLoading('正在处理');
+        Template._simpleChatLabelDevice.open(data);
+    }
+});
+
+Template.clusterWorkStatusPopPage.onDestroyed(function(){
+    $('.clusterWorkStatusPopPage .employeeLists').off('scroll');
+    if(lazyloadInterval){
+        window.clearInterval(lazyloadInterval);
+    }
 });

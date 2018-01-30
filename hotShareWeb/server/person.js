@@ -1165,6 +1165,175 @@ PERSON = {
   }
 };
 
+CLUSTER_PERSON = {
+    /*_removeFace: function(obj){
+        console.log('ClusterPerson: removeFace, try remove faces');
+        var person = null;
+        var faces = [];
+        if(obj.group_id){
+          person = ClusterPerson.findOne({group_id: obj.group_id, faceId: obj.faceId});
+        }
+        if(person){
+          faces = person.faces;
+          var faceId = person.faceId;
+          if(faceId === obj.face_id){
+            if(faces.length <= 1){
+              return ClusterPerson.remove({_id: person._id});
+            }
+            ClusterPerson.update({_id: person._id}, {
+              $set: {faceId: person.faces[0].id, url: person.faces[0].url},
+              $pop: {faces: -1}
+            });
+          } else {
+            faces.splice(_.pluck(faces, 'id').indexOf(obj.face_id), 1);
+            ClusterPerson.update({_id: person._id},{$set: {faces: faces}});
+          }
+        }
+    },*/
+    removeFace: function(group_id, faceId, url){
+        var person = null;
+        if(group_id){
+            person = ClusterPerson.findOne({group_id: group_id, faceId: faceId});
+        }
+        if(person){
+            if(faceId === person.faceId){
+                if(person.faces.length <= 1){
+                    return ClusterPerson.remove({_id: person._id});
+                }
+                ClusterPerson.update({"_id": person._id}, {$pull: {'faces': {"url": url}}})
+            } else {
+                console.log("ClusterPeople: removeFace failed, url="+url+", faceId="+faceId);
+            }
+        }
+    },
+    removeFaceByUrl: function(group_id, url){
+        var persons = null;
+        if(group_id){
+            persons = ClusterPerson.find({group_id: group_id, "faces.url": url}).fetch();
+        }
+        if(persons){
+            console.log("url="+url+", persons="+JSON.stringify(persons));
+            for(var i=0; i<persons.length; i++){
+                var person = persons[i];
+                if(person.faces && person.faces.length <= 1){
+                    console.log("url="+url+", person._id = "+person._id);
+                    ClusterPerson.remove({_id: person._id});
+                } else {
+                    console.log("ClusterPerson.update = "+person._id+", url="+url);
+                    ClusterPerson.update({"_id": person._id}, {$pull: {'faces': {"url": url}}})
+                }
+            }
+        }
+    },
+    addFace: function(group_id, uuid, faceId, unique_face_id, url, name, is_video, callback){
+        CLUSTER_PERSON.removeFaceByUrl(group_id, url);
+        var person = ClusterPerson.findOne({group_id:group_id, faceId: faceId}, {sort: {createAt: 1}});
+        var dervice = Devices.findOne({uuid: uuid});
+        if (person){
+            if (is_video) {
+                return person;
+            }
+            person.url = url;
+            person.updateAt = new Date();
+            if(_.pluck(person.faces, 'url').indexOf(url) === -1)
+                person.faces.push({id: unique_face_id, url: url});
+            else {
+                //ClusterPerson.faces[_.pluck(person.faces, 'url').indexOf(url)].url = url;
+                console.log("addFace: url already in this person, "+url);
+                return person;
+            }
+          console.log("ClusterPerson: addFace person.faces = "+JSON.stringify(person.faces));
+          ClusterPerson.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
+        } else {
+            person = {
+                _id: new Mongo.ObjectID()._str,
+                id: ClusterPerson.find({group_id: group_id, faceId: faceId}).count() + 1,
+                group_id:group_id,
+                faceId: faceId,
+                unique_face_id: unique_face_id,
+                url: url,
+                name: name,
+                faces: [{id: unique_face_id, url: url}],
+                deviceId: dervice ? dervice._id : '',
+                DeviceName: dervice ? dervice.name : '',
+                createAt: new Date(),
+                updateAt: new Date()
+            };
+            if (is_video) {
+                delete person.faces;
+                delete person.faceId;
+            }
+            console.log("insert person = "+JSON.stringify(person));
+            ClusterPerson.insert(person);
+        }
+        callback && callback();
+        return person;
+    },
+    updateAutogroupResult: function(group_id, message) {
+        if (message == undefined || typeof message != "object") {
+            console.log("updateAutogroupResult: invalide auto group result, group_id="+group_id+", message="+JSON.stringify(group_id));
+            return ;
+        }
+        try {
+            message = JSON.parse(message);
+        } catch (e) {
+            console.log("updateAutogroupResult: JSON.parse error.");
+        }
+        var deviceId = message["devId"];
+        var results = message["results"];
+        console.log("message = "+message+", typeof message="+(typeof message));
+        //console.log("deviceId = "+deviceId+", results="+results)
+        if (deviceId == undefined || results == undefined) {
+            console.log("updateAutogroupResult: deviceId or results is undefined.");
+            return ;
+        }
+        //for(var i=0;i<results.length;i++) {
+        hash_map = {}
+        forEachAsynSeries(results, 1, function(item, index, callback){
+            Fiber(function(){
+                /*PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
+                console.log('LABLE_DADASET_Handle 3')
+                LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:slef.userId,action:'聊天室标记'});
+                */
+                console.log("updateAutogroupResult: item = "+JSON.stringify(item));
+                if (item.url == undefined || item.url == '') {
+                    console.log("updateAutogroupResult: url is null, continue");
+                    return callback && callback();
+                }
+                if (item.frm == '' && item.to == '') {
+                    console.log("updateAutogroupResult: frm and to is null string, continue");
+                    return callback && callback();
+                }
+                if (item.to == '') { //delete this url
+                    CLUSTER_PERSON.removeFace(group_id, item.frm, item.url);
+                } else {
+                    if (item.frm != '') {//Move url from one person to another
+                        CLUSTER_PERSON.removeFace(group_id, item.frm, item.url);
+                    }
+                    //new photo, Add  a url to person
+                    var faceId = item.to;
+                    if (faceId.indexOf("newperson_") == 0) {//New person
+                        if (hash_map[item.to] != undefined && hash_map[item.to] != null) {
+                            faceId = hash_map[item.to];
+                        } else {
+                            faceId = new Mongo.ObjectID()._str;
+                            hash_map[item.to] = faceId;
+                        }
+                    }
+                    unique_face_id = item.unique_face_id ? item.unique_face_id : ''
+                    if (unique_face_id =='') {
+                        unique_face_id = new Mongo.ObjectID()._str;
+                    }
+                    CLUSTER_PERSON.addFace(group_id, null, faceId, unique_face_id, item.url, 'New people', false, null);
+                }
+                callback && callback();
+            }).run();
+        }, function(error) {
+            console.log('updateAutogroupResult: all done');
+        });
+    }
+};
+
 Meteor.methods({
   'upset-device': function(uuid){
     return PERSON.upsetDevice(uuid, null,null,null);

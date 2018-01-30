@@ -43,6 +43,7 @@ Devices = new Meteor.Collection('devices');
 
 Person = new Meteor.Collection('person');
 PersonNames = new Meteor.Collection('personNames');
+ClusterPerson = new Meteor.Collection('clusterPerson');
 /*Person = {
   id: <Integer>,
   uuid: <Integer>,
@@ -69,7 +70,6 @@ NLPTextClassName = {
 }
  */
 
-
 //点圈用户和平板识别出的人的关系表 
 WorkAIUserRelations = new Meteor.Collection('workaiUserRelations');
 
@@ -90,6 +90,7 @@ WorkAIUserRelations = {
 
 // WorkStatus
 WorkStatus = new Meteor.Collection('workStatus');
+ClusterWorkStatus = new Meteor.Collection('clusterWorkStatus');
 /*
 {
     app_user_id:<Integer> //点圈用户
@@ -131,6 +132,7 @@ DeviceTimeLine = new Meteor.Collection('device_timeline');
 
 
 LableDadaSet = new Meteor.Collection('label_dataset');
+ClusterLableDadaSet = = new Meteor.Collection('cluster_label_dataset');
 /*
 {
   "id":"",
@@ -227,12 +229,28 @@ if(Meteor.isServer){
     return Person.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
   });
 
+  Meteor.publish('group_cluster_person', function(group_id, limit){
+    if(!this.userId || !group_id){
+      return this.ready();
+    }
+    var limit = limit || 50;
+    return ClusterPerson.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
+  });
+
   Meteor.publish('person_labelDataset',function(group_id,name,limit){
     if (!group_id || !name) {
       return this.ready();
     }
     var limit = limit || 50;
     return LableDadaSet.find({group_id: group_id,name:name},{limit: limit,sort:{createAt: -1}});
+  });
+
+  Meteor.publish('cluster_person_labelDataset',function(group_id,name,limit){
+    if (!group_id || !name) {
+      return this.ready();
+    }
+    var limit = limit || 50;
+    return ClusterLableDadaSet.find({group_id: group_id,name:name},{limit: limit,sort:{createAt: -1}});
   });
   
   Meteor.publish('people_new', function(){
@@ -335,8 +353,8 @@ if(Meteor.isServer){
     }
     return this.ready();
   });
-
-Meteor.publish('group_workstatus', function(group_id, date){
+ 
+ Meteor.publish('group_workstatus', function(group_id, date){
      if (!this.userId) {
          return this.ready();
      }
@@ -345,7 +363,15 @@ Meteor.publish('group_workstatus', function(group_id, date){
          WorkStatus.find({date: date,group_id:group_id})
      ];
  });
- 
+ Meteor.publish('group_clusterworkstatus', function(group_id, date){
+     if (!this.userId) {
+         return this.ready();
+     }
+     return [
+         Devices.find({groupId: group_id}),
+         ClusterWorkStatus.find({date: date,group_id:group_id})
+     ];
+ });
  Meteor.publish('devices-by-uuid',function(uuid){
      if(!this.userId || !uuid){
          return this.ready();

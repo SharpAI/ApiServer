@@ -16,6 +16,17 @@ if(Meteor.isServer){
         mqtt_connection.on('connect',function(){
             console.log('Connected to mqtt server');
         });
+        mqtt_connection.on('message', function (topic, message) {
+            // message is Buffer
+            var keyword = '/msg/autogroup/';
+            if (topic.indexOf(keyword) == 0) {
+                var group_id = topic.substring(keyword.length);
+                console.log("/msg/autogroup/: "+group_id+", message="+message.toString());
+                //results.append({"opt":'mv', "url":url, "from_faceId":from_faceId, "to_faceId":to_faceId})
+                CLUSTER_PERSON.updateAutogroupResult(group_id, message);
+            }
+        });
+        mqtt_connection.subscribe('/msg/autogroup/#');
         sendMqttMessage=function(topic,message){
             Meteor.defer(function(){
                 mqtt_connection.publish(topic,JSON.stringify(message),{qos:1})
