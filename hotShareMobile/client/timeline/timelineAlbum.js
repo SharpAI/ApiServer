@@ -37,6 +37,14 @@ var initTimeRangeSet = function() {
       limit.set(5);
       // go back to top
       $('.content').scrollTop(0);
+
+      var uuid = Router.current().params._uuid;
+      var selector = getSelector();
+      Session.set('timelineAlbumLoading',true);
+      Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
+        Session.set('timelineAlbumLoading',false);
+        lazyTimelineImg();
+      });
     }
   });
 };
@@ -44,12 +52,18 @@ var initTimeRangeSet = function() {
 // timelineAlbum 查询条件生成
 var getSelector = function() {
   var uuid = Router.current().params._uuid;
+  var device = Devices.findOne({uuid: uuid});
+  
   var hour = Session.get('wantModifyTime');
   var range = timeRange.get();
 
   var selector = {
     uuid: uuid
   };
+
+  if(device && device.groupId){
+    selector['group_id'] = device.groupId;
+  }
 
   if( hour ) {
     range[1] = hour;
@@ -264,10 +278,10 @@ Template.timelineAlbum.onRendered(function(){
       _limit += 1;
       console.log('loadMore and limit = ',_limit);
       var selector = getSelector();
-      var counts = Session.get('timelineAlbumCounts');
+      var counts = DeviceTimeLine.find(selector,{sort:{hour:-1},limit:limit.get()}).count();
       Meteor.subscribe('device-timeline2',uuid,selector,_limit,function(){
         Session.set('timelineAlbumLoading',false);
-        if(Session.get('timelineAlbumCounts') > counts) {
+        if(DeviceTimeLine.find(selector,{sort:{hour:-1},limit:_limit}).count() > counts) {
           limit.set(_limit);
         }
       });
