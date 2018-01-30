@@ -9,6 +9,8 @@ var page_data = null;
 var $box = null;
 var $box_ul = null;
 
+var label_name_text =  new ReactiveVar('');
+
 Array.prototype.removeByIndex= function(index){
   return this.slice(0,index).concat(this.slice(index+1,this.length));
 }
@@ -2536,6 +2538,7 @@ Template._simpleChatToChatLabelName.onRendered(function(){
   var $box = this.$(".simple-chat-to-chat-label-name");
   $box.scroll(function(){
     if ($box.scrollTop() + $box[0].offsetHeight >= $box[0].scrollHeight){
+    // if($box.scrollTop() + $box.height() - 145 >= $ul.height()){
       label_limit.set(label_limit.get()+20);
       var group_id = Blaze.getData($('.simple-chat-to-chat-label-name')[0]).group_id;
       Meteor.subscribe('get-label-names', group_id, label_limit.get(), {
@@ -2566,10 +2569,18 @@ Template._simpleChatToChatLabelName.helpers({
   },
   names: function(){
     // return PersonNames.find({group_id: this.group_id}, {sort: {createAt: 1}, limit: label_limit.get()});
+    var selector = {
+      group_id: this.group_id
+    };
+
+    if(label_name_text.get() && label_name_text.get() != ''){
+      var filter = new RegExp(label_name_text.get(),'i');
+      selector['name'] = filter;
+    }
 
     var arrEnglish = [];
     var arrPinyin = [];
-    PersonNames.find({group_id: this.group_id}, {sort: {createAt: 1}, limit: label_limit.get()}).forEach(function(item){
+    PersonNames.find(selector, {sort: {createAt: 1}, limit: label_limit.get()}).forEach(function(item){
       if(item.name && item.name.charCodeAt(0) > 255){
         item.pinyin = makePy(item.name)[0];
         arrPinyin.push(item);
@@ -2603,6 +2614,10 @@ Template._simpleChatToChatLabelName.helpers({
   }
 });
 Template._simpleChatToChatLabelName.events({
+  'keyup #label-input-name, change #label-input-name': function(e){
+    var val = $('#label-input-name').val();
+    label_name_text.set(val);
+  },
   'click li': function(e, t){
     $('#label-input-name').val(this.name);
     $('#label-input-name').attr('placeholder','');
