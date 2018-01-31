@@ -311,13 +311,17 @@ if(Meteor.isServer){
     return WorkStatus.find({ date:{$in: dates},group_id: group_id},{sort:{date:-1}})
   });
 
-  Meteor.publish('userGroupsWorkstatusLists', function(date) {
+  Meteor.publish('userGroupsWorkstatusLists', function(date, limit) {
+
     if(!this.userId || !date) {
         return this.ready();
     }
+
+    var limit = limit || 3;
+
     var dates = [];
     var groupIds = [];
-    SimpleChat.GroupUsers.find({user_id: this.userId}).forEach(function (item) {
+    SimpleChat.GroupUsers.find({user_id: this.userId},{limit: limit}).forEach(function (item) {
         groupIds.push(item.group_id);
     });
 
