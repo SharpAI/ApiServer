@@ -33,10 +33,32 @@
         .active{ border-bottom: 2px solid #39a8fe;}
       }
       h2{margin: 0;padding: 10px 0;font-size: 16px;border-bottom: 1px solid #efefef;}
-      .company-content{ height: 260px;background: #fff; padding: 5px;}
+      .company-content{ height: 260px;background: #fff; padding: 5px; position: relative;}
     }
   }
   .noBoundCompany{
     position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;
+  }
+
+  .lineChartLoadingLayer{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.78);
+    z-index: 999;
+    .lineChartLoading {
+      display: inline-block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -20px;
+      margin-left: -60px;
+      width: 100px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+    }
   }
 }

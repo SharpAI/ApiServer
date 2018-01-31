@@ -33,6 +33,13 @@
   <h2><img src="/img/default-company-logo.png" style="height:30px; margin:5px;">{{group_name}}</h2>
 </div>
 <div class="company-content" id="chart-{{_id}}">
+  {{#if isLoading group_id}}
+  <div class="lineChartLoadingLayer">
+   <div class="lineChartLoading">
+      <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+    </div>
+  </div>
+  {{/if}}
   <div id="lineChart-{{group_id}}" style="height:100%; width:100%;">
 
   </div>

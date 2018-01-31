@@ -184,16 +184,16 @@ var fillChartData = function(group_id) {
   };
 
   console.log(options);
+  Session.set('lineChart_loadStatus_'+group_id, 'loaded');
   window.companyCharts['char-'+group_id].setOption(options);
-  window.companyCharts['char-'+group_id].hideLoading();
 };
 
 Template.companyItem.onRendered(function () {
   console.log(this.data);
 	var group_id = this.data.group_id;
 	Session.set('showLen-'+group_id, 'monthly');
-    window.companyCharts['char-'+group_id] = echarts.init(document.getElementById('lineChart-'+group_id));
-    window.companyCharts['char-'+group_id].showLoading();
+	window.companyCharts['char-'+group_id] = echarts.init(document.getElementById('lineChart-'+group_id));
+	Session.set('lineChart_loadStatus_'+group_id, 'loading');
 	Meteor.subscribe('get-group',group_id , {
 		onReady: function() {
 			fillChartData(group_id);
@@ -207,18 +207,24 @@ Template.companyItem.helpers({
 			return 'active';
 		}
 		return '';
+	},
+	isLoading: function(group_id) {
+		if( Session.get('lineChart_loadStatus_'+group_id) && Session.get('lineChart_loadStatus_'+group_id, 'loading') == 'loading' ){
+			return true;
+		}
+		return false;
 	}
 });
 
 Template.companyItem.events({
   'click .weekly': function(e){
 		Session.set('showLen-'+this.group_id, 'weekly');
-        window.companyCharts['char-'+this.group_id].showLoading();
+		Session.set('lineChart_loadStatus_'+this.group_id, 'loading');
 		fillChartData(this.group_id);
 	},
 	'click .monthly': function(e){
 		Session.set('showLen-'+this.group_id, 'monthly');
-        window.companyCharts['char-'+this.group_id].showLoading();
+		Session.set('lineChart_loadStatus_'+this.group_id, 'loading');
 		fillChartData(this.group_id);
 	}
 })

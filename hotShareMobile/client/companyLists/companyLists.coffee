@@ -31,9 +31,9 @@ if Meteor.isClient
     hasBoundCompany: ()->
       company_array = getBoundCompany()
       company_array.length > 0
-    companies: ()->
+    # companies: ()->
       # getBoundCompany()
-      return SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).fetch()
+      # return SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).fetch()
   Template.companyLists.events
     'click .companyLists ul li':(e, t)->
       # Session.set('reportUrl', this.reportUrl)
