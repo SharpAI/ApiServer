@@ -2536,20 +2536,36 @@ Template._simpleChatToChatLabelName.onRendered(function(){
       }
   }); // TODO：
   var $box = this.$(".simple-chat-to-chat-label-name");
-  $box.scroll(function(){
-    if ($box.scrollTop() + $box[0].offsetHeight >= $box[0].scrollHeight){
-    // if($box.scrollTop() + $box.height() - 145 >= $ul.height()){
-      label_limit.set(label_limit.get()+20);
-      var group_id = Blaze.getData($('.simple-chat-to-chat-label-name')[0]).group_id;
-      Meteor.subscribe('get-label-names', group_id, label_limit.get(), {
-          onStop: function() {},
-          onReady: function(){
-              Session.set(group_id + "_simpleChatToChatLabelName_loading", false);
-          }
-      }); // TODO：
-      console.log('load more');
+
+  document.addEventListener('scroll', function(event){
+    if(event.target.classList.toString().indexOf('simple-chat-to-chat-label-name') > -1) {
+      if ($(event.target).scrollTop() + event.target.offsetHeight >= event.target.scrollHeight){
+        label_limit.set(label_limit.get()+20);
+        var group_id = Blaze.getData($('.simple-chat-to-chat-label-name')[0]).group_id;
+        Meteor.subscribe('get-label-names', group_id, label_limit.get(), {
+            onStop: function() {},
+            onReady: function(){
+                Session.set(group_id + "_simpleChatToChatLabelName_loading", false);
+            }
+        }); // TODO：
+        console.log('load more');
+      }
     }
-  });
+  },true);
+  
+  // $box.scroll(function(){
+  //   if ($box.scrollTop() + $box[0].offsetHeight >= $box[0].scrollHeight){
+  //     label_limit.set(label_limit.get()+20);
+  //     var group_id = Blaze.getData($('.simple-chat-to-chat-label-name')[0]).group_id;
+  //     Meteor.subscribe('get-label-names', group_id, label_limit.get(), {
+  //         onStop: function() {},
+  //         onReady: function(){
+  //             Session.set(group_id + "_simpleChatToChatLabelName_loading", false);
+  //         }
+  //     }); // TODO：
+  //     console.log('load more');
+  //   }
+  // });
   this.$("#label-input-name").bind("input propertychange",function (e) {
         var length = $(e.currentTarget).val().length;
         if (length === 0) {
