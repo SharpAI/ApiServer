@@ -31,8 +31,8 @@ var initTimeRangeSet = function() {
       var startArr =  new Date(vals[0]);
       var endArr = new Date(vals[1]);
       var range = timeRange.get();
-      range[0] = new Date(startArr.getFullYear(),startArr.getMonth(), startArr.getDate(),startArr.getHours(),0,0,0);
-      range[1] = new Date(endArr.getFullYear(),endArr.getMonth(), endArr.getDate(),endArr.getHours(),0,0,0);
+      range[0] = new Date(startArr.getFullYear(),startArr.getMonth(), startArr.getDate(),startArr.getHours(),startArr.getMinutes(),0,0);
+      range[1] = new Date(endArr.getFullYear(),endArr.getMonth(), endArr.getDate(),endArr.getHours(),endArr.getMinutes(),0,0);
 
       timeRange.set(range);
       // reset limit
@@ -81,6 +81,12 @@ var getSelector = function() {
   if(range[1]) {
     selector['hour'] = selector['hour'] || {};
     selector['hour']['$lte'] = range[1]
+  }
+
+  if(range[0] && range[1] && range[0].getHours() == range[1].getHours()) {
+    var ts = range[0];
+    ts = new Date(ts.getFullYear(),ts.getMonth(), ts.getDate(),ts.getHours(),0,0,0);
+    selector['hour'] = ts;
   }
 
   return selector;
@@ -335,6 +341,8 @@ Template.timelineAlbum.helpers({
 
     var selector = getSelector();
 
+    var range = timeRange.get();
+
     DeviceTimeLine.find(selector,{sort:{hour:-1},limit:limit.get()}).forEach(function(item){
       var tmpArr = [];
       for(x in item.perMin){
@@ -345,20 +353,31 @@ Template.timelineAlbum.helpers({
           images: []
         }
         var personIds = [];
-        item.perMin[x].forEach(function(img){
-          img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
-          var index = personIds.indexOf(img.person_id);
-          if( !(onlyShowUnknown.get() && img.person_name) ){
-            if(index < 0){
-              personIds.push(img.person_id)
-              tmpObj.images.push(img);
-            } else {
-              var mergedImgs = tmpObj.images[index].mergedImgs || [];
-              mergedImgs.push(img);
-              tmpObj.images[index].mergedImgs = mergedImgs;
+        // 大于 rangeStart 且 小于 rangeEnd
+        var shouldContinue = true;
+        if( range && range[0] && (hour < range[0]) ) {
+          shouldContinue = false;
+        }
+        if( range && range[1] && (hour > range[1]) ){
+          shouldContinue = false;
+        }
+
+        if( shouldContinue ) {
+          item.perMin[x].forEach(function(img){
+            img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
+            var index = personIds.indexOf(img.person_id);
+            if( !(onlyShowUnknown.get() && img.person_name) ){
+              if(index < 0){
+                personIds.push(img.person_id)
+                tmpObj.images.push(img);
+              } else {
+                var mergedImgs = tmpObj.images[index].mergedImgs || [];
+                mergedImgs.push(img);
+                tmpObj.images[index].mergedImgs = mergedImgs;
+              }
             }
-          }
-        });
+          });
+        }
         if(tmpObj.images.length > 0){
           tmpArr.push(tmpObj);
           timelineAlbumCounts += tmpObj.images.length;
