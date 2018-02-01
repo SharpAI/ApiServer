@@ -1,0 +1,1 @@
+VideoQueueLists = new Mongo.Collection('video-queue-lists');

@@ -1,0 +1,186 @@
+// index page
+.videoAnalysis{
+  color: #555;
+  .va-head{
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #eee;
+    i{ font-size: 26px;height: 40px;line-height: 40px;}
+    .left{ float: left; width: 40px; box-sizing: border-box;}
+    .title{
+      margin: 0 40px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;
+    }
+  }
+  .va-container{
+    position: absolute;
+    top: 40px;
+    bottom: 50px;
+    width: 100%;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+
+  .va-foot{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #efefef;
+    height: 40px;
+    padding: 5px 0;
+    border-top: 1px solid #ccc;
+    box-sizing: content-box;
+    .va-foot-bar{
+      margin: 0; padding: 0;
+    }
+    .va-ft-btn{
+      cursor: pointer;
+      list-style: none;
+      float: left;
+      width: 50%;
+      text-align: center;
+      i,p{display: inline-block; width: 100%;font-size: 16px;line-height: 20px; margin: 0}
+      p{font-size: 12px;}
+    }
+    .va-ft-btn.active{
+      color: #2196F3;
+    }
+  }
+}
+
+// search page
+.va-search {
+  .va-select-pic {
+    text-align: center;
+    button {
+      border: 1px solid #ccc;
+      background: #efefef;
+      width: 48px;
+      height: 48px;
+      color: #888;
+      border-radius: 50%;
+      font-size: 20px;
+    }
+    .tip{ margin: 5px 0; margin-top: 15px; font-size: 12px;}
+  }
+  .va-select-pic.no-pic{
+    margin-top: 40%;
+  }
+}
+
+// history page
+.va-history{
+  p{margin: 5px 0;}
+  img {width: 100%; height: 100%; object-fit: cover;}
+  .va-his-lists{
+    margin: 0;
+    padding: 0;
+  }
+  .va-his-item{
+    list-style: none;
+    margin: 10px;
+    position: relative;
+    overflow: hidden;
+    .pull-right{
+      float: right;
+      margin-left: 90px;
+    }
+    .va-imgHelper{
+      height: 90px;
+    }
+  }
+  .va-his-time{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 90px;
+  }
+}
+
+
+// detial page 
+.va-detail{
+  img {height:100%; width: 100%; object-fit: cover; object-position: center;}
+  p{margin: 5px 0; font-size: 12px;}
+  .va-videoHelper{
+    height: 120px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .va-video-info {
+    padding: 10px;
+    border-bottom: 1px solid #efefef;
+    margin-bottom: 10px;
+    overflow: hidden;
+    p{margin: 0;}
+    .result-count{float: left; margin-right: 10px;}
+    .va-count{ color: #2196F3;font-size: 26px; line-height: 26px; text-align: center;}
+    h1{margin: 0;font-size: 14px;height: 40px;line-height: 40px; padding-right: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative;}
+    h1 span{position: absolute; right: 0; top: 0; display: inline-block; height: 40px; width: 40px; text-align: center; background: #fff;}
+  }
+  .va-vid-result-lists{
+    overflow: hidden;
+    overflow-y: auto;
+    position: absolute;
+    bottom: 0;
+    top: 230px;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  .va-vid-result-item{
+    list-style: none;
+    position: relative;
+    overflow: hidden;
+    .pull-left{
+      float: left;
+      margin-left: 100px;
+      padding: 10px 0;
+      .va-imgHelper{
+        height: 80px;
+        img {height:100%;object-fit: contain; object-position: center;}
+      }
+    }
+  }
+  .va-his-time{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80px;
+    border-right: 1px solid #ccc;
+    height: 100px;
+    padding: 10px 5px;
+    padding-left: 10px
+  }
+  .in-duration {
+    line-height: 20px;
+    margin-top: 40%;
+  }
+  .va-status-adpter {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    height: 20px;
+    width: 20px;
+    margin-top: -10px;
+    background: #9E9E9E;
+    border-radius: 50%;
+    text-align: center;
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 20px;
+    display: inline-block;
+  }
+}
+// popPage
+
+.va-popPage{
+  position: fixed;
+  display: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  z-index: 999990;
+}

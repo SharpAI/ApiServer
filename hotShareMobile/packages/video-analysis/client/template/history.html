@@ -1,0 +1,22 @@
+<template name="VA_History">
+<div class="va-history">
+  <ul class="va-his-lists">
+    {{#each lists}}
+    <li class="va-his-item">
+      <div class="va-his-time">
+        <p class="date">2018-02-01</p>
+        <p class="time">14:47</p>
+      </div>
+      
+      <div class="pull-right">
+        <p>16 results in 3 videos</p>
+        <div class="va-imgHelper">
+          <img src="/homeai.png">
+        </div>
+      </div>
+    </li>
+    {{/each}}
+  </ul>
+</div>
+{{> VA_Detail}}
+</template>
