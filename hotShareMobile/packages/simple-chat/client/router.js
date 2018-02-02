@@ -2569,9 +2569,11 @@ Template._simpleChatToChatLabelName.onRendered(function(){
   this.$("#label-input-name").bind("input propertychange",function (e) {
         var length = $(e.currentTarget).val().length;
         if (length === 0) {
+          label_name_text.set('');
           $(e.currentTarget).attr('placeholder','请选择或输入名字~');
         }
     });
+  label_name_text.set('');
 });
 Template._simpleChatToChatLabelName.helpers({
   notLoading: function() {
