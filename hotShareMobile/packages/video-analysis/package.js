@@ -14,7 +14,8 @@ Package.onUse(function (api) {
   ], ['client','server']);
 
   api.addAssets([
-    'images/homeai.png'
+    'images/homeai.png',
+    'images/radar_scan.png'
   ], 'client');
 
   api.addFiles([
@@ -23,6 +24,7 @@ Package.onUse(function (api) {
     'client/index.less',
 
     // templates
+    'client/template/devices.html',
     'client/template/search.html',
     'client/template/history.html',
     'client/template/history.js',
