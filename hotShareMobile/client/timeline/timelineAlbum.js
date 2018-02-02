@@ -47,7 +47,6 @@ var initTimeRangeSet = function() {
       Session.set('timelineAlbumLoading',true);
       Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
         Session.set('timelineAlbumLoading',false);
-        lazyTimelineImg();
       });
     }
   });
@@ -129,27 +128,6 @@ LazyImg.prototype.init = function() {
   });
 };
 
-window.lazyTimelineImgTimeout = null;
-var lazyTimelineImg = function(){
-  if(lazyTimelineImgTimeout){
-    window.clearTimeout(lazyTimelineImgTimeout)
-  }
-  lazyTimelineImgTimeout = window.setTimeout(function(){
-    console.log('lazyTimelineImg call')
-    // $("img.lazy").lazyload({
-    //   threshold : 100
-    // });
-    // $('img.lazy').load(function() {
-    //   console.log($(this).attr('src') + ' loaded');
-    //   var self = $(this);
-    //   if(self.attr('data-original') == self.attr('src')){
-    //     self.addClass('img-loaded').removeClass('lazy');
-    //   }
-    // });
-    lazyImg = new LazyImg(document.querySelector('.content'))
-    lazyImg.init();
-  },600);
-}
 
 var checkInOutWithOutName = function(type,name,taId,taName){
   var data = Session.get('setPicturePersonNameData');
@@ -268,7 +246,6 @@ Template.timelineAlbum.onRendered(function(){
   var selector = getSelector();
   Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
     Session.set('timelineAlbumLoading',false);
-    lazyTimelineImg();
   });
 
   var isLoadMore = false;
@@ -296,17 +273,10 @@ Template.timelineAlbum.onRendered(function(){
         }
       });
     }
-    lazyTimelineImg();
   });
 
   Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
 
-  // 有新img元素时触发lazyload
-  Tracker.autorun(function(c) {
-    if(Session.get('timelineAlbumCounts')){
-      lazyTimelineImg();
-    }
-  })
 });
 Template.timelineAlbum.onDestroyed(function(){
   Session.set('wantModify',false);
@@ -470,7 +440,6 @@ Template.timelineAlbum.events({
     Session.set('timelineAlbumLoading',true);
     Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
       Session.set('timelineAlbumLoading',false);
-      lazyTimelineImg();
     });
   },
   // 展开合并的图片
@@ -483,7 +452,6 @@ Template.timelineAlbum.events({
       lists.push(id);
     } 
     mergedExtendLists.set(lists);
-    lazyTimelineImg();
   },
   'click .images-click-able, click .select-video-enable': function(e){
     e.stopImmediatePropagation();
@@ -964,4 +932,22 @@ Template.timelineAlbum.onDestroyed(function() {
   isMultiSelect.set(false);
   multiSelectIds.set([]);
   multiSelectLists.set([]);
+});
+
+
+// lazyload
+var lazyloadInitTimeout = null;
+var lazyloadInit = function($ul){
+  lazyloadInitTimeout && Meteor.clearTimeout(lazyloadInitTimeout);
+  lazyloadInitTimeout = Meteor.setTimeout(function(){
+    $ul.find('img.lazy:not([src])').lazyload({
+      container: $('.content')
+    });
+   lazyloadInitTimeout && Meteor.clearTimeout(lazyloadInitTimeout);
+  }, 600);
+};
+
+Template.timelineAlbumImg.onRendered(function(){
+  var $img = this.$('img');
+  lazyloadInit($('ul.timeLine'));
 });
