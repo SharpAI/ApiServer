@@ -361,13 +361,6 @@ Template.groupPhotoImg.helpers({
   },
   is_type: function(val){
     return type.get() === val;
-  },
-  getLabelTimes: function() {
-    var times = this.label_times;
-    if(times && Number(times) > 99){
-      return '99+';
-    }
-    return times;
   }
 });
 
@@ -428,6 +421,16 @@ Template.groupPhoto.close = function(){
 //     return selected2.get().indexOf(id) >= 0;
 //   },
 // });
+
+Template.groupPhotoImg1.helpers({
+  getLabelTimes: function() {
+    var times = this.label_times;
+    if(times && Number(times) > 999){
+      return '999+';
+    }
+    return times;
+  }
+});
 
 Template.groupPhotoImg1.events({
   'click li': function(e){
