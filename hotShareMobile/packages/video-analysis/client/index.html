@@ -2,6 +2,9 @@
 <div class="videoAnalysis">
   <div class="va-head"> 
     <div class="left"><i class="fa fa-angle-left fa-fw"></i></div>
+    {{#if isPage 'VA_Devices'}}
+    <div class="right"><i class="fa fa-plus fa-fw" style="font-size:20px;"></i></div>
+    {{/if}}
     <div class="title">视频分析</div>
   </div>
   <div class="va-container">
@@ -13,6 +16,10 @@
       <li class="va-ft-btn {{currTemp 'VA_Search'}}" id="VA_Search">
         <i class="fa fa-search fa-fw"></i>
         <p>查询</p>
+      </li>
+      <li class="va-ft-btn {{currTemp 'VA_Devices'}}" id="VA_Devices">
+        <i class="fa fa-tv fa-fw"></i>
+        <p>设备</p>
       </li>
       <li class="va-ft-btn {{currTemp 'VA_History'}}" id="VA_History">
         <i class="fa fa-history fa-fw"></i>

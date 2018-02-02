@@ -14,6 +14,9 @@ Template.videoAnalysis.helpers({
       return 'active';
     }
     return '';
+  },
+  isPage: function(_template){
+    return _template == template.get();
   }
 });
 
