@@ -361,6 +361,13 @@ Template.groupPhotoImg.helpers({
   },
   is_type: function(val){
     return type.get() === val;
+  },
+  getLabelTimes: function() {
+    var times = this.label_times;
+    if(times && Number(times) > 99){
+      return '99+';
+    }
+    return times;
   }
 });
 

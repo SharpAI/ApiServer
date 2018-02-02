@@ -95,6 +95,24 @@ PERSON = {
       }
     }
   },
+  updateLabelTimes: function(group_id, items) {
+    var names = [];
+    for (var i = 0; i < items.length; i++){
+      if(items[i].name && names.indexOf(items[i].name) < 0) {
+        names.push(items[i].name);
+      }
+    }
+
+    for (var x = 0; x < names.length; x++ ){
+      var person = Person.findOne({group_id:group_id, name: names[x]}, {sort: {createAt: 1}});
+      if ( person ) {
+        Person.update({_id: person._id}, {
+          $inc: {label_times: 1}
+        });
+      }
+    }
+    console.log('==sr==. names =='+ JSON.stringify(names));
+  },
   setName: function(group_id, uuid, id, url, name,is_video, callback){
     var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
     var dervice = Devices.findOne({uuid: uuid});
@@ -145,6 +163,7 @@ PERSON = {
         faces: [{id: id, url: url}],
         deviceId: dervice._id,
         DeviceName: dervice.name,
+        label_times: 1,
         createAt: new Date(),
         updateAt: new Date()
       };
@@ -1047,6 +1066,11 @@ PERSON = {
       }
       modifier["$set"]["perMin."+minutes+".$.person_name"] = person_name;
     }
+
+     // 更新标注次数
+    modifier["$inc"] = {};
+    modifier["$inc"]["perMin."+minutes+".$.label_times"] = 1;
+
     DeviceTimeLine.update(selector,modifier,function(err,res){
       if(err){
         console.log('updateToDeviceTimeline2 Err:'+err);
@@ -1356,6 +1380,7 @@ Meteor.methods({
   'set-person-names': function(group_id, items){
     console.log('set-person-names:', items);
     var slef = this;
+    PERSON.updateLabelTimes(group_id,items);
     for(var i=0;i<items.length;i++) {
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
       console.log('LABLE_DADASET_Handle 3')
