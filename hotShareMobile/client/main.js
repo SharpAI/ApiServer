@@ -214,6 +214,10 @@ if (Meteor.isCordova) {
           } */
           if (action == 'added') {
               console.log('service added', service);
+              PUB.Toptip('<i class="fa fa-wifi fa-fw"></i> 发现一台新设备',{autohide:true, timeout:10000, service: service},function(event, options){
+                console.log(event);
+                console.log(JSON.stringify(options));
+              });
           } else {
               console.log('service removed', service);
           }

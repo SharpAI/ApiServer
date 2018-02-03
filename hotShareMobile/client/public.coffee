@@ -9,6 +9,41 @@ pages = ['/user', '/bell', '/search']
         $('body').append('<div class="actionWaitLoading"><div class="loadingContainer"><img src="/loading.gif" width="28" height="28"/><p>'+text+'</p></div></div>')
     'hideWaitLoading':()->
         $('.actionWaitLoading').remove()
+    'Toptip': (text, options, callback)->
+        if !text 
+            return
+        if Session.equals('can_show_toptip', false)
+            return
+
+        this.hideTopTip()
+        config = _.extend({
+            timeout: 5000,
+            autohide: true
+        }, options)
+        
+        $("tool_tp").remove()
+
+        div = document.createElement('div')
+        div.classList += '_top_tip'
+        div.innerHTML = text
+
+        window.ToptipTimeout = null
+        if window.ToptipTimeout
+            Meteor.clearTimeout(window.ToptipTimeout)
+        if config.autohide
+            window.ToptipTimeout = Meteor.setTimeout(->
+                PUB.hideTopTip()
+            ,config.timeout)
+
+        div.addEventListener('click', (e)->
+            PUB.hideTopTip()
+            callback and callback(e, options)
+        )
+        $('body').append(div)
+    'hideTopTip':->
+        $('._top_tip').remove()
+        if window.ToptipTimeout
+            Meteor.clearTimeout(window.ToptipTimeout)
     'isUrl':(str_url)->
         `
         var strRegex = '^((https|http|ftp|rtsp|mms)?://)'
