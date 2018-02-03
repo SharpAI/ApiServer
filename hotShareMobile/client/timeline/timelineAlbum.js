@@ -91,43 +91,6 @@ var getSelector = function() {
   return selector;
 };
 
-function LazyImg(option){
-  this.settings = option || {};
-  this.settings.selector = '.lazy';
-  
-  this.settings.src = 'data-original';
-  this.settings.threshold = 100;
-  this.container = this.settings.container || document.body;
-  this.images = document.querySelectorAll(this.settings.selector);
-  this.lazyedImages = document.querySelectorAll('.lazyed');
-};
-
-LazyImg.prototype.init = function() {
-  var seeHeight = this.container.clientHeight + this.settings.threshold; // 可见区域高度
-  var self = this;
-  [].forEach.call(self.images,function(img){
-    var src = img.getAttribute(self.settings.src);
-    var rect = img.getBoundingClientRect()
-    // console.log(rect.top + rect.height)
-    // console.log(seeHeight)
-    if( (rect.top + rect.height) > 0 && (rect.top + rect.height) < seeHeight){ // 处理在可见区域内的图片
-      if("img" === img.tagName.toLowerCase()){
-        img.src = src;
-        img.className = 'lazyed';
-      }
-    }
-  });
-  // 处理data-original 和 src不一致的情况
-
-  [].forEach.call(self.lazyedImages,function(img){
-    var original = img.getAttribute(self.settings.src);
-    var src = img.getAttribute('src');
-    if(original !== src){
-      img.src = original;
-    }
-  });
-};
-
 
 var checkInOutWithOutName = function(type,name,taId,taName){
   var data = Session.get('setPicturePersonNameData');
@@ -625,12 +588,7 @@ Template.timelineAlbum.events({
             console.log('ai-checkin-out error:' + err);
             return;
           }
-          // if(timelineAlbumTimeout){
-          //   window.clearTimeout(timelineAlbumTimeout);
-          // }
-          // timelineAlbumTimeout = setTimeout(function() {
-          //   $("img.lazy").lazyload({});
-          // }, 500);
+
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
             // 发送代Ta 签到成功通知
@@ -690,12 +648,7 @@ Template.timelineAlbum.events({
             console.log('ai-checkin-out error:' + err);
             return;
           }
-          // if(timelineAlbumTimeout){
-          //   window.clearTimeout(timelineAlbumTimeout);
-          // }
-          // timelineAlbumTimeout = setTimeout(function() {
-          //   $("img.lazy").lazyload({});
-          // }, 500);
+
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
             // 发送代Ta 签到成功通知
@@ -763,12 +716,7 @@ Template.timelineAlbum.events({
         console.log('ai-checkin-out error:' + err);
         return;
       }
-      // if(timelineAlbumTimeout){
-      //   window.clearTimeout(timelineAlbumTimeout);
-      // }
-      // timelineAlbumTimeout = setTimeout(function() {
-      //   $("img.lazy").lazyload({});
-      // }, 500);
+
       if(res && res.result == 'succ'){
         PUB.toast('已记录到每日出勤报告');
         // 发送代Ta 签到成功通知
@@ -936,15 +884,11 @@ Template.timelineAlbum.onDestroyed(function() {
 
 
 // lazyload
-var lazyloadInitTimeout = null;
 var lazyloadInit = function($ul){
-  lazyloadInitTimeout && Meteor.clearTimeout(lazyloadInitTimeout);
-  lazyloadInitTimeout = Meteor.setTimeout(function(){
-    $ul.find('img.lazy:not([src])').lazyload({
-      container: $('.content')
-    });
-   lazyloadInitTimeout && Meteor.clearTimeout(lazyloadInitTimeout);
-  }, 600);
+  $ul.find('img.lazy:not([src])').lazyload({
+    container: $('.content'),
+    event: 'scrollstop'
+  });
 };
 
 Template.timelineAlbumImg.onRendered(function(){
