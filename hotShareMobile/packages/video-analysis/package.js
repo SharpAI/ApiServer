@@ -25,6 +25,7 @@ Package.onUse(function (api) {
 
     // templates
     'client/template/devices.html',
+    'client/template/devices.js',
     'client/template/search.html',
     'client/template/history.html',
     'client/template/history.js',
