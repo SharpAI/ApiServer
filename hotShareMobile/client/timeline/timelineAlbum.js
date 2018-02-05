@@ -9,6 +9,9 @@ var limit = new ReactiveVar(5);
 
 var onlyShowUnknown = new ReactiveVar(false);
 
+var timelineLists = new ReactiveVar([]);
+var timelineIds = new ReactiveVar([]);
+
 var initTimeRangeSet = function() {
   var now = new Date();
   $('#timeRange').mobiscroll().range({
@@ -47,6 +50,7 @@ var initTimeRangeSet = function() {
       Session.set('timelineAlbumLoading',true);
       Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
         Session.set('timelineAlbumLoading',false);
+        setLists(true);
       });
     }
   });
@@ -191,6 +195,90 @@ var checkInOutWithOutName = function(type,name,taId,taName){
   });
 };
 
+
+var setLists = function(overlay) {
+  var timelineAlbumCounts = 0;
+  var uuid = Router.current().params._uuid;
+  var _lists = timelineLists.get() || [];
+  var ids = timelineIds.get() || [];
+  if(overlay){
+    _lists = [];
+    ids = [];
+  }
+  var hour = Session.get('wantModifyTime');
+
+  var selector = getSelector();
+
+  var range = timeRange.get();
+  DeviceTimeLine.find(selector,{sort:{hour:-1},limit:limit.get()}).forEach(function(item){
+    var tmpArr = [];
+    for(x in item.perMin){
+      var hour = new Date(item.hour)
+      hour = hour.setMinutes(x);
+      var tmpObj = {
+        time: hour,
+        images: []
+      }
+      var personIds = [];
+      // 大于 rangeStart 且 小于 rangeEnd
+      var shouldContinue = true;
+      if( range && range[0] && (hour < range[0]) ) {
+        shouldContinue = false;
+      }
+      if( range && range[1] && (hour > range[1]) ){
+        shouldContinue = false;
+      }
+
+      if( shouldContinue ) {
+        item.perMin[x].forEach(function(img){
+          img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
+          var index = personIds.indexOf(img.person_id);
+          if( !(onlyShowUnknown.get() && img.person_name) && ids.indexOf(img.img_url) < 0 ){
+            if(index < 0){
+              personIds.push(img.person_id)
+              tmpObj.images.push(img);
+            } else {
+              var mergedImgs = tmpObj.images[index].mergedImgs || [];
+              mergedImgs.push(img);
+              tmpObj.images[index].mergedImgs = mergedImgs;
+            }
+            ids.push(img.img_url);
+          }
+        });
+      }
+      if(tmpObj.images.length > 0){
+        tmpArr.push(tmpObj);
+        timelineAlbumCounts += tmpObj.images.length;
+      }
+    }
+    // tmpArr.reverse();
+    _lists = _lists.concat(tmpArr);
+  });
+  
+  personIds = [];
+  Session.set('timelineAlbumCounts', timelineAlbumCounts);
+  Session.set('timelineAlbumListsCounts',_lists.length);
+
+  var compare = function (prop) {
+        return function (obj1, obj2) {
+            var val1 = obj1[prop];
+            var val2 = obj2[prop];
+            if (val1 < val2) {
+                return 1;
+            } else if (val1 > val2) {
+                return -1;
+            } else {
+                return 0;
+            }            
+        } 
+    };
+
+  _lists.sort(compare('time'));
+
+  timelineIds.set(ids);
+  timelineLists.set(_lists);
+};
+
 Template.timelineAlbum.onRendered(function(){
   initTimeRangeSet();
 
@@ -207,8 +295,15 @@ Template.timelineAlbum.onRendered(function(){
   var hour = Session.get('wantModifyTime');
 
   var selector = getSelector();
-  Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
-    Session.set('timelineAlbumLoading',false);
+
+  timelineLists.set([]);
+  timelineIds.set([]);
+
+  Meteor.subscribe('devices-by-uuid',Router.current().params._uuid, function() {
+    Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
+      Session.set('timelineAlbumLoading',false);
+      setLists(true);
+    });
   });
 
   var isLoadMore = false;
@@ -231,14 +326,15 @@ Template.timelineAlbum.onRendered(function(){
       var counts = DeviceTimeLine.find(selector,{sort:{hour:-1},limit:limit.get()}).count();
       Meteor.subscribe('device-timeline2',uuid,selector,_limit,function(){
         Session.set('timelineAlbumLoading',false);
-        if(DeviceTimeLine.find(selector,{sort:{hour:-1},limit:_limit}).count() > counts) {
+        if(DeviceTimeLine.find(selector,{sort:{hour:-1},limit:_limit}).count() >= counts) {
           limit.set(_limit);
+          setLists();
         }
       });
     }
   });
 
-  Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
+  // Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
 
 });
 Template.timelineAlbum.onDestroyed(function(){
@@ -267,6 +363,8 @@ Template.timelineAlbum.helpers({
     return device.name;
   }, 
   lists: function(){
+    return timelineLists.get();
+
     var timelineAlbumCounts = 0;
     var uuid = Router.current().params._uuid;
     var lists = [];
@@ -389,6 +487,7 @@ Template.timelineAlbum.events({
     } else {
       onlyShowUnknown.set(true);
     }
+    setLists(true);
   },
   'click #clearFilter': function(e) {
     onlyShowUnknown.set(false);
@@ -403,6 +502,7 @@ Template.timelineAlbum.events({
     Session.set('timelineAlbumLoading',true);
     Meteor.subscribe('device-timeline2',uuid,selector,limit.get(),function(){
       Session.set('timelineAlbumLoading',false);
+      setLists(true);
     });
   },
   // 展开合并的图片
@@ -880,15 +980,23 @@ Template.timelineAlbum.onDestroyed(function() {
   isMultiSelect.set(false);
   multiSelectIds.set([]);
   multiSelectLists.set([]);
+
+  timelineLists.set([]);
+  timelineIds.set([]);
 });
 
 
 // lazyload
+var lazyloadInitTimeout = null;
 var lazyloadInit = function($ul){
-  $ul.find('img.lazy:not([src])').lazyload({
-    container: $('.content'),
-    event: 'scrollstop'
-  });
+  lazyloadInitTimeout && Meteor.clearTimeout(lazyloadInitTimeout);
+  lazyloadInitTimeout = Meteor.setTimeout(function(){
+    $ul.find('img.lazy:not([src])').lazyload({
+      container: $('.content'),
+      event: 'scrollstop'
+    }).removeClass('lazy').addClass('lazyed');
+    lazyloadInitTimeout && Meteor.clearTimeout(lazyloadInitTimeout);
+  }, 600);
 };
 
 Template.timelineAlbumImg.onRendered(function(){
