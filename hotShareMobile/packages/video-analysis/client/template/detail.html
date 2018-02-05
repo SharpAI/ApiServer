@@ -1,13 +1,19 @@
-<template name="VA_Detail">
-<div class="va-detail va-popPage">
-  <div class="va-head"> 
-    <div class="left"><i class="fa fa-angle-left fa-fw"></i></div>
-    <div class="title">视频分析</div>
-  </div>
+<template name="dvaDetailHeader">
+  <div class="left"><i class="fa fa-angle-left fa-fw"></i></div>
+  <div class="title">视频分析</div>
+</template>
+
+<template name="dvaDetail">
+<div class="va-detail">
+  
   <div class="va-videoHelper">
     <!--<img src="/homeai.png">-->
-    <video id="my-video" class="video-js" controls preload="auto" width="320" height="220"
-      poster="MY_VIDEO_POSTER.jpg" data-setup="{}">
+    <video id="my-video" class="video-js vjs-default-skin vjs-fluid vjs-16-9" controls preload="auto" 
+      poster="MY_VIDEO_POSTER.jpg" 
+      data-setup='{
+        "fluid": true,
+        "playbackRates": [1, 1.5, 2]
+      }'>
         <source src="http://www.runoob.com/try/demo_source/movie.mp4" type='video/mp4'>
         <p class="vjs-no-js">
           To view this video please enable JavaScript, and consider upgrading to a web browser that

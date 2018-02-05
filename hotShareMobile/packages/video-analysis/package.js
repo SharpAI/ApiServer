@@ -22,7 +22,8 @@ Package.onUse(function (api) {
     'client/index.html',
     'client/index.js',
     'client/index.less',
-
+    // layout
+    'client/layout.html',
     // templates
     'client/template/devices.html',
     'client/template/devices.js',
@@ -31,5 +32,7 @@ Package.onUse(function (api) {
     'client/template/history.js',
     'client/template/detail.html',
     'client/template/detail.js',
+    // router
+    'client/router.js'
   ], 'client');
 });

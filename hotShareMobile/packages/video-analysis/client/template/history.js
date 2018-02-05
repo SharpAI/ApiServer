@@ -7,6 +7,7 @@ Template.VA_History.helpers({
 
 Template.VA_History.events({
   'click .va-his-item': function(e) {
-    $('.va-detail').fadeIn();
+    // $('.va-detail').fadeIn();
+    PUB.page('/dvaDetail/'+'123')
   }
 })

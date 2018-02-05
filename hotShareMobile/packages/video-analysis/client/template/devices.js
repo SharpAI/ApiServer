@@ -1,4 +1,7 @@
-// var zeroconf = cordova.plugins.zeroconf;
+var zeroconf;
+if(Meteor.isCordova){
+ zeroconf = cordova.plugins.zeroconf;
+} 
 
 var isScanModal = new ReactiveVar(false); // 是否是设备扫描模式
 var isScanning = new ReactiveVar(false); // 是否正在扫描
@@ -26,7 +29,6 @@ Template.VA_Devices.helpers({
     return DVA_Devices.find({user_id: Meteor.userId()},{limit: limit.get(), sort:{createdAt: -1}}).fetch();
   },
   scanLists: function() {
-    return [1,2,3,4,5,6,7,8,9];
     return scanLists.get();
   }
 });
