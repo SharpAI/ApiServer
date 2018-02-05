@@ -28,6 +28,7 @@ Package.onUse(function (api) {
     'client/template/devices.html',
     'client/template/devices.js',
     'client/template/search.html',
+    'client/template/search.js',
     'client/template/history.html',
     'client/template/history.js',
     'client/template/detail.html',

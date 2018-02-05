@@ -1,10 +1,20 @@
-<template name="VA_Search">
+<template name="dvaSearch">
 <div class="va-search">
+  {{#if selectedPicture}}
+  <div class="va-select-pic">
+    <div class="va-imgHelper">
+      <img id="mainImage{{mainImage._id}}" class="image_{{mainImage._id}}" src="{{getImagePath mainImage.imgUrl mainImage.URI mainImage._id}}"/>
+    </div>
+    <button type="button" id="selectPic">重新选择</button>
+    <button type="button" id="startQuery">开始查询</button>
+  </div>
+  {{else}}
   <div class="va-select-pic no-pic">
-    <button id="selectPic">
+    <button type="button" id="selectPic">
       <i class="fa fa-camera"></i>
     </button>
     <p class="tip">选择照片开始查询</p>
   </div>
+  {{/if}}
 </div>
 </template>

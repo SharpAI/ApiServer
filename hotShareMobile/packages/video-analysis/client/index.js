@@ -1,4 +1,4 @@
-var template = new ReactiveVar('VA_Search')
+var template = new ReactiveVar('dvaSearch')
 
 Template.videoAnalysis.onRendered(function () {
   
