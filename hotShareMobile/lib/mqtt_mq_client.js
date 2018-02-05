@@ -53,7 +53,8 @@ if(Meteor.isClient){
                 keepAliveInterval: 10,
                 cleanSession: false,
                 onSuccess:onConnect,
-                onFailure:onFailure
+                onFailure:onFailure,
+                reconnect: true
             };
             //mqtt_connection=myMqtt.connect('ws://tmq.tiegushi.com:80',mqttOptions);
             mqtt_connection=new Paho.MQTT.Client('mq.tiegushi.com', Number(80), clientId);
@@ -109,21 +110,22 @@ if(Meteor.isClient){
             function onFailure(msg) {
                 console.log('mqtt onFailure: errorCode='+msg.errorCode);
                 clearUndeliveredMessages();
-                setTimeout(function(){
+                // setTimeout(function(){
                     console.log('MQTT onFailure, reconnecting...');
                     mqtt_connection.connect(pahoMqttOptions);
-                }, 1000);
+                // }, 1000);
             };
             function onConnectionLost(responseObject) {
                 //mqtt_connected = false;
                 console.log('MQTT connection lost.')
                 clearUndeliveredMessages();
-                if (responseObject.errorCode !== 0)
+                if (responseObject.errorCode !== 0) {
                     console.log("onConnectionLost: "+responseObject.errorMessage);
-                setTimeout(function(){
+                }
+                // setTimeout(function(){
                     console.log('MQTT onConnectionLost, reconnecting...');
                     mqtt_connection.connect(pahoMqttOptions);
-                }, 1000);
+                // }, 1000);
             };
             function onMessageDelivered(message) {
                 console.log('MQTT onMessageDelivered: "' + message.payloadString + '" delivered');
