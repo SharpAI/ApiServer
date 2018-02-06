@@ -43,7 +43,7 @@ Template.VA_Devices.events({
     isScanning.set(true);
     Meteor.setTimeout(function() {
       isScanning.set(false);
-    }, 5 * 1000);
+    }, 120 * 1000);
 
     zeroconf.watch('_zhifa._tcp.', 'local.',function(result) {
       var lists = scanLists.get();
@@ -53,6 +53,7 @@ Template.VA_Devices.events({
 
       if( action == 'added' ) {
         console.log('service added', JSON.stringify(service));
+        // TODO check is device in db
         lists.push(service);
       } else {
         console.log('service removed', JSON.stringify(service));
