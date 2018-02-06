@@ -15,7 +15,8 @@ Package.onUse(function (api) {
 
   api.addAssets([
     'images/homeai.png',
-    'images/radar_scan.png'
+    'images/radar_scan.png',
+    'images/loading.gif'
   ], 'client');
 
   api.addFiles([
