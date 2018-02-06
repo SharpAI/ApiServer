@@ -51,5 +51,20 @@ if (Meteor.isServer) {
     var limit = limit || 20;
     return DVA_QueueLists.find({userId: this.userId},{limit: limit, sort:{createdAt: -1}});
   });
+
+  Meteor.publish('dva_queue_info', function(_id) {
+    if(!this.userId || !_id) {
+      return this.ready();
+    }
+    return DVA_QueueLists.find({_id: _id});
+  })
+
+  Meteor.publish('dva_device_lists', function(limit) {
+    if(!this.userId) {
+      return this.ready();
+    }
+    var limit = limit || 20;
+    return DVA_Devices.find({userId: this.userId},{limit: limit, sort:{createdAt: -1}});
+  });
   
 }

@@ -14,7 +14,7 @@
         
         <div class="pull-right">
           {{#if isStatus 'pendding'}}<p>查询已加入队列，等待执行</p>{{/if}}
-          {{#if isStatus 'waiting'}}<p>正在查询，请稍后...</p>{{/if}}
+          {{#if isStatus 'progress'}}<p>正在查询，请稍后...</p>{{/if}}
           {{#if isStatus 'failed'}}<p>查询失败！</p>{{/if}}
           {{#if isStatus 'done'}}
             {{#if resultCounts}}

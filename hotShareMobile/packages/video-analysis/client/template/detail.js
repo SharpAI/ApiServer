@@ -1,3 +1,6 @@
+var isLoading = new ReactiveVar(false);
+var videoIndex = new ReactiveVar(0);
+
 var videoPlayer = null;
 
 var initPlayer = function(id){
@@ -53,12 +56,26 @@ var initPlayer = function(id){
 }
 
 Template.dvaDetail.onRendered(function() {
-  initPlayer('my-video')
+  var _id = Router.current().params._id;
+  isLoading.set(true);
+  Meteor.subscribe('dva_queue_info',_id, {
+    onReady: function() {
+      isLoading.set(false);
+      initPlayer('my-video');
+    }
+  });
 });
 
 Template.dvaDetail.helpers({
-  lists: function () {
-    return [1,2,3,4,5,6,7,8,9,10];
+  obj: function() {
+    var _id = Router.current().params._id;
+    return DVA_QueueLists.findOne({_id: _id});
+  },
+  videoInfo: function() {
+    var _id = Router.current().params._id;
+    var data = DVA_QueueLists.findOne({_id: _id});
+    var index = videoIndex.get();
+    return data.result[index];
   }
 });
 
