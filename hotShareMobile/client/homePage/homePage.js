@@ -58,6 +58,9 @@ Template.homePage.events({
   'click .companyItem': function(e){
     Session.set('workstatus_group', this);
     return workStatusPopPage.show();
+  },
+  'click .rightButton':function(e) {
+    return PUB.page('/deepVideoAnalysis');
   }
 })
 

@@ -26,5 +26,8 @@ Template.videoAnalysis.events({
   },
   'click .startScanDevices': function(e){
     Session.set('is_DVA_device_scan_model', true);
+  },
+  'click .left': function(e) {
+    return PUB.back();
   }
 });

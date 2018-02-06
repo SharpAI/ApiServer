@@ -1,6 +1,10 @@
 var zeroconf;
 if(Meteor.isCordova){
- zeroconf = cordova.plugins.zeroconf;
+  Meteor.startup(function(){
+    document.addEventListener("deviceready", function(){
+      zeroconf = cordova.plugins.zeroconf;
+    }, false);
+  });
 } 
 
 var isScanModal = new ReactiveVar(false); // 是否是设备扫描模式
@@ -9,13 +13,14 @@ var isScanning = new ReactiveVar(false); // 是否正在扫描
 var limit = new ReactiveVar(20);
 // 扫描到的设备列表
 var scanLists = new ReactiveVar([]);
+var scanIds = new ReactiveVar([]);
 
-Template.VA_Devices.onRendered(function() {
+Template.dvaDevices.onRendered(function() {
   // subscribe the DVA devices of user
   Meteor.subscribe('dva_device_lists', limit.get());
 });
 
-Template.VA_Devices.helpers({
+Template.dvaDevices.helpers({
   isScanModal: function() {
     // return isScanModal.get();
     return Session.equals('is_DVA_device_scan_model', true);
@@ -38,17 +43,20 @@ Template.VA_Devices.helpers({
   }
 });
 
-Template.VA_Devices.events({
+Template.dvaDevices.events({
   'click .startScanDevices': function(e) {
     // isScanModal.set(true);
     Session.set('is_DVA_device_scan_model', true);
     isScanning.set(true);
+    scanLists.set([]);
+    scanIds.set([]);
     Meteor.setTimeout(function() {
       isScanning.set(false);
     }, 120 * 1000);
 
-    zeroconf.watch('_zhifa._tcp.', 'local.',function(result) {
+    zeroconf && zeroconf.watch('_zhifa._tcp.', 'local.',function(result) {
       var lists = scanLists.get();
+      var ids = scanIds.get();
 
       var action = result.action;
       var service = result.service;
@@ -57,18 +65,25 @@ Template.VA_Devices.events({
         console.log('service added', JSON.stringify(service));
         // TODO check is device in db
         lists.push(service);
+        ids.push(service.name);
       } else {
+        var index = ids.indexOf(service.name);
+        if(index > -1){
+          ids.splice(index,1);
+          lists.splice(index,1);
+        }
         console.log('service removed', JSON.stringify(service));
       }
 
       scanLists.set(lists);
+      scanIds.set(ids);
     });
   },
   'click .stopScanDevices': function(e) {
     // isScanModal.set(false);
     Session.set('is_DVA_device_scan_model', false);
     isScanning.set(false);
-    zeroconf.unwatch('_zhifa._tcp.', 'local.')
+    zeroconf && zeroconf.unwatch('_zhifa._tcp.', 'local.')
   },
   // bind user and device 
   'click .scanDeviceItem': function(e) {
