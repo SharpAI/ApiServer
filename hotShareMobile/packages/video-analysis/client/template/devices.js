@@ -17,7 +17,8 @@ Template.VA_Devices.onRendered(function() {
 
 Template.VA_Devices.helpers({
   isScanModal: function() {
-    return isScanModal.get();
+    // return isScanModal.get();
+    return Session.equals('is_DVA_device_scan_model', true);
   },
   isScanning: function() {
     return isScanning.get()
@@ -39,7 +40,8 @@ Template.VA_Devices.helpers({
 
 Template.VA_Devices.events({
   'click .startScanDevices': function(e) {
-    isScanModal.set(true);
+    // isScanModal.set(true);
+    Session.set('is_DVA_device_scan_model', true);
     isScanning.set(true);
     Meteor.setTimeout(function() {
       isScanning.set(false);
@@ -63,7 +65,8 @@ Template.VA_Devices.events({
     });
   },
   'click .stopScanDevices': function(e) {
-    isScanModal.set(false);
+    // isScanModal.set(false);
+    Session.set('is_DVA_device_scan_model', false);
     isScanning.set(false);
     zeroconf.unwatch('_zhifa._tcp.', 'local.')
   },

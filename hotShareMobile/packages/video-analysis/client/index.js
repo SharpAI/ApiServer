@@ -1,8 +1,7 @@
 var template = new ReactiveVar('dvaSearch')
 
 Template.videoAnalysis.onRendered(function () {
-  
-
+  Session.set('is_DVA_device_scan_model', false);
 });
 
 Template.videoAnalysis.helpers({
@@ -24,5 +23,8 @@ Template.videoAnalysis.events({
   'click .va-ft-btn': function(e){
     var _t = e.currentTarget.id;
     template.set(_t);
+  },
+  'click .startScanDevices': function(e){
+    Session.set('is_DVA_device_scan_model', true);
   }
 });
