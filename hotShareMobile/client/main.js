@@ -217,6 +217,7 @@ if (Meteor.isCordova) {
               PUB.Toptip('<i class="fa fa-wifi fa-fw"></i> 发现一台新设备',{autohide:true, timeout:10000, service: service},function(event, options){
                 console.log(event);
                 console.log(JSON.stringify(options));
+                PUB.page('/deepVideoAnalysis');
               });
           } else {
               console.log('service removed', service);
