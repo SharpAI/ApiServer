@@ -2,9 +2,6 @@ var selectedPicture = new ReactiveVar(null);
 
 Template.dvaSearch.helpers({
   selectedPicture: function() {
-    return {
-      URI:'',
-    }
     return selectedPicture.get();
   },
   getImagePath: function(path,uri,id){

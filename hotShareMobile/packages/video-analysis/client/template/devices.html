@@ -27,25 +27,25 @@
         </div>
       {{/if}}
     
-    {{#if scanLists}}
-    <!-- device lists start -->
-    <ul class="va-dev-lists">
-      {{#each scanLists}}
-      <li class="va-dev-item">
-        <h1 class="va-dev-name">Video Analysis BOX1</h1>
-        <span class="va-dev-ip">192.168.0.102</span>
-      </li>
-      {{/each}}
-    </ul>
-    <!-- device lists end -->
-    {{/if}}
+      {{#if scanLists}}
+      <!-- device lists start -->
+      <ul class="va-dev-lists">
+        {{#each scanLists}}
+        <li class="va-dev-item scanDeviceItem">
+          <h1 class="va-dev-name">{{name}}</h1>
+          <span class="va-dev-ip">{{getIPV4}}</span>
+        </li>
+        {{/each}}
+      </ul>
+      <!-- device lists end -->
+      {{/if}}
     {{else}}
       {{#if lists}}
       <ul class="va-dev-lists">
         {{#each lists}}
-        <li class="va-dev-item">
-          <h1 class="va-dev-name">Video Analysis BOX1</h1>
-          <span class="va-dev-ip">192.168.0.102</span>
+        <li class="va-dev-item userDeviceItem">
+          <h1 class="va-dev-name">{{name}}</h1>
+          <span class="va-dev-ip">{{getIPV4}}</span>
         </li>
         {{/each}}
       </ul>
