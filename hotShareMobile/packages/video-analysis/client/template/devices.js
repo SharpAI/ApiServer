@@ -23,7 +23,7 @@ Template.VA_Devices.helpers({
   isScanning: function() {
     return isScanning.get()
   },
-  scanListsCount() {
+  scanListsCount: function() {
     return scanLists.get().length;
   },
   lists: function() {
