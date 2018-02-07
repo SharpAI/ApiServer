@@ -24,8 +24,9 @@ Template.videoAnalysis.events({
     var _t = e.currentTarget.id;
     template.set(_t);
   },
-  'click .startScanDevices': function(e){
-    Session.set('is_DVA_device_scan_model', true);
+  'click .right': function(e){
+    // import online video 
+    return PUB.page('/dvaImport');
   },
   'click .left': function(e) {
     return PUB.back();

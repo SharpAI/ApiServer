@@ -2,9 +2,7 @@
 <div class="videoAnalysis">
   <div class="va-head"> 
     <div class="left"><i class="fa fa-angle-left fa-fw"></i></div>
-    {{#if isPage 'dvaDevices'}}
-    <div class="right startScanDevices"><i class="fa fa-plus fa-fw" style="font-size:20px;"></i></div>
-    {{/if}}
+    <div class="right"><i class="fa fa-plus fa-fw" style="font-size:20px;"></i></div>
     <div class="title">视频分析</div>
   </div>
   <div class="va-container">
@@ -20,6 +18,10 @@
       <li class="va-ft-btn {{currTemp 'dvaDevices'}}" id="dvaDevices">
         <i class="fa fa-tv fa-fw"></i>
         <p>设备</p>
+      </li>
+      <li class="va-ft-btn {{currTemp 'dvaVideos'}}" id="dvaVideos">
+        <i class="fa fa-youtube fa-fw"></i>
+        <p>视频</p>
       </li>
       <li class="va-ft-btn {{currTemp 'dvaHistory'}}" id="dvaHistory">
         <i class="fa fa-history fa-fw"></i>

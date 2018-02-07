@@ -39,6 +39,10 @@ Package.onUse(function (api) {
     'client/template/history.js',
     'client/template/detail.html',
     'client/template/detail.js',
+    'client/template/videos.html',
+    'client/template/videos.js',
+    'client/template/videoImport.html',
+    'client/template/videoImport.js',
     // router
     'client/router.js'
   ], 'client');
