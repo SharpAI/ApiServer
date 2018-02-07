@@ -54,7 +54,7 @@ Template.dvaDevices.events({
       isScanning.set(false);
     }, 120 * 1000);
 
-    zeroconf && zeroconf.watch('_zhifa._tcp.', 'local.',function(result) {
+    zeroconf && zeroconf.watch('_DeepEye._tcp', 'local.',function(result) {
       var lists = scanLists.get();
       var ids = scanIds.get();
 
@@ -64,8 +64,10 @@ Template.dvaDevices.events({
       if( action == 'added' ) {
         console.log('service added', JSON.stringify(service));
         // TODO check is device in db
-        lists.push(service);
-        ids.push(service.name);
+        if(service && service.name && service.ipv4Addresses){
+          lists.push(service);
+          ids.push(service.name);
+        }
       } else {
         var index = ids.indexOf(service.name);
         if(index > -1){
@@ -83,7 +85,7 @@ Template.dvaDevices.events({
     // isScanModal.set(false);
     Session.set('is_DVA_device_scan_model', false);
     isScanning.set(false);
-    zeroconf && zeroconf.unwatch('_zhifa._tcp.', 'local.')
+    zeroconf && zeroconf.unwatch('_DeepEye._tcp', 'local.')
   },
   // bind user and device 
   'click .scanDeviceItem': function(e) {

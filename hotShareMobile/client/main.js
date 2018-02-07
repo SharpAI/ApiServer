@@ -197,7 +197,7 @@ if (Meteor.isCordova) {
     }
     function zeroconfWatch(){
       var zeroconf = cordova.plugins.zeroconf;
-      zeroconf.watch('_zhifa._tcp.', 'local.', function(result) {
+      zeroconf.watch('_DeepEye._tcp', 'local.', function(result) {
           var action = result.action;
           var service = result.service;
           /* service : {
@@ -216,7 +216,7 @@ if (Meteor.isCordova) {
               console.log('service added', service);
               Deps.autorun(function(){
                 if(Meteor.userId()){
-                  PUB.Toptip('<i class="fa fa-wifi fa-fw"></i> 发现一台新设备',{autohide:true, timeout:10000, service: service},function(event, options){
+                  PUB.Toptip('<i class="fa fa-wifi fa-fw"></i> 发现一台新设备',{autohide:false, timeout:10000, service: service},function(event, options){
                     console.log(event);
                     console.log(JSON.stringify(options));
                     PUB.page('/deepVideoAnalysis');
