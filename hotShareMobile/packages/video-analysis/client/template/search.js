@@ -2,6 +2,7 @@ var selectedPicture = new ReactiveVar(null);
 
 Template.dvaSearch.helpers({
   selectedPicture: function() {
+    return {}
     return selectedPicture.get();
   },
   getImagePath: function(path,uri,id){
@@ -69,7 +70,7 @@ Template.dvaSearch.events({
         userIcon: user.profile.icon,
         imgUrl: imgUrl,
         devices: dva_devices,
-        status: 'padding',
+        status: 'pendding',
         createdAt: new Date()
       }, function(error, result){
         PUB.hideWaitLoading();
@@ -101,5 +102,50 @@ Template.dvaSearch.events({
 
       });
     }
+  },
+  // cropPic 
+  'click #cropPic': function (e) {
+    var img = selectedPicture.get();
+
+    var cropcallback = function(){
+      var filename = '';
+      var URI = result;
+      var imgUrl = '';
+      var timestamp = new Date().getTime();
+      var originalFilename = result.replace(/^.*[\\\/]/, '');
+
+      filename = Meteor.userId() + '_' + timestamp + '_' + originalFilename;
+      console.log('File name ' + filename);
+
+      var lastQuestionFlag = result.lastIndexOf('?');
+      if (lastQuestionFlag >= 0){
+        URI = result.substring(0, lastQuestionFlag);
+      }
+      var lastQuestionFlag = filename.lastIndexOf('?');
+      if (lastQuestionFlag >= 0) {
+        filename = filename.substring(0, lastQuestionFlag);
+        imgUrl = imgUrl+'/'+filename;
+      }
+      console.log('filename==',filename)
+      console.log('URI==',URI)
+
+      selectedPicture.set({
+        id: new Mongo.ObjectID()._str, 
+        type: 'image',
+        owner: Meteor.userId(), 
+        imgUrl: imgUrl, 
+        filename: filename, 
+        URI: URI
+      });
+    };
+
+    plugins.crop(function success(newPath){
+      console.log('plugins crop newPath:' + newPath);
+      if (newPath) {
+        cropcallback(newPath,$elemLI)
+      }
+    },function fail(error){
+      console.log('plugins crop Err='+ JSON.stringify(error));
+    },img.URI);
   }
 })

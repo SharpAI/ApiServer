@@ -14,6 +14,7 @@ Template.dvaHistory.helpers({
     return DVA_QueueLists.find({userId: Meteor.userId()},{limit:limit.get(), sort:{createdAt: -1}}).fetch();
   },
   isStatus: function(_status){
+    console.log(this);
     return this.status == _status;
   },
   getDate: function() {
