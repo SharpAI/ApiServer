@@ -132,7 +132,7 @@ Template.dvaSearch.events({
         id: new Mongo.ObjectID()._str, 
         type: 'image',
         owner: Meteor.userId(), 
-        imgUrl: imgUrl, 
+        imgUrl: URI, 
         filename: filename, 
         URI: URI
       });
