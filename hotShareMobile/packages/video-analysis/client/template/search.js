@@ -2,7 +2,6 @@ var selectedPicture = new ReactiveVar(null);
 
 Template.dvaSearch.helpers({
   selectedPicture: function() {
-    return {}
     return selectedPicture.get();
   },
   getImagePath: function(path,uri,id){
@@ -107,7 +106,7 @@ Template.dvaSearch.events({
   'click #cropPic': function (e) {
     var img = selectedPicture.get();
 
-    var cropcallback = function(){
+    var cropcallback = function(result){
       var filename = '';
       var URI = result;
       var imgUrl = '';
@@ -142,7 +141,7 @@ Template.dvaSearch.events({
     plugins.crop(function success(newPath){
       console.log('plugins crop newPath:' + newPath);
       if (newPath) {
-        cropcallback(newPath,$elemLI)
+        cropcallback(newPath)
       }
     },function fail(error){
       console.log('plugins crop Err='+ JSON.stringify(error));
