@@ -13,6 +13,7 @@
         <div class="dot2"></div>
         <div class="dot3"></div>
       </div>
+      <p id="scanTimeDown">正在扫描, 120 s</p>
       <!-- device scan end --> 
       {{else}}
         <div class="va-scan-stop">
@@ -29,7 +30,7 @@
     
       {{#if scanLists}}
       <!-- device lists start -->
-      <ul class="va-dev-lists">
+      <ul class="va-dev-lists va-dev-scanlists">
         {{#each scanLists}}
         <li class="va-dev-item scanDeviceItem">
           <h1 class="va-dev-name">{{name}}</h1>

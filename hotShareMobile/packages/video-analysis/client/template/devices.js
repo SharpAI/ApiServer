@@ -1,3 +1,17 @@
+//秒倒计时
+var resetTime = function(time){
+  var timer=null;
+  var s=time;
+  function countDown(){
+   s--;
+   if(s == 1){
+     clearInterval(timer);
+   }
+   $('#scanTimeDown').html('正在扫描, '+s+ ' s');
+  }
+  timer=setInterval(countDown,1000);
+};
+
 var zeroconf;
 if(Meteor.isCordova){
   Meteor.startup(function(){
@@ -50,6 +64,8 @@ Template.dvaDevices.events({
     isScanning.set(true);
     scanLists.set([]);
     scanIds.set([]);
+
+    resetTime(120);
     Meteor.setTimeout(function() {
       isScanning.set(false);
     }, 120 * 1000);
@@ -64,7 +80,7 @@ Template.dvaDevices.events({
       if( action == 'added' ) {
         console.log('service added', JSON.stringify(service));
         // TODO check is device in db
-        if(service && service.name && service.ipv4Addresses){
+        if(service && service.name && service.ipv4Addresses && service.ipv4Addresses.length > 0){
           lists.push(service);
           ids.push(service.name);
         }
