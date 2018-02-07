@@ -4,6 +4,9 @@ var videoIndex = new ReactiveVar(0);
 var videoPlayer = null;
 
 var initPlayer = function(id){
+  var _id = Router.current().params._id;
+  var obj =  DVA_QueueLists.findOne({_id: _id});
+  var images = (obj && obj[videoIndex.get()] && obj[videoIndex.get()].images) ?  obj[videoIndex.get()].images : [];
   var video_src = 'http://www.runoob.com/try/demo_source/movie.mp4';
   if(videoPlayer) {
     videoPlayer.dispose();
@@ -17,6 +20,17 @@ var initPlayer = function(id){
     this.on('play',function(){
       console.log('正在播放');
     }); 
+
+    this.on('timeupdate', function() {
+      var currentTime = _player.currentTime();
+      for(var i=0; i < images.length; i++) {
+        if(currentTime >= (images[i].time) ) {
+          $('.va-vid-result-item').removeClass('current');
+          $('.va-vid-result-item').eq(1).addClass('current');
+          return;
+        }
+      }
+    });
 
     //暂停--播放完毕后也会暂停
     this.on('pause',function(){
@@ -84,5 +98,14 @@ Template.dvaDetailHeader.events({
     videoPlayer.dispose();
     videoPlayer = null;
     PUB.back();
+  },
+  // 跳转到对应视频位置， 并设置当前为选择状态
+  'click .va-vid-result-item': function(e) {
+    // 设置当前为选中状态
+    $('.va-vid-result-item').removeClass('current');
+    $(e.currentTarget).addClass('current');
+
+    // 跳转至对应视频相应位置
+    videoPlayer.currentTime(this.time);
   }
 });

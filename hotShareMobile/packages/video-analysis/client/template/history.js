@@ -33,6 +33,9 @@ Template.dvaHistory.helpers({
 Template.dvaHistory.events({
   'click .va-his-item': function(e) {
     // $('.va-detail').fadeIn();
+    if(this.status !== 'done') {
+      return PUB.toast('该任务正在进行，请稍候');
+    }
     PUB.page('/dvaDetail/'+this._id);
   }
 })

@@ -19,17 +19,6 @@
     width: 100%;
     overflow: hidden;
     overflow-y: auto;
-     button {
-      outline: none;
-      border: none;
-      height: 30px;
-      line-height: 30px;
-      border-radius: 4px;
-      background: #ccc;
-      padding: 0 15px;
-      font-size: 12px;
-      margin-right: 8px;
-    }
   }
 
   .va-foot{
@@ -74,6 +63,17 @@
 .va-search {
   .va-select-pic {
     text-align: center; margin-top: 20%;
+    button {
+      outline: none;
+      border: none;
+      height: 30px;
+      line-height: 30px;
+      border-radius: 4px;
+      background: #ccc;
+      padding: 0 15px;
+      font-size: 12px;
+      margin-right: 8px;
+    }
     .va-imgHelper{
       height: 260px;
       width: 260px;
@@ -171,6 +171,11 @@
         img {height:100%;object-fit: contain; object-position: center;}
       }
     }
+  }
+  .va-vid-result-item.current{
+    color: #2196F3;
+    .va-status-adpter{ background: #2196F3;}
+    .va-imgHelper{border: 2px solid #b6d0d8;}
   }
   .va-his-time{
     position: absolute;
