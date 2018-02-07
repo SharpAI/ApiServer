@@ -13,6 +13,11 @@ Package.onUse(function (api) {
     'lib/collections.js'
   ], ['client','server']);
 
+  // server 
+  api.addFiles([
+    'server/router.js'
+  ], 'server');
+  
   api.addAssets([
     'images/homeai.png',
     'images/radar_scan.png',

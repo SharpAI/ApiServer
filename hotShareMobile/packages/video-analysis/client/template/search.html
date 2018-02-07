@@ -3,7 +3,7 @@
   {{#if selectedPicture}}
   <div class="va-select-pic">
     <div class="va-imgHelper">
-      <img id="mainImage{{mainImage._id}}" class="image_{{mainImage._id}}" src="{{getImagePath mainImage.imgUrl mainImage.URI mainImage._id}}"/>
+      <img id="va_image_{{selectedPicture.id}}" class="image_{{selectedPicture.id}}" src="{{getImagePath selectedPicture.imgUrl selectedPicture.URI selectedPicture.id}}"/>
     </div>
     <button type="button" id="selectPic">重新选择</button>
     <button type="button" id="startQuery">开始查询</button>

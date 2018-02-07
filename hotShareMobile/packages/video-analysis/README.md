@@ -1,7 +1,7 @@
 # 数据结构
 1. 存储上传的图片信息
 ```javascript
-VideoQueueLists = {
+DVA_QueueLists = {
   imgUrl:'',
 
   userId: '',
@@ -27,5 +27,25 @@ VideoQueueLists = {
     }]
   }]
 }
+```
 
+
+2. 存储用户绑定的设备列表
+
+```javascript
+DVA_Devices = {
+  userId:'',
+  userName: '',
+  userIcon: '',
+  domain: 'local.',
+  type: '_http._tcp.',
+  name: 'Becvert\'s iPad',
+  port: 80,
+  hostname: 'ipad-of-becvert.local',
+  ipv4Addresses: [ '192.168.1.125' ], 
+  ipv6Addresses: [ '2001:0:5ef5:79fb:10cb:1dbf:3f57:feb0' ],
+  txtRecord: {
+    foo: 'bar'
+  }
+}
 ```
