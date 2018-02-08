@@ -4,7 +4,8 @@ var dvaServer = (Session.get('deepVideoServer') && Session.get('deepVideoServer'
 var parseQueryResults = function(query_task_id,obj) {
   var videos = {};
   var results = obj.results || [];
-  
+  var resultCounts = 0,
+      videoCounts = 0;
   for (var x in results) {
     results[x].forEach(function(item) {
       if( videos[''+item.video_id] ){
@@ -14,8 +15,11 @@ var parseQueryResults = function(query_task_id,obj) {
           images: [item]
         }
       }
+      resultCounts += 1;
     });
   };
+
+  videoCounts = Object.keys(videos).length;
 
   console.log( JSON.stringify(videos) );
 
@@ -25,10 +29,13 @@ var parseQueryResults = function(query_task_id,obj) {
       query_url   :obj.url,
       task_id     :obj.task_id,
       primary_key :obj.primary_key,
-      regions     :obj.regions,
+      // regions     :obj.regions,
+      resultCounts: resultCounts,
+      videoCounts: videoCounts,
       results     : videos
     }
   }, function(error, result){
+    PUB.hideWaitLoading()
     if(error) {
       return console.log('update query task error');
     } 
@@ -50,6 +57,9 @@ var sendSearchFunc = function() {
   var base64URL = canvas.toDataURL("image/png"); 
   console.log('base64URL is == '+ base64URL);
   console.log('dvaServer is '+ dvaServer);
+ 
+  var user = Meteor.user();
+  var dva_devices = DVA_Devices.find({user_id: Meteor.userId()}).fetch();
 
   DVA_QueueLists.insert({
     userId: Meteor.userId(),
@@ -66,23 +76,22 @@ var sendSearchFunc = function() {
     
     var query_task_id = res;
 
-    // send to Deep Video Box 
-    sendSearchFunc(result);
     $.ajax({
       type: "POST",
-      url: dvaServer + '/Search',
+      url: dvaServer + '/Search2',
       dataType: 'json',
       async: true,
       data: {
           'image_url': base64URL,
           'count': 20,
-          'selected_indexers':["5_2","5_3","4_1","4_4"],
-          'selected_detectors':["3"],
+          'selected_indexers':'["5_2","5_3","4_1","4_4"]',
+          'selected_detectors':'["3"]',
           'generate_tags':false,
           'csrfmiddlewaretoken':'KBmmGgN2MO6UvUKiVbqSvNKF6d8XfIiRRvVDdNAOPhqpfOvnsjnWQ9UvY3YBfhYp'
       },
       password: 'admin:super',
       error: function(xhr,status,error) {
+        PUB.hideWaitLoading();
         console.log('ajax xhr = ', JSON.stringify(xhr));
         console.log('ajax status ==' , status);
         console.log('ajax error'+ error);
@@ -95,6 +104,7 @@ var sendSearchFunc = function() {
           selectedPicture.set(null);
         } catch (error) {}
 
+        // var query_url = deepVideoServer + response.url;
         var query_url = response.url;
         var task_id = response.task_id;
         var primary_key = response.primary_key;
@@ -184,8 +194,8 @@ Template.dvaSearch.events({
   // start query task
   'click #startQuery': function (e) {
     var picObj = selectedPicture.get();
-
-    return sendSearchFunc(result);
+    PUB.showWaitLoading('正在查询');
+    return sendSearchFunc();
 
     var createQueryQueue = function(imgUrl) {
       PUB.showWaitLoading('正在创建查询任务');
