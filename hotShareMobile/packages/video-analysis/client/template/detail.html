@@ -14,7 +14,7 @@
         "fluid": true,
         "playbackRates": [1, 1.5, 2]
       }'>
-        <source src="{{videoInfo.video_url}}" type='video/mp4'>
+        <source src="{{getVideoUrl}}" type='video/mp4'>
         <!--<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4"> -->
         <p class="vjs-no-js">
           To view this video please enable JavaScript, and consider upgrading to a web browser that
@@ -37,7 +37,7 @@
     {{#each videoInfo.images}}
     <li class="va-vid-result-item">
       <div class="va-his-time">
-        <p class="in-duration">{{time}}</p>
+        <p class="in-duration">{{distance}}</p>
         <span class="va-status-adpter">
           <i class="fa fa-play fa-fw"></i>
         </span>

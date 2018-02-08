@@ -3,6 +3,8 @@ var videoIndex = new ReactiveVar(0);
 
 var videoPlayer = null;
 
+var dvaServer = (Session.get('deepVideoServer') && Session.get('deepVideoServer') !== '' ) ? Session.get('deepVideoServer'): deepVideoServer;
+
 var initPlayer = function(id){
   var _id = Router.current().params._id;
   var obj =  DVA_QueueLists.findOne({_id: _id});
@@ -89,7 +91,15 @@ Template.dvaDetail.helpers({
     var _id = Router.current().params._id;
     var data = DVA_QueueLists.findOne({_id: _id});
     var index = videoIndex.get();
-    return data.result[index];
+    var results = data.results;
+    var lists = [];
+    for(var x in results){
+      lists.push(results[x]);
+    }
+    return lists[index];
+  },
+  getVideoUrl: function() {
+    return dvaServer + '/media/' + this.video_id + '/video/' + this.video_id + '.mp4' ;
   }
 });
 
