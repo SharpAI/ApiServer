@@ -1,4 +1,5 @@
 var selectedPicture = new ReactiveVar(null);
+var deepVideoServer = 'http://192.168.0.117:8000';
 
 var sendSearchFunc = function(query_task_id) {
   var image = $('.mainImage')[0];
@@ -8,9 +9,11 @@ var sendSearchFunc = function(query_task_id) {
   canvas.width = image.width;  
   canvas.height = image.height;  
   // 坐标(0,0) 表示从此处开始绘制，相当于偏移。  
-  canvas.getContext("2d").drawImage(image, 0, 0);  
+  canvas.getContext("2d").drawImage(image, 0, 0, 260, 260);  
 
   var base64URL = canvas.toDataURL("image/png"); 
+  console.log('base64URL is == '+ base64URL);
+  console.log('deepVideoServer is '+ deepVideoServer);
   $.ajax({
     type: "POST",
     url: deepVideoServer + '/Search',
@@ -24,7 +27,13 @@ var sendSearchFunc = function(query_task_id) {
         'generate_tags':false,
         'csrfmiddlewaretoken':'KBmmGgN2MO6UvUKiVbqSvNKF6d8XfIiRRvVDdNAOPhqpfOvnsjnWQ9UvY3YBfhYp'
     },
-    success: function (response) {
+    password: 'admin:super',
+    error: function(xhr,status,error) {
+      console.log('ajax xhr = ', JSON.stringify(xhr));
+      console.log('ajax status ==' , status);
+      console.log('ajax error'+ error);
+    },
+    success: function (response, status, xhr) {
       console.log(response)
       // var query_url = deepVideoServer + response.url;
       var query_url = response.url;
@@ -33,15 +42,15 @@ var sendSearchFunc = function(query_task_id) {
       var regions = response.regions;
       var results = response.results;
 
-      DVA_QueueLists.update({_id: query_task_id},{
-        $set:{
-          query_url   :response.url,
-          task_id     :response.task_id,
-          primary_key :response.primary_key,
-          regions     :response.regions,
-          results     :response.results
-        }
-      });
+      // DVA_QueueLists.update({_id: query_task_id},{
+      //   $set:{
+      //     query_url   :response.url,
+      //     task_id     :response.task_id,
+      //     primary_key :response.primary_key,
+      //     regions     :response.regions,
+      //     results     :response.results
+      //   }
+      // });
     }
   });
 
@@ -104,6 +113,8 @@ Template.dvaSearch.events({
   // start query task
   'click #startQuery': function (e) {
     var picObj = selectedPicture.get();
+
+    return sendSearchFunc(result);
 
     var createQueryQueue = function(imgUrl) {
       PUB.showWaitLoading('正在创建查询任务');
