@@ -1,0 +1,33 @@
+<template name="videoAnalysis">
+<div class="videoAnalysis">
+  <div class="va-head"> 
+    <div class="left"><i class="fa fa-angle-left fa-fw"></i></div>
+    <div class="right"><i class="fa fa-plus fa-fw" style="font-size:20px;"></i></div>
+    <div class="title">视频分析</div>
+  </div>
+  <div class="va-container">
+    {{> Template.dynamic template=template}} 
+  </div>
+
+  <div class="va-foot">
+    <ul class="va-foot-bar">
+      <li class="va-ft-btn {{currTemp 'dvaSearch'}}" id="dvaSearch">
+        <i class="fa fa-search fa-fw"></i>
+        <p>查询</p>
+      </li>
+      <li class="va-ft-btn {{currTemp 'dvaDevices'}}" id="dvaDevices">
+        <i class="fa fa-tv fa-fw"></i>
+        <p>设备</p>
+      </li>
+      <!--<li class="va-ft-btn {{currTemp 'dvaVideos'}}" id="dvaVideos">
+        <i class="fa fa-youtube fa-fw"></i>
+        <p>视频</p>
+      </li>-->
+      <li class="va-ft-btn {{currTemp 'dvaHistory'}}" id="dvaHistory">
+        <i class="fa fa-history fa-fw"></i>
+        <p>历史</p>
+      </li>
+    </ul>
+  </div>
+</div>
+</template>

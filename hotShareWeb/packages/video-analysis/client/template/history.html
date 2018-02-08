@@ -1,0 +1,41 @@
+<template name="dvaHistory">
+<div class="va-history">
+  {{#if isLoading}}
+  <div class="va-loading"><img src="/packages/video-analysis/images/loading.gif" height="24"/> 加载中...</div>
+  {{else}}
+    {{#if lists}}
+    <ul class="va-his-lists">
+      {{#each lists}}
+      <li class="va-his-item">
+        <div class="va-his-time">
+          <p class="date">{{getDate}}</p>
+          <p class="time">{{getTime}}</p>
+        </div>
+        
+        <div class="pull-right">
+          {{#if isStatus 'pendding'}}<p>查询已加入队列，等待执行</p>{{/if}}
+          {{#if isStatus 'progress'}}<p>正在查询，请稍后...</p>{{/if}}
+          {{#if isStatus 'failed'}}<p>查询失败！</p>{{/if}}
+          {{#if isStatus 'done'}}
+            {{#if resultCounts}}
+            <p>匹配到{{resultCounts}}张图片 ({{videoCounts}} 个视频)</p>
+            {{else}}
+            <p>未查询到相应数据</p>
+            {{/if}}
+          {{/if}}
+          <div class="va-imgHelper">
+            <img src="{{imgUrl}}">
+          </div>
+        </div>
+      </li>
+      {{/each}}
+    </ul>
+    {{else}}
+    <div class="va-nodata">
+      <p>暂无数据</p>
+    </div>
+    {{/if}}
+  {{/if}}
+</div>
+<!--{{> VA_Detail}}-->
+</template>

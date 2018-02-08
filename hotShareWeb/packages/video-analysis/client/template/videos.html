@@ -1,0 +1,24 @@
+<template name="dvaVideos">
+<div class="va-videos">
+  {{#if isLoading}}
+  <div class="va-loading"><img src="/packages/video-analysis/images/loading.gif" height="24"/> 加载中...</div>
+  {{else}}
+    {{#if lists}}
+    <ul class="va-video-lists">
+      {{#each lists}}
+      <li class="va-video-item">
+        <div class="va-video-helper">
+          <img src="/homeai.png" />
+          <h2 class="va-video-title">测试测试测试的视频</h2>
+        </div>
+      </li>
+      {{/each}}
+    </ul>
+    {{else}}
+    <div class="va-nodata">
+      <p>暂无数据</p>
+    </div>
+    {{/if}}
+  {{/if}}
+</div>
+</template>
