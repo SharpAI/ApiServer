@@ -3,7 +3,7 @@ var videoIndex = new ReactiveVar(0);
 
 var videoPlayer = null;
 
-var dvaServer = (Session.get('deepVideoServer') && Session.get('deepVideoServer') !== '' ) ? Session.get('deepVideoServer'): deepVideoServer;
+var deepVideoServer = 'http://192.168.0.117:8000';
 
 var initPlayer = function(id){
   var _id = Router.current().params._id;
@@ -99,7 +99,7 @@ Template.dvaDetail.helpers({
     return lists[index];
   },
   getVideoUrl: function() {
-    return dvaServer + '/media/' + this.video_id + '/video/' + this.video_id + '.mp4' ;
+    return deepVideoServer + '/media/' + this.video_id + '/video/' + this.video_id + '.mp4' ;
   }
 });
 
