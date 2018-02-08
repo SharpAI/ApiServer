@@ -2,6 +2,8 @@
 DVA_QueueLists = new Mongo.Collection('dva_queue_lists');
 // 用户设备列表
 DVA_Devices = new Mongo.Collection('dva_devices');
+// 等待导入的视频
+DVA_WaitImportVideo = new Mongo.Collection('dva_wait_import_video');
 
 // DB index 
 if (Meteor.isServer) {
@@ -29,6 +31,21 @@ if (Meteor.isServer) {
   });
 
   DVA_Devices.allow({
+    insert: function (userId, doc) {
+      // the user must be logged in, and the document must be owned by the user
+      return (userId && doc.userId === userId);
+    },
+    update: function (userId, doc, fields, modifier) {
+      // can only change your own documents
+      return doc.userId === userId;
+    },
+    remove: function (userId, doc) {
+      // can only remove your own documents
+      return doc.userId === userId;
+    }
+  });
+
+  DVA_WaitImportVideo.allow({
     insert: function (userId, doc) {
       // the user must be logged in, and the document must be owned by the user
       return (userId && doc.userId === userId);

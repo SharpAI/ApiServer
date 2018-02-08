@@ -49,3 +49,14 @@ DVA_Devices = {
   }
 }
 ```
+
+3. 存储等待导入的 web 视频
+```javascript
+DVA_WaitImportVideo = {
+  _id: '',
+  userId: '',
+  url: '',
+  type: '',
+  createdAt: new Date()
+}
+```
