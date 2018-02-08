@@ -1,7 +1,43 @@
 var selectedPicture = new ReactiveVar(null);
 var deepVideoServer = 'http://192.168.0.117:8000';
 
-var sendSearchFunc = function(query_task_id) {
+var parseQueryResults = function(query_task_id,obj) {
+  var videos = {};
+  var results = obj.results || [];
+  
+  for (var x in results) {
+    results[x].forEach(function(item) {
+      if( videos[''+item.video_id] ){
+        videos[''+item.video_id].images.push(item);
+      } else {
+        videos[''+item.video_id] = {
+          images: [item]
+        }
+      }
+    });
+  };
+
+  console.log( JSON.stringify(videos) );
+
+  DVA_QueueLists.update({_id: query_task_id},{
+    $set:{
+      status: 'done',
+      query_url   :obj.url,
+      task_id     :obj.task_id,
+      primary_key :obj.primary_key,
+      regions     :obj.regions,
+      results     : videos
+    }
+  }, function(error, result){
+    if(error) {
+      return console.log('update query task error');
+    } 
+    return PUB.toast('查询成功');
+  });
+
+}
+
+var sendSearchFunc = function() {
   var image = $('.mainImage')[0];
 
   // 创建canvas DOM元素，并设置其宽高和图片一样   
@@ -14,44 +50,62 @@ var sendSearchFunc = function(query_task_id) {
   var base64URL = canvas.toDataURL("image/png"); 
   console.log('base64URL is == '+ base64URL);
   console.log('deepVideoServer is '+ deepVideoServer);
-  $.ajax({
-    type: "POST",
-    url: deepVideoServer + '/Search',
-    dataType: 'json',
-    async: true,
-    data: {
-        'image_url': base64URL,
-        'count': 20,
-        'selected_indexers':["5_2","5_3","4_1","4_4"],
-        'selected_detectors':["3"],
-        'generate_tags':false,
-        'csrfmiddlewaretoken':'KBmmGgN2MO6UvUKiVbqSvNKF6d8XfIiRRvVDdNAOPhqpfOvnsjnWQ9UvY3YBfhYp'
-    },
-    password: 'admin:super',
-    error: function(xhr,status,error) {
-      console.log('ajax xhr = ', JSON.stringify(xhr));
-      console.log('ajax status ==' , status);
-      console.log('ajax error'+ error);
-    },
-    success: function (response, status, xhr) {
-      console.log(response)
-      // var query_url = deepVideoServer + response.url;
-      var query_url = response.url;
-      var task_id = response.task_id;
-      var primary_key = response.primary_key;
-      var regions = response.regions;
-      var results = response.results;
 
-      // DVA_QueueLists.update({_id: query_task_id},{
-      //   $set:{
-      //     query_url   :response.url,
-      //     task_id     :response.task_id,
-      //     primary_key :response.primary_key,
-      //     regions     :response.regions,
-      //     results     :response.results
-      //   }
-      // });
+  DVA_QueueLists.insert({
+    userId: Meteor.userId(),
+    userName: user.profile.fullname ? user.profile.fullname: user.username,
+    userIcon: user.profile.icon,
+    imgUrl: base64URL,
+    devices: dva_devices,
+    status: 'pendding',
+    createdAt: new Date()
+  }, function(error, res){
+    if(error) {
+      return PUB.toast('创建失败~');
     }
+    
+    var query_task_id = res;
+
+    // send to Deep Video Box 
+    sendSearchFunc(result);
+    $.ajax({
+      type: "POST",
+      url: deepVideoServer + '/Search',
+      dataType: 'json',
+      async: true,
+      data: {
+          'image_url': base64URL,
+          'count': 20,
+          'selected_indexers':["5_2","5_3","4_1","4_4"],
+          'selected_detectors':["3"],
+          'generate_tags':false,
+          'csrfmiddlewaretoken':'KBmmGgN2MO6UvUKiVbqSvNKF6d8XfIiRRvVDdNAOPhqpfOvnsjnWQ9UvY3YBfhYp'
+      },
+      password: 'admin:super',
+      error: function(xhr,status,error) {
+        console.log('ajax xhr = ', JSON.stringify(xhr));
+        console.log('ajax status ==' , status);
+        console.log('ajax error'+ error);
+        PUB.toast('查询失败，请重试');
+      },
+      success: function (response, status, xhr) {
+        console.log(response)
+
+        try{
+          selectedPicture.set(null);
+        } catch (error) {}
+
+        // var query_url = deepVideoServer + response.url;
+        var query_url = response.url;
+        var task_id = response.task_id;
+        var primary_key = response.primary_key;
+        var regions = response.regions;
+        var results = response.results;
+
+        // parse results 
+        parseQueryResults(query_task_id,response);
+      }
+    });
   });
 
 };
