@@ -1,5 +1,5 @@
 var selectedPicture = new ReactiveVar(null);
-var deepVideoServer = 'http://192.168.0.117:8000';
+var dvaServer = (Session.get('deepVideoServer') && Session.get('deepVideoServer') !== '' ) ? Session.get('deepVideoServer'): deepVideoServer;
 
 var parseQueryResults = function(query_task_id,obj) {
   var videos = {};
@@ -49,7 +49,7 @@ var sendSearchFunc = function() {
 
   var base64URL = canvas.toDataURL("image/png"); 
   console.log('base64URL is == '+ base64URL);
-  console.log('deepVideoServer is '+ deepVideoServer);
+  console.log('dvaServer is '+ dvaServer);
 
   DVA_QueueLists.insert({
     userId: Meteor.userId(),
@@ -70,7 +70,7 @@ var sendSearchFunc = function() {
     sendSearchFunc(result);
     $.ajax({
       type: "POST",
-      url: deepVideoServer + '/Search',
+      url: dvaServer + '/Search',
       dataType: 'json',
       async: true,
       data: {
@@ -95,7 +95,6 @@ var sendSearchFunc = function() {
           selectedPicture.set(null);
         } catch (error) {}
 
-        // var query_url = deepVideoServer + response.url;
         var query_url = response.url;
         var task_id = response.task_id;
         var primary_key = response.primary_key;
@@ -110,6 +109,21 @@ var sendSearchFunc = function() {
 
 };
 
+Template.dvaSearch.onRendered(function() {
+  Meteor.subscribe('dva_device_lists',20,{
+    onReady: function() {
+      var deviceIPs = [];
+      DVA_Devices.find({userId: Meteor.userId()},{limit: limit, sort:{createdAt: -1}}).forEach(function(item) {
+        deviceIPs = deviceIPs.concat(item.ipv4Addresses);
+      });
+      if (deviceIPs && deviceIPs.length > 0) {
+        Session.set('deepVideoServer', deviceIPs[0]);
+        deepVideoServer = deviceIPs[0];
+      }
+    }
+  })
+});
+
 Template.dvaSearch.helpers({
   selectedPicture: function() {
     return selectedPicture.get();
@@ -122,6 +136,9 @@ Template.dvaSearch.helpers({
 Template.dvaSearch.events({
   // take a photo or select picture from  photo library
   'click #selectPic': function (e) {
+    if(!dvaServer ) {
+      return PUB.toast('请先绑定设备');
+    }
     var self = this;
 
     var options = {
