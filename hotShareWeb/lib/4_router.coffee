@@ -1884,6 +1884,28 @@ if Meteor.isServer
       #console.log('>>> ' + JSON.stringify(clusteringObj))
       this.response.end('{"result": "ok"}\n')
     )
+  Router.route('/restapi/get-group-users', {where: 'server'}).get(()->
+      group_id = this.params.query.group_id
+
+      resObj = []
+      gUsers = Person.find({group_id: group_id})
+      if gUsers
+        gUsers.forEach((user)->
+          resObj.push(user)
+        )
+      this.response.end(JSON.stringify(resObj))
+    ).post(()->
+      if this.request.body.hasOwnProperty('group_id')
+        group_id = this.request.body.group_id
+
+      resObj = []
+      gUsers = Person.find({group_id: group_id})
+      if gUsers
+        gUsers.forEach((user)->
+          resObj.push(user)
+        )
+      this.response.end(JSON.stringify(resObj))
+    )
   Router.route('/restapi/datasync/:token/:groupid', {where: 'server'}).get(()->
       token = this.params.token
       groupid = this.params.groupid
