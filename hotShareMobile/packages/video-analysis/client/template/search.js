@@ -12,7 +12,9 @@ var parseQueryResults = function(query_task_id,obj) {
         videos[''+item.video_id].images.push(item);
       } else {
         videos[''+item.video_id] = {
-          images: [item]
+          images: [item],
+          video_id: item.video_id,
+          video_name: item.video_name
         }
       }
       resultCounts += 1;
