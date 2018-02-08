@@ -51,6 +51,9 @@ Template.homePage.helpers({
   },
   getOutCount: function(){
     return WorkStatus.find({group_id: this._id, date: Session.get('theCurrentDay'), status: 'out'}).count();
+  },
+  showDVAEnter: function() {
+    return Session.equals('canShowDeepVideoAnalysisEnter', true);
   }
 });
 
