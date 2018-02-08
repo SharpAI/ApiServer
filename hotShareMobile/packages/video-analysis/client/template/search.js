@@ -1,5 +1,52 @@
 var selectedPicture = new ReactiveVar(null);
 
+var sendSearchFunc = function(query_task_id) {
+  var image = $('.mainImage')[0];
+
+  // 创建canvas DOM元素，并设置其宽高和图片一样   
+  var canvas = document.createElement("canvas");  
+  canvas.width = image.width;  
+  canvas.height = image.height;  
+  // 坐标(0,0) 表示从此处开始绘制，相当于偏移。  
+  canvas.getContext("2d").drawImage(image, 0, 0);  
+
+  var base64URL = canvas.toDataURL("image/png"); 
+  $.ajax({
+    type: "POST",
+    url: deepVideoServer + '/Search',
+    dataType: 'json',
+    async: true,
+    data: {
+        'image_url': base64URL,
+        'count': 20,
+        'selected_indexers':["5_2","5_3","4_1","4_4"],
+        'selected_detectors':["3"],
+        'generate_tags':false,
+        'csrfmiddlewaretoken':'KBmmGgN2MO6UvUKiVbqSvNKF6d8XfIiRRvVDdNAOPhqpfOvnsjnWQ9UvY3YBfhYp'
+    },
+    success: function (response) {
+      console.log(response)
+      // var query_url = deepVideoServer + response.url;
+      var query_url = response.url;
+      var task_id = response.task_id;
+      var primary_key = response.primary_key;
+      var regions = response.regions;
+      var results = response.results;
+
+      DVA_QueueLists.update({_id: query_task_id},{
+        $set:{
+          query_url   :response.url,
+          task_id     :response.task_id,
+          primary_key :response.primary_key,
+          regions     :response.regions,
+          results     :response.results
+        }
+      });
+    }
+  });
+
+};
+
 Template.dvaSearch.helpers({
   selectedPicture: function() {
     return selectedPicture.get();
@@ -77,6 +124,8 @@ Template.dvaSearch.events({
           return PUB.toast('创建失败~');
         }
         selectedPicture.set(null);
+        // send to Deep Video Box 
+        sendSearchFunc(result);
         return PUB.toast('查询任务已经添加到队列');
         // return PUB.confirm('查询任务已经添加到队列，点击『确定』查看',function(){
         //   template('VA_History')
@@ -98,7 +147,7 @@ Template.dvaSearch.events({
         selectedPicture.set(picObj);
 
         createQueryQueue(res[0].imgUrl);
-
+        
       });
     }
   },

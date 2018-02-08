@@ -63,3 +63,9 @@ Router.route('/api/dva/task', {where: 'server'})
   return res.end('{"result":"success"}');
 
 });
+
+Meteor.startup(function() {
+  Meteor.methods({
+    
+  });
+});
