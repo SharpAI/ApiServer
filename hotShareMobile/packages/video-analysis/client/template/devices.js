@@ -65,10 +65,10 @@ Template.dvaDevices.events({
     scanLists.set([]);
     scanIds.set([]);
 
-    resetTime(120);
+    resetTime(60);
     Meteor.setTimeout(function() {
       isScanning.set(false);
-    }, 120 * 1000);
+    }, 60 * 1000);
 
     zeroconf && zeroconf.watch('_DeepEye._tcp', 'local.',function(result) {
       var lists = scanLists.get();

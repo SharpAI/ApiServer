@@ -134,7 +134,8 @@ Template.dvaDetailHeader.events({
   'click .left': function(e){
     videoPlayer.dispose();
     videoPlayer = null;
-    PUB.back();
+    Session.set('DVA_Last_Page', 'dvaHistory');
+    return Router.go('/deepVideoAnalysis');
   }
 });
 

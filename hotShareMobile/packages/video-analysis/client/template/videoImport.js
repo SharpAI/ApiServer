@@ -1,6 +1,6 @@
 Template.dvaVideoImportHeader.events({
   'click .left': function (e) {
-    return PUB.back();
+    return Router.go('/deepVideoAnalysis');
   },
   'click .right': function (e) {
     var link = $('#va-video-urls').val();
