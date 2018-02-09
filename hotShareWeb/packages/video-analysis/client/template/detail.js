@@ -1,15 +1,37 @@
 var isLoading = new ReactiveVar(false);
 var videoIndex = new ReactiveVar(0);
+var totalVideoLen = new ReactiveVar(1);
 
 var videoPlayer = null;
 
-var dvaServer = (Session.get('deepVideoServer') && Session.get('deepVideoServer') !== '' ) ? Session.get('deepVideoServer'): deepVideoServer;
+var deepVideoServer = 'http://192.168.0.117:8000';
 
+var setVideoInfo = function(){
+  var index = videoIndex.get();
+  var _id = Router.current().params._id;
+  var obj =  DVA_QueueLists.findOne({_id: _id});
+  var results = [];
+  for (x in obj.results) {
+    results.push(obj.results[x]);
+  }
+  var video_id =  (results && results[index] && results[index].video_id) ? results[index].video_id : '';
+  var video_name = (results && results[index] && results[index].video_name) ? results[index].video_name : '';
+  var video_src = deepVideoServer + '/media/' + video_id + '/video/' + video_id + '.mp4';
+  videoPlayer.src(video_src);  
+}
 var initPlayer = function(id){
   var _id = Router.current().params._id;
   var obj =  DVA_QueueLists.findOne({_id: _id});
-  var images = (obj && obj[videoIndex.get()] && obj[videoIndex.get()].images) ?  obj[videoIndex.get()].images : [];
-  var video_src = 'http://www.runoob.com/try/demo_source/movie.mp4';
+  var results = [];
+  for (x in obj.results) {
+    results.push(obj.results[x]);
+  }
+  
+  var images = (results && results[videoIndex.get()] && results[videoIndex.get()].images) ?  results[videoIndex.get()].images : [];
+  // var video_src = 'http://www.runoob.com/try/demo_source/movie.mp4';
+  var video_id =  (results && results[videoIndex.get()] && results[videoIndex.get()].video_id) ? results[videoIndex.get()].video_id : '';
+  var video_name = (results && results[videoIndex.get()] && results[videoIndex.get()].video_name) ? results[videoIndex.get()].video_name : '';
+  var video_src = deepVideoServer + '/media/' + video_id + '/video/' + video_id + '.mp4';
   if(videoPlayer) {
     videoPlayer.dispose();
     videoPlayer = null;
@@ -26,7 +48,7 @@ var initPlayer = function(id){
     this.on('timeupdate', function() {
       var currentTime = _player.currentTime();
       for(var i=0; i < images.length; i++) {
-        if(currentTime >= (images[i].time) ) {
+        if(currentTime >= (images[i].distance) ) {
           $('.va-vid-result-item').removeClass('current');
           $('.va-vid-result-item').eq(1).addClass('current');
           return;
@@ -53,18 +75,6 @@ var initPlayer = function(id){
     $('.va-videoHelper').css({'height':height+'px'});
     $('.va-vid-result-lists').css({'top':height + 74 + 'px'});
 
-    _player.titlebar({
-      position: 'top-right',
-      fadeTime: 3000,
-      title: '测试视频',
-      backButton: {
-        callback: function(player){
-          player.dispose();
-          videoPlayer = null;
-          return PUB.back();
-        }
-      }
-    });
     // 设置播放源
     _player.src(video_src);  
   });
@@ -96,10 +106,27 @@ Template.dvaDetail.helpers({
     for(var x in results){
       lists.push(results[x]);
     }
+    totalVideoLen.set(lists.length);
     return lists[index];
   },
-  getVideoUrl: function() {
-    return dvaServer + '/media/' + this.video_id + '/video/' + this.video_id + '.mp4' ;
+  getCount: function(images) {
+    return images.length;
+  },
+  getVideoInLen: function() {
+    return videoIndex.get() + 1 + ' of ' + totalVideoLen.get();
+  },
+  getVideoUrl: function(video_id) {
+    return deepVideoServer + '/media/' + video_id + '/video/' + video_id + '.mp4' ;
+  },
+  getImageUrl: function(url) {
+    if(url.indexOf('data:') > -1) {
+      return url;
+    }
+    return deepVideoServer + url;
+  },
+  formatNum: function(num) {
+    var n  = Number(num);
+    return n.toFixed(1);
   }
 });
 
@@ -107,8 +134,12 @@ Template.dvaDetailHeader.events({
   'click .left': function(e){
     videoPlayer.dispose();
     videoPlayer = null;
-    PUB.back();
-  },
+    Session.set('DVA_Last_Page', 'dvaHistory');
+    return Router.go('/deepVideoAnalysis');
+  }
+});
+
+Template.dvaDetail.events({
   // 跳转到对应视频位置， 并设置当前为选择状态
   'click .va-vid-result-item': function(e) {
     // 设置当前为选中状态
@@ -116,6 +147,22 @@ Template.dvaDetailHeader.events({
     $(e.currentTarget).addClass('current');
 
     // 跳转至对应视频相应位置
-    videoPlayer.currentTime(this.time);
+    videoPlayer.currentTime(this.distance);
+  },
+  'click #videoPrev': function() {
+    var index = videoIndex.get();
+    if(index > 0) {
+      index -= 1;
+      videoIndex.set(index);
+      setVideoInfo();
+    }
+  },
+  'click #videoNext': function() {
+    var index = videoIndex.get();
+    if(index < (totalVideoLen.get() - 1) ) {
+      index += 1;
+      videoIndex.set(index);
+      setVideoInfo();
+    }
   }
 });

@@ -14,7 +14,7 @@
         "fluid": true,
         "playbackRates": [1, 1.5, 2]
       }'>
-        <source src="{{getVideoUrl}}" type='video/mp4'>
+        <!--<source src="{{getVideoUrl videoInfo.video_id}}" type='video/mp4'>-->
         <!--<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4"> -->
         <p class="vjs-no-js">
           To view this video please enable JavaScript, and consider upgrading to a web browser that
@@ -24,12 +24,17 @@
   </div>
   <div class="va-video-info">
     <div class="result-count">
-      <p class="va-count">{{videoInfo.imagesCount}}</p>
+      <p class="va-count">{{getCount videoInfo.images}}</p>
       <p>RESULT</p>
     </div>
     <h1>
       {{videoInfo.video_name}} 
-      <span class="va-view-detail"><i class="fa fa-info fa-fw"></i></span>
+      <p class="va-video-inlen">({{getVideoInLen}})</p>
+      <!--<span class="va-view-detail"><i class="fa fa-info fa-fw"></i></span>-->
+      <div class="va-video-nav">
+        <button type="button" id="videoPrev"><i class="fa fa-angle-left"></i></button>
+        <button type="button" id="videoNext"><i class="fa fa-angle-right"></i></button>
+      </div>
     </h1>
   </div>
 
@@ -37,7 +42,10 @@
     {{#each videoInfo.images}}
     <li class="va-vid-result-item">
       <div class="va-his-time">
-        <p class="in-duration">{{distance}}</p>
+        <p class="in-duration">
+          at {{formatNum distance}}<br/>
+          at Frame {{frame_index}}
+        </p>
         <span class="va-status-adpter">
           <i class="fa fa-play fa-fw"></i>
         </span>
@@ -45,7 +53,7 @@
       
       <div class="pull-left">
         <div class="va-imgHelper">
-          <img src="{{url}}">
+          <img src="{{getImageUrl url}}">
         </div>
       </div>
     </li>

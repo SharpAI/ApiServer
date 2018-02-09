@@ -26,7 +26,7 @@ var initPlayer = function(id){
   for (x in obj.results) {
     results.push(obj.results[x]);
   }
-  console.warn(results);
+  
   var images = (results && results[videoIndex.get()] && results[videoIndex.get()].images) ?  results[videoIndex.get()].images : [];
   // var video_src = 'http://www.runoob.com/try/demo_source/movie.mp4';
   var video_id =  (results && results[videoIndex.get()] && results[videoIndex.get()].video_id) ? results[videoIndex.get()].video_id : '';
