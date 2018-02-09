@@ -83,5 +83,12 @@ if (Meteor.isServer) {
     var limit = limit || 20;
     return DVA_Devices.find({userId: this.userId},{limit: limit, sort:{createdAt: -1}});
   });
+
+  Meteor.publish('getDvaDeviceByMacAddress', function(macAddress) {
+    if(!this.userId || !macAddress) {
+      return this.ready();
+    }
+    return DVA_Devices.find({macAddress: macAddress});
+  });
   
 }

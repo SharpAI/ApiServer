@@ -106,6 +106,7 @@ Template.dvaDevices.events({
   // bind user and device 
   'click .scanDeviceItem': function(e) {
     var self = this;
+    var macAddress = (self.txtRecord && self.txtRecord.macAddress) ? self.txtRecord.macAddress:'';
     console.log(self);
     // 'domain' : 'local.',
     // 'type' : '_http._tcp.',
@@ -117,19 +118,44 @@ Template.dvaDevices.events({
     // 'txtRecord' : {
     //     'foo' : 'bar'
     // }
-    var obj = self;
-    var user = Meteor.user();
-    obj.userId = Meteor.userId();
-    obj.userName = user.profile.fullname ? user.profile.fullname: user.username;
-    obj.userIcon = user.profile.icon;
+    // check is device aleardy bind by user 
     PUB.showWaitLoading('正在添加设备');
-    DVA_Devices.insert(obj, function(error , result){
-      PUB.hideWaitLoading();
-      if(error){
-        console.log(error);
-        return PUB.toast('添加设备失败~');
+    Meteor.subscribe('getDvaDeviceByMacAddress', macAddress, function() {
+      if ( DVA_Devices.find({macAddress: macAddress}).count() > 0 ) {
+        PUB.hideWaitLoading()
+        return PUB.toast('该设备已被其他用户绑定');
+      } else {
+        var obj = self;
+        var user = Meteor.user();
+        obj.userId = Meteor.userId();
+        obj.userName = user.profile.fullname ? user.profile.fullname: user.username;
+        obj.userIcon = user.profile.icon;
+        obj.macAddress = macAddress;
+        
+        DVA_Devices.insert(obj, function(error , result){
+          PUB.hideWaitLoading();
+          if(error){
+            console.log(error);
+            return PUB.toast('添加设备失败~');
+          }
+          return PUB.toast('添加设备成功');
+        });
       }
-      return PUB.toast('添加设备成功');
-    });
+    })
+  },
+  // unbind device 
+  'click .userDeviceItem': function(e) {
+    var self = this;
+    PUB.confirm('要解绑设备『'+self.name+'』吗？', function() {
+      PUB.showWaitLoading('正在解绑');
+      DVA_Devices.remove({_id: self._id}, function(error, result) {
+        PUB.hideWaitLoading();
+          if(error){
+            console.log(error);
+            return PUB.toast('解绑失败~');
+          }
+          return PUB.toast('已解绑设备『'+self.name+'』');
+      });
+    })
   }
 })
