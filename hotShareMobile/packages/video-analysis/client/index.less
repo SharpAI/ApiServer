@@ -146,8 +146,33 @@
     p{margin: 0;}
     .result-count{float: left; margin-right: 10px;}
     .va-count{ color: #2196F3;font-size: 26px; line-height: 26px; text-align: center;}
-    h1{margin: 0;font-size: 14px;height: 40px;line-height: 40px; padding-right: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative;}
+    h1{margin: 0;font-size: 16px;height: 40px;line-height: 26px; padding-right: 64px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative;}
     h1 span{position: absolute; right: 0; top: 0; display: inline-block; height: 40px; width: 40px; text-align: center; background: #fff;}
+  }
+  .va-video-inlen{
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    font-size: 12px;
+    line-height: 14px;
+  }
+  .va-video-nav {
+    position: absolute;
+    right: 0;
+    display: inline-block;
+    top: 0;
+    font-size: 0;
+    height: 40px;
+    button {
+      border: none;
+      background: none;
+      outline: none;
+      font-size: 26px;
+      height: 40px;
+      width: 30px;
+      line-height: 40px;
+      i{ vertical-align: top;}
+    }
   }
   .va-vid-result-lists{
     overflow: hidden;
@@ -165,24 +190,24 @@
     overflow: hidden;
     .pull-left{
       float: left;
-      margin-left: 100px;
+      margin-left: 140px;
       padding: 10px 0;
       .va-imgHelper{
         height: 80px;
-        img {height:100%;object-fit: contain; object-position: center;}
+        img {height:100%;width: auto;object-fit: contain; object-position: left center;}
       }
     }
   }
   .va-vid-result-item.current{
     color: #2196F3;
     .va-status-adpter{ background: #2196F3;}
-    .va-imgHelper{border: 2px solid #b6d0d8;}
+    .va-imgHelper img{border: 2px solid #b6d0d8;}
   }
   .va-his-time{
     position: absolute;
     left: 0;
     top: 0;
-    width: 80px;
+    width: 120px;
     border-right: 1px solid #ccc;
     height: 100px;
     padding: 10px 5px;
@@ -190,7 +215,7 @@
   }
   .in-duration {
     line-height: 20px;
-    margin-top: 40%;
+    margin-top: 20%;
   }
   .va-status-adpter {
     position: absolute;

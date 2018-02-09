@@ -41,7 +41,8 @@ var parseQueryResults = function(query_task_id,obj) {
     if(error) {
       return console.log('update query task error');
     } 
-    return PUB.toast('查询成功');
+    PUB.toast('查询成功');
+    return PUB.page('/dvaDetail/'+query_task_id);
   });
 
 }
