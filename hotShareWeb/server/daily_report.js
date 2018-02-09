@@ -31,10 +31,14 @@ if(Meteor.isServer){
           var strInTime = '--|--';
           var strOutTime = '--|--';
           pContent = pContent.replace('{{person_name}}', ws.person_name);
-          if (ws.in_time != 0)
-            strInTime = new Date(ws.in_time).toLocaleString().substr(11, 8);
-          if (ws.out_time != 0)
-            strOutTime = new Date(ws.out_time).toLocaleString().substr(11, 8);
+          if (ws.in_time != 0) {
+            strInTime = new Date(ws.in_time).toLocaleString();
+            strInTime = strInTime.substring(strInTime.indexOf(' ') + 1);
+          }
+          if (ws.out_time != 0) {
+            strOutTime = new Date(ws.out_time).toLocaleString();
+            strOutTime = strOutTime.substring(strOutTime.indexOf(' ') + 1);
+          }
           pContent = pContent.replace('{{person_in_time}}', strInTime);
           pContent = pContent.replace('{{person_in_image}}', ws.in_image);
           pContent = pContent.replace('{{person_out_time}}', strOutTime);
