@@ -1,5 +1,6 @@
 var selectedPicture = new ReactiveVar(null);
 var deepVideoServer = 'http://192.168.0.117:8000';
+var dvaServer = new ReactiveVar('');
 
 var parseQueryResults = function(query_task_id,obj) {
   var videos = {};
@@ -59,7 +60,7 @@ var sendSearchFunc = function() {
 
   var base64URL = canvas.toDataURL("image/png"); 
   console.log('base64URL is == '+ base64URL);
-  console.log('deepVideoServer is '+ deepVideoServer);
+  console.log('deepVideoServer is '+ dvaServer.get());
  
   var user = Meteor.user();
   var dva_devices = DVA_Devices.find({user_id: Meteor.userId()}).fetch();
@@ -81,7 +82,7 @@ var sendSearchFunc = function() {
 
     $.ajax({
       type: "POST",
-      url: deepVideoServer + '/Search2',
+      url: dvaServer.get() + '/Search2',
       dataType: 'json',
       async: true,
       data: {
@@ -107,7 +108,6 @@ var sendSearchFunc = function() {
           selectedPicture.set(null);
         } catch (error) {}
 
-        // var query_url = deepVideoServer + response.url;
         var query_url = response.url;
         var task_id = response.task_id;
         var primary_key = response.primary_key;
@@ -122,6 +122,20 @@ var sendSearchFunc = function() {
 
 };
 
+Template.dvaSearch.onRendered(function() {
+  Meteor.subscribe('dva_device_lists', 10, function() {
+    var device = DVA_Devices.findOne({userId: Meteor.userId()});
+    if(device && device.ipv4Addresses && device.ipv4Addresses.length > 0) {
+      var ip = device.ipv4Addresses[0]
+      var port = device.port;
+      var url = 'http://'+ ip + ':'+port;
+      dvaServer.set(url);
+    } else {
+      dvaServer.set('');
+    }
+  });
+});
+
 Template.dvaSearch.helpers({
   selectedPicture: function() {
     return selectedPicture.get();
@@ -135,7 +149,14 @@ Template.dvaSearch.events({
   // take a photo or select picture from  photo library
   'click #selectPic': function (e) {
     var self = this;
-
+    console.log('DVA_server is :', dvaServer.get());
+    if (!dvaServer.get()){
+      navigator.notification.confirm('您还没有绑定设备！',function(buttonIndex){
+        if(buttonIndex == 2) {
+          Session.set('DVA_Index_Foot','dvaDevices');
+        }
+      },'提示',['稍后','绑定设备']);
+    }
     var options = {
       title: '拍摄照片或从相册选择图片',
       buttonLabels: ['拍照','从相册选择'],
