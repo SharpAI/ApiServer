@@ -24,10 +24,27 @@
         //   position: absolute; left: 3px; bottom: 3px; right: 3px; height: 20px; line-height: 20px; font-size: 12px; background: rgba(0, 0, 0, 0.25);
         // }
         .label {
-          display: block;background: none;color: #555;width: 60px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;padding: 5px 0;}
-        .label_times {
-          position: absolute;left: 3px;top: 45px;right: 3px; padding-right: 4px; height: 18px;line-height: 18px;font-size: 12px; text-align: right;background: rgba(0, 0, 0, 0.25);
+          display: block;background: none;color: #555;width: 60px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;padding: 5px 0;
         }
+      }
+      li.group-photo-labeled-item{
+        background: #fff;
+        display: block;
+        color: #555;
+        text-align: justify;
+        border-bottom: 1px solid #eee;
+        border-radius: 0;
+        padding: 10px 0;
+        margin: 0 10px;
+        img {
+          height: 50px; width: 50px; margin-right: 10px; float: left;background-color: #ccc;
+        }
+        .name{ font-size: 14px; margin: 0; line-height: 30px; height: 30px;}
+        p{font-size: 12px; margin: 0; line-height: 20px;}
+        .label_times{background: #6b6b6b;color: #fff;border-radius: 8px;padding: 0 6px;height: 14px;line-height: 14px;margin-left: 5px;display: inline-block;}
+      }
+      li.group-photo-labeled-item:last-child{
+        border: none;
       }
     }
     .photos.hover{visibility: visible;}

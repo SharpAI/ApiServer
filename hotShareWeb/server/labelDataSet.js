@@ -39,6 +39,9 @@ LABLE_DADASET_Handle = {
     else{
     	LABLE_DADASET_Handle.update(doc);
     }
+    Person.update({group_id:group_id, name: name}, {
+      $inc: {imgCount: 1}
+    });
   },
   update:function(doc){
   	console.log('LableDadaSet update with :' + JSON.stringify(doc));
@@ -93,6 +96,9 @@ LABLE_DADASET_Handle = {
     }
     LableDadaSet.remove({group_id:doc.group_id,url:doc.url});
     LABLE_DADASET_Handle.updatePerson(doc);
+    Person.update({group_id:doc.group_id, name: doc.name}, {
+      $inc: {imgCount: -1}
+    });
   },
   updatePersonWithName:function(doc){
     console.log('try updatePersonWithName:'+JSON.stringify(doc));
@@ -202,4 +208,16 @@ LABLE_DADASET_Handle = {
       }
     });
   },*/
+
+  // only local
+  updatePersonImgCount: function () {
+    Person.find({},{sort: {updateAt:1}}).forEach(function(fields){
+      if(fields.group_id && fields.name){
+        var counts = LableDadaSet.find({group_id: fields.group_id, name: fields.name}).count();
+        Person.update({_id: fields._id}, {
+          $set: {imgCount: counts}
+        });
+      }
+    });
+  }
 };

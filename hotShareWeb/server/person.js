@@ -1583,6 +1583,10 @@ Meteor.methods({
   'initLableDataSet':function(){
     LABLE_DADASET_Handle.initLableDataSet();
   },
+  'updatePersonImgCount': function() {
+    // 仅在本地开发环境下使用
+    LABLE_DADASET_Handle.updatePersonImgCount();
+  },
   // 'cleanLeftRelationAndStatusDate': function(){
   //   // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
   //   cleanLeftRelationAndStatusDate();

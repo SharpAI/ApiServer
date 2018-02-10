@@ -435,7 +435,7 @@ Template.groupPhotoImg1.helpers({
 Template.groupPhotoImg1.events({
   'click li': function(e){
     var self = this;
-
+    
     // remove or reName Person
     var options = {
       title: '请选择',
