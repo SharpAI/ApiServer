@@ -1272,6 +1272,12 @@ Template._simpleChatToChat.helpers({
     var res = Session.get('simple_chat_need_show_tips');
     return res == true;
   },
+  showLNPTips: function() {
+    if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
+      return false;
+    }
+    return true;
+  },
   inDevMode:function(){
     var ret_val = false;
     var res = Session.get('inDevMode');
