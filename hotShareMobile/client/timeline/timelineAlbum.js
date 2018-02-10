@@ -914,7 +914,9 @@ Template.timelineAlbum.events({
       isMultiSelect.set(false);
     }
     var _lists = multiSelectLists.get();
-
+    if(_lists.length == 0 ) {
+      return PUB.toast('请至少选择一张照片');
+    }
     multiSelectIds.set([]);
     multiSelectLists.set([]);
     $('.images, .videos').removeClass('multi-selected');
