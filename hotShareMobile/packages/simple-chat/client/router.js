@@ -367,7 +367,7 @@ Template._simpleChatToChat.onRendered(function(){
   if (page_data.type === 'group') {
     Meteor.subscribe('device_by_groupId', slef.data.id);
   }
-  
+
   Meteor.setTimeout(function(){
     $box = $('.box');
     $box_ul = $('.box ul');
@@ -1974,6 +1974,12 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     var user = Meteor.user();
     var group = SimpleChat.Groups.findOne({_id: group_id});
     var groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: Meteor.userId()})
+
+    // 如果是等待标记（即：未识别）的消息,不予显示
+    if (msgObj.wait_lable) {
+      return;
+    }
+
     // 接收消息方是否是群管理员
     if (groupUser &&  groupUser.isGroupAdmin ) {
       isAdmin = true;
