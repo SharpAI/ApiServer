@@ -290,6 +290,12 @@ Template.timelineAlbum.onRendered(function(){
   Session.set('timelineAlbumMultiSelect',false);
   Session.set('timelineAlbumLimit',1);
   var uuid = Router.current().params._uuid;
+  var formPage = Router.current().params.query.from;
+  // 如果是直接从聊天室过来， 只显示未识别的人
+  if (formPage && formPage == 'groupchat') {
+    onlyShowUnknown.set(true);
+  }
+
   Meteor.subscribe('user-relations-bygroup',uuid);
   Session.set('timelineAlbumLoading',true);
   var hour = Session.get('wantModifyTime');
@@ -438,8 +444,8 @@ Template.timelineAlbum.helpers({
   // 是否显示多选模式
   showMultiSelect: function() {
     var formPage = Router.current().params.query.from;
-    // 只有直接从设备进入， 才启用多选
-    if (formPage && formPage == 'timeline') {
+    // 只有直接从设备进入，或从聊天室进入， 才启用多选
+    if (formPage && (formPage == 'timeline' || formPage == 'groupchat') ) {
       return true;
     }
     return false;

@@ -364,6 +364,10 @@ Template._simpleChatToChat.onRendered(function(){
   var slef = this;
   page_data = this.data;
 
+  if (page_data.type === 'group') {
+    Meteor.subscribe('device_by_groupId', slef.data.id);
+  }
+  
   Meteor.setTimeout(function(){
     $box = $('.box');
     $box_ul = $('.box ul');
@@ -1339,6 +1343,17 @@ Template._simpleChatToChat.events({
   'click #showScripts': function(e){
     $('.scriptsLayer').fadeIn();
     $('#showScripts').hide();
+  },
+  'click #labelNewPerson': function(e) {
+    // get the device list
+    var data = page_data;
+    console.log('==sr==. data is ',data);
+    var device = Devices.findOne({groupId: data.id});
+    if (device) {
+      return PUB.page('/timelineAlbum/'+device.uuid+'?from=groupchat');
+    } else {
+      return PUB.toast('该群组下暂无设备，请先绑定设备');
+    }
   },
   'click .scriptsItem': function(e){
     $('.scriptsLayer').fadeOut();

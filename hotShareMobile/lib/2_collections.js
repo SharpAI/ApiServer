@@ -371,7 +371,12 @@ if(Meteor.isServer){
     }
     return this.ready();
   });
- 
+ Meteor.publish('device_by_groupId', function(groupId) {
+     if (!this.userId || !groupId) {
+         return this.ready();
+     } 
+     return Devices.find({groupId: groupId});
+ });
  Meteor.publish('group_workstatus', function(group_id, date){
      if (!this.userId) {
          return this.ready();
