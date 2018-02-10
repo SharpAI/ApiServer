@@ -213,11 +213,11 @@ if (Meteor.isCordova) {
               }
           } */
           if (action == 'added') {
-              console.log('service added', service);
+              console.log('service added', JSON.stringify(service));
               Deps.autorun(function(){
                 if(Meteor.userId()){
                   Session.set('canShowDeepVideoAnalysisEnter', true);
-                  PUB.Toptip('<i class="fa fa-wifi fa-fw"></i> 发现一台新设备',{autohide:false, timeout:10000, service: service},function(event, options){
+                  PUB.Toptip('<i class="fa fa-wifi fa-fw"></i> 发现一台新设备',{autohide:true, timeout:10000, service: service},function(event, options){
                     console.log(event);
                     console.log(JSON.stringify(options));
                     PUB.page('/deepVideoAnalysis');
@@ -225,7 +225,7 @@ if (Meteor.isCordova) {
                 }
               });
           } else {
-              console.log('service removed', service);
+              console.log('service removed', JSON.stringify(service));
           }
       });
     }
