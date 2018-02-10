@@ -294,6 +294,7 @@ Template.timelineAlbum.onRendered(function(){
   // 如果是直接从聊天室过来， 只显示未识别的人
   if (formPage && formPage == 'groupchat') {
     onlyShowUnknown.set(true);
+    isMultiSelect.set(true);
   }
 
   Meteor.subscribe('user-relations-bygroup',uuid);
@@ -351,6 +352,13 @@ Template.timelineAlbum.onDestroyed(function(){
 
 });
 Template.timelineAlbum.helpers({
+  isFormGroupchat: function() {
+    var formPage = Router.current().params.query.from;
+    if (formPage && formPage == 'groupchat') {
+      return true;
+    }
+    return false;
+  },
   showAccAndFuzz: function(accuracy,fuzziness){
     if(!accuracy && !fuzziness){
       return false;
@@ -890,9 +898,21 @@ Template.timelineAlbum.events({
     multiSelectLists.set([]);
     $('.images, .videos').removeClass('multi-selected');
   },
+  // 重置多选
+  'click #resetSelect': function(e) {
+    multiSelectIds.set([]);
+    multiSelectLists.set([]);
+    $('.images, .videos').removeClass('multi-selected');
+  },
   // 完成多选, 同时完成标记， 不记录时间
   'click #confirmSelect': function(e) {
-    isMultiSelect.set(false);
+    var formPage = Router.current().params.query.from;
+    // 如果是直接从聊天室过来，保持多选模式
+    if (formPage && formPage == 'groupchat') {
+      isMultiSelect.set(true);
+    } else {
+      isMultiSelect.set(false);
+    }
     var _lists = multiSelectLists.get();
 
     multiSelectIds.set([]);
