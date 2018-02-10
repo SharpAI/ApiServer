@@ -77,15 +77,17 @@ Template.dvaDevices.events({
       var action = result.action;
       var service = result.service;
 
+      var index = ids.indexOf(macAddress);
+      var macAddress = (service.txtRecord && service.txtRecord.macAddress) ? service.txtRecord.macAddress:'';
+
       if( action == 'added' ) {
         console.log('service added', JSON.stringify(service));
         // TODO check is device in db
-        if(service && service.name && service.ipv4Addresses && service.ipv4Addresses.length > 0){
+        if(index < 0 && service && service.name && service.ipv4Addresses && service.ipv4Addresses.length > 0){
           lists.push(service);
-          ids.push(service.name);
+          ids.push(macAddress);
         }
       } else {
-        var index = ids.indexOf(service.name);
         if(index > -1){
           ids.splice(index,1);
           lists.splice(index,1);
