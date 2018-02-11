@@ -148,18 +148,49 @@
 }
 
 .timelineAlbum{
+  .head{
+    text-align: justify;
+    strong{margin-left: 30px;}
+  }
+  .rightBtnGroup{
+    position: relative;
+    float: right;
+    font-size: 0;
+    padding-right: 35px;
+    height: 40px;
+    button{
+      outline: none;
+      background: none;
+      color: #fff;
+      height: 40px;
+      line-height: 40px;
+      font-size: 14px;
+      border: none;
+      margin: 0;
+      padding: 0;
+      width: 50px;
+    }
+    button.dropdown-toggle {
+      font-size: 0;
+      position: absolute;
+      right: 0;
+      top:0;
+      width: 40px;
+      i{font-size: 20px; line-height: 40px;}
+    }
+  }
   .dropdown-menu{
     background: #222;
     min-width: 100px;
     left: auto;
-    right: 10px;
+    right: 5px;
     margin-top: 10px;
   }
   .dropdown-menu:before{
     position: absolute;
     content: "";
     top: -12px;
-    right: 10px;
+    right: 5px;
     border: 7px solid transparent;
     border-bottom: 7px solid #222;
   }

@@ -12,29 +12,28 @@
     <div class="leftButton back">
       <i class="fa fa-angle-left fa-fw"></i>
     </div>
-    {{#if showMultiSelect}}
-      {{#if isMultiSelect}}
-        {{#if isFormGroupchat}}
-        <div id="resetSelect" class="rightButton" style="padding-top:0;right:48px;">重选</div>
+    <div class="rightBtnGroup">
+      {{#if showMultiSelect}}
+        {{#if isMultiSelect}}
+          {{#if isFormGroupchat}}
+          <button id="resetSelect">重选</button>
+          {{else}}
+          <button id="cancelSelect">取消</button>
+          {{/if}}
+          <button id="confirmSelect">确定</button>
         {{else}}
-        <div id="cancelSelect" class="rightButton" style="padding-top:0;right:48px;">取消</div>
+        <button id="multiSelect">多选</button>
         {{/if}}
-        <div id="confirmSelect" class="rightButton" style="padding-top:0;">确定</div>
-      {{else}}
-      <div id="multiSelect" class="rightButton" style="padding-top:0;right:48px;">多选</div>
-      <!--<div id="timeRange" class="rightButton">
+      {{/if}}
+      <button class="dropdown-toggle" id="btn-more" data-toggle="dropdown">
         <i class="fa fa-filter fa-fw"></i>
-      </div>-->
-      <div class="rightButton dropdown-toggle" id="btn-more" data-toggle="dropdown">
-        <i class="fa fa-filter fa-fw" style="font-size:24px;"></i>
-      </div>
+      </button>
       <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more">
         <li role="presentation"><a id="timeRange" role="menuitem" tabindex="-1">{{#if filterTimeRange}}<i class="fa fa-check fa-fw"></i>{{/if}} 时间范围</a></li>
         <li role="presentation"><a id="onlyShowUnknown" role="menuitem" tabindex="-1">{{#if onlyShowUnknown}}<i class="fa fa-check fa-fw"></i>{{/if}} 未识别</a></li>
         <li role="presentation"><a id="clearFilter" role="menuitem" tabindex="-1"> 清除过滤条件</a></li>
       </ul>
-      {{/if}}
-    {{/if}}
+    </div>
   </div>
   <div class="content" style="position: absolute;top: 0;left: 0;bottom: 0;right: 0;overflow-x: hidden;overflow-y: auto;-webkit-overflow-scrolling: touch;">
     {{#if isLoading}}

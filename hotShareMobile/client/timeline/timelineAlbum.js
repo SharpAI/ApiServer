@@ -44,6 +44,8 @@ var initTimeRangeSet = function() {
       $('.content').scrollTop(0);
 
       $('#btn-more').dropdown('toggle');
+      multiSelectIds.set([]);
+      multiSelectLists.set([]);
 
       var uuid = Router.current().params._uuid;
       var selector = getSelector();
