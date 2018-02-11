@@ -437,3 +437,35 @@
     p{margin: 0;}
   }
 }
+
+._checkGroupDevice{
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.64);
+  z-index: 99990;
+  ._cgd_container{
+    position: absolute;
+    bottom: 20%;
+    left: 10%;
+    height: 200px;
+    width: 80%;
+    background: #fff;
+    color: #555;
+  }
+  ._cgd_header{
+    height: 40px;
+    line-height: 40px;
+    padding: 10px;
+    border-bottom: 1px solid #efefef;
+    position: relative;
+    box-shadow: 0px 2px 6px -2px #545454;
+    ._cgd_title{font-size: 16px; margin: 0;}
+    ._cgd_close{position: absolute;top: 0;right: 0;height: 40px;border: none;outline: none;background: none;width: 64px;text-align: right;padding-right: 10px;}
+  }
+  ._cgd_device_lists{background: #fff;margin: 0;padding: 10px;position: absolute;top: 50px;bottom: 10px;overflow: hidden;overflow-y: auto;left: 0;right: 0;height: 100%;}
+  ._cgd_device_item{ height: 40px;line-height: 40px;font-size: 14px;border-bottom: 1px solid #efefef;}
+}

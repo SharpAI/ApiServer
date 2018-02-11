@@ -1345,6 +1345,29 @@ sendMqttMsg = function(){
     sendMqttUserMessage(msg.to.id, msg, callback);
 };
 
+Template._checkGroupDevice.onRendered(function(){
+  Session.set('_groupChatDeviceLists',[]);
+});
+
+Template._checkGroupDevice.helpers({
+  lists: function() {
+    return Session.get('_groupChatDeviceLists') || [];
+  }
+});
+
+Template._checkGroupDevice.events({
+  'click ._cgd_device_item': function(e) {
+    $('._checkGroupDevice').fadeOut();
+    Session.set('_groupChatDeviceLists',[]);
+    return PUB.page('/timelineAlbum/'+this.uuid+'?from=groupchat');
+  },
+  'click ._checkGroupDevice, click ._cgd_close': function(e) {
+    Session.set('_groupChatDeviceLists',[]);
+    return $('._checkGroupDevice').fadeOut();
+  }
+});
+
+
 Template._simpleChatToChat.events({
   'click #showScripts': function(e){
     $('.scriptsLayer').fadeIn();
@@ -1354,12 +1377,17 @@ Template._simpleChatToChat.events({
     // get the device list
     var data = page_data;
     console.log('==sr==. data is ',data);
-    var device = Devices.findOne({groupId: data.id});
-    if (device) {
-      return PUB.page('/timelineAlbum/'+device.uuid+'?from=groupchat');
-    } else {
-      return PUB.toast('该群组下暂无设备，请先绑定设备');
+
+    var deviceLists = Devices.find({groupId: data.id}).fetch();
+    if (deviceLists && deviceLists.length > 0) {
+      if(deviceLists.length == 1 && deviceLists[0].uuid) {
+        return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?from=groupchat');
+      } else {
+        Session.set('_groupChatDeviceLists',deviceLists);
+        return $('._checkGroupDevice').fadeIn();
+      }
     }
+    return PUB.toast('该群组下暂无设备');
   },
   'click .scriptsItem': function(e){
     $('.scriptsLayer').fadeOut();

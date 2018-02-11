@@ -61,6 +61,9 @@
         <div class="send-btn"><input class="btn" type="submit" value="发送" style="border-radius: 5px;" /></div>
       </form></div>
     </div>
+
+    {{> _checkGroupDevice}}
+    
     {{#if needShowTips}}
       {{> _TipHintTemplate}}
     {{/if}}
@@ -475,4 +478,20 @@
     {{/if}}
   </div>
   {{/if}}
+</template>
+
+<template name="_checkGroupDevice">
+<div class="_checkGroupDevice">
+  <div class="_cgd_container">
+    <div class="_cgd_header">
+      <h1 class="_cgd_title">选择设备</h1>
+      <button class="_cgd_close"><i class="fa fa-close fa-fw"></i></button>
+    </div>
+    <ul class="_cgd_device_lists">
+      {{#each lists}}
+      <li class="_cgd_device_item">{{name}}</li>
+      {{/each}}
+    </ul>
+  </div>
+</div>
 </template>
