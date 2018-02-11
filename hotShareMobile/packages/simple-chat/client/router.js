@@ -1752,6 +1752,7 @@ Template._simpleChatToChatItem.helpers({
   },
   // hide Label Buttons, only show where use is group admin
   hideLabelBtn: function(group_id){
+    return true; // 02/11,2018 also hide when user is admin 
     console.log('==sr==. group_id..='+group_id)
     if(!window.hideLableButtonWithNormalGroupUser){
       return false;
