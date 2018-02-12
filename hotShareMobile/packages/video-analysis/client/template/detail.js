@@ -4,7 +4,7 @@ var totalVideoLen = new ReactiveVar(1);
 
 var videoPlayer = null;
 
-var deepVideoServer = 'http://192.168.0.117:8000';
+var deepVideoServer = new ReactiveVar('');
 
 var setVideoInfo = function(){
   var index = videoIndex.get();
@@ -16,7 +16,7 @@ var setVideoInfo = function(){
   }
   var video_id =  (results && results[index] && results[index].video_id) ? results[index].video_id : '';
   var video_name = (results && results[index] && results[index].video_name) ? results[index].video_name : '';
-  var video_src = deepVideoServer + '/media/' + video_id + '/video/' + video_id + '.mp4';
+  var video_src = deepVideoServer.get() + '/media/' + video_id + '/video/' + video_id + '.mp4';
   videoPlayer.src(video_src);  
 }
 var initPlayer = function(id){
@@ -31,7 +31,7 @@ var initPlayer = function(id){
   // var video_src = 'http://www.runoob.com/try/demo_source/movie.mp4';
   var video_id =  (results && results[videoIndex.get()] && results[videoIndex.get()].video_id) ? results[videoIndex.get()].video_id : '';
   var video_name = (results && results[videoIndex.get()] && results[videoIndex.get()].video_name) ? results[videoIndex.get()].video_name : '';
-  var video_src = deepVideoServer + '/media/' + video_id + '/video/' + video_id + '.mp4';
+  var video_src = deepVideoServer.get() + '/media/' + video_id + '/video/' + video_id + '.mp4';
   if(videoPlayer) {
     videoPlayer.dispose();
     videoPlayer = null;
@@ -86,6 +86,15 @@ Template.dvaDetail.onRendered(function() {
   isLoading.set(true);
   Meteor.subscribe('dva_queue_info',_id, {
     onReady: function() {
+      // get Server url 
+      var server_url = 'http://192.168.0.117:8000';
+      var device = DVA_Devices.findOne({userId: Meteor.userId()});
+      if(device && device.ipv4Addresses && device.ipv4Addresses[0] && device.port) {
+        server_url = 'http://'+device.ipv4Addresses[0]+ ':' + device.port;
+      }
+      console.log('==sr==. server_url is '+ server_url);
+      deepVideoServer.set(server_url);
+      
       isLoading.set(false);
       initPlayer('my-video');
     }
@@ -116,7 +125,7 @@ Template.dvaDetail.helpers({
     return videoIndex.get() + 1 + ' of ' + totalVideoLen.get();
   },
   getVideoUrl: function(video_id) {
-    var url = deepVideoServer + '/media/' + video_id + '/video/' + video_id + '.mp4' ;
+    var url = deepVideoServer.get() + '/media/' + video_id + '/video/' + video_id + '.mp4' ;
     console.log('==sr==. video url is :'+url);
     return url;
   },
@@ -124,7 +133,7 @@ Template.dvaDetail.helpers({
     if(url.indexOf('data:') > -1) {
       return url;
     }
-    return deepVideoServer + url;
+    return deepVideoServer.get() + url;
   },
   formatNum: function(num) {
     var n  = Number(num);
