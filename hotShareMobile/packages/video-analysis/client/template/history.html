@@ -7,24 +7,18 @@
     <ul class="va-his-lists">
       {{#each lists}}
       <li class="va-his-item">
-        <div class="va-his-time">
-          <p class="date">{{getDate}}</p>
-          <p class="time">{{getTime}}</p>
-        </div>
-        
-        <div class="pull-right">
-          {{#if isStatus 'pendding'}}<p>查询已加入队列，等待执行</p>{{/if}}
-          {{#if isStatus 'progress'}}<p>正在查询，请稍后...</p>{{/if}}
-          {{#if isStatus 'failed'}}<p>查询失败！</p>{{/if}}
-          {{#if isStatus 'done'}}
+        <div class="va-his-content">
+          <div class="va-imageHelper">
+            <img src="{{imgUrl}}" />
+          </div>
+          <span class="va-his-status va-status-{{status}}">{{status}}</span>
+          <div class="va-his-results">
             {{#if resultCounts}}
-            <p>匹配到{{resultCounts}}张图片 ({{videoCounts}} 个视频)</p>
+            <h2 class="va-his-title"><strong>{{resultCounts}}</strong> RESULTS in <strong>{{videoCounts}}</strong> VIDEOS</h2>
             {{else}}
-            <p>未查询到相应数据</p>
+            <h2 class="va-his-title" style="color: #555;">暂无数据</h2>
             {{/if}}
-          {{/if}}
-          <div class="va-imgHelper">
-            <img src="{{imgUrl}}">
+            <p class="va-his-time">{{getDate}}</p>
           </div>
         </div>
       </li>

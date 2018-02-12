@@ -73,7 +73,10 @@ if (Meteor.isServer) {
     if(!this.userId || !_id) {
       return this.ready();
     }
-    return DVA_QueueLists.find({_id: _id});
+    return [
+      DVA_Devices.find({userId: this.userId},{limit: 10, sort:{createdAt: -1}}),
+      DVA_QueueLists.find({_id: _id})
+    ];
   })
 
   Meteor.publish('dva_device_lists', function(limit) {
