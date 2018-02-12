@@ -87,6 +87,17 @@ Template.dvaDevices.events({
           lists.push(service);
           ids.push(macAddress);
         }
+        // watch device ipv4Addresses change , if is changed , update
+        var device = DVA_Devices.findOne({macAddress: macAddress});
+        if( device && device.ipv4Addresses && device.ipv4Addresses[0] && service.ipv4Addresses && service.ipv4Addresses[0] ) {
+          if(device.ipv4Addresses[0] != service.ipv4Addresses[0]){
+            DVA_Devices.update({_id: device._id},{
+              $set:{
+                ipv4Addresses: service.ipv4Addresses
+              }
+            });
+          }
+        }
       } else {
         if(index > -1){
           ids.splice(index,1);

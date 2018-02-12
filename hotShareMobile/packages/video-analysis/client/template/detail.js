@@ -116,7 +116,9 @@ Template.dvaDetail.helpers({
     return videoIndex.get() + 1 + ' of ' + totalVideoLen.get();
   },
   getVideoUrl: function(video_id) {
-    return deepVideoServer + '/media/' + video_id + '/video/' + video_id + '.mp4' ;
+    var url = deepVideoServer + '/media/' + video_id + '/video/' + video_id + '.mp4' ;
+    console.log('==sr==. video url is :'+url);
+    return url;
   },
   getImageUrl: function(url) {
     if(url.indexOf('data:') > -1) {
