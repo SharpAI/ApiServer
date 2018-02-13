@@ -459,7 +459,7 @@ Template.groupPhotoImg1.events({
               }
               var trainsetObj = {
                 group_id: self.group_id,
-                face_id: self.id,
+                face_id: self.faceId,
                 drop_person: true,
               };
               console.log('removePersonById'+JSON.stringify(trainsetObj));
