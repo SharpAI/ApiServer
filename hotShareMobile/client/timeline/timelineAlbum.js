@@ -935,13 +935,20 @@ Template.timelineAlbum.events({
 
       PUB.showWaitLoading('处理中');
       var setNames = [];
-
       Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res){
         if (err || !res){
           return PUB.toast('标注失败，请重试~');
         }
         
         _lists.forEach(function(item) {
+          
+          var faceId = null;
+          if (res && res.faceId){
+            faceId = res.faceId
+          }else {
+            faceId = item.person_id
+          }
+          
           // 发送消息给平板
           var trainsetObj = {
             group_id: group_id,
@@ -949,7 +956,7 @@ Template.timelineAlbum.events({
             url: item.img_url,
             person_id: item.person_id,
             device_id: uuid,
-            face_id: res ? res.faceId : item.person_id,
+            face_id: faceId,
             drop: false,
             img_type: 'face',
             style:item.style,
