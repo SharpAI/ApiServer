@@ -802,7 +802,9 @@ if Meteor.isServer
         }
         PERSON.updateToDeviceTimeline(uuid,userGroup.group_id,timeObj)
         #识别准确度在0.85以上才自动打卡
-        if name and accuracy >= withDefaultAccuracy
+        #if name and accuracy >= withDefaultAccuracy
+        #if tablet recognizes this person, update it to mainpage.
+        if name
           msg_data = {
             group_id:userGroup.group_id,
             create_time:create_time,
