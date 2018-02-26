@@ -1,0 +1,82 @@
+<template name="dvaVideoInfoHeader">
+  <div class="left"><i class="fa fa-angle-left fa-fw"></i></div>
+  <div class="title">视频详情</div>
+</template>
+
+<template name="dvaVideoInfo">
+<div class="va-detail"> 
+  <!-- video paly area start -->
+  <div class="va-videoHelper">
+    <!--<img src="/homeai.png">-->
+    <video id="my-video" class="video-js vjs-default-skin vjs-fluid vjs-16-9" controls preload="auto" 
+      poster="{{videoInfo.video_poster}}" 
+      data-setup='{
+        "fluid": true,
+        "playbackRates": [1, 1.5, 2]
+      }'>
+        <!--<source src="{{getVideoUrl videoInfo.video_id}}" type='video/mp4'>-->
+        <source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4"> 
+        <p class="vjs-no-js">
+          To view this video please enable JavaScript, and consider upgrading to a web browser that
+          <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+        </p>
+      </video>
+  </div>
+  <!-- video play area end -->
+
+  <!-- tab lists start -->
+  <ul class="va-tabnav">
+    <li id="videoInfo" class="va-tabitem {{isCurrent 'videoInfo'}}"><span>Info</span></li>
+    <li id="videoFrames" class="va-tabitem {{isCurrent 'videoFrames'}}"><span>Frames</span></li>
+  </ul>
+  <div class="va-tabcontent">
+    {{#if isTab 'videoInfo'}}
+    <table>
+      <tr>
+        <th>Title:</th>
+        <td><p>测试视屏</p></td>
+      </tr>
+      <tr>
+        <th>Device:</th>
+        <td>
+          <p>Video Box 01</p>
+          <p><small>192.168.0.111</small></p>
+        </td>
+      </tr>
+      <tr>
+        <th>Frames:</th>
+        <td><p>45</p></td>
+      </tr>
+      <tr>
+        <th>Length:</th>
+        <td><p>120s</p></td>
+      </tr>
+    </table>
+    {{/if}}
+
+    {{#if isTab 'videoFrames'}}
+    <ul class="va-tabframes">
+      <li class="va-tabframeitem">
+        <div class="va-imageHelper">
+          <img src="/homeai.png" />
+        </div>
+        <h2># Frame 0</h2>
+        <div class="va-tf-foot">
+          <span class="va-tf-rect">
+            <img src="/packages/video-analysis/images/dva_position.png"/>
+            <small>X: 120</small>
+            <small>Y: 120</small>
+          </span>
+          <span class="va-tf-size">
+            <img src="/packages/video-analysis/images/dva_size.png"/>
+            <small>W: 120</small>
+            <small>H: 120</small>
+          </span>
+        </div>
+      </li>
+    </ul>
+    {{/if}}
+  </div>
+  <!-- tab lists end -->
+</div>
+</template>

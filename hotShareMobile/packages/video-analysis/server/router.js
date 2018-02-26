@@ -66,6 +66,6 @@ Router.route('/api/dva/task', {where: 'server'})
 
 Meteor.startup(function() {
   Meteor.methods({
-    
+
   });
 });

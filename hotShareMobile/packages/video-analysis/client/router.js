@@ -17,3 +17,11 @@ Router.route('/dvaImport', {
     'dvaVideoImportHeader': { to: 'header' },
   }
 });
+
+Router.route('/dva/video/:_id', {
+  name: 'dvaVideoInfo',
+  layoutTemplate: 'dvaLayout',
+  yieldRegions: {
+    'dvaVideoInfoHeader': { to: 'header' }
+  }
+})
