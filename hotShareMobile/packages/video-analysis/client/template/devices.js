@@ -144,6 +144,8 @@ Template.dvaDevices.events({
         obj.userName = user.profile.fullname ? user.profile.fullname: user.username;
         obj.userIcon = user.profile.icon;
         obj.macAddress = macAddress;
+        obj.latestUpdateAt = new Date();
+        obj.status = 'online';
         
         DVA_Devices.insert(obj, function(error , result){
           PUB.hideWaitLoading();
