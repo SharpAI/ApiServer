@@ -87,6 +87,13 @@ if (Meteor.isServer) {
     return DVA_Devices.find({userId: this.userId},{limit: limit, sort:{createdAt: -1}});
   });
 
+  Meteor.publish('user_dva_devices', function(){
+    if(!this.userId) {
+      return this.ready();
+    }
+    return DVA_Devices.find({userId: this.userId});
+  });
+
   Meteor.publish('getDvaDeviceByMacAddress', function(macAddress) {
     if(!this.userId || !macAddress) {
       return this.ready();
