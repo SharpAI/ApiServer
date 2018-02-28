@@ -21,15 +21,18 @@ Package.onUse(function (api) {
   api.addAssets([
     'images/homeai.png',
     'images/radar_scan.png',
-    'images/loading.gif'
+    'images/loading.gif',
+    'images/dva_position.png',
+    'images/dva_size.png'
   ], 'client');
 
   api.addFiles([
+    // layout
+    'client/layout.html',
+    // index 
     'client/index.html',
     'client/index.js',
     'client/index.less',
-    // layout
-    'client/layout.html',
     // templates
     'client/template/devices.html',
     'client/template/devices.js',
@@ -41,6 +44,8 @@ Package.onUse(function (api) {
     'client/template/detail.js',
     'client/template/videos.html',
     'client/template/videos.js',
+    'client/template/videoInfo.html',
+    'client/template/videoInfo.js',
     'client/template/videoImport.html',
     'client/template/videoImport.js',
     // router

@@ -212,6 +212,7 @@ if (Meteor.isCordova) {
                   'foo' : 'bar'
               }
           } */
+          Meteor.call('upsetDeepVideoDevices', result);
           if (action == 'added') {
               console.log('service added', JSON.stringify(service));
               Deps.autorun(function(){

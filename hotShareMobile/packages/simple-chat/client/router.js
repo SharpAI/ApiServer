@@ -1419,6 +1419,10 @@ Template._simpleChatToChat.events({
       text = "train";
     else if (cmd == "ping")
       text = "ping";
+    else if (cmd == "syncstatusinfo")
+      text = "syncstatusinfo";
+    else if (cmd == "finalsyncdatasets")
+      text = "finalsyncdatasets";
     else {
       return;
     }
@@ -1459,7 +1463,7 @@ Template._simpleChatToChat.events({
         wait_classify:false,
         send_status: 'sending'
       };
-      if (cmd != 'train' && cmd != 'ping')
+      if (cmd != 'train' && cmd != 'ping' && cmd != 'syncstatusinfo' && cmd != 'finalsyncdatasets')
         msg.wait_clearqueue= true;
 
       Messages.insert(msg, function(){

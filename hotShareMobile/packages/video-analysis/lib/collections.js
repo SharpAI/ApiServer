@@ -5,6 +5,9 @@ DVA_Devices = new Mongo.Collection('dva_devices');
 // 等待导入的视频
 DVA_WaitImportVideo = new Mongo.Collection('dva_wait_import_video');
 
+// videos in deep video analysis devices
+DVA_Videos = new Mongo.Collection('dva_videos');
+
 // DB index 
 if (Meteor.isServer) {
   Meteor.startup(function () {
@@ -85,6 +88,13 @@ if (Meteor.isServer) {
     }
     var limit = limit || 20;
     return DVA_Devices.find({userId: this.userId},{limit: limit, sort:{createdAt: -1}});
+  });
+
+  Meteor.publish('user_dva_devices', function(){
+    if(!this.userId) {
+      return this.ready();
+    }
+    return DVA_Devices.find({userId: this.userId});
   });
 
   Meteor.publish('getDvaDeviceByMacAddress', function(macAddress) {
