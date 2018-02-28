@@ -1276,6 +1276,19 @@ var PahoMQTT = (function (global) {
 						localStorage.removeItem("Received:"+this._localKey+receivedMessage.messageIdentifier);
 					}
 					this._receivedMessages = {};
+				}else {
+					//loop to call receivedMessage callback
+					console.log('LOOP begin calling _receiveMessage' );
+					for (var key in this._receivedMessages) {
+						console.log('LOOP calling _receiveMessage', key);
+						var receivedMessage = this._receivedMessages[key];
+									
+						// If this is a re flow of a PUBREL after we have restarted receivedMessage will not exist.
+						if (receivedMessage) {
+							this._receiveMessage(receivedMessage);
+						}
+						
+					}
 				}
 				// Client connected and ready for business.
 				if (wireMessage.returnCode === 0) {
@@ -1478,6 +1491,7 @@ var PahoMQTT = (function (global) {
 				break;
 
 			case 1:
+				this.store("Received:", wireMessage);
 				var pubAckMessage = new WireMessage(MESSAGE_TYPE.PUBACK, {messageIdentifier:wireMessage.messageIdentifier});
 				this._schedule_message(pubAckMessage);
 				this._receiveMessage(wireMessage);
@@ -1499,7 +1513,8 @@ var PahoMQTT = (function (global) {
 	/** @ignore */
 	ClientImpl.prototype._receiveMessage = function (wireMessage) {
 		if (this.onMessageArrived) {
-			this.onMessageArrived(wireMessage.payloadMessage);
+			var msgKey = "Received:"+this._localKey+wireMessage.messageIdentifier;
+			this.onMessageArrived(wireMessage.payloadMessage, msgKey);
 		}
 	};
 

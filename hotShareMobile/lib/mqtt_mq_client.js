@@ -6,41 +6,44 @@ if(Meteor.isClient){
     var undeliveredMessages = [];
     var unsendMessages = [];
     var uninsertMessages = [];
+    var uninsertMessages_msgKey = [];
     mqtt_connection = null;
     //mqtt_connected = false;
-    var onMessageArrived = function(message) {
+    var onMessageArrived = function(message, msgKey) {
         console.log("onMessageArrived:"+message.payloadString);
         console.log('message.destinationName= '+message.destinationName);
-        console.log('message= '+JSON.stringify(message));
-        function reciveMsg(message){
+        console.log('message= ', msgKey, JSON.stringify(message));
+        function reciveMsg(message, msgKey){
             try {
                 var topic = message.destinationName;
                 console.log('on mqtt message topic: ' + topic + ', message: ' + message.payloadString);
                 if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
                 {
-                    SimpleChat.onMqttMessage(topic, message.payloadString);
+                    SimpleChat.onMqttMessage(topic, message.payloadString, msgKey);
                 }
                 else if (topic.startsWith('/msg/l/'))
-                    SimpleChat.onMqttLabelMessage(topic, message.payloadString);
+                    SimpleChat.onMqttLabelMessage(topic, message.payloadString, msgKey);
             } catch (ex) {
                 console.log('exception onMqttMessage: ' + ex);
             }
         }
         if (Session.equals('GroupUsersLoaded',true)) {
-            reciveMsg(message);
+            reciveMsg(message, msgKey);
         }
         else{
             console.log('subscribe get my group!');
             uninsertMessages.push(message);
+            uninsertMessages_msgKey.push(msgKey)
             Meteor.subscribe('get-my-group', Meteor.userId(),{
                 onReady:function(){
                     Session.set('GroupUsersLoaded',true);
                     console.log('GroupUsersLoaded!!');
                     if (uninsertMessages.length > 0) {
                         for (var i = 0; i < uninsertMessages.length; i++) {
-                            reciveMsg(uninsertMessages[i]);
+                            reciveMsg(uninsertMessages[i], uninsertMessages_msgKey[i]);
                         }
                         uninsertMessages = [];
+                        uninsertMessages_msgKey = [];
                     }
                 }
             });

@@ -793,13 +793,21 @@ Template._simpleChatToChatItem.events({
       var setNames = [];
       for (var i=0;i<msgObj.images.length;i++){
         //if (msgObj.images[i].label) {
+          
+          var faceId = null;
+          if (res && res.faceId){
+            faceId = res.faceId
+          }else {
+            faceId = msgObj.images[i].id
+          }
+
           var trainsetObj = {
             group_id: msgObj.to.id,
             type: 'trainset',
             url: msgObj.images[i].url,
             person_id: '',
             device_id: msgObj.people_uuid,
-            face_id: res ? res.faceId : msgObj.images[i].id,
+            face_id: faceId,
             drop: false,
             img_type: msgObj.images[i].img_type,
             style:msgObj.images[i].style,
@@ -1983,7 +1991,14 @@ var clearMoreOldMessage = function(){
    }
 }
 
-SimpleChat.onMqttMessage = function(topic, msg) {
+SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
+  var rmMsgKey = function(msgKey, log){
+    console.log('remove msg key ', log, msgKey);
+    if (msgKey){
+      localStorage.removeItem(msgKey); 
+    }
+  }
+  
   var msgObj = JSON.parse(msg);
 
   //Messages表尚未初始化
@@ -1992,9 +2007,11 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     initCollection();
   }
 
-  //console.log('SimpleChat.onMqttMessage:'+msg);
-  if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
+  console.log('SimpleChat.onMqttMessage:'+msg);
+  if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))){
+    rmMsgKey(msgKey, '#2021');
     return;
+  }
   if (msgObj.create_time)
       msgObj.create_time = new Date(msgObj.create_time);
   else
@@ -2012,6 +2029,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
 
     // 如果是等待标记（即：未识别）的消息,不予显示
     if (msgObj.wait_lable) {
+      rmMsgKey(msgKey, '#2030');
       return;
     }
 
@@ -2036,22 +2054,26 @@ SimpleChat.onMqttMessage = function(topic, msg) {
 
     if(group && group.rejectLabelMsg && !isAdmin && typeof(msgObj.wait_lable) != 'undefined'){
       console.log('===sr===. getMessage 辅助用户关闭了该群相应的label接收')
+      rmMsgKey(msgKey, '#2055');
       return;
     }
 
     // 如果是 等待标记消息(即：未识别) 且 消息接收方不是 Admin 且 用户没有主动打开接收
     if ( msgObj.wait_lable && !isAdmin && !allowUnknowMember) {
       console.log('===sr===. getMessage 即：未识别, '+ JSON.stringify(msgObj) );
+      rmMsgKey(msgKey, '#2062');
       return;
     }
     // 如果是标记消息 且 消息接收方不是 Admin
     if ( msgObj.formLabel && !isAdmin ) {
       console.log('===sr===. getMessage 用户标记, '+ JSON.stringify(msgObj) );
+      rmMsgKey(msgKey, '#2068');
       return;
     }
     // 如果是设备发来的 训练相关消息 且 消息接收方不是 Admin
     if ( ( (msgObj && msgObj.form && msgObj.form.name && msgObj.form.name.match(/\[(.{1,})/gim) ) || msgObj.is_device_traing ) && !isAdmin ) {
       console.log('===sr===. getMessage 设备训练, '+ JSON.stringify(msgObj) );
+      rmMsgKey(msgKey, '#2074');
       return;
     }
     
@@ -2061,12 +2083,13 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     };
     if (msgObj.wait_classify == false) {
       onNLPClassifyMessage(topic,msgObj);
+      rmMsgKey(msgKey, '#2084');
       return;
     }
     //console.log('》》》》》》》》》》》》》》》》》try to find Messages');
     var msgCount = Messages.find(where).count();
     if (msgCount < 10) {
-      onMqttMessage(topic, msg);
+      onMqttMessage(topic, msg, msgKey);
       return;
     }
   }
@@ -2075,6 +2098,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
       Messages.find({'form.id':Meteor.userId(),'to.id':msgObj.form.id,is_read:false}).forEach(function(item){
           Messages.update({_id:item._id},{$set:{is_read:true}});
       })
+      rmMsgKey(msgKey, '#2100');
       return;
     }
 
@@ -2109,6 +2133,8 @@ SimpleChat.onMqttMessage = function(topic, msg) {
           alert(msgObj.text);
         }
       }
+      
+      rmMsgKey(msgKey, '#2136');
       return;
     }
 
@@ -2138,6 +2164,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     //ta 被我拉黑
     if(BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [msgObj.form.id]}}).count() > 0){
       console.log(msgObj.to.id+'被我拉黑');
+      rmMsgKey(msgKey, '#2166');
       return;
     }
   }
@@ -2146,12 +2173,16 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     //应当避免消息重复
     if (Messages.findOne({_id:msgObj._id})) {
       //消息已存在
+      rmMsgKey(msgKey, '#2175');
       return;
     }
-    return Messages.insert(msgObj);
+    return Messages.insert(msgObj, function(err, _id){
+      rmMsgKey(msgKey, '#2179');  
+    }
+    );
   }
 
-  onMqttMessage(topic, msg);
+  onMqttMessage(topic, msg, msgKey);
   // MessageTemp.insert({
   //   topic: topic,
   //   msg: msgObj,
@@ -2190,22 +2221,33 @@ var shouldScrollToBottom = function(msg){
   // }
 };
 
-var onMqttMessage = function(topic, msg) {
+var onMqttMessage = function(topic, msg, msgKey) {
+  var rmMsgKey = function(msgKey, log){
+    console.log('remove msg key ', log, msgKey);
+    if (msgKey){
+      localStorage.removeItem(msgKey); 
+    }
+  }
+  
   //console.log('>>>>>>>>>>>>> onMqttMessage has been called :'+msg);
   var insertMsg = function(msgObj, type){
     if(msgObj.admin_remove){
+      rmMsgKey(msgKey, '#2232');
       return;
     }
     console.log(type, msgObj._id);
     shouldScrollToBottom(msgObj);
     Messages.insert(msgObj, function(err, _id){
+      rmMsgKey(msgKey, '#2238');
       if (err)
         console.log('insert msg error:', err);
     });
   };
 
-  if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
+  if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))){
+    rmMsgKey(msgKey, '#2245');
     return;
+  }
 
   Session.set('hasNewLabelMsg', true);
   var msgObj = JSON.parse(msg);
@@ -2219,6 +2261,7 @@ var onMqttMessage = function(topic, msg) {
       }
       else {
           console.log('receive group message from group that i am not in: ' + msgObj.to.id);
+          rmMsgKey(msgKey, '#2261');
           return;
       }
     }
@@ -2275,9 +2318,10 @@ var onMqttMessage = function(topic, msg) {
       msgObj.images[i].id = msgObj.people_id;
   }
 
-  if (Messages.find({_id: msgObj._id}).count() > 0)
+  if (Messages.find({_id: msgObj._id}).count() > 0){
+    rmMsgKey(msgKey, '#2319');
     return console.log('已存在此消息:', msgObj._id);
-
+  }
   var targetMsg = null;
 
   var accuracy_default = 0.85; //期望准确值
@@ -2320,7 +2364,11 @@ var onMqttMessage = function(topic, msg) {
   else{
       if (msgObj.wait_lable){where.people_id = msgObj.people_id;}
       else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
-      else {return Messages.insert(msgObj)}
+      else {return Messages.insert(msgObj,function(err, _id){
+      rmMsgKey(msgKey, '#2365');
+      if (err)
+        console.log('insert msg error:', err);
+    })}
 
       console.log('SimpleChat.SimpleChat where:', where);
       targetMsg = Messages.findOne(where, {sort: {create_time: -1}});
@@ -2363,6 +2411,7 @@ var onMqttMessage = function(topic, msg) {
     }
   }
   if (is_exist) {
+    rmMsgKey(msgKey, '#2407');
     return;
   }
 
@@ -2438,6 +2487,8 @@ var onMqttMessage = function(topic, msg) {
       if (err || num <= 0)
         insertMsg(msgObj, 'update 失败');
     });
+    
+    rmMsgKey(msgKey, '#2491');
     return;
   }
   Messages.update({_id: targetMsg._id}, {
@@ -2447,12 +2498,21 @@ var onMqttMessage = function(topic, msg) {
     if (err || num <= 0)
       insertMsg(msgObj, 'update 失败');
   });
+  
+  rmMsgKey(msgKey, '#2502');
 };
 
 SimpleChat.onMqttLabelMessage = function(topic, msg) {
-  if (!topic.startsWith('/msg/l/'))
+  var rmMsgKey = function(msgKey, log){
+    console.log('remove msg key ', log, msgKey);
+    if (msgKey){
+      localStorage.removeItem(msgKey); 
+    }
+  }
+  if (!topic.startsWith('/msg/l/')){
+    rmMsgKey(msgKey, '#2513');
     return;
-
+  }
   var msgObj = JSON.parse(msg);
   var isAdmin = Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType && Meteor.user().profile.userType == 'admin';
   if (msgObj.createAt)
@@ -2470,12 +2530,14 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
       msgObj._id = msgObj.msgId;
       MsgAdminRelays.insert(msgObj);
     }
+    rmMsgKey(msgKey, '#2533');
     return;
   }
   if(msgObj.is_admin_relay){
     if(msgObj.admin_remove){
       // admin 发送了删除消息
       Messages.remove({_id: targetMsg._id});
+      rmMsgKey(msgKey, '#2540');
       return;
     }
 
@@ -2507,7 +2569,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
               is_read: false
             });
 
-            Messages.insert(msgToInsrtObj,function(){});
+            Messages.insert(msgToInsrtObj,function(){rmMsgKey(msgKey, '#2572');});
 
           }
         }
@@ -2524,10 +2586,13 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
         }
       },function(){});
     }
+    rmMsgKey(msgKey, '#2589');
     return;
   }
-  if (targetMsg.label_users && targetMsg.label_users.length > 0 && _.pluck(targetMsg.label_users, 'id').indexOf(msgObj.user.id) >= 0)
+  if (targetMsg.label_users && targetMsg.label_users.length > 0 && _.pluck(targetMsg.label_users, 'id').indexOf(msgObj.user.id) >= 0){
+    rmMsgKey(msgKey, '#2593');
     return;
+  }
   Messages.update({_id: targetMsg._id}, {
     $push: {label_users: msgObj.user},
   //  $set: {create_time: new Date()}
@@ -2540,7 +2605,10 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     //   $box.scrollTop($box.scrollTop()+1);
     //   $box.trigger("scroll");
     // }, 100);
+    rmMsgKey(msgKey, '#2608');
   });
+  
+  
 };
 
 // SimpleChat.onMqttMessage('/msg/g/b82cc56c599e4c143442c6d0', JSON.stringify({
