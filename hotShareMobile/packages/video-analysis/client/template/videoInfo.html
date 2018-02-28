@@ -34,46 +34,48 @@
     <table>
       <tr>
         <th>Title:</th>
-        <td><p>测试视屏</p></td>
+        <td><p>{{info.name}}</p></td>
       </tr>
       <tr>
         <th>Device:</th>
         <td>
-          <p>Video Box 01</p>
-          <p><small>192.168.0.111</small></p>
+          <p>{{info.deviceName}}</p>
+          <p><small>{{info.deviceIP}}</small></p>
         </td>
       </tr>
       <tr>
         <th>Frames:</th>
-        <td><p>45</p></td>
+        <td><p>{{info.frames}}</p></td>
       </tr>
       <tr>
         <th>Length:</th>
-        <td><p>120s</p></td>
+        <td><p>{{info.length_in_seconds}} s</p></td>
       </tr>
     </table>
     {{/if}}
 
     {{#if isTab 'videoFrames'}}
     <ul class="va-tabframes">
+      {{#each frames}}
       <li class="va-tabframeitem">
         <div class="va-imageHelper">
-          <img src="/homeai.png" />
+          <img src="{{media_url}}" />
         </div>
-        <h2># Frame 0</h2>
+        <h2># Frame {{frame_index}}</h2>
         <div class="va-tf-foot">
           <span class="va-tf-rect">
             <img src="/packages/video-analysis/images/dva_position.png"/>
-            <small>X: 120</small>
-            <small>Y: 120</small>
+            <small>X: -</small>
+            <small>Y: -</small>
           </span>
           <span class="va-tf-size">
             <img src="/packages/video-analysis/images/dva_size.png"/>
-            <small>W: 120</small>
-            <small>H: 120</small>
+            <small>W: {{w}}</small>
+            <small>H: {{h}}</small>
           </span>
         </div>
       </li>
+      {{/each}}
     </ul>
     {{/if}}
   </div>

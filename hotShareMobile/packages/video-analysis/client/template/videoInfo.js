@@ -1,5 +1,7 @@
 var currentTab = new ReactiveVar('videoInfo');
 var isLoading = new ReactiveVar(false);
+var videoInfo = new ReactiveVar({});
+var framesList = new ReactiveVar([]);
 var videoPlayer = null;
 
 var deepVideoServer = new ReactiveVar('');
@@ -7,9 +9,32 @@ var deepVideoServer = new ReactiveVar('');
 var setVideoInfo = function(){
   var _id = Router.current().params._id;
 }
+
+var getVideoInfo = function() {
+  var url = Router.current().params.query.url;
+  var id = Router.current().params._id;
+  url += '/api/videos/'+id;
+  $.get(url, function(result) {
+    videoInfo.set(result);
+  });
+};
+
+var getFrames = function() {
+  var url = Router.current().params.query.url;
+  var id = Router.current().params._id;
+  url += '/api/frames/?vid='+id;
+  $.get(url, function(result) {
+    var tmpArr = [];
+    tmpArr.concat(result);
+    framesList.set(tmpArr);
+  });
+};
+
 var initPlayer = function(id){
   var _id = Router.current().params._id;
-
+  var url = Router.current().params.query.url;
+  var video_src = url + '/media/'+_id+'/video/'+_id+'.mp4';
+  
   // 初始化播放器
   videoPlayer = videojs(id,{ fluid: true }, function () {
     console.log('Good to go!');
@@ -39,7 +64,7 @@ var initPlayer = function(id){
     $('.va-vid-result-lists').css({'top':height + 74 + 'px'});
 
     // 设置播放源
-    // _player.src(video_src);  
+    _player.src(video_src);
   });
   
 }
@@ -68,12 +93,27 @@ Template.dvaVideoInfo.helpers({
       return 'current';
     }
     return '';
+  },
+  info: function() {
+    return Session.get('dva_video_info');
+  },
+  frames: function() {
+    return framesList.get();
   }
 
 });
 
 Template.dvaVideoInfo.events({
   'click .va-tabitem': function (e) {
+    if(e.currentTarget.id == 'videoFrames'){
+      getFrames();
+    }
     return currentTab.set(e.currentTarget.id);
   }
+});
+
+Template.dvaVideoInfo.onDestroyed(function() {
+  alert('destroyed');
+  videoInfo.set({});
+  framesList.set([]);
 });

@@ -5,6 +5,9 @@ DVA_Devices = new Mongo.Collection('dva_devices');
 // 等待导入的视频
 DVA_WaitImportVideo = new Mongo.Collection('dva_wait_import_video');
 
+// videos in deep video analysis devices
+DVA_Videos = new Mongo.Collection('dva_videos');
+
 // DB index 
 if (Meteor.isServer) {
   Meteor.startup(function () {
