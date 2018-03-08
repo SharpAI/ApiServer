@@ -2062,7 +2062,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
       return;
     }
 
-    // 如果是 等待标记消息(即：未识别) 且 消息接收方不是 Admin 且 用户没有主动打开接收
+    // 如果是 等待标记消息(即：未识���) 且 消息接收方不是 Admin 且 用户没有主动打开接收
     if ( msgObj.wait_lable && !isAdmin && !allowUnknowMember) {
       console.log('===sr===. getMessage 即：未识别, '+ JSON.stringify(msgObj) );
       rmMsgKey(msgKey, '#2062');
@@ -2242,9 +2242,13 @@ var onMqttMessage = function(topic, msg, msgKey) {
     console.log(type, msgObj._id);
     shouldScrollToBottom(msgObj);
     Messages.insert(msgObj, function(err, _id){
-      rmMsgKey(msgKey, '#2238');
       if (err)
-        console.log('insert msg error:', err);
+        return console.log('insert msg error:', err);
+      
+      if (msgObj && msgObj._id == _id && _id != null){
+        console.log('msgObj._id:'+ msgObj._id)
+        rmMsgKey(msgKey, '#2250');
+      }
     });
   };
 
