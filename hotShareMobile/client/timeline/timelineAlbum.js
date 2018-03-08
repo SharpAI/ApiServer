@@ -940,15 +940,14 @@ Template.timelineAlbum.events({
           return PUB.toast('标注失败，请重试~');
         }
         
+        var faceId = null;
+        if (res && res.faceId){
+          faceId = res.faceId
+        }else {
+          faceId = _lists[0].person_id
+        }
+
         _lists.forEach(function(item) {
-          
-          var faceId = null;
-          if (res && res.faceId){
-            faceId = res.faceId
-          }else {
-            faceId = item.person_id
-          }
-          
           // 发送消息给平板
           var trainsetObj = {
             group_id: group_id,
