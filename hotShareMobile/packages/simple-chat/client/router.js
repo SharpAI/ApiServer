@@ -2252,6 +2252,31 @@ var onMqttMessage = function(topic, msg, msgKey) {
     });
   };
 
+  var removeErrorImage = function(msgObj,type) {
+    // 从当前消息中 移除 
+    var msg = Messages.findOne({'to.id': msgObj.to.id, 'images.id': msgObj.id});
+    if (msg && msg.images) {
+      var images = msg.images;
+      images = images.splice(_.pluck(images, 'id').indexOf(msgObj.id), 1);
+      if(images.length > 0) {
+        return Messages.update({_id: msg._id},{$set:{images: images}});
+      } else {
+        return Messages.remove({_id: msg._id});
+      }
+    }
+    // 从历史消息中 移除
+    var hisMsg = MessagesHis.findOne({'to.id': msgObj.to.id, 'images.id': msgObj.id});
+    if (hisMsg && hisMsg.images) {
+      var images = hisMsg.images;
+      images = images.splice(_.pluck(images, 'id').indexOf(msgObj.id), 1);
+      if(images.length > 0) {
+        return MessagesHis.update({_id: msg._id},{$set:{images: images}});
+      } else {
+        return MessagesHis.remove({_id: msg._id});
+      }
+    }
+  };
+
   if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))){
     rmMsgKey(msgKey, '#2245');
     return;
@@ -2259,6 +2284,12 @@ var onMqttMessage = function(topic, msg, msgKey) {
 
   Session.set('hasNewLabelMsg', true);
   var msgObj = JSON.parse(msg);
+
+  if (msgObj.to_type == 'group' && msgObj.type == 'remove_error_img'){
+    removeErrorImage(msgObj, '移除错误识别的照片');
+    rmMsgKey(msgKey, '#2256');
+    return;
+  }
 
   if (msgObj.to_type == 'group') {
     var record = GroupUsers.findOne({group_id: msgObj.to.id, user_id: Meteor.userId()});
@@ -2335,6 +2366,11 @@ var onMqttMessage = function(topic, msg, msgKey) {
   var accuracy_default = 0.85; //期望准确值
 
   if (msgObj.tid && msgObj.tid !== '') {
+    /**
+     * people_uuid: 设备uuid ， 只对同一个设备 的图片 合并
+     * people_id: faceId ,
+     * tid: 轨迹id 
+     * */
     //最近十条记录
     var targetArray = Messages.find({to_type: msgObj.to_type,'to.id': msgObj.to.id,create_time: {$lte: msgObj.create_time},people_uuid:msgObj.people_uuid}, {limit: 10, sort: {create_time: -1}}).fetch();
     for (var i = 0; i < targetArray.length; i++) {
