@@ -86,14 +86,17 @@ if(Meteor.isServer){
       Meteor.setTimeout(sendJobReport, calcTimeStamp23());
     }
 
-    function sendJobReport() {
-      console.log('sendJobReport');
+    function sendJobReport(time_offset) {
+      console.log('sendJobReport, current timeOffsetZone is '+time_offset);
 
       try {
         var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
         groups.forEach(function(group) {
           console.log(group._id, group.report_emails);
-          sendGroupJobReport(group);
+          group_time_offset = group.offsetTimeZone ? group.offsetTimeZone : 8;
+          if(group_time_offset == time_offset){
+            sendGroupJobReport(group);
+          }
         });
       }
       catch(ex) {
@@ -104,14 +107,27 @@ if(Meteor.isServer){
     }
 
     //Meteor.setTimeout(sendJobReport, calcTimeStamp23());
+    // 国内邮件发送
     SyncedCron.add({
-      name: 'send report email 11 pm every day',
+      name: 'send report email 10:00 pm every day(UTC 8)',
       schedule: function(parser){
         // parser is later.parse pbject
-        return parser.text('at 11:00 pm');
+        return parser.text('at 14:00 pm');
       },
       job: function(){
-        sendJobReport();
+        sendJobReport(8);
+        return 1;
+      }
+    });
+
+    // 美国邮件发送
+    SyncedCron.add({
+      name: 'send report email at 10:00 pm every day(UTC -7)',
+      schedule: function(parser) {
+        return parser.text('at 05:00 am');
+      },
+      job: function(){
+        sendJobReport(-7);
         return 1;
       }
     });
