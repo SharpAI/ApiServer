@@ -1,5 +1,9 @@
 if(Meteor.isServer){
   Meteor.startup(function(){
+    String.prototype.replaceAll = function(s1,s2) {
+      return this.replace(new RegExp(s1,"gm"),s2);
+    };
+
     function calcTimeStamp23() {
       var now = new Date();
       var millisTill23 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 0, 0, 0) - now;
@@ -10,17 +14,20 @@ if(Meteor.isServer){
       return millisTill23;
     }
 
-    function sendGroupJobReport(group) {
+    function sendGroupJobReport(group, emails) {
       var group_id = group._id;
       var now = new Date();
       var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
       var job_report = Assets.getText('email/job-report.html');
-      job_report = job_report.replace('{{company_name}}', group.name);
-      job_report = job_report.replace('{{job_date}}', now.toISOString().split('T')[0]);
+      job_report = job_report.replaceAll('{{company_name}}', group.name);
+      job_report = job_report.replaceAll('{{job_date}}', now.toISOString().split('T')[0]);
 
       var subject = "每日考勤报告";
       var to = group.report_emails;
+      if (emails){
+        to = emails;
+      }
 
       var job_content = '';
 
@@ -28,9 +35,9 @@ if(Meteor.isServer){
       if (workStatus) {
         workStatus.forEach(function(ws) {
           var pContent = Assets.getText('email/job-item.html');
-          var strInTime = '--|--';
-          var strOutTime = '--|--';
-          pContent = pContent.replace('{{person_name}}', ws.person_name);
+          var strInTime = '';
+          var strOutTime = '';
+          pContent = pContent.replaceAll('{{person_name}}', ws.person_name);
           if (ws.in_time != 0) {
             strInTime = new Date(ws.in_time).toLocaleString();
             strInTime = strInTime.substring(strInTime.indexOf(' ') + 1);
@@ -39,9 +46,9 @@ if(Meteor.isServer){
             strOutTime = new Date(ws.out_time).toLocaleString();
             strOutTime = strOutTime.substring(strOutTime.indexOf(' ') + 1);
           }
-          pContent = pContent.replace('{{person_in_time}}', strInTime);
+          pContent = pContent.replaceAll('{{person_in_time}}', strInTime);
           pContent = pContent.replace('{{person_in_image}}', ws.in_image);
-          pContent = pContent.replace('{{person_out_time}}', strOutTime);
+          pContent = pContent.replaceAll('{{person_out_time}}', strOutTime);
           pContent = pContent.replace('{{person_out_image}}', ws.out_image);
           var summary = ws.whats_up;
           if (!summary)
@@ -110,5 +117,15 @@ if(Meteor.isServer){
     });
 
     SyncedCron.start();
+
+    Meteor.methods({
+      // for local test method 
+      'testGroupDailyReport': function (group_id, emails) {
+        var group = SimpleChat.Groups.findOne({_id: group_id});
+        console.log(group._id, emails);
+        console.log(group._id, group.report_emails);
+        sendGroupJobReport(group, emails);
+      }
+    });
   });
 }
