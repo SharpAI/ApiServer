@@ -7,9 +7,9 @@
 <body>
 	<div id="workai-layout-div" style="text-align:center; background-color: #efefef; padding: 32px 0; min-height: 100%;">
 		<style>
-		html,body{margin: 0;padding: 0;}
-		/* style for mobile , use prefix workai- */
-		@media screen and (max-width: 600px) {
+			html,body{margin: 0;padding: 0;}
+			/* style for mobile , use prefix workai- */
+			@media screen and (max-width: 600px) {
 				#workai-layout-div{
 					padding: 0 !important;
 				}
@@ -20,13 +20,16 @@
 				#workai-layout-container{
 					width: 100% !important;
 				}
-				#workai-qrcode{
+				#workai-qrcod {
 					display: none !important;
 				}
 				#workai-download-tip{
 					width: 100% !important;
 				}
-		}
+				.workai-list-item{
+					width: 33.3% !important;
+				}
+			}
 		</style>
 		<table id="workai-layout-table" width="600" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;padding: 32px;background: #fff; box-shadow: 0 -1px 10px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.1), 0 10px 30px #f3ece8;
 		border-radius: 0.2em 0.2em 0 0;">
@@ -37,12 +40,28 @@
 							<!-- 水平居中的邮件 -->
 							<!-- content start -->
 							<h1 style="font-size: 26px; text-align: center; margin: 16px 0;">{{company_name}}每日报告</h1>
-							<p style="font-size:16px;text-align: center;margin-top: 32px;position: relative;height: 20px;">
+							<p style="font-size:16px;text-align: center;margin: 32px 0;position: relative;height: 20px;">
 								<time datetime="{{job_date}}" style="display: inline-block;background: #fff;padding: 0 12px;">{{job_date}}</time>
 								<span style="float: left;height:1px;background: #ddd;display: inline-block;width: 100%;margin-top: -8px;"></span>
 							</p>
 					
-							{{job_content}}
+							<h2 style="font-size: 14px;color: #00c4ff;margin: 0;margin-bottom: -15px;margin-left: 16px;">
+								<span style="padding: 2px 16px;border-radius: 20px;background-color: #eee;display: inline-block;">
+									<span style="display: inline-block;height: 26px;line-height: 26px;">已签到: {{checkin_member_count}} 人</span>
+								</span>
+							</h2>
+							<ul style="margin: 0;padding: 0;overflow: hidden;margin-bottom: 32px;border: 1px solid #eee;border-radius: 4px;">
+							{{job_checkin_content}}
+							</ul>
+
+							<h2 style="font-size: 14px;color: #607D8B;margin: 0;margin-bottom: -15px;margin-left: 16px;">
+								<span style="padding: 2px 16px;border-radius: 20px;background-color: #eee;display: inline-block;">
+									<span style="display: inline-block;height: 26px;line-height: 26px;">未签到: {{uncheckin_member_count}} 人</span>
+								</span>
+							</h2>
+							<ul style="margin: 0;padding: 0;overflow: hidden;margin-bottom: 32px;border: 1px solid #eee;border-radius: 4px;">
+							{{job_uncheckin_content}}
+							</ul>
 							<!-- content end -->
 
 							<!-- footer start -->

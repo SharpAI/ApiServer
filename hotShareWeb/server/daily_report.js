@@ -31,35 +31,50 @@ if(Meteor.isServer){
 
       var job_content = '';
 
+      var checkin_content = '',
+          uncheckin_content = '',
+          checkin_count = 0,
+          uncheckin_count = 0;
+
+      var un_check_names = [];
+
       var workStatus = WorkStatus.find({group_id: group_id, date: date});
       if (workStatus) {
         workStatus.forEach(function(ws) {
-          var pContent = Assets.getText('email/job-item.html');
+          var pContentCheck = Assets.getText('email/job-checkin-item.html');
           var strInTime = '';
-          var strOutTime = '';
-          pContent = pContent.replaceAll('{{person_name}}', ws.person_name);
-          if (ws.in_time != 0) {
+          if(ws.in_time && ws.in_time != 0) {
             strInTime = new Date(ws.in_time).toLocaleString();
             strInTime = strInTime.substring(strInTime.indexOf(' ') + 1);
-          }
-          if (ws.out_time != 0) {
-            strOutTime = new Date(ws.out_time).toLocaleString();
-            strOutTime = strOutTime.substring(strOutTime.indexOf(' ') + 1);
-          }
-          pContent = pContent.replaceAll('{{person_in_time}}', strInTime);
-          pContent = pContent.replace('{{person_in_image}}', ws.in_image);
-          pContent = pContent.replaceAll('{{person_out_time}}', strOutTime);
-          pContent = pContent.replace('{{person_out_image}}', ws.out_image);
-          var summary = ws.whats_up;
-          if (!summary)
-            summary = '工作总结还没有填写!';
-          pContent = pContent.replace('{{person_summary}}', summary);
 
-          job_content += pContent;
+            pContentCheck = pContentCheck.replaceAll('{{person_in_time}}', strInTime);
+            pContentCheck = pContentCheck.replace('{{person_name}}', ws.person_name);
+            pContentCheck = pContentCheck.replace('{{person_in_image}}', ws.in_image);
+            
+            checkin_count += 1;
+            checkin_content += pContentCheck;
+          } else {
+            un_check_names.push(ws.person_name);
+          }
         });
       }
 
-      job_report = job_report.replace('{{job_content}}', job_content)
+      var persons = Person.find({group_id:group_id, name:{$in: un_check_names}});
+      persons.forEach( function (person) {
+        var pContentUnCheck = Assets.getText('email/job-uncheckin-item.html');
+        if(person && person.url) {
+          pContentUnCheck = pContentUnCheck.replace('{{person_in_image}}', person.url);
+          pContentUnCheck = pContentUnCheck.replace('{{person_name}}', person.name);
+          uncheckin_count += 1;
+          uncheckin_content += pContentUnCheck;
+        }
+      });
+      
+      job_report = job_report.replace('{{job_checkin_content}}', checkin_content);
+      job_report = job_report.replace('{{job_uncheckin_content}}', uncheckin_content);
+      job_report = job_report.replace('{{checkin_member_count}}', checkin_count);
+      job_report = job_report.replace('{{uncheckin_member_count}}', uncheckin_count);
+      
 
       try {
           Email.send({
@@ -93,10 +108,7 @@ if(Meteor.isServer){
         var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
         groups.forEach(function(group) {
           console.log(group._id, group.report_emails);
-          group_time_offset = group.offsetTimeZone ? group.offsetTimeZone : 8;
-          if(group_time_offset == time_offset){
-            sendGroupJobReport(group);
-          }
+          sendGroupJobReport(group);
         });
       }
       catch(ex) {
@@ -107,27 +119,15 @@ if(Meteor.isServer){
     }
 
     //Meteor.setTimeout(sendJobReport, calcTimeStamp23());
-    // 国内邮件发送
+    // 邮件发送
     SyncedCron.add({
-      name: 'send report email 10:00 pm every day(UTC 8)',
+      name: 'send report email 12:00 am every day',
       schedule: function(parser){
         // parser is later.parse pbject
-        return parser.text('at 14:00 pm');
+        return parser.text('at 12:00 am');
       },
       job: function(){
         sendJobReport(8);
-        return 1;
-      }
-    });
-
-    // 美国邮件发送
-    SyncedCron.add({
-      name: 'send report email at 10:00 pm every day(UTC -7)',
-      schedule: function(parser) {
-        return parser.text('at 05:00 am');
-      },
-      job: function(){
-        sendJobReport(-7);
         return 1;
       }
     });
