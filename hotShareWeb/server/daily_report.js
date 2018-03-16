@@ -19,6 +19,11 @@ if(Meteor.isServer){
       var now = new Date();
       var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
+      var time_offset = 8;
+      if (group && group.offsetTimeZone) {
+        time_offset = group.offsetTimeZone;
+      }
+
       var job_report = Assets.getText('email/job-report.html');
       job_report = job_report.replaceAll('{{company_name}}', group.name);
       job_report = job_report.replaceAll('{{job_date}}', now.toISOString().split('T')[0]);
@@ -36,7 +41,7 @@ if(Meteor.isServer){
           checkin_count = 0,
           uncheckin_count = 0;
 
-      var un_check_names = [];
+      var check_names = [];
 
       var workStatus = WorkStatus.find({group_id: group_id, date: date});
       if (workStatus) {
@@ -44,8 +49,8 @@ if(Meteor.isServer){
           var pContentCheck = Assets.getText('email/job-checkin-item.html');
           var strInTime = '';
           if(ws.in_time && ws.in_time != 0) {
-            strInTime = new Date(ws.in_time).toLocaleString();
-            strInTime = strInTime.substring(strInTime.indexOf(' ') + 1);
+            strInTime = new Date(ws.in_time);
+            strInTime = strInTime.shortTime(time_offset, true);
 
             pContentCheck = pContentCheck.replaceAll('{{person_in_time}}', strInTime);
             pContentCheck = pContentCheck.replace('{{person_name}}', ws.person_name);
@@ -53,13 +58,12 @@ if(Meteor.isServer){
             
             checkin_count += 1;
             checkin_content += pContentCheck;
-          } else {
-            un_check_names.push(ws.person_name);
+            check_names.push(ws.person_name);
           }
         });
       }
 
-      var persons = Person.find({group_id:group_id, name:{$in: un_check_names}});
+      var persons = Person.find({group_id:group_id, name:{$nin: check_names}});
       persons.forEach( function (person) {
         var pContentUnCheck = Assets.getText('email/job-uncheckin-item.html');
         if(person && person.url) {
@@ -101,14 +105,30 @@ if(Meteor.isServer){
       Meteor.setTimeout(sendJobReport, calcTimeStamp23());
     }
 
+    function DateTimezone(offset) {
+      var d = new Date();
+      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      var local_now = new Date(utc + (3600000*offset))
+
+      return local_now;
+    }
+
     function sendJobReport(time_offset) {
       console.log('sendJobReport, current timeOffsetZone is '+time_offset);
 
       try {
         var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
         groups.forEach(function(group) {
-          console.log(group._id, group.report_emails);
-          sendGroupJobReport(group);
+          var time_offset = 8;
+          if (group && group.offsetTimeZone) {
+            time_offset = group.offsetTimeZone;
+          }
+
+          var local_time = DateTimezone(time_offset);
+          if(local_time.getHours() == 12) { // 群组本地时间 12 点 发送
+            console.log(group._id, group.report_emails);
+            sendGroupJobReport(group);
+          }
         });
       }
       catch(ex) {
@@ -124,7 +144,9 @@ if(Meteor.isServer){
       name: 'send report email 12:00 am every day',
       schedule: function(parser){
         // parser is later.parse pbject
-        return parser.text('at 12:00 am');
+        // UTC -7 的12：00 am 也就是 UTC 8 下一天的 03:00 am 
+        // 每小时执行一次
+        return parser.text('every 1 hour');
       },
       job: function(){
         sendJobReport(8);
