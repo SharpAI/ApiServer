@@ -43,7 +43,7 @@ cp /home/roger/hotShare/ShareExtension/Android/MainActivity.java ./src/org/worka
 
 修改Ａｐｐ的名字为中文：
 vim res/values/strings.xml
-把app_name那一项从ｈｏｔＳｈａｒｅ改为workai
+把app_name那一项从 sharpai 改为 来了吗
 
 在ｐｒｏｊｅｃｔ目录下创建一个文件
 vim gradle.properties 
@@ -54,7 +54,7 @@ android.useDeprecatedNdk=true
 gradle wrapper
 
 最后，　用这个命令来ｂｕｉｌｄ　ａｐｋ
-ANDROID_HOME=~/.meteor/android_bundle/android-sdk ./gradlew assembleRelease -Pandroid.injected.signing.store.file=/home/roger/workspace/hotShare/hotShareMobile/keystore -Pandroid.injected.signing.store.password=actiontec -Pandroid.injected.signing.key.alias="wifi whiteboard" -Pandroid.injected.signing.key.password=actiontec
+ANDROID_HOME=~/.meteor/android_bundle/android-sdk ./gradlew assembleRelease -Pandroid.injected.signing.store.file=/home/roger/workspace/hotShare/hotShareMobile/sharpai.keystore -Pandroid.injected.signing.store.password=actiontec -Pandroid.injected.signing.key.alias="wifi whiteboard" -Pandroid.injected.signing.key.password=actiontec
 
 生成的ａｐｋ在　./build/outputs/apk/project-armv7-release.apk
 
