@@ -295,7 +295,7 @@ Template.timelineAlbum.onRendered(function(){
   var formPage = Router.current().params.query.from;
   // 如果是直接从聊天室过来， 只显示未识别的人
   if (formPage && formPage == 'groupchat') {
-    onlyShowUnknown.set(true);
+    // onlyShowUnknown.set(true); // 从聊天室过来默认显示全部
     isMultiSelect.set(true);
   }
 
