@@ -4,7 +4,7 @@
 
 ./cleanbuild.sh
 ./build.sh
-cd ~/build-workai/android/project
+cd ~/build-sharpai/android/project
 vim ./AndroidManifest.xml
 修改文件内容，　在Ｍａｉｎ　Ａｃｔｉｖｉｔｙ中增加以下内容
             <intent-filter>
@@ -39,7 +39,7 @@ vim ./AndroidManifest.xml
         </activity>
 
 
-cp /home/roger/hotShare/ShareExtension/Android/MainActivity.java ./src/org/workai/everywhere/
+cp ~/workspace/sharpai/ShareExtension/Android/MainActivity.java ./src/org/sharpai/everywhere/
 
 修改Ａｐｐ的名字为中文：
 vim res/values/strings.xml
@@ -54,7 +54,7 @@ android.useDeprecatedNdk=true
 gradle wrapper
 
 最后，　用这个命令来ｂｕｉｌｄ　ａｐｋ
-ANDROID_HOME=~/.meteor/android_bundle/android-sdk ./gradlew assembleRelease -Pandroid.injected.signing.store.file=/home/roger/workspace/hotShare/hotShareMobile/sharpai.keystore -Pandroid.injected.signing.store.password=actiontec -Pandroid.injected.signing.key.alias="wifi whiteboard" -Pandroid.injected.signing.key.password=actiontec
+ANDROID_HOME=/Users/actiontec/actiontec ./gradlew assembleRelease -Pandroid.injected.signing.store.file=/Users/actiontec/workspace/sharpai/hotShareMobile/sharpai.keystore -Pandroid.injected.signing.store.password=actiontec -Pandroid.injected.signing.key.alias="wifi whiteboard" -Pandroid.injected.signing.key.password=actiontec
 
 生成的ａｐｋ在　./build/outputs/apk/project-armv7-release.apk
 

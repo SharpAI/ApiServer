@@ -17,7 +17,7 @@
        under the License.
  */
 
-package org.workai.everywhere;
+package org.sharpai.everywhere;
 
 import android.os.Bundle;
 import android.os.Build;
