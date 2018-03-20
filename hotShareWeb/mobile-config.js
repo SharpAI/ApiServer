@@ -1,7 +1,7 @@
 App.info({
-  id: 'org.workai.everywhere',
-  version: '3.4.7',
-  name: 'WorkAI-web',
+  id: 'org.sharpai.everywhere',
+  version: '0.0.1',
+  name: 'sharpai-web',
   description: 'Share everything with everyone',
   author: 'hotShare Design Team',
   email: '',
