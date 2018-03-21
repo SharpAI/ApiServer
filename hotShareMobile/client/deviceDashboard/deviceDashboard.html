@@ -10,27 +10,22 @@
     <div class="rightButton" style="padding-top:0;"><i class="fa fa-exchange fa-fw" style="font-size:20px;"></i></div>
   </div>
   <ul class="lists">
-    <!--{{#if isOut}}
-    <p class="tip">当前显示设备(方向): 出</p> 
+    {{#if isOut}}
+      {{#each unCkeckLists}}
+      <li class="listsItem">
+        <img src="{{url}}"/>
+        <p>{{name}}</p>
+      </li>
+      {{/each}}
     {{else}}
-    <p class="tip">当前显示设备(方向): 进</p> 
-    {{/if}}-->
-    {{#each lists}}
-      {{#if isShowOut}}
+      {{#each checkInLists}}
       <li class="listsItem">
-        <img src="{{out_image}}"/>
+        <img src="{{getCheckInImage}}"/>
         <p>{{person_name}}</p>
-        <span class="time">{{getTime out_time}}</span>
+        <span class="time">{{getTime}}</span>
       </li>
-      {{/if}}
-      {{#if isShowIn}}
-      <li class="listsItem">
-        <img src="{{in_image}}"/>
-        <p>{{person_name}}</p>
-        <span class="time">{{getTime in_time}}</span>
-      </li>
-      {{/if}}
-    {{/each}}
+      {{/each}}
+    {{/if}}
   </ul>
 </div>
 </template>

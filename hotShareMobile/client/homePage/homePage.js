@@ -47,13 +47,7 @@ Template.homePage.helpers({
   },
   getInCount: function(){
     var group_id = this._id;
-    return WorkStatus.find({group_id: this._id, date: Session.get('theCurrentDay'), status: 'in'}).count();
-  },
-  getOutCount: function(){
-    return WorkStatus.find({group_id: this._id, date: Session.get('theCurrentDay'), status: 'out'}).count();
-  },
-  showDVAEnter: function() {
-    return Session.equals('canShowDeepVideoAnalysisEnter', true);
+    return WorkStatus.find({group_id: this._id, date: Session.get('theCurrentDay'), status: {$in:['in','out']}}).count();
   }
 });
 

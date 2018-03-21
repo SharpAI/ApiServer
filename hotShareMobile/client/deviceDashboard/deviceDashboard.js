@@ -4,6 +4,8 @@ var time_offset = new ReactiveVar(8);
 
 var lists         = new ReactiveVar([]);
 var isOut        = new ReactiveVar(false);
+var limit = new ReactiveVar(200);
+var ckeckInNames = new ReactiveVar([]);
 
 Template.deviceDashboard.onRendered(function () {
   isOut.set(false);
@@ -28,16 +30,31 @@ Template.deviceDashboard.onRendered(function () {
   });
   Meteor.subscribe('WorkStatusByGroup',date.get(), group_id,{
      onReady:function(){
-      var _lists = WorkStatus.find({group_id: group_id, date: date.get()}).fetch();
-      console.log(_lists);
-      lists.set(_lists);
+
+      var checkin_names = ckeckInNames.get();
+      WorkStatus.find({group_id: group_id, date: date.get()}).forEach(function(item) {
+        if(!item.in_time && !item.out_time) {
+          checkin_names.push(item.person_name);
+        }
+      });
+
+      ckeckInNames.set(checkin_names);
+    }
+  });
+
+  Meteor.subscribe('group_person',group_id, limit.get(),{
+    onReady: function(){
+      Session.set('group_person_loaded',true);
+    },
+    onStop: function(err){
+      console.log(err);
     }
   });
 
 });
 
 Template.deviceDashboard.helpers({
-  lists: function(){
+  checkInLists: function() {
     var now = new Date();
     var _today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
@@ -48,7 +65,19 @@ Template.deviceDashboard.helpers({
     date.set(_date); //UTC日期
     today.set(_today);
 
-    return WorkStatus.find({group_id: group_id, date: date.get()}).fetch();
+    var lists = [];
+    WorkStatus.find({group_id: group_id, date: date.get()}).forEach( function (item) {
+      if (item.in_time || item.out_time) {
+        lists.push(item);
+      }
+    });
+    return lists;
+  },
+  unCkeckLists: function() {
+    var checkin_names = ckeckInNames.get();
+
+    var group_id = Router.current().params.group_id;
+    return Person.find({group_id: group_id, name: {$nin: checkin_names}},{limit: limit.get(), sort:{createAt: -1}}).fetch();
   },
   groupName: function(){
     return Session.get('deviceDashboardTitle');
@@ -56,13 +85,23 @@ Template.deviceDashboard.helpers({
   isOut: function(){
     return isOut.get();
   },
-  isShowOut: function(){
-    return isOut.get() && this.out_image;
+  getCheckInImage: function() {
+    if(this.in_time && this.in_image) {
+      return this.in_image;
+    }
+    if(this.out_time && this.out_image) {
+      return this.out_image;
+    }
   },
-  isShowIn: function(){
-    return !isOut.get() && this.in_image;
-  },
-  getTime: function(ts){
+  getTime: function(){
+    var ts = null;
+    if(this.in_time) {
+      ts = this.in_time;
+    }
+    if(this.out_time) {
+      ts = this.out_time;
+    }
+
     if(!ts || ts == null || ts == 0){
       return '-/-';
     }
