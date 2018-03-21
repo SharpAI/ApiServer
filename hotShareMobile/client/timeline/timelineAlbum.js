@@ -295,8 +295,10 @@ Template.timelineAlbum.onRendered(function(){
   var formPage = Router.current().params.query.from;
   // 如果是直接从聊天室过来， 只显示未识别的人
   if (formPage && formPage == 'groupchat') {
-    // onlyShowUnknown.set(true); // 从聊天室过来默认显示全部
+    onlyShowUnknown.set(true);
     isMultiSelect.set(true);
+  } else {
+    onlyShowUnknown.set(false);
   }
 
   Meteor.subscribe('user-relations-bygroup',uuid);
