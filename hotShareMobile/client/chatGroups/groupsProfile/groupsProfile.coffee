@@ -215,6 +215,7 @@ if Meteor.isClient
       group_id = Session.get('groupsId')
       PUB.page('/groupUserHide/'+group_id)
     'click #groupsProfilePageback':(event)->
+      return PUB.back()
       groupid = Session.get('groupsId')
       type = Session.get('groupsType')
       url = '/simple-chat/to/'+type+'?id='+groupid

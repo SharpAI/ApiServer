@@ -286,6 +286,9 @@ if Meteor.isClient
       Session.set('nextPostID',this.params._id)
       this.render 'redirect'
       return
+    Router.route '/groupPerson/:_id', ()->
+      this.render 'groupPerson'
+      return
     # Router.route '/posts/:_id', {
     #     waitOn: ->
     #       [subs.subscribe("publicPosts",this.params._id),

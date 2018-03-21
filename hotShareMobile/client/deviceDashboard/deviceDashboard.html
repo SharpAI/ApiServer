@@ -1,16 +1,20 @@
 <template name="deviceDashboard">
 <div class="deviceDashboard">
   <div class="head">
-    <strong>{{groupName}}</strong>
+    {{#if isOut}}
+    <strong style="width: 100%;">{{groupName}}(未签到)</strong>
+    {{else}}
+    <strong style="width: 100%;">{{groupName}}(已签到)</strong>
+    {{/if}}
     <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
     <div class="rightButton" style="padding-top:0;"><i class="fa fa-exchange fa-fw" style="font-size:20px;"></i></div>
   </div>
   <ul class="lists">
-    {{#if isOut}}
+    <!--{{#if isOut}}
     <p class="tip">当前显示设备(方向): 出</p> 
     {{else}}
     <p class="tip">当前显示设备(方向): 进</p> 
-    {{/if}}
+    {{/if}}-->
     {{#each lists}}
       {{#if isShowOut}}
       <li class="listsItem">

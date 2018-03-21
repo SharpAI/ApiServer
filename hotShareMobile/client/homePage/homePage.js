@@ -58,9 +58,17 @@ Template.homePage.helpers({
 });
 
 Template.homePage.events({
-  'click .companyItem': function(e){
-    Session.set('workstatus_group', this);
-    return workStatusPopPage.show();
+  'click .viewWorkStatus': function(e){
+    // Session.set('workstatus_group', this);
+    // return workStatusPopPage.show();
+    Session.set('deviceDashboardTitle', this.name);
+    return PUB.page('/device/dashboard/'+ this._id);
+  },
+  'click .goGroupPerson': function(e) {
+    return PUB.page('/groupPerson/'+this._id);
+  },
+  'click .goGroupProfile': function(e) {
+    return PUB.page('/groupsProfile/group/'+e.currentTarget.id);
   },
   'click .rightButton':function(e) {
     return PUB.page('/deepVideoAnalysis');

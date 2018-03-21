@@ -6,7 +6,7 @@
     {{/if}}
     <strong class="top-home-btn active">主页</strong>
   </div>
-  <ul class="companyLists">
+  <!--<ul class="companyLists">
     {{#each companys}}
     <li class="companyItem" style="{{onlyOneCompany}}">
       <div class="container">
@@ -22,7 +22,28 @@
       </div>
     </li>
     {{/each}}
+  </ul>-->
+  <div class="content" style="padding-top: 40px;">
+  {{#each companys}}
+  <ul class="companyUl">
+    <li class="mainInfo goGroupProfile" id="{{_id}}">
+      <div class="icon"><img src="/img/default-company-logo.png"/></div>
+      <label>{{name}}</label>
+      <div class="value"> 管理 <i class="fa fa-cog"></i></div>
+    </li>
+    <li class="goGroupPerson">
+      <div class="icon"><img src="/group_users.png"/></div>
+      <label>成员管理</label>
+      <div class="value"><i class="fa fa-angle-right"></i></div>
+    </li>
+    <li class="viewWorkStatus">
+      <div class="icon"><img src="/check_canlder.png"/></div>
+      <label>签到信息</label>
+      <div class="value">已签到 {{getInCount}}人 <i class="fa fa-angle-right"></i></div>
+    </li>
   </ul>
+  {{/each}}
+  </div>
 </div>
 {{> footer}}
 </template>
