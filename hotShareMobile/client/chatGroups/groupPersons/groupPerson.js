@@ -55,6 +55,9 @@ Template.groupPerson.events({
 
 Template.groupPerson.onRendered(function(){
   var group_id = Router.current().params._id;
+
+  Meteor.subscribe('device_by_groupId',group_id);
+
   Meteor.subscribe('group_person',group_id, limit.get(),{
     onReady: function(){
       Session.set('group_person_loaded',true);

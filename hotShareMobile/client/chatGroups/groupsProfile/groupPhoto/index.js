@@ -429,10 +429,31 @@ Template.groupPhotoImg1.helpers({
       return '999+';
     }
     return times;
+  },
+  isNeedLabelMore: function() {
+    return this.imgCount < 10;
   }
 });
 
 Template.groupPhotoImg1.events({
+  'click .labelMoreImage': function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    var group_id = Router.current().params._id;
+    var deviceLists =  Devices.find({groupId: group_id}).fetch();
+    
+    if (deviceLists && deviceLists.length > 0) {
+      if(deviceLists.length == 1 && deviceLists[0].uuid) {
+        return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?from=groupchat');
+      } else {
+        Session.set('_groupChatDeviceLists',deviceLists);
+        return $('._checkGroupDevice').fadeIn();
+      }
+    }
+    return PUB.toast('该群组下暂无设备');
+
+  },
   'click li': function(e){
     var self = this;
     
