@@ -2,6 +2,19 @@
 <div class="homePage">
   <div class="head">
     <strong class="top-home-btn active">主页</strong>
+    <div class="rightDropMenu dropdown">
+      <div class="rightButton dropdown-toggle" id="add-more" data-toggle="dropdown">
+        <img src="/add_more.png" height="30" >
+      </div>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="add-more">
+        <li role="presentation"><a id="joinTestChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-users add-more-drop-item"></i>加入公司</a></li>
+        <li role="presentation"><a id="createNewChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-comment add-more-drop-item"></i>创建公司</a></li>
+        <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫一扫</a></li>
+        {{#if isAndroid}}
+        <li role="presentation"><a id="scanimage" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫图片</a></li>
+        {{/if}}
+      </ul>
+    </div>
   </div>
   <!--<ul class="companyLists">
     {{#each companys}}

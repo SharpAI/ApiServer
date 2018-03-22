@@ -64,8 +64,22 @@ Template.homePage.events({
   'click .goGroupProfile': function(e) {
     return PUB.page('/groupsProfile/group/'+e.currentTarget.id);
   },
-  'click .rightButton':function(e) {
-    return PUB.page('/deepVideoAnalysis');
+  'click #joinTestChatGroups': function (event) {
+    event.stopImmediatePropagation();
+    return PUB.page('/introductoryPage2');
+  },
+  'click #createNewChatGroups': function (event) {
+    event.stopImmediatePropagation()
+    Session.set('fromCreateNewGroups',true);
+    return Router.go('/setGroupname');
+  },
+  'click #scanbarcode': function (event) {
+    event.stopImmediatePropagation();
+    return ScanBarcodeByBarcodeScanner();
+  },
+  'click #scanimage': function (event) {
+    event.stopImmediatePropagation();
+    return DecodeImageFromAlum();
   }
 })
 
