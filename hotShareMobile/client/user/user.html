@@ -25,20 +25,80 @@
       </div>
         <span class="userName">{{myProfileName}}</span>
     </div>
-    <div class="line">
-      <span></span>
-    </div>
-    <!--div class="follow">
-      <div class="follower">{{followers}} {{_ "followers"}} ({{_ "emailFollow"}}: {{emailFollowerCount}} | {{_ "appFollow"}}: {{appFollowerCount}})</div>
-      <div class="vertical">
-        <span></span>
+
+    <div class="userCheckinBox">
+      <div class="header">
+        <div style="float: right; font-size:0;">
+          {{#if hasTwoMore}}
+            {{#if isFirstGroup}}
+            <button style="border: none; width: 40px; height: 40px; background: none;">
+              <i class="fa fa-angle-left" style="font-size: 26px; color:#ccc;"></i>
+            </button>
+            {{else}}
+            <button id="changeToPrevGroup" style="border: none; width: 40px; height: 40px; background: none;">
+              <i class="fa fa-angle-left" style="font-size: 26px; color:#555;"></i>
+            </button>
+            {{/if}}
+            {{#if isLastGroup}}
+            <button style="border: none; width: 40px; height: 40px; background: none;">
+              <i class="fa fa-angle-right" style="font-size: 26px; color:#ccc;"></i>
+            </button>
+            {{else}}
+            <button id="changeToNextGroup" style="border: none; width: 40px; height: 40px; background: none;">
+              <i class="fa fa-angle-right" style="font-size: 26px; color:#555;"></i>
+            </button>
+            {{/if}}
+          {{/if}}
+        </div>
+        <h2 style="margin:0; font-size:18px; line-height:40px;font-weight: 600;">
+          <img src="/img/default-company-logo.png" style="height: 40px;"/>
+          {{group.group_name}}
+        </h2>
       </div>
-      <div class="following">{{_ "following"}} {{followCount}} {{_ "ppl"}}</div>
-    </div-->
-    <div class="line" style="padding-bottom: 0 !important;">
-      <span></span>
+
+      <div class="checkInOutStatus">
+        <div style="position: relative;">
+          <i class="fa fa-circle " style="color: #27d496;font-size: 15px;padding: 10px 0;margin: auto;position: absolute;"></i>
+          {{#if hasIntime group.in_time}}
+          <div  style="display: inline-block;margin-left: 30px;">
+            <div style="color: #868686;font-size: 12px;">上班时间：09:00</div>
+            <div style="font-size: 14px;font-weight: 400;margin-top: 5px;">打卡时间：{{inTime group.in_time group.group_id}}</div>
+          </div>
+          <span  class="reReckInTime" style="right: 0;position: absolute;color: #39a8fe;padding: 10px 0;" data-groupid="{{group.group_id}}">
+            更新打卡 <i class="fa fa-angle-right"></i>
+          </span>
+          {{else}}
+          <div  style="display: inline-block;margin-left: 30px;">
+            <div style="color: #868686;font-size: 12px;">上班时间：09:00</div>
+            <div style="font-size: 14px;font-weight: 400;margin-top: 5px;">打卡时间： 未打卡</div>
+          </div>
+          <span class="checkInTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 0;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group.group_id}}" >上班打卡</span>
+          {{/if}}
+        </div>
+        <div style="position: relative; margin-top: 32px;">
+          <i class="fa fa-circle " style="color: #f1b725;font-size: 15px;padding: 10px 0;margin: auto;position: absolute;"></i>    
+          {{#if hasOutTime group.out_time}}
+          <div  style="display: inline-block;margin-left: 30px;">
+            <div style="color: #868686;font-size: 12px;">下班时间:18:00</div>
+            <div style="font-size: 14px;font-weight: 400;margin-top: 5px;">打卡时间：{{outTime group.out_time group.group_id}}</div>
+          </div>
+          <span class="reCheckOutTime" style="right: 0;position: absolute;color: #39a8fe;padding: 10px 0;" data-groupid="{{group.group_id}}">
+            更新打卡 <i class="fa fa-angle-right"></i>
+          </span>
+          {{else}}
+          <div  style="display: inline-block;margin-left: 30px;">
+            <div style="color: #868686;font-size: 12px;">下班时间:18:00</div>
+            <div style="font-size: 14px;font-weight: 400;margin-top: 5px;">打卡时间： 未打卡</div>
+          </div>
+          <span class="checkOutTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 0;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group.group_id}}">下班打卡</span>
+          {{/if}}
+        </div>
+      </div>
+      <div class="toDayWahtsUp" style="border-top: 1px solid #efefef; padding-top: 10px;">
+        添加今日简述...
+      </div> 
     </div>
-    {{#if hasTwoMoreGroup}}
+    <!--{{#if hasTwoMoreGroup}}
         {{#each myGroupWorkStatus}}
         {{#if workstatus group_id}}
         <div class="panel panel-default" style="margin-bottom: 0px;">
@@ -104,7 +164,7 @@
             </div>
           </div>
         </div>
-    {{/if}}
+    {{/if}}-->
     <div class="modal fade" id="selectDevicesInOut" tabindex="-1" role="dialog" aria-labelledby="selectDevicesInOutLabel">
       <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
         <div class="modal-content">
@@ -133,15 +193,15 @@
       </div>
     </div>
 
-    {{#if showGrayZone draftsCount postsCount}}
+    <!--{{#if showGrayZone draftsCount postsCount}}
     <div style="height: 20px;background: #eee;"></div>
     {{/if}}
     {{#if isLoading}}
     <div id="loader">
         <div align="center">{{_ "loading"}}</div>
     </div>
-    {{/if}}
-    {{#if hasJoinGroup}}
+    {{/if}}-->
+    <!--{{#if hasJoinGroup}}
     <div class="groupsList">
       <div class="item_head">
         <span>我的公司</span>
@@ -164,69 +224,7 @@
       {{/each}}
     </div>
     <div style="height: 20px;background: #eee;"></div>
-    {{/if}}
-      <!--
-      <div class="good">
-        <div class="praise">0 个赞</div>
-        <div class="dot">&#8226;</div>
-        <div class="forward">0 次转发</div>
-      </div>
-      -->
-    <div class="draft">
-      {{#if gtZero draftsCount}}
-        <div class="draftLeft">{{draftsCount}}{{_ "draft"}}</div>
-      {{/if}}
-      {{#if gtValue draftsCount 2}}
-        <div class="draftRight">{{_ "checkAll"}}></div>
-      {{/if}}
-    </div>
-    {{#if gtZero draftsCount}}
-    <div class="draftImages">
-        <ul>
-            {{#each items}}
-                <li id="{{_id}}" style="background-image:url({{getmainImage}})">
-                  <div class="css-post-title">
-                    <h4 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                        {{title}}
-                    </h4>
-                    <h6 class="addontitle" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                        {{addontitle}}
-                    </h6>
-                  </div>
-                </li>
-            {{/each}}
-        </ul>
-        {{#if gtZero postsCount}}
-        <div style="height: 20px; background: #eee;"></div>
-        {{/if}}
-    </div>
-    {{/if}}
-    <div class="post">
-      {{#if gtZero postsCount}}
-        <div class="postLeft">{{postsCount}}{{_ "numOfStory"}}</div>
-      {{/if}}
-      {{#if gtZero postsCount}}
-        <div class="postRight">{{_ "checkAll"}}></div>
-      {{/if}}
-    </div>
-    {{#if gtZero postsCount}}
-    <div class="postImages">
-        <ul>
-                {{#each postItems}}
-                <li id="{{_id}}" style="background-image:url({{mainImage}})">
-                  <div class="css-post-title">
-                    <h4 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                        {{title}}
-                    </h4>
-                    <h6 class="addontitle" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                        {{addontitle}}
-                    </h6>
-                  </div>
-                </li>
-            {{/each}}
-        </ul>
-    </div>
-    {{/if}}
+    {{/if}}-->
     </div>
   </div>
   {{> footer}}

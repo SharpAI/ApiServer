@@ -3,6 +3,8 @@ if Meteor.isClient
   now = new Date();
   today = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0, 0);
   
+  userGroupIndex = new ReactiveVar(0)
+
   Meteor.startup ()->
     ###
     Session.setDefault('myFollowedByCount',0)
@@ -293,9 +295,45 @@ if Meteor.isClient
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()}).count() > 0
     hasTwoMore:()->
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()}).count() > 2
+    group:()->
+      lists = []
+      SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach((item)->
+        lists.push({
+          group_id:item.group_id,
+          group_name: item.group_name
+        })
+      )
+      index = userGroupIndex.get()
+      group = lists[index]
+      
+      if !group
+        return {}
+      workstatus = WorkStatus.findOne({group_id: group.group_id, app_user_id:Meteor.userId(), date: today}) || {}
+      group = _.extend(group,workstatus)
+      return group
+    isFirstGroup: ()->
+      return userGroupIndex.get() < 1
+    isLastGroup: ()->
+      lists = []
+      SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach((item)->
+        lists.push({
+          group_id:item.group_id,
+          group_name: item.group_name
+        })
+      )
+      return userGroupIndex.get() isnt 0 and userGroupIndex.get() >= (lists.length - 1)
     groupList:()->
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()}, {limit:2, sort: {create_time: -1}}).fetch()
   Template.user.events
+    # change to next Group 
+    'click #changeToNextGroup': (e)->
+      index = userGroupIndex.get()
+      index += 1
+      userGroupIndex.set(index)
+    'click #changeToPrevGroup': (e)->
+      index = userGroupIndex.get()
+      index -= 1
+      userGroupIndex.set(index)
     'focus #search-box': (event)->
        PostsSearch.cleanHistory()
        PUB.page '/searchMyPosts'
