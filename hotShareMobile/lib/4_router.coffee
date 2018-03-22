@@ -289,6 +289,9 @@ if Meteor.isClient
     Router.route '/groupPerson/:_id', ()->
       this.render 'groupPerson'
       return
+    Router.route '/groupDevices/:_id', ()->
+      this.render 'groupDevices'
+      return 
     # Router.route '/posts/:_id', {
     #     waitOn: ->
     #       [subs.subscribe("publicPosts",this.params._id),
