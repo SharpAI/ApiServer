@@ -431,7 +431,7 @@ Template.groupPhotoImg1.helpers({
     return times;
   },
   isNeedLabelMore: function() {
-    return this.imgCount < 10;
+    return this.imgCount < 15;
   }
 });
 
