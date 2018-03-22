@@ -53,8 +53,6 @@ Template.homePage.helpers({
 
 Template.homePage.events({
   'click .viewWorkStatus': function(e){
-    // Session.set('workstatus_group', this);
-    // return workStatusPopPage.show();
     Session.set('deviceDashboardTitle', this.name);
     return PUB.page('/device/dashboard/'+ this._id);
   },
@@ -63,6 +61,10 @@ Template.homePage.events({
   },
   'click .goGroupProfile': function(e) {
     return PUB.page('/groupsProfile/group/'+e.currentTarget.id);
+  },
+  'click .goPersonHistory': function(e) {
+    Session.set('workstatus_group', this);
+    return workStatusPopPage.show();
   },
   'click #joinTestChatGroups': function (event) {
     event.stopImmediatePropagation();
