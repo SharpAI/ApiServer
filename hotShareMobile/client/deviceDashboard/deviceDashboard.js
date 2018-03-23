@@ -50,7 +50,7 @@ Template.deviceDashboard.onRendered(function () {
       console.log(err);
     }
   });
-
+  
 });
 
 Template.deviceDashboard.helpers({
@@ -74,10 +74,21 @@ Template.deviceDashboard.helpers({
     return lists;
   },
   unCkeckLists: function() {
-    var checkin_names = ckeckInNames.get();
+    var now = new Date();
+    var _today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+        0, 0, 0, 0);
 
     var group_id = Router.current().params.group_id;
-    return Person.find({group_id: group_id, name: {$nin: checkin_names}},{limit: limit.get(), sort:{createAt: -1}}).fetch();
+
+    var lists = [];
+    WorkStatus.find({group_id: group_id, date: _date}).forEach( function (item) {
+      if (item.in_time || item.out_time) {
+        lists.push(item.person_name);
+      }
+    });
+
+    return Person.find({group_id: group_id, name: {$nin: lists}},{limit: limit.get(), sort:{createAt: -1}}).fetch();
   },
   groupName: function(){
     return Session.get('deviceDashboardTitle');
