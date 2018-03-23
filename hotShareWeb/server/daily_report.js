@@ -24,9 +24,13 @@ if(Meteor.isServer){
         time_offset = group.offsetTimeZone;
       }
 
+      if (time_offset < 0) {
+        date = Date.UTC(now.getFullYear(),now.getMonth(), (now.getDate() - 1), 0, 0, 0, 0);
+      }
+
       var job_report = Assets.getText('email/job-report.html');
       job_report = job_report.replaceAll('{{company_name}}', group.name);
-      job_report = job_report.replaceAll('{{job_date}}', now.toISOString().split('T')[0]);
+      job_report = job_report.replaceAll('{{job_date}}', new Date(date).toISOString().split('T')[0]);
 
       var subject = "每日考勤报告";
       var to = group.report_emails;
@@ -41,9 +45,11 @@ if(Meteor.isServer){
           checkin_count = 0,
           uncheckin_count = 0;
 
-      var check_names = [];
+      var check_names = []; 
 
       var workStatus = WorkStatus.find({group_id: group_id, date: date});
+      console.log('==sr==. date is '+date+' and time is '+new Date(date) +' and local time is '+ DateTimezone(time_offset));
+
       if (workStatus) {
         workStatus.forEach(function(ws) {
           var pContentCheck = Assets.getText('email/job-checkin-item.html');
@@ -52,13 +58,16 @@ if(Meteor.isServer){
             strInTime = new Date(ws.in_time);
             strInTime = strInTime.shortTime(time_offset, true);
 
-            pContentCheck = pContentCheck.replaceAll('{{person_in_time}}', strInTime);
-            pContentCheck = pContentCheck.replace('{{person_name}}', ws.person_name);
-            pContentCheck = pContentCheck.replace('{{person_in_image}}', ws.in_image);
-            
-            checkin_count += 1;
-            checkin_content += pContentCheck;
-            check_names.push(ws.person_name);
+            var in_img = ws.in_image ? ws.in_image: ws.out_image;
+            if(in_img) {
+              pContentCheck = pContentCheck.replaceAll('{{person_in_time}}', strInTime);
+              pContentCheck = pContentCheck.replace('{{person_name}}', ws.person_name);
+              pContentCheck = pContentCheck.replace('{{person_in_image}}', in_img);
+              
+              checkin_count += 1;
+              checkin_content += pContentCheck;
+              check_names.push(ws.person_name);
+            }
           }
         });
       }
