@@ -1587,6 +1587,47 @@ Meteor.methods({
     // 仅在本地开发环境下使用
     LABLE_DADASET_Handle.updatePersonImgCount();
   },
+  'initUserWorkStatusToday': function(relation_id) {
+    var relation = WorkAIUserRelations.findOne({_id:relation_id});
+    var workstatus = null;
+
+    var time_offset = 8; //US is -7, China is +8 
+
+    var group = SimpleChat.Groups.findOne({_id: relation.group_id});
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+
+    function DateTimezone(offset) {
+      var d = new Date();
+      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      var local_now = new Date(utc + (3600000*offset))
+
+      return local_now;
+    }
+    
+    var now = DateTimezone(time_offset);
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+      0, 0, 0, 0);
+
+    if (relation.app_user_id) {
+      workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today_utc});
+    }
+    if (!workstatus && relation.person_name) {
+      workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'person_name': relation.person_name, 'date': today_utc});
+    }
+    if (!workstatus) {
+      WorkStatus.insert({
+        "app_user_id" : relation.app_user_id,
+        "group_id"    : relation.group_id,
+        "date"        : today_utc,
+        "person_id"   : relation.ai_persons,
+        "person_name" : relation.person_name,
+        "status"      : 'out',
+      });
+    }
+  },
   // 'cleanLeftRelationAndStatusDate': function(){
   //   // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
   //   cleanLeftRelationAndStatusDate();

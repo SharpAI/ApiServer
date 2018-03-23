@@ -295,6 +295,12 @@ if Meteor.isClient
     Router.route '/dayTasks/:_id', ()->
       this.render 'dayTasks'
       return
+    Router.route '/bindGroupUser', ()->
+      this.render 'bindGroupUser'
+      return 
+    Router.route '/bindUserPopup/:_id',()->
+      this.render 'bindUserPopup'
+      return
     # Router.route '/posts/:_id', {
     #     waitOn: ->
     #       [subs.subscribe("publicPosts",this.params._id),

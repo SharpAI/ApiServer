@@ -182,6 +182,9 @@ UnavailableEmails = new Meteor.Collection('unavailableEmails');
 
 if(Meteor.isServer){
   WorkAIUserRelations.allow({
+    insert: function (userId, doc) {
+        return userId == doc.app_user_id;
+    },
     update: function(userId, doc, fields, modifier) {
       if(userId && modifier['$set'].hide_it !== undefined){
         return true;

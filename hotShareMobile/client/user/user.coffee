@@ -234,23 +234,18 @@ if Meteor.isClient
         }).fetch();
       return [];
     hasIntime:(in_time)->
-      if in_time is 0
-        return false
-      else if in_time > 0
-        return true
-      workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
-      if (workstatus and workstatus.in_time and workstatus.in_time isnt 0)
+      if in_time and in_time > 0
         return true
       return false
-    inTime:(in_time,group_id)->
+    inTime:(in_time,group_id)-> 
       time_offset = 8
       intime = in_time
-      if (!in_time)
-        workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
-        if (workstatus and workstatus.in_time)
-          intime = workstatus.in_time
-        if (workstatus and workstatus.group_id)
-          group_id = workstatus.group_id
+      # if (!in_time)
+      #   workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
+      #   if (workstatus and workstatus.in_time)
+      #     intime = workstatus.in_time
+      #   if (workstatus and workstatus.group_id)
+      #     group_id = workstatus.group_id
 
       group = SimpleChat.Groups.findOne({_id: group_id})
       if (group and group.offsetTimeZone)
@@ -263,23 +258,18 @@ if Meteor.isClient
         return intime;
       return '';
     hasOutTime:(out_time)->
-      if out_time is 0
-        return false
-      else if out_time > 0
-        return true
-      workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
-      if (workstatus and workstatus.out_time and workstatus.out_time isnt 0)
+      if out_time and out_time > 0
         return true
       return false
     outTime:(out_time, group_id)->
       time_offset = 8
       outtime = out_time
-      if (!out_time)
-        workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
-        if (workstatus and workstatus.out_time)
-          outtime = workstatus.out_time
-        if (workstatus and workstatus.group_id)
-          group_id = workstatus.group_id
+      # if (!out_time)
+      #   workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
+      #   if (workstatus and workstatus.out_time)
+      #     outtime = workstatus.out_time
+      #   if (workstatus and workstatus.group_id)
+      #     group_id = workstatus.group_id
 
       group = SimpleChat.Groups.findOne({_id: group_id})
       if (group and group.offsetTimeZone)
@@ -331,6 +321,9 @@ if Meteor.isClient
     groupList:()->
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()}, {limit:2, sort: {create_time: -1}}).fetch()
   Template.user.events
+    # bind group user 
+    'click .bindGroupUser':(e)->
+      PUB.page('/bindGroupUser')
     # edit day Tasks
     'click .editDayTasks': (e)->
       group_id = $(e.currentTarget).data('groupid')
