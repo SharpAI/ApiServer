@@ -66,6 +66,10 @@ if Meteor.isClient
           onReady:()->
             Session.set('myCounterCollection','loaded')
         })
+  Template.user.onRendered(->
+    userGroupIndex.set(0)
+  )
+
   Template.user.helpers
     isLoading:->
       if Session.get('myPostsCount') isnt undefined
@@ -298,33 +302,39 @@ if Meteor.isClient
     group:()->
       lists = []
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach((item)->
-        lists.push({
-          group_id:item.group_id,
-          group_name: item.group_name
-        })
+        workstatus = WorkStatus.findOne({group_id: item.group_id, app_user_id:Meteor.userId(), date: today})
+        if workstatus
+          group = {
+            group_id:item.group_id,
+            group_name: item.group_name
+          }
+          group = _.extend(group,workstatus)
+          lists.push(group)
       )
       index = userGroupIndex.get()
       group = lists[index]
-      
-      if !group
-        return {}
-      workstatus = WorkStatus.findOne({group_id: group.group_id, app_user_id:Meteor.userId(), date: today}) || {}
-      group = _.extend(group,workstatus)
       return group
     isFirstGroup: ()->
       return userGroupIndex.get() < 1
     isLastGroup: ()->
       lists = []
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach((item)->
-        lists.push({
-          group_id:item.group_id,
-          group_name: item.group_name
-        })
+        workstatus = WorkStatus.findOne({group_id: item.group_id, app_user_id:Meteor.userId(), date: today})
+        if workstatus
+          group = {
+            group_id:item.group_id,
+            group_name: item.group_name
+          }
+          lists.push(group)
       )
-      return userGroupIndex.get() isnt 0 and userGroupIndex.get() >= (lists.length - 1)
+      return userGroupIndex.get() >= (lists.length - 1)
     groupList:()->
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()}, {limit:2, sort: {create_time: -1}}).fetch()
   Template.user.events
+    # edit day Tasks
+    'click .editDayTasks': (e)->
+      group_id = $(e.currentTarget).data('groupid')
+      PUB.page('/dayTasks/'+group_id)
     # change to next Group 
     'click #changeToNextGroup': (e)->
       index = userGroupIndex.get()
