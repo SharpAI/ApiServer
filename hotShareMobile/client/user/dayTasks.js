@@ -32,7 +32,13 @@ Template.dayTasks.events({
 
     var work_status = WorkStatus.findOne({group_id: group_id,date: todayUTC.get(),app_user_id:Meteor.userId()});
     if (work_status) {
-      WorkStatus.update({_id: work_status._id},{$set:{whats_up: text}}, function(error, result){
+      var whats_up = work_status.whats_up || [];
+      whats_up.push({
+        content: text,
+        person_name: Meteor.user().username,
+        ts: Date.now()
+      });
+      WorkStatus.update({_id: work_status._id},{$set:{whats_up: whats_up}}, function(error, result){
         if(error) {
           console.log('==sr==. update WorkStatus Err=', error);
           return PUB.tosat('更新今日简述失败~')

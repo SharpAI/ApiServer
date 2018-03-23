@@ -104,7 +104,9 @@
       </div>
       <div class="editDayTasks" style="border-top: 1px solid #efefef;padding-top: 10px;font-size: 13px;color: #333;" data-groupid="{{group.group_id}}">
         {{#if group.whats_up}}
-          <p style="word-wrap: break-word;white-space: pre-line; margin: 0;">{{group.whats_up}}</p>
+          {{#each group.whats_up}}
+          <p style="word-wrap: break-word;white-space: pre-line; margin: 0;"><strong>{{getShortTime ts group.group_id}}</strong>&nbsp;&nbsp; {{content}}</p>
+          {{/each}}
         {{else}}
           添加今日简述...
         {{/if}}

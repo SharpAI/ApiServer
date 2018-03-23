@@ -71,6 +71,13 @@ if Meteor.isClient
   )
 
   Template.user.helpers
+    getShortTime: (ts,group_id)->
+      time_offset = 8
+      group = SimpleChat.Groups.findOne({_id: group_id})
+      if group and group.offsetTimeZone
+        time_offset = group.offsetTimeZone
+      time = new Date(this.ts)
+      return time.shortTime(time_offset,true)
     isLoading:->
       if Session.get('myPostsCount') isnt undefined
         return false
