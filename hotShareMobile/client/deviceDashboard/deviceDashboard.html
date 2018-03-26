@@ -19,7 +19,7 @@
       {{/each}}
     {{else}}
       {{#each checkInLists}}
-      <li class="listsItem">
+      <li class="listsItem popItem">
         <img src="{{getCheckInImage}}"/>
         <p>{{person_name}}</p>
         <span class="time">{{getTime}}</span>
@@ -27,5 +27,28 @@
       {{/each}}
     {{/if}}
   </ul>
+</div>
+
+{{> deviceDashPoppage}}
+</template>
+
+<template name="deviceDashPoppage">
+<div class="deviceDashPoppage">
+  <div class="dd-dialog">
+    <div class="dd-header">
+      <div class="icon"><img src="{{data.url}}" /></div>
+      <h2 class="name">{{data.name}}</h2>
+      <span class="close" id="closeDDPop"><i class="fa fa-close"></i></span>
+    </div>
+    <div class="dd-content">
+      <p class="inCompanyTime">{{data.in_company_tlen}}</p>
+      {{#if data.in_time}}
+      <p>上班时间: {{data.in_time}}</p>
+      {{/if}}
+      {{#if data.out_time}}
+      <p>下班时间: {{data.out_time}}</p>
+      {{/if}}
+    </div>
+  </div>
 </div>
 </template>

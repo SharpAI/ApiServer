@@ -7,6 +7,8 @@ var isOut        = new ReactiveVar(false);
 var limit = new ReactiveVar(200);
 var ckeckInNames = new ReactiveVar([]);
 
+var popObj = new ReactiveVar({});
+
 Template.deviceDashboard.onRendered(function () {
   isOut.set(false);
 
@@ -132,5 +134,56 @@ Template.deviceDashboard.events({
     } else {
       isOut.set(true);
     }
+  },
+  'click .popItem': function(e) {
+    popObj.set(this);
+    $('.deviceDashPoppage').fadeIn();
+  }
+});
+
+Template.deviceDashPoppage.helpers({
+  data: function() {
+    var obj = popObj.get();
+    var url = obj.in_image?obj.in_image:obj.out_image;
+    
+    var diff = 0;
+    var out_time = obj.out_time;
+    if (!obj.out_time) {
+      var now_time = Date.now();
+      out_time = now_time;
+    }
+    
+    if (obj.in_time && out_time){
+      diff = out_time - obj.in_time;
+    }
+
+    if(diff > 24*60*60*1000){
+      diff = 24*60*60*1000;
+    } else if(diff < 0) {
+      diff = 0;
+    }
+    
+    var min = diff / 1000 / 60 ;
+    var in_company_tlen = Math.floor(min/60)+' h '+Math.floor(min%60) + ' min';
+    if(min < 60){
+      in_company_tlen = Math.floor(min%60) + ' min';
+    }
+    if(diff == 0){
+      in_company_tlen = '0 min';
+    }
+
+    return {
+      url: url,
+      name: obj.person_name,
+      in_company_tlen: in_company_tlen,
+      in_time: obj.in_time? (new Date(obj.in_time)).shortTime(time_offset.get()): null,
+      out_time: obj.out_time? (new Date(obj.out_time)).shortTime(time_offset.get()): null
+    }
+  }
+});
+
+Template.deviceDashPoppage.events({
+  'click .deviceDashPoppage, click #closeDDPop': function (e) {
+    return $('.deviceDashPoppage').fadeOut();
   }
 })
