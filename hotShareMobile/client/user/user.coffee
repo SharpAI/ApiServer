@@ -44,28 +44,29 @@ if Meteor.isClient
         Session.set('followedByWithLimitCollection','loading')
         Session.set('followToWithLimitCollection','loading')
         Session.set('myCounterCollection','loading')
-        Meteor.subscribe("postsWithLimit",4,{
-          onReady:()->
-            Session.set('postsWithLimitCollection','loaded')
-        })
-        Meteor.subscribe("savedDraftsWithLimit",20,{
-          onReady:()->
-            Session.set('savedDraftsWithLimitCollection','loaded')
-        })
-        Meteor.subscribe("followedByWithLimit",10,{
-          onReady:()->
-            Session.set('followedByWithLimitCollection','loaded')
-        })
-        Meteor.subscribe("followToWithLimit",10,{
-          onReady:()->
-            Session.set('followToWithLimitCollection','loaded')
-        })
+        # Meteor.subscribe("postsWithLimit",4,{
+        #   onReady:()->
+        #     Session.set('postsWithLimitCollection','loaded')
+        # })
+        # Meteor.subscribe("savedDraftsWithLimit",20,{
+        #   onReady:()->
+        #     Session.set('savedDraftsWithLimitCollection','loaded')
+        # })
+        # Meteor.subscribe("followedByWithLimit",10,{
+        #   onReady:()->
+        #     Session.set('followedByWithLimitCollection','loaded')
+        # })
+        # Meteor.subscribe("followToWithLimit",10,{
+        #   onReady:()->
+        #     Session.set('followToWithLimitCollection','loaded')
+        # })
         Meteor.subscribe("userRelation")
         Meteor.subscribe("userGroups")
-        Meteor.subscribe('myCounter',{
-          onReady:()->
-            Session.set('myCounterCollection','loaded')
-        })
+        Meteor.subscribe("group_devices")
+        # Meteor.subscribe('myCounter',{
+        #   onReady:()->
+        #     Session.set('myCounterCollection','loaded')
+        # })
   Template.user.onRendered(->
     userGroupIndex.set(0)
   )
