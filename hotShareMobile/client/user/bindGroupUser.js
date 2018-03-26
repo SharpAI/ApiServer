@@ -26,7 +26,7 @@ var limit = new ReactiveVar(20);
 Template.bindUserPopup.onRendered(function () {
   var group_id = Router.current().params._id;
   Meteor.subscribe('group_person',group_id,limit.get());
-  Meteor.subscribe('userRelation');
+  Meteor.subscribe('workaiUserRelationsByGroup', group_id);
 });
 
 Template.bindUserPopup.helpers({
@@ -47,7 +47,19 @@ Template.bindUserPopup.events({
 
     var relation = WorkAIUserRelations.findOne({group_id: group_id, person_name: self.name});
     if (relation) {
-      return PUB.toast('已被其他用户绑定');
+      if (relation.app_user_id) {
+        return PUB.toast('已被其他用户绑定');
+      }
+      WorkAIUserRelations.update({_id: relation._id},{$set:{app_user_id: Meteor.userId()}},function(error, _id){
+        if (error) {
+          console.log(error);
+          return PUB.toast('请重试');
+        }
+        PUB.toast('绑定成功');
+        // 初始化对应的WorkStatus 
+        Meteor.call('initUserWorkStatusToday',relation._id);
+        return Router.go('/bindGroupUser');
+      });
     } else {
       var user = Meteor.user();
       var userName = user.username

@@ -189,6 +189,9 @@ if(Meteor.isServer){
       if(userId && modifier['$set'].hide_it !== undefined){
         return true;
       }
+      if(userId && modifier['$set'].app_user_id == userId ) {
+          return true;
+      }
       return false;
     }
   });
@@ -2696,6 +2699,14 @@ if(Meteor.isServer){
        return this.ready();
 
     return UserRelation.find({userId: this.userId});
+  });
+
+   Meteor.publish('workaiUserRelationsByGroup', function (group_id) {
+    if(!this.userId || !group_id){
+        return this.ready();
+    }
+
+    return WorkAIUserRelations.find({group_id: group_id});
   });
 
   Meteor.publish('associateduserdetails', function(userIds) {
