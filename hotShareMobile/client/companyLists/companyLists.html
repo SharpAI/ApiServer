@@ -24,24 +24,32 @@
   </div>
 </template>
 
-<template name="companyItem">
-<div class="title">
-  <div class="pull-right">
-    <button type="button" class="weekly {{getActiveShow 'weekly'}}">周报</button>
-    <button type="button" class="monthly {{getActiveShow 'monthly'}}">月报</button>
-  </div>
-  <h2><img src="/img/default-company-logo.png" style="height:30px; margin:5px;">{{group_name}}</h2>
-</div>
-<div class="company-content" id="chart-{{_id}}">
-  {{#if isLoading group_id}}
-  <div class="lineChartLoadingLayer">
-   <div class="lineChartLoading">
-      <img src="/loading.gif" width="24px" height="24px"/> 加载中...
-    </div>
-  </div>
-  {{/if}}
-  <div id="lineChart-{{group_id}}" style="height:100%; width:100%;">
 
+<template name="companyItem">
+<div class="companyReporterPage">
+    <div class="head">
+      <div class="leftButton back">
+          <i class="fa fa-angle-left fa-fw"></i>
+      </div>
+      <div class="rightButton">
+        <button type="button" class="weekly {{getActiveShow 'weekly'}}">周报</button>
+        <button type="button" class="monthly {{getActiveShow 'monthly'}}">月报</button>
+      </div>
+      <strong>{{data.name}}</strong>
+  </div>
+  <div class="content" style="padding-top: 40px; height: 100%;">
+    <div class="company-content">
+      {{#if isLoading}}
+      <div class="lineChartLoadingLayer">
+      <div class="lineChartLoading">
+          <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+        </div>
+      </div>
+      {{/if}}
+      <div id="lineChartGroup" style="height:100%; width:100%;">
+
+      </div>
+    </div>
   </div>
 </div>
 </template>

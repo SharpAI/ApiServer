@@ -301,6 +301,10 @@ if Meteor.isClient
     Router.route '/bindUserPopup/:_id',()->
       this.render 'bindUserPopup'
       return
+    Router.route '/comReporter/:_id',()->
+      this.render 'companyItem'
+      return  
+
     # Router.route '/posts/:_id', {
     #     waitOn: ->
     #       [subs.subscribe("publicPosts",this.params._id),

@@ -351,6 +351,18 @@ if(Meteor.isServer){
     }
     return WorkStatus.find(selector);
   });
+
+  Meteor.publish('WorkStatusListsByGroup', function(date,group_id){
+    if(!date || !group_id){
+        return this.ready();
+    }
+    var dates = [];
+    for(var i = 0; i < 30 ; i++){
+        var d = date - (i * 24 * 60 * 60 * 1000);
+        dates.push(d);
+    };
+    return WorkStatus.find({group_id:group_id, date: {$in: dates}});
+  });
   
   WorkStatus.allow({
       update: function(userId, doc, fields, modifier){

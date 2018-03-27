@@ -1,3 +1,5 @@
+var isLoading = new ReactiveVar(false);
+var activeShow = new ReactiveVar('monthly');
 
 var getHourMinutesTime = function(value) {
     var val = value.toString().split('.');
@@ -126,10 +128,12 @@ var options = {
 };
 
 
-var fillChartData = function(group_id) {
+var fillChartData = function() {
+  var group_id = Router.current().params._id;
+	var lineChartGroup = echarts.init(document.getElementById('lineChartGroup'));
   console.log(group_id);
     var showLen = 30;
-    if( Session.get('showLen-'+group_id) == 'weekly') {
+    if( activeShow.get() == 'weekly') {
         showLen = 7;
     }
 
@@ -166,7 +170,7 @@ var fillChartData = function(group_id) {
     var timeLen = 0;
     status.forEach(function(item) {
 			var diff = inCompanyTimeLength(time_offset, item);
-			timeLen += diff;
+			timeLen += Math.abs(diff);
     });
 
     if(counts > 0){
@@ -184,47 +188,60 @@ var fillChartData = function(group_id) {
   };
 
   console.log(options);
-  Session.set('lineChart_loadStatus_'+group_id, 'loaded');
-  window.companyCharts['char-'+group_id].setOption(options);
+  isLoading.set(false);
+  lineChartGroup.setOption(options);
 };
 
 Template.companyItem.onRendered(function () {
-  console.log(this.data);
-	var group_id = this.data.group_id;
-	Session.set('showLen-'+group_id, 'monthly');
-	window.companyCharts['char-'+group_id] = echarts.init(document.getElementById('lineChart-'+group_id));
-	Session.set('lineChart_loadStatus_'+group_id, 'loading');
+
+	var group_id = Router.current().params._id;
+	isLoading.set(true);
+
+	var now = new Date();
+  var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,  0, 0, 0, 0);
+
+  Meteor.subscribe('WorkStatusListsByGroup', date, group_id, {
+    onReady: function() {}
+  });
 	Meteor.subscribe('get-group',group_id , {
 		onReady: function() {
-			fillChartData(group_id);
+			fillChartData();
 		}
 	});
+	
 });
 
 Template.companyItem.helpers({
 	getActiveShow: function(str) {
-		if( str == Session.get('showLen-'+this.group_id) ) {
+		if( str == activeShow.get() ) {
 			return 'active';
 		}
 		return '';
 	},
-	isLoading: function(group_id) {
-		if( Session.get('lineChart_loadStatus_'+group_id) && Session.get('lineChart_loadStatus_'+group_id, 'loading') == 'loading' ){
-			return true;
-		}
-		return false;
+
+	data: function() {
+		var group_id = Router.current().params._id;
+		return SimpleChat.Groups.findOne({_id: group_id});
+	},
+
+	isLoading: function() {
+		return isLoading.get();
 	}
 });
 
 Template.companyItem.events({
+	'click .back': function(e) {
+		return PUB.back();
+	},
   'click .weekly': function(e){
-		Session.set('showLen-'+this.group_id, 'weekly');
-		Session.set('lineChart_loadStatus_'+this.group_id, 'loading');
-		fillChartData(this.group_id);
+		activeShow.set('weekly');
+		isLoading.set(true);
+		fillChartData();
 	},
 	'click .monthly': function(e){
-		Session.set('showLen-'+this.group_id, 'monthly');
-		Session.set('lineChart_loadStatus_'+this.group_id, 'loading');
-		fillChartData(this.group_id);
+		activeShow.set('monthly');
+		isLoading.set(true);
+		fillChartData();
 	}
 })

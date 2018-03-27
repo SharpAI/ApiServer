@@ -82,6 +82,11 @@ Template.homePage.events({
   'click #scanimage': function (event) {
     event.stopImmediatePropagation();
     return DecodeImageFromAlum();
+  },
+  // 周报 / 月报 查看
+  'click .goGroupReporter': function(event) {
+    event.stopImmediatePropagation();
+    return PUB.page('/comReporter/'+ this._id);
   }
 })
 
