@@ -70,7 +70,7 @@ if Meteor.isClient
       if channel is channelName
         return true
     display_footer:()->
-      show_foot_url = ['/','/message','/timeline', '/explore', '/user']
+      show_foot_url = ['/','/message','/timeline', '/explore', '/user','/faces']
       console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
       setTimeout(
         ()->
@@ -198,6 +198,8 @@ if Meteor.isClient
         )
         return
       PUB.page('/explore')
+    'click #faces':(e)->
+      PUB.page('/faces')
     'click #bell':(e)->
       Meteor.defer ()->
         me = Meteor.user()

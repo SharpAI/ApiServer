@@ -635,6 +635,11 @@ if Meteor.isClient
     Router.route '/groupUserHide/:_id',()->
       this.render 'groupUserHide'
       return
+
+    Router.route '/faces', ()->
+      Session.set 'channel','faces'
+      this.render 'faces'
+      return
 if Meteor.isServer
   request = Meteor.npmRequire('request')
   Fiber = Meteor.npmRequire('fibers')
@@ -1312,6 +1317,17 @@ if Meteor.isServer
   #     ''
   #   )
 
+  # 对data 进行处理, data 必须是数组
+  insertFaces = (group_id, uuid, faces)->
+    device = Devices.findOne({uuid: uuid})
+    Faces.insert({
+      group_id: group_id,
+      uuid: uuid,
+      device_name: device.name,
+      faces: faces,
+      createdAt: new Date()
+    })
+    
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
       img_url = this.params.query.img_url
@@ -2566,6 +2582,32 @@ if Meteor.isServer
     this.response.end(JSON.stringify({result: 'ok'}))
   )
   
+  # Faces API 
+  # group_id: '',
+  # uuid: '',
+  # faces :[{
+  #   'id': id,
+  #   'uuid': uuid,
+  #   'group_id': current_groupid,
+  #   'img_url': url,
+  #   'position': position,
+  #   'type': img_type,
+  #   'current_ts': int(time.time()*1000),
+  #   'accuracy': accuracy,
+  #   'fuzziness': fuzziness,
+  #   'sqlid': sqlId,
+  #   'style': style,
+  #   'tid': tid,
+  #   'img_ts': img_ts,
+  #   'p_ids': p_ids,
+  # }]
+  Router.route('/restapi/workai/faces').post(()->
+    data = this.request.body
+    if data.group_id and data.uuid and data.faces and data.faces.length > 0
+      insertFaces(data.group_id, data.uuid, data.faces)
+    this.response.end('{"result": "ok"}\n')
+  )
+
   # 定义相应的mailgun webhook, dropped,hardbounces,unsubscribe 下次不再向相应的邮件地址发信
   # docs: https://documentation.mailgun.com/en/latest/user_manual.html#webhooks
   @mailGunSendHooks = (address, type, reason)->

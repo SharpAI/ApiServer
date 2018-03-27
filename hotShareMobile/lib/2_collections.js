@@ -179,6 +179,7 @@ UnavailableEmails = new Meteor.Collection('unavailableEmails');
  */
 
 
+Faces = new Meteor.Collection('faces');
 
 if(Meteor.isServer){
   WorkAIUserRelations.allow({
@@ -222,6 +223,22 @@ if(Meteor.isServer){
     }
   });
 
+  Meteor.publish('getFaces', function (limit) {
+      if(!this.userId){
+          return this.ready();
+      }
+
+      var limit = limit || 10;
+      var groupIds = [];
+      SimpleChat.GroupUsers.find({user_id: this.userId}).forEach(function (item) {
+          groupIds.push(item.group_id);
+      });
+
+      return [
+          SimpleChat.GroupUsers.find({user_id: this.userId}),
+          Faces.find({group_id: {$in: groupIds}},{sort: {createdAt: -1}, limit: limit})
+      ];
+  })
   // 发布：纠错
   Meteor.publish('clusteringLists', function(group_id, faceId, limit){
     if(!this.userId || !group_id || !faceId){
