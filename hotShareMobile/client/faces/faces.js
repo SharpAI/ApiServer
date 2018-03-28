@@ -32,16 +32,27 @@ Template.faces.helpers({
       return true;
     }
     return false;
-  }
+  },
+  formatDate: function(){
+    var date = new Date(this.img_ts);
+    var group_id = this.group_id;
+    var time_offset = 8;
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    console.log(group);
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+    return date.shortTime(time_offset)
+  },
 });
 
 Template.faces.events({
   'click .singleLeft': function (e) {
-    Faces.remove({_id: this._id});
+    Meteor.call('faceLabelAsUnknown', this._id);
   },
   'click .singleRight': function (e) {
     var self = this;
-    // TODO: set to person
+    Meteor.call('faceLabelAsPerson', self);
   },
   'click .multiLeft': function (e) {
 

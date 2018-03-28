@@ -10,18 +10,18 @@
 
     {{#if data}}
       <h2 class="face-title">发现新人</h2>
-      {{#if isMultiFaces data}}
+      <!--{{#if isMultiFaces data}}
         <div class="multiFacesBox">
         {{#each data.faces}}
           {{> multiFaces}}
         {{/each}}
         <button id="completeThisLabel">完成</button>
         </div>
-      {{else}}
+      {{else}}-->
         <div class="singleFacesBox">
-        {{> singleFaces getFace data}}
+        {{> singleFaces data}}
         </div>
-      {{/if}}
+      <!--{{/if}}-->
     {{else}}
       <p style="margin-top: 20%; text-align: center;">暂无数据</p>
     {{/if}}
@@ -40,8 +40,8 @@
     <div class="icon">
       <img src="{{img_url}}" />
     </div>
-    <p>Today 14:35</p>
-    <p>讯动进</p>
+    <p>{{formatDate}}</p>
+    <p>{{device_name}}</p>
   </div>
   <div class="face-ft">
     <p>你认识这个人吗？</p>
@@ -67,8 +67,8 @@
       <div class="icon">
         <img src="{{img_url}}" />
       </div>
-      <p class="time">Today 14:35</p>
-      <p>讯动进</p>
+      <p class="time">{{formatDate}}</p>
+      <p>{{device_name}}</p>
     </div>
     <div class="face-ft">
       <p>你认识这个人吗？</p>

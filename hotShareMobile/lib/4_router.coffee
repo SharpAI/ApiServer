@@ -1318,15 +1318,14 @@ if Meteor.isServer
   #   )
 
   # 对data 进行处理, data 必须是数组
-  insertFaces = (group_id, uuid, faces)->
-    device = Devices.findOne({uuid: uuid})
-    Faces.insert({
-      group_id: group_id,
-      uuid: uuid,
-      device_name: device.name,
-      faces: faces,
-      createdAt: new Date()
-    })
+  # 对data 进行处理, data 必须是数组
+  insertFaces = (face)->
+    device = Devices.findOne({uuid: face.uuid})
+    if device and device.name 
+      face.device_name = device.name
+    face.createdAt = new Date()
+
+    Faces.insert(face)
     
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
@@ -2583,9 +2582,7 @@ if Meteor.isServer
   )
   
   # Faces API 
-  # group_id: '',
-  # uuid: '',
-  # faces :[{
+  # [{
   #   'id': id,
   #   'uuid': uuid,
   #   'group_id': current_groupid,
@@ -2601,11 +2598,16 @@ if Meteor.isServer
   #   'img_ts': img_ts,
   #   'p_ids': p_ids,
   # }]
-  Router.route('/restapi/workai/faces').post(()->
+  Router.route('/restapi/workai/faces',{where:'server'}).post(()->
     data = this.request.body
-    if data.group_id and data.uuid and data.faces and data.faces.length > 0
-      insertFaces(data.group_id, data.uuid, data.faces)
-    this.response.end('{"result": "ok"}\n')
+    console.log(data)
+    if (typeof data is 'object' and data.constructor is Array)
+      data.forEach((face)->
+        insertFaces(face)
+      )
+      this.response.end('{"result": "ok"}\n')
+    else
+      this.response.end('{"result": "ok", "reason": "params must be an Array"}\n')
   )
 
   # 定义相应的mailgun webhook, dropped,hardbounces,unsubscribe 下次不再向相应的邮件地址发信
