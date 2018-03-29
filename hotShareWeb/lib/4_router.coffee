@@ -1115,7 +1115,7 @@ if Meteor.isServer
   #   'img_ts': img_ts,
   #   'p_ids': p_ids,
   # }]
-  Router.route('/restapi/workai/faces').post(()->
+  Router.route('/restapi/workai/faces', {where: 'server'}).post(()->
     data = this.request.body
     if (typeof data is 'object' and data.constructor is Array)
       data.forEach((face)->
