@@ -213,7 +213,7 @@ Template.deviceDashPoppage.events({
     }
 
     if (deviceLists && deviceLists.length == 1 && deviceLists[0].uuid) {
-      return PUB.page('/timelineAlbum/'+deviceLists[index].uuid+'?pid='+personId);
+      return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?pid='+personId);
     } else {
       var options = {
         title: '选择设备以修改签到时间',
