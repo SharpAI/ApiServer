@@ -24,10 +24,6 @@ if(Meteor.isServer){
         time_offset = group.offsetTimeZone;
       }
 
-      if (time_offset < 0) {
-        date = Date.UTC(now.getFullYear(),now.getMonth(), (now.getDate() - 1), 0, 0, 0, 0);
-      }
-
       var job_report = Assets.getText('email/job-report.html');
       job_report = job_report.replaceAll('{{company_name}}', group.name);
       job_report = job_report.replaceAll('{{job_date}}', new Date(date).toISOString().split('T')[0]);
@@ -53,22 +49,20 @@ if(Meteor.isServer){
       if (workStatus) {
         workStatus.forEach(function(ws) {
           var pContentCheck = Assets.getText('email/job-checkin-item.html');
-          var strInTime = '';
-          if(ws.in_time && ws.in_time != 0) {
-            strInTime = new Date(ws.in_time);
-            strInTime = strInTime.shortTime(time_offset, true);
 
-            var in_img = ws.in_image ? ws.in_image: ws.out_image;
-            if(in_img) {
-              pContentCheck = pContentCheck.replaceAll('{{person_in_time}}', strInTime);
-              pContentCheck = pContentCheck.replace('{{person_name}}', ws.person_name);
-              pContentCheck = pContentCheck.replace('{{person_in_image}}', in_img);
-              
-              checkin_count += 1;
-              checkin_content += pContentCheck;
-              check_names.push(ws.person_name);
-            }
-          }
+          var in_time = ws.in_time ? ws.in_time : ws.out_time; 
+          var in_img = ws.in_image ? ws.in_image: ws.out_image;
+
+          var strInTime = new Date(in_time);
+          strInTime = strInTime.shortTime(time_offset, true);
+
+          pContentCheck = pContentCheck.replaceAll('{{person_in_time}}', strInTime);
+          pContentCheck = pContentCheck.replace('{{person_name}}', ws.person_name);
+          pContentCheck = pContentCheck.replace('{{person_in_image}}', in_img);
+          
+          checkin_count += 1;
+          checkin_content += pContentCheck;
+          check_names.push(ws.person_name);
         });
       }
 
@@ -122,9 +116,7 @@ if(Meteor.isServer){
       return local_now;
     }
 
-    function sendJobReport(time_offset) {
-      console.log('sendJobReport, current timeOffsetZone is '+time_offset);
-
+    function sendJobReport() {
       try {
         var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
         groups.forEach(function(group) {
@@ -135,6 +127,7 @@ if(Meteor.isServer){
 
           var local_time = DateTimezone(time_offset);
           if(local_time.getHours() == 12) { // 群组本地时间 12 点 发送
+            console.log('sendJobReport, and group_id is '+group._id+', and current timeOffsetZone is '+time_offset);
             console.log(group._id, group.report_emails);
             sendGroupJobReport(group);
           }
@@ -158,7 +151,7 @@ if(Meteor.isServer){
         return parser.text('every 1 hour');
       },
       job: function(){
-        sendJobReport(8);
+        sendJobReport();
         return 1;
       }
     });
