@@ -52,17 +52,18 @@ if(Meteor.isServer){
 
           var in_time = ws.in_time ? ws.in_time : ws.out_time; 
           var in_img = ws.in_image ? ws.in_image: ws.out_image;
+          if (in_time && in_img) {
+            var strInTime = new Date(in_time);
+            strInTime = strInTime.shortTime(time_offset, true);
 
-          var strInTime = new Date(in_time);
-          strInTime = strInTime.shortTime(time_offset, true);
-
-          pContentCheck = pContentCheck.replaceAll('{{person_in_time}}', strInTime);
-          pContentCheck = pContentCheck.replace('{{person_name}}', ws.person_name);
-          pContentCheck = pContentCheck.replace('{{person_in_image}}', in_img);
-          
-          checkin_count += 1;
-          checkin_content += pContentCheck;
-          check_names.push(ws.person_name);
+            pContentCheck = pContentCheck.replaceAll('{{person_in_time}}', strInTime);
+            pContentCheck = pContentCheck.replace('{{person_name}}', ws.person_name);
+            pContentCheck = pContentCheck.replace('{{person_in_image}}', in_img);
+            
+            checkin_count += 1;
+            checkin_content += pContentCheck;
+            check_names.push(ws.person_name);
+          }
         });
       }
 
