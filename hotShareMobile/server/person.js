@@ -1625,6 +1625,19 @@ Meteor.methods({
       });
     }
   },
+  'resetMemberWorkStatus': function(_id) {
+    return WorkStatus.update({_id: _id},{
+      $set:{
+        status: 'out',
+        in_status: 'unknown',
+        out_status: 'unknown',
+        in_time: null,
+        out_time: null,
+        in_image: '',
+        out_image: ''
+      }
+    });
+  }
   // 'cleanLeftRelationAndStatusDate': function(){
   //   // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
   //   cleanLeftRelationAndStatusDate();

@@ -201,6 +201,7 @@ var checkInOutWithOutName = function(type,name,taId,taName){
 var setLists = function(overlay) {
   var timelineAlbumCounts = 0;
   var uuid = Router.current().params._uuid;
+  var person_id = Router.current().params.query.pid;
   var _lists = timelineLists.get() || [];
   var ids = timelineIds.get() || [];
   if(overlay){
@@ -232,10 +233,16 @@ var setLists = function(overlay) {
       }
 
       if( shouldContinue ) {
-        item.perMin[x].forEach(function(img){
+        var perMinList = item.perMin[x];
+        for (var i=0; i <  perMinList.length; i++) {
+          var img = perMinList[i];
           img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
           var index = personIds.indexOf(img.person_id);
           if( !(onlyShowUnknown.get() && img.person_name) && ids.indexOf(img.img_url) < 0 ){
+            // if(person_id && img.person_id != person_id ) { // 修改某人签到信息时的处理
+            //   continue;
+            // }
+
             if(index < 0){
               personIds.push(img.person_id)
               tmpObj.images.push(img);
@@ -246,7 +253,7 @@ var setLists = function(overlay) {
             }
             ids.push(img.img_url);
           }
-        });
+        }
       }
       if(tmpObj.images.length > 0){
         tmpArr.push(tmpObj);
@@ -628,9 +635,43 @@ Template.timelineAlbum.events({
     }
     data.wantModify = Session.get('wantModify');
 
-    // 帮别人签到
-    var taId = Router.current().params.query.taId;
     var msgObj;
+
+    var taId = Router.current().params.query.taId;
+    var person_id = Router.current().params.query.pid;
+
+    // 修改指定的人的上下班时间
+    if (person_id) {
+      person_name = Session.get('modifyMyStatus_person_name');
+
+      person_info.name = person_name;
+
+      data.wantModify = true;
+      data.person_info = person_info;
+
+      PUB.confirm('是否将时间记录到「'+ person_name +'」?',function(){
+        Meteor.call('ai-checkin-out',data,function(err, res){
+          PUB.hideWaitLoading();
+          if(err){
+            PUB.toast('记录失败，请重试');
+            console.log('ai-checkin-out error:' + err);
+            return;
+          }
+
+          if(res && res.result == 'succ'){
+            PUB.toast('已记录');
+            return PUB.back();
+          } else {
+            return navigator.notification.confirm(res.text,function(index){
+
+            },res.reason,['知道了']);
+          }
+        });
+        Session.get('modifyMyStatus_person_name', null);
+      });
+      return;
+    }
+    // 帮别人签到
     if(taId){
       data.user_id = taId;
 
