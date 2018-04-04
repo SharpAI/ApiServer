@@ -1625,8 +1625,9 @@ Meteor.methods({
       });
     }
   },
-  'resetMemberWorkStatus': function(_id) {
-    return WorkStatus.update({_id: _id},{
+  'resetMemberWorkStatus': function(_id, person_id) {
+    // Step 1. reset workStatus 
+    WorkStatus.update({_id: _id},{
       $set:{
         status: 'out',
         in_status: 'unknown',
@@ -1637,6 +1638,26 @@ Meteor.methods({
         out_image: ''
       }
     });
+    // Step 2. reset workai user relation
+    WorkAIUserRelations.update({'ai_persons.id': person_id},{
+      $set:{
+        in_uuid:"",
+        out_uuid:"",
+        ai_lastest_in_time: null,
+        ai_lastest_in_image: "",
+        ai_in_time: null,
+        ai_out_time: null,
+        checkin_time: null,
+        checkout_time: null,
+        ai_in_image: "",
+        ai_out_image: "",
+        checkin_image: "",
+        checkout_image: "",
+        checkin_video: "",
+        checkout_video: "",
+      }
+    });
+    return true;
   }
   // 'cleanLeftRelationAndStatusDate': function(){
   //   // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
