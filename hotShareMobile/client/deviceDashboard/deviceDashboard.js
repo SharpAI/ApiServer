@@ -190,10 +190,14 @@ Template.deviceDashPoppage.events({
   'click .resetWorkStatus': function (e) {
     e.stopImmediatePropagation();
     PUB.confirm('是否要移除该成员当前签到信息？请确认！', function() {
-      Meteor.call('resetMemberWorkStatus',e.currentTarget.id,function(error, result) {
+      var obj = popObj.get();
+      var personId = obj.person_id[0].id; 
+
+      Meteor.call('resetMemberWorkStatus',e.currentTarget.id, personId, function(error, result) {
         if (error) {
           return PUB.toast('请重试~');
         }
+        $('.deviceDashPoppage').fadeOut();
         return PUB.toast('已移除');
       });
     });
@@ -215,15 +219,20 @@ Template.deviceDashPoppage.events({
     if (deviceLists && deviceLists.length == 1 && deviceLists[0].uuid) {
       return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?pid='+personId);
     } else {
+      var buttonLabels = [];
+      deviceLists.forEach(function(item) {
+        buttonLabels.push(item.name);
+      });
       var options = {
         title: '选择设备以修改签到时间',
-        buttonLabels: deviceLists,
+        buttonLabels: buttonLabels,
         addCancelButtonWithLabel: '取消',
         androidEnableCancelButton: true
       };
 
       window.plugins.actionsheet.show(options, function(index) {
-        return PUB.page('/timelineAlbum/'+deviceLists[index].uuid+'?pid='+personId);
+        $('.deviceDashPoppage').fadeOut();
+        return PUB.page('/timelineAlbum/'+deviceLists[index-1].uuid+'?pid='+personId);
       });
     }
 
