@@ -22,6 +22,8 @@ Template.deviceDashboard.onRendered(function () {
   date.set(_date); //UTC日期
   today.set(_today);
 
+  Meteor.subscribe('device_by_groupId', group_id);
+  
   Meteor.subscribe('get-group', group_id,{
     onReady: function(){
       var _group = SimpleChat.Groups.findOne({_id: group_id});
