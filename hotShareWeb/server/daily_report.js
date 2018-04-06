@@ -1,5 +1,7 @@
 if(Meteor.isServer){
   Meteor.startup(function(){
+    //For local test purpose. also change the last line in Meteor.startup() to send email
+    //process.env.MAIL_URL = 'smtp://postmaster%40tiegushi.com:a7e104e236965118d8f1bd3268f36d8c@smtp.mailgun.org:587'
     String.prototype.replaceAll = function(s1,s2) {
       return this.replace(new RegExp(s1,"gm"),s2);
     };
@@ -87,11 +89,11 @@ if(Meteor.isServer){
       try {
           Email.send({
               to: to,
-              from: '故事贴<notify@mail.tiegushi.com>',
+              from: '来了吗<notify@mail.tiegushi.com>',
               subject: subject,
               html: job_report,
               envelope: {
-                  from: "故事贴<notify@mail.tiegushi.com>",
+                  from: "来了吗<notify@mail.tiegushi.com>",
                   to: to + "<" + to + ">"
               }
           });
@@ -118,6 +120,7 @@ if(Meteor.isServer){
     }
 
     function sendJobReport() {
+      console.log("send email out");
       try {
         var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
         groups.forEach(function(group) {
@@ -127,11 +130,11 @@ if(Meteor.isServer){
           }
 
           var local_time = DateTimezone(time_offset);
-          if(local_time.getHours() == 12) { // 群组本地时间 12 点 发送
+          //if(local_time.getHours() == 12) { // 群组本地时间 12 点 发送
             console.log('sendJobReport, and group_id is '+group._id+', and current timeOffsetZone is '+time_offset);
             console.log(group._id, group.report_emails);
             sendGroupJobReport(group);
-          }
+          //}
         });
       }
       catch(ex) {
@@ -168,5 +171,7 @@ if(Meteor.isServer){
         sendGroupJobReport(group, emails);
       }
     });
+  //
+  //sendJobReport();
   });
 }
