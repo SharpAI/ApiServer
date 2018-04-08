@@ -1,4 +1,5 @@
 <template name="workStatusPopPage">
+{{> _checkGroupDevice}}
 <div class="workStatusPopPage">
   <div class="workStatusHead">
     <!--<div class="imgHelper">
@@ -17,6 +18,8 @@
   </div>
   <div class="swichToCluster" align="right" style="color:blue; padding-right:20px;">
     <button id="switch" type="button">查看未标注的人</button>
+    {{#if _checkGroupDevice_status}}
+    {{/if}}
   </div>
   {{#if isLoading}}
     <div class="loading"><img src="/img/company-loading.gif"/><p>加载中</p></div>

@@ -1367,11 +1367,17 @@ Template._checkGroupDevice.events({
   'click ._cgd_device_item': function(e) {
     $('._checkGroupDevice').fadeOut();
     Session.set('_groupChatDeviceLists',[]);
+    Session.set('_checkGroupDevice_status', 'status_open_device');
+    console.log("_checkGroupDevice_status set to status_open_device")
     return PUB.page('/timelineAlbum/'+this.uuid+'?from=groupchat');
   },
   'click ._checkGroupDevice, click ._cgd_close': function(e) {
     Session.set('_groupChatDeviceLists',[]);
     return $('._checkGroupDevice').fadeOut();
+  },
+  'click ._cgd_close': function(e) {
+    Session.set('_checkGroupDevice_status', 'status_open_close');
+    console.log("_checkGroupDevice_status set to status_open_close")
   }
 });
 
@@ -1384,7 +1390,6 @@ Template._simpleChatToChat.events({
   'click #labelNewPerson': function(e) {
     // get the device list
     var data = page_data;
-    console.log('==sr==. data is ',data);
 
     var deviceLists = Devices.find({groupId: data.id}).fetch();
     if (deviceLists && deviceLists.length > 0) {

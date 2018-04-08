@@ -196,6 +196,7 @@ if Meteor.isClient
     #     Session.set 'channel','homePage'
     #   return
     Router.route '/timelineAlbum/:_uuid',()->
+      console.log "TimeLine album: run into this page"
       this.render 'timelineAlbum'
       return
     Router.route '/device/dashboard/:group_id',()->

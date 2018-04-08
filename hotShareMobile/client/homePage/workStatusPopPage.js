@@ -15,6 +15,12 @@ workStatusPopPage = {
     var data = Session.get('workstatus_group')
     view = Blaze.renderWithData(Template.workStatusPopPage, data, document.body);
   },
+  display: function(){
+    $('.workStatusPopPage').show();
+  },
+  hide: function(){
+    $('.workStatusPopPage').hide();
+  },
   close: function(){
     if(view){
       Blaze.remove(view);
@@ -251,14 +257,46 @@ Template.workStatusPopPage.helpers({
     var time = new Date(this.ts);
     return time.shortTime(time_offset,true);
   },
+  _checkGroupDevice_status: function() {
+    var status = Session.get('_checkGroupDevice_status');
+    console.log("_checkGroupDevice_status status="+status);
+    if (status == 'status_open_device') {
+      $('.workStatusPopPage').css('display', 'none')
+    }
+  }
 });
 
 
 Template.workStatusPopPage.events({
-  'click #switch': function() {
+  'click #switch': function(e) {
     //console.log("Frank.switch: this="+JSON.stringify(this));
+    /*
     Session.set('clusterworkstatus_group', this);
     return clusterWorkStatusPopPage.show();
+    */
+    // get the device list
+    var group_id = Session.get('modifyMyStatus_group_id') || group.get()._id;
+    console.log('group id is: ',group_id);
+
+    var deviceLists = Devices.find({groupId: group_id}).fetch();
+    console.log("device lists is: ", JSON.stringify(deviceLists));
+
+    if (deviceLists && deviceLists.length > 0) {
+      if(deviceLists.length == 1 && deviceLists[0].uuid) {
+        console.log("enter this device timeline")
+        workStatusPopPage.close();       
+        return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?from=groupchat');
+      } else {       
+        console.log("select a device")
+        Session.set('_groupChatDeviceLists',deviceLists);
+        //workStatusPopPage.close();
+        $('._checkGroupDevice').fadeIn();
+        //workStatusPopPage.hide();
+        $('.workStatusPopPage').css('z-index', 0)
+        return;
+      }
+    }
+    return PUB.toast('该群组下暂无设备');
   },
   'click #closeStausPop': function(){
     return workStatusPopPage.close();
