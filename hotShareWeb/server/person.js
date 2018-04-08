@@ -1625,7 +1625,7 @@ Meteor.methods({
       });
     }
   },
-  'resetMemberWorkStatus': function(_id) {
+  'resetMemberWorkStatus': function(_id,person_id) {
     // Step 1. reset workStatus 
     WorkStatus.update({_id: _id},{
       $set:{
