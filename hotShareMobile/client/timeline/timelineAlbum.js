@@ -1011,7 +1011,7 @@ Template.timelineAlbum.events({
 
           setNames.push({
             uuid: uuid, 
-            id: item.person_id, 
+            id: faceId, //item.person_id,
             url: item.img_url, 
             name: name,
             sqlid:item.style,
