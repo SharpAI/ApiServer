@@ -1,0 +1,20 @@
+messages = {
+  form:{
+    id:,
+    name:,
+    icon:
+  },
+  to: {
+    id:,
+    name:,
+    icon:
+  }
+  to_type: 'user/group'
+  type: 'images/text',
+  text: '',
+  image: '',
+  thumbnail: '',
+  create_time:,
+  is_read:,
+  read_time:
+}

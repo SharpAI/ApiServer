@@ -1,0 +1,1 @@
+TimelineLists = new Mongo.Collection("timelinelists");

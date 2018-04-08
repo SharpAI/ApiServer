@@ -1,0 +1,8 @@
+groups = {
+  name:,
+  icon:,
+  describe:,
+  create_time:
+  last_text:,
+  last_time:
+}
