@@ -985,9 +985,11 @@ Template.timelineAlbum.events({
         
         var faceId = null;
         if (res && res.faceId){
-          faceId = res.faceId
+          faceId = res.faceId;
+        }else if (_lists[0].person_name != null && _lists[0].person_name != undefined) {
+          faceId = new Mongo.ObjectID()._str;
         }else {
-          faceId = _lists[0].person_id
+          faceId = _lists[0].person_id;
         }
 
         _lists.forEach(function(item) {
