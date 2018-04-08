@@ -288,6 +288,95 @@ var setLists = function(overlay) {
   timelineLists.set(_lists);
 };
 
+var treatAsTrainData = function(name, data) {
+  if (!name) {
+    return;
+  }
+
+  var _lists = [{person_name: name,
+   person_id: data.face_id,
+   img_url: data.checkin_image, 
+   style: data.person_info.style, 
+   sqlit: data.person_info.sqlid,
+   ts: data.person_info.ts,
+   accuracy: data.person_info.accuracy,
+   fuzziness: data.person_info.fuzziness}];
+  var uuid   = Router.current().params._uuid;
+  var device = Devices.findOne({uuid: uuid});
+  var group_id  = device.groupId;
+
+  var setNames = [];
+  Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res){
+    if (err || !res){
+      return PUB.toast('标注失败');
+    }
+    
+    var faceId = null;
+    if (res && res.faceId){
+      faceId = res.faceId;
+    }else if (_lists[0].person_name != null && _lists[0].person_name != undefined) {
+      faceId = new Mongo.ObjectID()._str;
+    }else {
+      faceId = _lists[0].person_id;
+    }
+
+    _lists.forEach(function(item) {
+      // 发送消息给平板
+      var trainsetObj = {
+        group_id: group_id,
+        type: 'trainset',
+        url: item.img_url,
+        person_id: item.person_id,
+        device_id: uuid,
+        face_id: faceId,
+        drop: false,
+        img_type: 'face',
+        style:item.style,
+        sqlid:item.sqlid
+      };
+      console.log("==sr==. timeLine multiSelect: " + JSON.stringify(trainsetObj));
+      sendMqttMessage('/device/'+group_id, trainsetObj);
+
+      setNames.push({
+        uuid: uuid, 
+        id: faceId, //item.person_id,
+        url: item.img_url, 
+        name: name,
+        sqlid:item.style,
+        style:item.sqlid
+      });
+    });
+
+    if (setNames.length > 0){
+      Meteor.call('set-person-names', group_id, setNames);
+    }
+
+    _lists.forEach(function(item) {
+      try {
+        var person_info = {
+          'uuid': uuid,
+          'name': name,
+          'group_id':group_id,
+          'img_url': item.img_url,
+          'type': 'face',
+          'ts': item.ts,
+          'accuracy': item.accuracy,
+          'fuzziness': item.fuzziness,
+          'sqlid':item.sqlid,
+          'style':item.style
+        };
+        var data = {
+          face_id: item.person_id,
+          person_info: person_info,
+          formLabel: true
+        };
+        
+        Meteor.call('ai-checkin-out',data,function(err,res){});
+      } catch(e){}
+    });
+  });
+};
+
 Template.timelineAlbum.onRendered(function(){
   initTimeRangeSet();
 
@@ -921,6 +1010,7 @@ Template.timelineAlbum.events({
     var data = Session.get('setPicturePersonNameData');
     var taId = e.currentTarget.id;
     var taName = $(e.currentTarget).data('name');
+    treatAsTrainData(person_name, data);
     return checkInOutWithOutName('personItem',person_name, taId, taName);
   },
   // 添加组员

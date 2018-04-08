@@ -113,9 +113,9 @@ Template.deviceDashboard.helpers({
     if(this.in_time) {
       ts = this.in_time;
     }
-    if(this.out_time) {
+    /*if(this.out_time) {
       ts = this.out_time;
-    }
+    }*/
 
     if(!ts || ts == null || ts == 0){
       return '-/-';
