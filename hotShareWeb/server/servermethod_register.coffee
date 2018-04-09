@@ -129,7 +129,12 @@ if Meteor.isServer
             userLists.push(userId)
             Recommends.update({_id:item._id},{$set: {readUsers: userLists}})
         return {msg: 'success'}
-
+      "isDeviceInDB": (uuid)->
+        try
+          return Devices.find({uuid: uuid}).count() > 0
+        catch error
+          console.log('checke device in db Err=', JSON.stringify(error))
+          return false
       'pushRecommendStoryToReaderGroups': (postId, storyId, userId)->
         if this.userId is null or postId is undefined or postId is null or storyId is undefined or storyId is null
           return false
