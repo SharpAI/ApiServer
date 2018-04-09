@@ -76,10 +76,11 @@ if Meteor.isClient
       # 1.公司名称修改
       # 2.解散公司
       # 3.群管理员管理权限
-      group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
-      if group and group.creator and group.creator.id is Meteor.userId()
-        return true
-      return false
+      #group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
+      #if group and group.creator and group.creator.id is Meteor.userId()
+      #  return true
+      #return false
+      return true
     userIsGroupAdmin:()->
       groupUser = SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'), user_id: Session.get("simpleUserProfileUserId")})
       if groupUser and groupUser.isGroupAdmin
