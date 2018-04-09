@@ -1428,13 +1428,24 @@ if Meteor.isServer
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
       if (msg_type == 'text' and msg_text)
-        user = Meteor.users.findOne({username: uuid})
-        unless user
-          return this.response.end('{"result": "failed", "cause": "device not registered"}\n')
+        user = null
+        userGroup = null
 
-        userGroup = SimpleChat.GroupUsers.findOne({user_id: user._id, group_id: group_id})
-        unless userGroup or userGroup.group_id
-          return this.response.end('{"result": "failed", "cause": "group not found"}\n')
+        device = Devices.findOne({"uuid" : uuid})
+        if device and device.groupId
+          user = {'_id': device._id, 'username': device.name, 'profile': {'icon': '/device_icon_192.png'}}
+
+          userGroup = SimpleChat.GroupUsers.findOne({group_id: group_id})
+          unless userGroup or userGroup.group_id
+            return this.response.end('{"result": "failed", "cause": "group not found"}\n')
+        else
+          user = Meteor.users.findOne({username: uuid})
+          unless user
+            return this.response.end('{"result": "failed", "cause": "device not registered"}\n')
+
+          userGroup = SimpleChat.GroupUsers.findOne({user_id: user._id, group_id: group_id})
+          unless userGroup or userGroup.group_id
+            return this.response.end('{"result": "failed", "cause": "group not found"}\n')
 
         sendMqttMessage('/msg/g/'+ userGroup.group_id, {
           _id: new Mongo.ObjectID()._str
