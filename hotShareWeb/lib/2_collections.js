@@ -70,7 +70,7 @@ NLPTextClassName = {
 }
  */
 
-//点圈用户和平板识别出的人的关系表 
+//点圈用户和平板识别出的人的关系表
 WorkAIUserRelations = new Meteor.Collection('workaiUserRelations');
 
 /*
@@ -119,7 +119,7 @@ DeviceTimeLine = new Meteor.Collection('device_timeline');
       "img_url":"",
       "app_user_id":"",// 关联过有，未关联没有
       "app_user_name":"",// 关联过有，未关联没有
-      "sqlid": "sqlid", 
+      "sqlid": "sqlid",
       "style": "style",
       "ts":""
     }],
@@ -172,10 +172,35 @@ UnavailableEmails = new Meteor.Collection('unavailableEmails');
   reason:'xx',
 }
  */
+Cameras = new Meteor.Collection('cameras');
 
 Faces = new Meteor.Collection('faces');
 
 if(Meteor.isServer){
+  Cameras.allow({
+    insert: function(userId, doc){
+        return userId == doc.userId;
+    },
+    update: function (userId, doc, fields, modifier) {
+        return userId == doc.userId;
+    },
+    remove: function(userId, doc){
+        return userId == doc.userId;
+    }
+  })
+
+  Devices.allow({
+      insert: function(userId, doc){
+          return userId == doc.userId;
+      },
+      update: function(userId,doc, fields, modifier) {
+          return userId == doc.userId;
+      },
+      remove: function(userId, doc){
+          return userId == doc.userId;
+      }
+  });
+
   WorkAIUserRelations.allow({
     insert: function (userId, doc) {
         return userId == doc.app_user_id;
@@ -242,7 +267,7 @@ if(Meteor.isServer){
     var limit = limit || 30;
     return Clustering.find({group_id: group_id, faceId: faceId, marked: {$ne: true}},{limit: limit})
   });
-  
+
   // 发布 group 已经标注的person 信息
   Meteor.publish('group_person', function(group_id, limit){
     if(!this.userId || !group_id){
@@ -275,7 +300,7 @@ if(Meteor.isServer){
     var limit = limit || 50;
     return ClusterLableDadaSet.find({group_id: group_id,name:name},{limit: limit,sort:{createAt: -1}});
   });
-  
+
   Meteor.publish('people_new', function(){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
@@ -366,7 +391,7 @@ if(Meteor.isServer){
     };
     return WorkStatus.find({ group_id:group_id, date: {$in: dates} });
   });
-  
+
   WorkStatus.allow({
       update: function(userId, doc, fields, modifier){
           //if(userId === doc.app_user_id){
@@ -388,7 +413,7 @@ if(Meteor.isServer){
                 Devices.find({groupId: {$in:groupIds}}),
                 SimpleChat.GroupUsers.find({user_id:this.userId})
             ];
-        } 
+        }
     }
     return this.ready();
   });
@@ -396,10 +421,10 @@ if(Meteor.isServer){
  Meteor.publish('device_by_groupId', function(groupId) {
     if (!this.userId || !groupId) {
         return this.ready();
-    } 
+    }
     return Devices.find({groupId: groupId});
  });
- 
+
  Meteor.publish('group_workstatus', function(group_id, date){
      if (!this.userId) {
          return this.ready();
@@ -427,7 +452,7 @@ if(Meteor.isServer){
          Meteor.users.find({username: uuid})
      ];
  });
- 
+
  Meteor.publish('group-device-timeline', function(group_id,timeRange){
      if(!this.userId || !group_id || !timeRange) {
          return this.ready();
@@ -491,7 +516,7 @@ if(Meteor.isServer){
       var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});
       if(!people)
         return '';
-      
+
       return {uuid: people.uuid, id: people.id};
     },
     //获取group下的设备列表
