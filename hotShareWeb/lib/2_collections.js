@@ -493,7 +493,12 @@ if(Meteor.isServer){
         return '';
       
       return {uuid: people.uuid, id: people.id};
-    }
+    },
+    //获取group下的设备列表
+    getDeviceListByGroupId:function(group_id){
+        var deviceList =  Devices.find({groupId: group_id}).fetch();
+        return deviceList;
+     }
   });
   var Fiber = Meteor.npmRequire('fibers');
   deferSetImmediate = function(func){

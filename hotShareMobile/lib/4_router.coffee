@@ -103,6 +103,9 @@ if Meteor.isClient
       this.render 'home'
       Session.set 'channel','home'
       return
+    Router.route '/notice',()->
+      this.render 'notice'
+      return 
     Router.route '/message',()->
       this.render 'chatGroups'
       Session.set 'channel','message'
