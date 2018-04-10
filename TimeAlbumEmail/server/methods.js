@@ -15,50 +15,19 @@ function LocalDateTimezone(d, time_offset) {
     return today_now;
 }
 var AlreadySend ={};
+CurrentGroupId = null
 
 Meteor.methods({
-  sendHtmlEmail: function (to,  html) {
-    
+  sendEmail: function() {
     var gloup_id = '0a3c12765104f7c9c827f6e5'
-    now = new Date()
-    localDate = LocalDateTimezone(now, -7);
-    
-    year = localDate.getFullYear() 
-    month = localDate.getMonth()
-    day = localDate.getDate()
-    hour = localDate.getHours()
-    console.log(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 
-    localDate.getHours(), localDate.getMinutes(), localDate.getSeconds())
-    
-    key = gloup_id +"--" + year + "-" + month + "-" + day
-    console.log("key:", key)
-    
-    if (hour != 23){
-      console.log("only 23:00 can send email, return ", hour)
-     // return;
-    }
-    
-    if (AlreadySend[key] == true){
-      console.log("already send, return")
-      //return;
-    }
-    
-    AlreadySend[key] =  true
-
     var group = SimpleChat.Groups.findOne({_id: gloup_id});
-    console.log(group._id, group.report_emails);
-    
-    
-    to = group.report_emails
-    var from = '<notify@mail.tiegushi.com>';
-    var subject = 'DeepEye Daily Report';
-    
     this.unblock();
-    Email.send({
-      to: to,
-      from: from,
-      subject: subject,
-      html: html
-    });
+    
+    CurrentGroupId = gloup_id
+    
+    sendGroupJobReport(group)
   }
 });
+
+
+

@@ -48,6 +48,7 @@ Router.route( "timelines/add", function() {
     fields["createdAt"] = now
     fields["time"] = localDate.toLocaleString()
     fields["ZeroTimestamp"] = localZeroDateTimestamp
+    fields["groupId"] = '0a3c12765104f7c9c827f6e5'
     
     console.log("query", query)
     console.log("fields", fields)
