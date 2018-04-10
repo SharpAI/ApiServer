@@ -452,6 +452,9 @@ Template.timelineAlbum.onDestroyed(function(){
 
 });
 Template.timelineAlbum.helpers({
+  showHint:function(){
+    return Session.get('showHint');
+  },
   isFormGroupchat: function() {
     var formPage = Router.current().params.query.from;
     if (formPage && formPage == 'groupchat') {
@@ -592,6 +595,10 @@ Template.timelineAlbum.helpers({
 });
 
 Template.timelineAlbum.events({
+  'click #goHint':function(){
+    Session.set('notice-from','timelineAlbum');
+    Session.set('showHint',true);
+  },
   'click .back': function(){
     return PUB.back();
   },

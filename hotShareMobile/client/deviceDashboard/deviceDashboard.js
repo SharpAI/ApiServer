@@ -104,6 +104,9 @@ Template.deviceDashboard.onRendered(function () {
 });
 
 Template.deviceDashboard.helpers({
+  showHint:function(){
+    return Session.get('showHint');
+  },
   has_day_before:function(group_id){
     var lastday =  today.get() - 7 * 24 * 60 * 60 *1000; //7天前
     return theDisplayDay.get() > lastday;
@@ -191,6 +194,10 @@ Template.deviceDashboard.helpers({
 });
 
 Template.deviceDashboard.events({
+  'click #goHint':function(e,t){
+    Session.set('notice-from','deviceDashboard');
+    Session.set('showHint',true);
+  },
   'click .leftButton': function(){
     return PUB.back();
   },

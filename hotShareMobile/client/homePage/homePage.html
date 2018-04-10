@@ -8,9 +8,9 @@
         <img src="/add_more.png" height="30" >
       </div>
       <ul class="dropdown-menu" role="menu" aria-labelledby="add-more">
-        <li role="presentation"><a id="joinTestChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-users add-more-drop-item"></i>加入公司</a></li>
+        <!-- <li role="presentation"><a id="joinTestChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-users add-more-drop-item"></i>加入公司</a></li> -->
         <li role="presentation"><a id="createNewChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-comment add-more-drop-item"></i>创建公司</a></li>
-        <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫一扫</a></li>
+        <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫码加入公司</a></li>
         {{#if isAndroid}}
         <li role="presentation"><a id="scanimage" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫图片</a></li>
         {{/if}}
@@ -60,7 +60,7 @@
     </li>
     <li class="goStranger">
       <div class="icon"><img src="/stranger.png"/></div>
-      <label>公司陌生人</label>
+      <label>标注陌生人</label>
       <div class="value"><i class="fa fa-angle-right"></i></div>
     </li>
     <li class="goGroupReporter">
@@ -76,10 +76,14 @@
 </template>
 
 <template name="notice">
-    <div style="position: fixed;top:0;left:0;right:0;bottom:0;">           
-                <img id="notice_img" width="100%" height="100%" src="{{src}}" />
-                <!-- <div><img src="/creatGeroup2.jpeg"/></div>
-                <div><img src="/creatGeroup3.jpeg"/></div>          -->
+    <div style="position: fixed;top:0;left:0;right:0;bottom:0;z-index:1000">
+      <img id="notice_img" width="100%" height="100%" src="{{src}}" />
+      <div id="back" style="float:left;position:absolute;font-size:40px;color:black;opacity:0.5;top:1%">
+        <i class="fa fa-angle-left fa-fw"></i>
+      </div>
+      <!-- <div id="next" style="position: absolute;bottom:2.5%">
+        <i class="fa fa-angle-right fa-fw"></i>
+      </div> -->
     </div>
 </template>
   
