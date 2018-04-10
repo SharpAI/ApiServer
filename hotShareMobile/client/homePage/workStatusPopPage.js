@@ -260,6 +260,7 @@ Template.workStatusPopPage.helpers({
   _checkGroupDevice_status: function() {
     var status = Session.get('_checkGroupDevice_status');
     console.log("_checkGroupDevice_status status="+status);
+    $('.workStatusPopPage').css('z-index', 999990)
     if (status == 'status_open_device') {
       $('.workStatusPopPage').css('display', 'none')
     }
@@ -292,7 +293,7 @@ Template.workStatusPopPage.events({
         //workStatusPopPage.close();
         $('._checkGroupDevice').fadeIn();
         //workStatusPopPage.hide();
-        $('.workStatusPopPage').css('z-index', 0)
+        $('.workStatusPopPage').css('z-index', 2000)
         return;
       }
     }
