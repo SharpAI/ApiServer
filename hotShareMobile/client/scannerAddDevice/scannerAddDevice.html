@@ -1,0 +1,41 @@
+<template name="scannerAddDevice">
+<div class="head" style="background:none;">
+  <div class="leftButton back">
+    <i class="fa fa-angle-left fa-fw"></i>
+  </div>
+  <!--<strong class="top-home-btn active" style="width: 100%;">正在扫描...</strong>-->
+</div>
+  
+<div class="va-devices" style="position: fixed;left: 0;right: 0;height: 260px;z-index: 1;background: #002440;">
+  <div class="radar_wrapper">
+    <div class="bar"></div>
+    <div class="radial"></div>
+    <div class="hr"></div>
+    <div class="vr"></div>
+    <div class="back"></div>
+    <div class="dot1"></div>
+    <div class="dot2"></div>
+    <div class="dot3"></div>
+  </div>
+</div>
+<div class="content" style="overflow:hidden; position: relative; padding-top:260px;">
+  <!-- 已发现设备列表 Start -->
+  <ul class="boxDeviceLists">
+    <li class="ul-line">可用设备</li>
+    {{#each scanLists}}
+    <li class="boxDeviceItem scanListItem">
+      <div class="boxDeviceIcon"><i class="fa fa-mobile"></i></div>
+      {{#if isInDB}}
+          <div class="boxDeviceCheckedIcon"><i class="fa fa-pencil-square-o"></i></div>
+      {{else}}
+          <div class="boxDeviceCheckedIcon"><i class="fa fa-plus"></i></div>
+      {{/if}}
+      <h2>{{name}}</h2>
+      <p>{{getIp}}</p>
+    </li>
+    {{/each}}
+  </ul>
+  <!-- 已发现设备列表 End -->
+  
+</div>
+</template>

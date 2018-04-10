@@ -194,7 +194,8 @@ if(Meteor.isServer){
           return userId == doc.userId;
       },
       update: function(userId,doc, fields, modifier) {
-          return userId == doc.userId;
+          //return userId == doc.userId;
+          return true;
       },
       remove: function(userId, doc){
           return userId == doc.userId;

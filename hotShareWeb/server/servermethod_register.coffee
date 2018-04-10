@@ -99,6 +99,18 @@ if Meteor.isServer
       FavouritePosts.insert({postId: postId, userId: userId, createdAt: new Date(), updateAt: new Date()})
   Meteor.startup ()->
     Meteor.methods
+      "isDeviceInDB": (uuid)->
+        try
+          #return Devices.find({uuid: uuid}).count() > 0
+          item = Devices.findOne({uuid: uuid}, {fields:{groupId:1}})
+          console.log("isDeviceInDB: item="+JSON.stringify(item))
+          if item
+            return [item]
+          else
+            return []
+        catch error
+          console.log('checke device in db Err=', JSON.stringify(error))
+          return false
       "clusteringFixPersons": (ids, marked_ids)->
         try
           result1 = Clustering.update({_id: {$in: ids}},{

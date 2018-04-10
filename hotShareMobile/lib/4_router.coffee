@@ -644,6 +644,9 @@ if Meteor.isClient
       Session.set 'channel','faces'
       this.render 'faces'
       return
+    Router.route '/scannerAddDevice', ()->
+      this.render 'scannerAddDevice'
+      return
 if Meteor.isServer
   request = Meteor.npmRequire('request')
   Fiber = Meteor.npmRequire('fibers')

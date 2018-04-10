@@ -182,6 +182,19 @@ UnavailableEmails = new Meteor.Collection('unavailableEmails');
 Faces = new Meteor.Collection('faces');
 
 if(Meteor.isServer){
+  Devices.allow({
+      insert: function(userId, doc){
+          return userId == doc.userId;
+      },
+      update: function(userId,doc, fields, modifier) {
+          //return userId == doc.userId;
+          return true;
+      },
+      remove: function(userId, doc){
+          return userId == doc.userId;
+      }
+  });
+
   WorkAIUserRelations.allow({
     insert: function (userId, doc) {
         return userId == doc.app_user_id;

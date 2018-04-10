@@ -112,6 +112,10 @@ Template.homePage.events({
     event.stopImmediatePropagation();
     return DecodeImageFromAlum();
   },
+  'click #scanadddevice': function (event) {
+    event.stopImmediatePropagation();
+    return Router.go('/scannerAddDevice');
+  },
   // 周报 / 月报 查看
   'click .goGroupReporter': function (event) {
     event.stopImmediatePropagation();
