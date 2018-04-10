@@ -20,6 +20,7 @@
         {{/if}}
       </ul>
   </div>
+  <div style="font-size:16px;text-align:right;padding-right:10px;"><a style="color:rgb(0, 119, 255);" id="goHint">识别错了？</a></div>
   {{#if isLoading}}
     <div class="loading"><img src="/loading.gif"/><p>加载中</p></div>
   {{else}}
@@ -45,6 +46,9 @@
 </div>
 
 {{> deviceDashPoppage}}
+{{#if showHint}}
+{{>notice}}
+{{/if}}
 </template>
 
 <template name="deviceDashPoppage">

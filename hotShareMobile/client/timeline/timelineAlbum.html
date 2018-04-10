@@ -43,7 +43,7 @@
     {{else}}
     {{#if lists}}
     <ul class="timeLine">
-      <div style="color: #FF9800;font-size: 16px;"> 点击头像，选择您的上/下班时间</div>
+      <div style="color: #FF9800;font-size: 16px;"> 点击头像，选择您的上/下班时间&nbsp;&nbsp;&nbsp;<a id="goHint" style="color:rgb(0, 119, 255)">未识别照片?</a></div>
       <!--{{#each lists}}
       {{#if isShowTime}}
       <div class="timeLine-time"> 
@@ -235,6 +235,10 @@
     </div>
   </div>
   <!-- select person end-->
+
+  {{#if showHint}}
+  {{>notice}}
+  {{/if}}
 </template>
 
 <template name="timelineAlbumImg">

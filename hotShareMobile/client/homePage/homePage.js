@@ -100,7 +100,8 @@ Template.homePage.events({
   },
   'click #createNewChatGroups': function (event) {
     event.stopImmediatePropagation()
-    // Session.set('fromCreateNewGroups', true);
+    Session.set('fromCreateNewGroups', true);
+    Session.set('notice-from','createNewChatGroups');
     // return Router.go('/setGroupname');
     Router.go('/notice');
   },
@@ -123,23 +124,58 @@ Template.homePage.events({
   }
 })
 Template.notice.onCreated(function(){
-  this.imgArr = ["/createGroup1.png","/createGroup2.png","/createGroup3.png"];
-  this.index = new ReactiveVar(0);
+  this.curSrc = new ReactiveVar('');
+  var type = Session.get('notice-from');
+    if(type == 'timelineAlbum'){
+      this.curSrc.set('/moshengren.png');
+    }else if(type == 'deviceDashboard'){
+      this.curSrc.set('/hint.png');
+    }else if(type == 'createNewChatGroups'){
+      this.curSrc.set('/createGroup3.png');
+    }
 })
 Template.notice.helpers({
   src:function(){
     var t = Template.instance();
-    return t.imgArr[t.index.get()];
+    
+    return t.curSrc.get();
   }
 })
 Template.notice.events({
   'click #notice_img':function(e,t){
-    if(t.index.get()<t.imgArr.length-1){
-      t.index.set(t.index.get()+1);
-    }else{
-      Session.set('fromCreateNewGroups', true);
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    var t = Template.instance();
+    var type = Session.get('notice-from');
+    if(type == 'timelineAlbum'){
+      return;
+    }else if(type == 'deviceDashboard'){
+      if(t.curSrc.get()=='/hint.png'){
+        t.curSrc.set('/createGroup2.png');
+      }else{
+        Session.set('showHint',false);
+      }
+    }else if(type == 'createNewChatGroups'){
       return Router.go('/setGroupname');
     }
-    
+  },
+  'click #back':function(e,t){
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    var type = Session.get('notice-from');
+    if(type == 'timelineAlbum'){
+      Session.set('showHint',false);
+      return;
+    }
+    if(type == 'deviceDashboard'){
+      if(t.curSrc.get()=='/createGroup2.png'){
+        t.curSrc.set('/hint.png');
+      }else{
+        Session.set('showHint',false);
+      }
+    }
+    if(type == 'createNewChatGroups'){
+      Router.go('/');
+    }
   }
 })
