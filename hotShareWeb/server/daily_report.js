@@ -130,11 +130,11 @@ if(Meteor.isServer){
           }
 
           var local_time = DateTimezone(time_offset);
-          //if(local_time.getHours() == 12) { // 群组本地时间 12 点 发送
+          if(local_time.getHours() == 12) { // 群组本地时间 12 点 发送
             console.log('sendJobReport, and group_id is '+group._id+', and current timeOffsetZone is '+time_offset);
             console.log(group._id, group.report_emails);
             sendGroupJobReport(group);
-          //}
+          }
         });
       }
       catch(ex) {
