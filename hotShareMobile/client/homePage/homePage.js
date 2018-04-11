@@ -103,7 +103,7 @@ Template.homePage.events({
     Session.set('fromCreateNewGroups', true);
     Session.set('notice-from','createNewChatGroups');
     // return Router.go('/setGroupname');
-    Router.go('/notice');
+    PUB.page('/notice');
   },
   'click #scanbarcode': function (event) {
     event.stopImmediatePropagation();
@@ -175,7 +175,8 @@ Template.notice.events({
       }
     }
     if(type == 'createNewChatGroups'){
-      Router.go('/');
+      // Router.go('/');
+      PUB.back();
     }
   }
 })

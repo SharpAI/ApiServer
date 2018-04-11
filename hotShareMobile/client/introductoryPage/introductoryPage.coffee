@@ -69,7 +69,9 @@ if Meteor.isClient
       window.localStorage.setItem("isSecondUse",'true');
       #Router.go('/group/add');
       Session.set('fromCreateNewGroups',true);
-      Router.go('/setGroupname');
+      Session.set('notice-from','createNewChatGroups');
+      #Router.go('/setGroupname');
+      PUB.page '/notice'
     'click #joinTestGroup':(event)->
       # Session.set('needShowBubble','false');
       # window.localStorage.setItem("isSecondUse",'true');
@@ -77,9 +79,10 @@ if Meteor.isClient
       Session.set('needShowBubble','false');
       window.localStorage.setItem("isSecondUse",'true');
       #讯动训练营
-      groupid = 'd2bc4601dfc593888618e98f' 
-      type = 'FACE'
-      joinTestGroup(groupid,type)
+      #groupid = 'd2bc4601dfc593888618e98f' 
+      #type = 'FACE'
+      #joinTestGroup(groupid,type)
+      PUB.page '/'
       #PUB.page('/introductoryPage2')
      'click #skipStep':(event)->
       Session.set('needShowBubble','false');
