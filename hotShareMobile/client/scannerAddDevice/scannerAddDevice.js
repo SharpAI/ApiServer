@@ -47,7 +47,7 @@ Template.scannerAddDevice.events({
   'click .scanListItem': function(e) {
     var self = this;
     console.log("self = "+JSON.stringify(self));
-    return SELECT_CREATE_GROUP.show(self, function() {
+    return window.SELECT_CREATE_GROUP.show(self, function() {
       var lists = scanLists.get();
       var ids = scanIds.get();
 
@@ -67,8 +67,11 @@ Template.scannerAddDevice.onRendered(function() {
   console.log("Template.scannerAddDevice.onRendered")
   scanLists.set([]);
   scanIds.set([]);
+  var watchStr = '_DeepEye._tcp.';
+  if (device.platform === 'iOS')
+    watchStr = '_DeepEye._tcp';
   // 页面初始化完成后， 自动开始扫描设备
-  zeroconf && zeroconf.watch('_DeepEye._tcp', 'local.',function(result) {
+  zeroconf && zeroconf.watch(watchStr, 'local.',function(result) {
       console.log("zeroconf.watch in");
       console.log("zeroconf.watch in, result="+JSON.stringify(result));
       var lists = scanLists.get();
@@ -89,6 +92,13 @@ Template.scannerAddDevice.onRendered(function() {
           console.log("service.ipv4Addresses="+service.ipv4Addresses);
           Meteor.call('isDeviceInDB', uuid, function(error, result){
             console.log('isDeviceInDB result = ', JSON.stringify(result))
+            function isUuidInList(uuid, lists) {
+              for (var i = 0; i < lists.length; i++) {
+                if (lists[i].uuid == uuid)
+                  return true;
+              }
+              return false;
+            }
             if(!error/* && !result*/) {
               service.uuid = uuid;
               if (result && result.length > 0) {
@@ -98,8 +108,10 @@ Template.scannerAddDevice.onRendered(function() {
               } else {
                 service.isInDB = false;
               }
-              lists.push(service);
-              ids.push(uuid);
+              if (!isUuidInList(uuid, lists)) {
+                lists.push(service);
+                ids.push(uuid);
+              }
             }
             scanLists.set(lists);
             scanIds.set(ids);
@@ -121,5 +133,8 @@ Template.scannerAddDevice.onRendered(function() {
 });
 
 Template.scannerAddDevice.onDestroyed(function (){
-  zeroconf && zeroconf.unwatch('_DeepEye._tcp', 'local.');
+  var watchStr = '_DeepEye._tcp.';
+  if (device.platform === 'iOS')
+    watchStr = '_DeepEye._tcp';
+  zeroconf && zeroconf.unwatch(watchStr, 'local.');
 });

@@ -23,6 +23,7 @@ SELECT_CREATE_GROUP = {
     return view != null;
   }
 };
+window.SELECT_CREATE_GROUP = SELECT_CREATE_GROUP;
 
 var isCreating = new ReactiveVar(false);
 var addDeviceToGroup = function(group_id, group_name) {
@@ -51,6 +52,10 @@ var addDeviceToGroup = function(group_id, group_name) {
           return PUB.toast('添加设备失败~');
         }
         cb && cb();
+        $.post("http://workaihost.tiegushi.com/restapi/workai-join-group", {uuid: uuid, group_id: group_id, name: uuid, in_out: "in"}, function(data) {
+          var msgBody = {_id: new Mongo.ObjectID()._str, uuid: uuid, type: 'text', text: 'groupchanged'};
+          sendMqttMessage('/msg/d/'+uuid, msgBody);
+        });
         SELECT_CREATE_GROUP.close();
         return PUB.toast('添加设备成功');
       });
@@ -75,6 +80,10 @@ var changeDeviceGroup = function(group_id,group_name){
       return PUB.toast('请重试~');
     }
     cb && cb();
+    $.post("http://workaihost.tiegushi.com/restapi/workai-join-group", {uuid: uuid, group_id: group_id, name: uuid, in_out: "in"}, function(data) {
+      var msgBody = {_id: new Mongo.ObjectID()._str, uuid: uuid, type: 'text', text: 'groupchanged'};
+      sendMqttMessage('/msg/d/'+uuid, msgBody);
+    });
     SELECT_CREATE_GROUP.close();
     return PUB.toast('群组已更改');
   })
