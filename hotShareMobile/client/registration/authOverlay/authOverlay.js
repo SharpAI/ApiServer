@@ -234,10 +234,10 @@ if (Meteor.isClient) {
     if (Meteor.user())
       Meteor.subscribe("follows");
     if (isUSVersion == true) {
-      document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1en.jpg)";
+      // document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1en.jpg)";
     } else {
     //   document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1.png)";
-      document.getElementById("authOverlaybg").style.backgroundImage = "url(theme_blue/loginbg1.jpg)";
+      // document.getElementById("authOverlaybg").style.backgroundImage = "url(theme_blue/loginbg1.jpg)";
     }
   });
   // Template.authOverlay.onDestroyed(function () {

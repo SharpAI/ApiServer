@@ -3,9 +3,10 @@
 <div class="signupForm">
     <div class="signupHeader">
         <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
-        <span>{{_ "createAccount"}}</span>
+        <!-- <span>{{_ "createAccount"}}</span> -->
     </div>
     <form  class="signupBody" id="signup-form">
+        <div class="box"><p class="text-box">新用户注册</p></div>
         <div class="input-group margin-bottom-sm">
             <!--<span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>-->
             <input type="text" id="signup-username" class="form-control" placeholder={{_ "userName"}} value="{{names}}" maxlength="{{namesMaxLength}}"/>
@@ -27,6 +28,9 @@
         <button type="submit" id="sub-registered" class="ripple-btn" style="color: #fff; border: none;outline: none;">{{_ "createAccount"}}</button>
     </form>
 <!--    <div class="deal">创建帐户即代表您同意<br>用户条款和隐私政策</div>-->
-<div class="company">{{_ "kmxdkj"}}</div>
+<!-- <div class="company">{{_ "kmxdkj"}}</div> -->
+    <div class="bottom-img">
+        <img src="/new_logo.png" height="100%" width="100%">
+    </div>
 </div>
 </template>
