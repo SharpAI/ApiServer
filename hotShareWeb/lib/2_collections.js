@@ -179,26 +179,26 @@ Faces = new Meteor.Collection('faces');
 if(Meteor.isServer){
   Cameras.allow({
     insert: function(userId, doc){
-        return userId == doc.userId;
+        return true;
     },
     update: function (userId, doc, fields, modifier) {
-        return userId == doc.userId;
+        return true;
     },
     remove: function(userId, doc){
-        return userId == doc.userId;
+        return true;
     }
   })
 
   Devices.allow({
       insert: function(userId, doc){
-          return userId == doc.userId;
+          return true;
       },
       update: function(userId,doc, fields, modifier) {
           //return userId == doc.userId;
           return true;
       },
       remove: function(userId, doc){
-          return userId == doc.userId;
+          return true;
       }
   });
 
