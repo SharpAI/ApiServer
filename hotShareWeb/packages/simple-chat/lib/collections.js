@@ -73,6 +73,12 @@ if(Meteor.isServer){
   });
 
   Groups.allow({
+     insert: function(userId, doc) {
+      if(userId && doc.creator && doc.creator.id && userId == doc.creator.id) {
+        return true;
+      }
+      return false;
+     },
      update: function (userId, doc, fields, modifier) {
       var user = Meteor.users.findOne({_id: userId})
       var isAdmin = user.profile && user.profile.userType && user.profile.userType == 'admin';
@@ -80,6 +86,19 @@ if(Meteor.isServer){
         return false
       }
       return true;
+    }
+  });
+
+  GroupUsers.allow({
+    insert: function(userId, doc) {
+      if (!doc.group_id) {
+        return false;
+      }
+      var group = Groups.findOne({_id: doc.group_id});
+      if ( userId &&  group && group.creator && group.creator.id && userId == group.creator.id) {
+        return true;
+      }
+      return false;
     }
   });
 }

@@ -1,6 +1,6 @@
 <template name="homePage">
 {{> _checkGroupDevice}}
-<div class="homePage">
+<div class="homePage" style="{{noCompany}}">
   <div class="head">
     <strong class="top-home-btn active">主页</strong>
     <div class="rightDropMenu dropdown">
@@ -14,7 +14,7 @@
         {{#if isAndroid}}
         <li role="presentation"><a id="scanimage" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫图片</a></li>
         {{/if}}
-        <li role="presentation"><a id="scanadddevice" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scanlancamera.png" height="30" style="margin-left: -15px;">添加摄像头</a></li>
+        <li role="presentation"><a id="scanadddevice" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/addDevice.png" height="30" style="margin-left: -15px;">添加设备</a></li>
       </ul>
     </div>
   </div>

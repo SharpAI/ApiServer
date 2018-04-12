@@ -26,6 +26,13 @@ Template.homePage.helpers({
     });
     return lists;
   },
+  noCompany:function(){
+    var lists = Template.homePage.__helpers.get('companys')();
+    if (lists.length == 0) {
+      return 'background-img:url(nogroup_bg.png);background-repeat:no-repeat;background-size:cover';
+    }
+    return '';
+  },
   onlyOneCompany: function () {
     var lists = Template.homePage.__helpers.get('companys')();
     if (lists.length == 1) {
@@ -103,7 +110,7 @@ Template.homePage.events({
     Session.set('fromCreateNewGroups', true);
     Session.set('notice-from','createNewChatGroups');
     // return Router.go('/setGroupname');
-    Router.go('/notice');
+    PUB.page('/notice');
   },
   'click #scanbarcode': function (event) {
     event.stopImmediatePropagation();
@@ -175,7 +182,8 @@ Template.notice.events({
       }
     }
     if(type == 'createNewChatGroups'){
-      Router.go('/');
+      // Router.go('/');
+      PUB.back();
     }
   }
 })
