@@ -2,10 +2,12 @@ Template.loginForm.events
     'focus input':(e,t)->
       Meteor.setTimeout ->
         $('.company').css('display','none')
+        $('.bottom-img').css('display','none')
       ,10
     'blur input':(e,t)->
       Meteor.setTimeout ->
         $('.company').css('display','block')
+        $('.bottom-img').css('display','block')
       ,10
     'click #btn_back' :->
       $('input').blur()

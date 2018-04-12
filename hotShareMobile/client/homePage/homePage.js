@@ -26,6 +26,13 @@ Template.homePage.helpers({
     });
     return lists;
   },
+  noCompany:function(){
+    var lists = Template.homePage.__helpers.get('companys')();
+    if (lists.length == 0) {
+      return 'background-img:url(nogroup_bg.png);background-repeat:no-repeat;background-size:cover';
+    }
+    return '';
+  },
   onlyOneCompany: function () {
     var lists = Template.homePage.__helpers.get('companys')();
     if (lists.length == 1) {
