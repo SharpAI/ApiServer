@@ -337,9 +337,13 @@ if (Meteor.isClient) {
         console.log('in call back', arguments);
       });
     },
-    'click #wechat': function (e,t) {
+    'click #wechatBtn': function (e,t) {
       if (Meteor.status().connected !== true) {
         PUB.toast('当前为离线状态,请检查网络连接');
+        return;
+      }
+      if(device.platform === 'iOS' && !Session.get('isWXAppInstalled')){
+        PUB.toast('当前没有安装微信');
         return;
       }
       Meteor.loginWithWeixin(function(err, result) {

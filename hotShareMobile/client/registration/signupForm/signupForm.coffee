@@ -35,10 +35,12 @@ Template.signupForm.events
   'focus input':(e,t)->
     Meteor.setTimeout ->
       $('.company').css('display','none')
+      $('.bottom-img').css('display','none')
     ,10
   'blur input':(e,t)->
     Meteor.setTimeout ->
       $('.company').css('display','block')
+      $('.bottom-img').css('display','block')
     ,10
   'click .term_notice' :(e,t)->
     names = t.find('#signup-username').value

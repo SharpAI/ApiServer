@@ -27,3 +27,7 @@
 .resetPwddiv{opacity: 0.8;width:80%;margin-left: 10%;background: white;margin-top: 10%;color:black;}
 .sureReset{width:100%;background:#f0f0f0;height:40px;text-align:center;margin-top:20px;padding-top:3px;}
 .sureReset input, .sureReset button{width:80px;height:30px;background:#44b549; margin-left: 50%; transform:translate(-50%, 0);}
+
+/* .iconArea{margin: 9% auto 10%;width: 50% } */
+.iconArea{left:0;right:0;width: 50%;position: fixed;top:9%;margin-left: auto;margin-right: auto;}
+#wechatBtn{margin: 20px;font-size:14px;display: inline-block}
