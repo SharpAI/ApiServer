@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+TEST_GROUP_ID = 'd6d6db0aa8fac4b44e672c96'
+
 function LocalZeroTimezoneTimestamp(d, time_offset) {
     if (time_offset == undefined){
         if (d.getTimezoneOffset() == 420){
@@ -25,20 +27,23 @@ Template.timeline.onCreated(function helloOnCreated() {
 
 Template.timeline.helpers({
   timeLinelists() {
-    now = new Date()
-    localZeroDateTimestamp = LocalZeroTimezoneTimestamp(now, -7)
-    console.log(localZeroDateTimestamp) 
-    
     var ret_timeLists = []
     
-    timeLists = TimelineLists.find({ZeroTimestamp:localZeroDateTimestamp}, {sort
+    group = SimpleChat.Groups.findOne({_id:TEST_GROUP_ID});
+    
+    if (group == null){
+      return ret_timeLists
+    }
+    
+    console.log("timeLinelists group", group)
+    now = new Date()
+    localZeroDateTimestamp = LocalZeroTimezoneTimestamp(now, group.offsetTimeZone)  
+    console.log(localZeroDateTimestamp) 
+
+    timeLists = TimelineLists.find({groupId:TEST_GROUP_ID, ZeroTimestamp:localZeroDateTimestamp}, {sort
 :{createdAt:1}}).fetch()
     for (idx in timeLists) {
         console.log(timeLists[idx], timeLists[idx]["createdAt"].getTime())
-        if (timeLists[idx]["createdAt"].getTime() < 1523296886840){
-            continue
-        }
-        
         ret_timeLists.push(timeLists[idx])
     }
     

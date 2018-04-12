@@ -1,63 +1,41 @@
-function LocalDateTimezone(d, time_offset) {
-    if (time_offset == undefined){
-        if (d.getTimezoneOffset() == 420){
-            time_offset = -7
-        }else {
-            time_offset = 8
-        }
-    }
-    // 取得 UTC time
-    var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-    var local_now = new Date(utc + (3600000*time_offset))
-    var today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
-    local_now.getHours(), local_now.getMinutes(), local_now.getSeconds());
-
-    return today_now;
-}
-
-
-function LocalZeroTimezoneTimestamp(d, time_offset) {
-    if (time_offset == undefined){
-        if (d.getTimezoneOffset() == 420){
-            time_offset = -7
-        }else {
-            time_offset = 8
-        }
-    }
-    // 取得 UTC time
-    var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-    var local_now = new Date(utc + (3600000*time_offset))
-    
-    var today_zero = new Date(Date.UTC(local_now.getFullYear(), local_now.getMonth(), local_now.getDate()));
-            
-    return today_zero.getTime();
-}
-
-
 Router.route( "timelines/add", function() {
     var query   = this.request.query,
         fields  = {};
-  
-    fields["img_url"] = query.img_url;
-    fields["person"] = query.person;
+
+    if (query.group_id == null){
+        this.response.setHeader( 'access-control-allow-origin', '*' );
+        this.response.statusCode = 200;
+        this.response.end( 'Error, groupId not passed' ); 
+        return
+    }
+    
+    group = SimpleChat.Groups.findOne({_id:query.group_id});
+    if (group == null){
+        this.response.setHeader( 'access-control-allow-origin', '*' );
+        this.response.statusCode = 200;
+        this.response.end( 'Error, group not exist' ); 
+        return
+    }
     
     now = new Date()
-    localDate = LocalDateTimezone(now, -7);
-    localZeroDateTimestamp = LocalZeroTimezoneTimestamp(now, -7)
+    localDate = LocalDateTimezone(now, group.offsetTimeZone);
+    localZeroDateTimestamp = LocalZeroTimezoneTimestamp(now, group.offsetTimeZone)
     
+    fields["img_url"] = query.img_url;
+    fields["person"] = query.person;
+    fields["groupId"] = query.group_id;
     fields["createdAt"] = now
     fields["time"] = localDate.toLocaleString()
     fields["ZeroTimestamp"] = localZeroDateTimestamp
-    fields["groupId"] = '0a3c12765104f7c9c827f6e5'
     
+    console.log("group", group)
     console.log("query", query)
     console.log("fields", fields)
-    TimelineLists.insert(fields);
   
-    //console.log("yyyymmdd:", d.toLocaleString(), d.getTime())
-
+    TimelineLists.insert(fields);
     
     this.response.setHeader( 'access-control-allow-origin', '*' );
     this.response.statusCode = 200;
     this.response.end( 'ok' );
+    
 }, { where: "server" });

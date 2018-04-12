@@ -3,8 +3,9 @@ import { Meteor } from 'meteor/meteor';
 Meteor.startup(() => {
   // code to run on server at startup
   process.env.MAIL_URL = 'smtp://postmaster%40tiegushi.com:a7e104e236965118d8f1bd3268f36d8c@smtp.mailgun.org:587'
+  TEST_GROUP_ID = 'd6d6db0aa8fac4b44e672c96'
   
-  function LocalDateTimezone(d, time_offset) {
+  LocalDateTimezone = function (d, time_offset) {
       if (time_offset == undefined){
           if (d.getTimezoneOffset() == 420){
               time_offset = -7
@@ -21,10 +22,28 @@ Meteor.startup(() => {
       return today_now;
   }
   
+  LocalZeroTimezoneTimestamp = function (d, time_offset) {
+    if (time_offset == undefined){
+        if (d.getTimezoneOffset() == 420){
+            time_offset = -7
+        }else {
+            time_offset = 8
+        }
+    }
+    // 取得 UTC time
+    var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+    var local_now = new Date(utc + (3600000*time_offset))
+    
+    var today_zero = new Date(Date.UTC(local_now.getFullYear(), local_now.getMonth(), local_now.getDate()));
+            
+    return today_zero.getTime();
+  }
+  
+  
   sendGroupJobReport = function (group) {
     var html = SSR.render("srvemailTemplate");
     console.log(group._id, group.report_emails);
-    //console.log(html)
+    
     to = group.report_emails
     var from = 'DeepEye<notify@mail.tiegushi.com>';
     var subject = 'DeepEye Daily Report';
@@ -37,12 +56,12 @@ Meteor.startup(() => {
     });
   }
   
-  function sendJobReport() {
+  sendJobReport = function () {
       try {
         var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
         groups.forEach(function(group) {
           var time_offset = 8;
-          if (group._id == '0a3c12765104f7c9c827f6e5'){
+          if (group._id == TEST_GROUP_ID){
             
             if (group && group.offsetTimeZone) {
               time_offset = group.offsetTimeZone;
@@ -80,8 +99,7 @@ Meteor.startup(() => {
       }
     });
 
-    SyncedCron.start();
-  
+    //SyncedCron.start();
 });
 
 
