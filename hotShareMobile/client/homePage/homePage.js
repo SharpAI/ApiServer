@@ -29,7 +29,14 @@ Template.homePage.helpers({
   noCompany:function(){
     var lists = Template.homePage.__helpers.get('companys')();
     if (lists.length == 0) {
-      return 'background-img:url(nogroup_bg.png);background-repeat:no-repeat;background-size:cover';
+      return 'background-image:url(nogroup_bg.png);background-repeat:no-repeat;background-size:cover';
+    }
+    return '';
+  },
+  hide_content:function(){
+    var lists = Template.homePage.__helpers.get('companys')();
+    if (lists.length == 0) {
+      return 'display:none';
     }
     return '';
   },
