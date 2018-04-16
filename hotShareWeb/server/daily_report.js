@@ -22,7 +22,7 @@ if(Meteor.isServer){
       if (group && group.offsetTimeZone) {
         time_offset = group.offsetTimeZone;
       }
-      var now = DateTimezone(offset);
+      var now = DateTimezone(time_offset);
       var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
       var job_report = Assets.getText('email/job-report.html');
@@ -129,7 +129,7 @@ if(Meteor.isServer){
           }
 
           var local_time = DateTimezone(time_offset);
-          if(local_time.getHours() == 12) { // 群组本地时间 12 点 发送
+          if(local_time.getHours() == 19) { // 群组本地时间 12 点 发送
             console.log('sendJobReport, and group_id is '+group._id+', and current timeOffsetZone is '+time_offset);
             console.log(group._id, group.report_emails);
             sendGroupJobReport(group);
