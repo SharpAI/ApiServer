@@ -294,17 +294,79 @@ Template.deviceDashPoppage.events({
   },
   'click .resetWorkStatus': function (e) {
     e.stopImmediatePropagation();
-    PUB.confirm('是否要移除该成员当前签到信息？请确认！', function() {
-      var obj = popObj.get();
-      var personId = obj.person_id[0].id; 
+    // PUB.confirm('是否要移除该成员当前签到信息？请确认！', function() {
+    //   var obj = popObj.get();
+    //   var personId = obj.person_id[0].id; 
 
-      Meteor.call('resetMemberWorkStatus',e.currentTarget.id, personId, function(error, result) {
-        if (error) {
-          return PUB.toast('请重试~');
+    //   Meteor.call('resetMemberWorkStatus',e.currentTarget.id, personId, function(error, result) {
+    //     if (error) {
+    //       return PUB.toast('请重试~');
+    //     }
+    //     $('.deviceDashPoppage').fadeOut();
+    //     return PUB.toast('已移除');
+    //   });
+    // });
+    var obj = popObj.get();
+    var personId = obj.person_id[0].id;
+    var group_id = obj.group_id;
+    var url = obj.in_image?obj.in_image:obj.out_image;
+    var uuid = obj.in_uuid?obj.in_uuid:obj.out_uuid;
+    //直接转到标识人页面
+    // Session.set('channel','device/dashboard/'+group_id);
+    // Router.page('');
+    //2.删除签到记录
+    Meteor.call('resetMemberWorkStatus', e.currentTarget.id, personId, function (error, result) {
+      if (error) {
+        return PUB.toast('请重试~');
+      }
+      $('.deviceDashPoppage').fadeOut();
+
+      // return PUB.toast('已移除');
+      SimpleChat.show_label(group_id, url, function (name) {
+        //1.将照片添加到name的训练集
+        if (!name) {
+          return;
         }
-        $('.deviceDashPoppage').fadeOut();
-        return PUB.toast('已移除');
-      });
+        // PUB.showWaitLoading('处理中');
+        var setNames = [];
+        Meteor.call('get-id-by-name1', uuid, name, group_id, function (err, res) {
+          if (err || !res) {
+            return PUB.toast('标注失败，请重试~');
+          }
+          var faceId = null;
+          if (res && res.faceId) {
+            faceId = res.faceId;
+          } else {
+            faceId = new Mongo.ObjectID()._str;
+          }
+          // 发送消息给平板
+          var trainsetObj = {
+            group_id: group_id,
+            type: 'trainset',
+            url: url,
+            person_id: personId,
+            device_id: uuid,
+            face_id: faceId,
+            drop: false,
+            img_type: 'face',
+            // style:item.style,
+            // sqlid:item.sqlid
+          };
+          sendMqttMessage('/device/' + group_id, trainsetObj);
+
+          setNames.push({
+            uuid: uuid,
+            id: faceId, //item.person_id,
+            url: url,
+            name: name,
+          });
+
+          if (setNames.length > 0) {
+            Meteor.call('add-label-dataset', group_id, setNames);
+          }
+          // PUB.hideWaitLoading();
+        })
+      })
     });
   },
   'click .changeWorkStatus': function (e) {
@@ -312,34 +374,54 @@ Template.deviceDashPoppage.events({
     var obj = popObj.get();
     var group_id = obj.group_id;
     var personId = obj.person_id[0].id; 
-    
-    var deviceLists = Devices.find({groupId: group_id}).fetch();
+    var url = obj.in_image?obj.in_image:obj.out_image;
+    // var deviceLists = Devices.find({groupId: group_id}).fetch();
 
-    Session.set('modifyMyStatus_person_name', obj.person_name);
+    // Session.set('modifyMyStatus_person_name', obj.person_name);
 
-    if (!deviceLists || deviceLists.length < 1) {
-      return PUB.toast('未找到相应设备');
+    // if (!deviceLists || deviceLists.length < 1) {
+    //   return PUB.toast('未找到相应设备');
+    // }
+
+    // if (deviceLists && deviceLists.length == 1 && deviceLists[0].uuid) {
+    //   return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?pid='+personId);
+    // } else {
+    //   var buttonLabels = [];
+    //   deviceLists.forEach(function(item) {
+    //     buttonLabels.push(item.name);
+    //   });
+    //   var options = {
+    //     title: '选择设备以修改签到时间',
+    //     buttonLabels: buttonLabels,
+    //     addCancelButtonWithLabel: '取消',
+    //     androidEnableCancelButton: true
+    //   };
+
+    //   window.plugins.actionsheet.show(options, function(index) {
+    //     $('.deviceDashPoppage').fadeOut();
+    //     return PUB.page('/timelineAlbum/'+deviceLists[index-1].uuid+'?pid='+personId);
+    //   });
+    // }
+    var c;
+    var pname = PersonNames.findOne({group_id:group_id,name:/^guest\d+/},{sort:{createAt:-1}});
+    if(!pname){
+      c = 1;
+    }else{
+      c = Number(pname.name.substr(5))+1;
     }
-
-    if (deviceLists && deviceLists.length == 1 && deviceLists[0].uuid) {
-      return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?pid='+personId);
-    } else {
-      var buttonLabels = [];
-      deviceLists.forEach(function(item) {
-        buttonLabels.push(item.name);
-      });
-      var options = {
-        title: '选择设备以修改签到时间',
-        buttonLabels: buttonLabels,
-        addCancelButtonWithLabel: '取消',
-        androidEnableCancelButton: true
-      };
-
-      window.plugins.actionsheet.show(options, function(index) {
+    Session.set('default-label-name','guest'+c);
+    SimpleChat.show_label(group_id, url, function (name) {
+      Session.set('default-label-name','');
+      if(!name || name == ''){
+        return;
+      }
+      Meteor.call('update-workstatus',obj._id,name,url,group_id,function(err,res){
+        if(err){
+          return PUB.toast('修改失败');
+        }
         $('.deviceDashPoppage').fadeOut();
-        return PUB.page('/timelineAlbum/'+deviceLists[index-1].uuid+'?pid='+personId);
-      });
-    }
-
+        return PUB.toast('修改成功');
+      })
+    });
   }
 });

@@ -1658,7 +1658,71 @@ Meteor.methods({
       }
     });
     return true;
-  }
+  },
+  //修改签到人
+  'update-workstatus':function(id,name,url,group_id){
+    var personName = PersonNames.findOne({group_id: group_id, name: name});
+    //1.find person
+    var person = Person.findOne({name:name});
+    var face_id;
+    if(person){
+      face_id = person.faceId;
+    }else{
+      face_id = new Mongo.ObjectID()._str; 
+    }
+    if (!personName)
+      PersonNames.insert({group_id: group_id, url: url, id: face_id, name: name, createAt: new Date(), updateAt: new Date()}); 
+    if(person){
+      WorkStatus.update({_id:id},{$set:{person_name:name,'person_id':[{id:person._id}]}});
+    }else{
+      person = {
+        _id: new Mongo.ObjectID()._str,
+        id: Person.find({group_id: group_id, faceId: face_id}).count() + 1,
+        group_id:group_id,
+        faceId: face_id,
+        url: url,
+        name: name,
+        faces: [{id: face_id, url: url}],
+        // deviceId: dervice._id,
+        // DeviceName: dervice.name,
+        label_times: 1,
+        createAt: new Date(),
+        updateAt: new Date()
+      };
+      console.log("insert person = "+JSON.stringify(person));
+      Person.insert(person);
+      WorkStatus.update({_id:id},{$set:{person_name:name}});
+    }
+  },
+  //加入训练集
+  'add-label-dataset': function(group_id, items){
+    PERSON.updateLabelTimes(group_id,items);
+    var name = items[0].name;
+    var url = items[0].url;
+    var id = items[0].id;
+
+    var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
+    var personName = PersonNames.findOne({group_id: group_id, name: name});
+
+    if (!personName)
+      PersonNames.insert({group_id: group_id, url: url, id: id, name: name, createAt: new Date(), updateAt: new Date()});
+    // else
+    //   PersonNames.update({_id: name._id}, {$set: {name: name, url: url, id: id, updateAt: new Date()}})
+
+    if (person){
+      person.url = url;
+      person.updateAt = new Date();
+      if(_.pluck(person.faces, 'id').indexOf(id) === -1)
+        person.faces.push({id: id, url: url});
+      else
+        person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
+      // Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
+      console.log("update person.faces = "+JSON.stringify(person.faces));
+      Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
+    }
+      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[0].uuid,id:id,url:url,name:name,sqlid:items[0].sqlid,style:items[0].style,user_id:slef.userId,action:'签到标记'});
+    }
+
   // 'cleanLeftRelationAndStatusDate': function(){
   //   // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
   //   cleanLeftRelationAndStatusDate();
