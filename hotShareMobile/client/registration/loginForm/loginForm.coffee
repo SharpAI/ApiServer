@@ -1,14 +1,22 @@
+id1 = null
+id2 = null
 Template.loginForm.events
     'focus input':(e,t)->
-      Meteor.setTimeout ->
-        $('.company').css('display','none')
-        $('.bottom-img').css('display','none')
-      ,10
+      if id2 isnt null
+        Meteor.clearTimeout id2
+        id2 = null
+      id1 = Meteor.setTimeout ->
+            $('.company').css('display','none')
+            $('.bottom-img').css('display','none')
+          ,10
     'blur input':(e,t)->
-      Meteor.setTimeout ->
-        $('.company').css('display','block')
-        $('.bottom-img').css('display','block')
-      ,10
+      if id1 isnt null
+        Meteor.clearTimeout id1
+        id1 = null
+      id2 = Meteor.setTimeout ->
+            $('.company').css('display','block')
+            $('.bottom-img').css('display','block')
+          ,500
     'click #btn_back' :->
       $('input').blur()
       PUB.back()

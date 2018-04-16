@@ -2747,6 +2747,13 @@ Template._simpleChatToChatLabelName.onRendered(function(){
         }
     });
   label_name_text.set('');
+
+  var default_label_name = Session.get('default-label-name');
+  if(default_label_name && default_label_name!=''){
+    Meteor.setTimeout(function(){
+      $('#label-input-name').val(default_label_name);
+    },100)
+  }
 });
 Template._simpleChatToChatLabelName.helpers({
   notLoading: function() {
@@ -2864,6 +2871,7 @@ Template._simpleChatToChatLabelRemove.events({
     Blaze.remove(remove_view);
     simple_chat_page_stack.pop();
     remove_view = null;
+    Session.set('default-label-name','');
   },
   'click .rightButton': function(e, t){
     if (!$('#label-input-name').val())
