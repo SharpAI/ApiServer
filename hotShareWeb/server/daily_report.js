@@ -18,13 +18,12 @@ if(Meteor.isServer){
 
     function sendGroupJobReport(group, emails) {
       var group_id = group._id;
-      var now = new Date();
-      var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0, 0);
-
       var time_offset = 8;
       if (group && group.offsetTimeZone) {
         time_offset = group.offsetTimeZone;
       }
+      var now = DateTimezone(offset);
+      var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
       var job_report = Assets.getText('email/job-report.html');
       job_report = job_report.replaceAll('{{company_name}}', group.name);
