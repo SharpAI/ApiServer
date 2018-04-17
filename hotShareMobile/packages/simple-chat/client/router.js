@@ -2751,11 +2751,21 @@ Template._simpleChatToChatLabelName.onRendered(function(){
   var default_label_name = Session.get('default-label-name');
   if(default_label_name && default_label_name!=''){
     Meteor.setTimeout(function(){
-      $('#label-input-name').val(default_label_name);
-    },100)
+      this.$('#label-input-name').val(default_label_name);
+    },500)
   }
 });
+Template._simpleChatToChatLabelName.onDestroyed(function(){
+  Session.set('no-back',false);
+  Session.set('default-label-name','');
+});
 Template._simpleChatToChatLabelName.helpers({
+  noback:function(){
+    if(Session.get('no-back')){
+      return Session.get('no-back');
+    }
+    return false;
+  },
   notLoading: function() {
     var loading = Session.get(this.group_id + "_simpleChatToChatLabelName_loading");
     if (loading != null && loading != undefined) {
@@ -2826,6 +2836,7 @@ Template._simpleChatToChatLabelName.events({
     Blaze.remove(label_view);
     simple_chat_page_stack.pop();
     label_view = null;
+    // Session.set('default-label-name','');
   },
   'click .rightButton': function(e, t){
     if (!$('#label-input-name').val())
@@ -2835,6 +2846,7 @@ Template._simpleChatToChatLabelName.events({
     Blaze.remove(label_view);
     simple_chat_page_stack.pop();
     label_view = null;
+    Session.set('no-back',false);
   }
 });
 
@@ -2871,7 +2883,6 @@ Template._simpleChatToChatLabelRemove.events({
     Blaze.remove(remove_view);
     simple_chat_page_stack.pop();
     remove_view = null;
-    Session.set('default-label-name','');
   },
   'click .rightButton': function(e, t){
     if (!$('#label-input-name').val())

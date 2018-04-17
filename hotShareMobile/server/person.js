@@ -1421,6 +1421,7 @@ Meteor.methods({
         group_id:lists[i].group_id,
         id:lists[i].face_id,
         url:lists[i].face_url,
+        name:lists[i].name
       };
       LABLE_DADASET_Handle.remove(data);
     }
@@ -1721,7 +1722,19 @@ Meteor.methods({
       Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
     }
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[0].uuid,id:id,url:url,name:name,sqlid:items[0].sqlid,style:items[0].style,user_id:slef.userId,action:'签到标记'});
+    },
+    //获取随机名 guestN
+    'get-guest-name':function(group_id){
+      var c;
+      var pname = PersonNames.findOne({ group_id: group_id, name: /^guest\d+/ }, { sort: { createAt: -1 } });
+      if (!pname) {
+        c = 1;
+      } else {
+        c = Number(pname.name.substr(5)) + 1;
+      }
+      return 'guest'+c;
     }
+
 
   // 'cleanLeftRelationAndStatusDate': function(){
   //   // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
