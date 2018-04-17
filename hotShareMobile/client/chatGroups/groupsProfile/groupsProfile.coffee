@@ -538,7 +538,7 @@ if Meteor.isClient
       Session.set("groupsProfileMenu","groupInformation")
     'click .adE':(event)->
       ss = $(".inpEmail").val()
-      ret = ss.match(/^\w+@[a-z0-9]+(\.[a-z]+){1,3}$/)
+      ret = ss.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
       if not ret
         PUB.toast '无效邮箱地址!'
         return
