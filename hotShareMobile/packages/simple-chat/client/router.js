@@ -1365,6 +1365,10 @@ Template._checkGroupDevice.helpers({
 
 Template._checkGroupDevice.events({
   'click ._cgd_device_item': function(e) {
+    if (this.uuid == '') {
+        PUB.toast('访问设备故障，请重新添加该设备。');
+        return ;
+    }
     $('._checkGroupDevice').fadeOut();
     Session.set('_groupChatDeviceLists',[]);
     Session.set('_checkGroupDevice_status', 'status_open_device');

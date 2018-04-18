@@ -1422,6 +1422,7 @@ if Meteor.isServer
     ###
     console.log('selector='+JSON.stringify(selector))
     modifier = {$set:{}}
+    modifier.$set["perMin."+minutes+".$.person_id"] = new Mongo.ObjectID()._str
     modifier.$set["perMin."+minutes+".$.person_name"] = null
     modifier.$set["perMin."+minutes+".$.accuracy"] = false
     DeviceTimeLine.update(selector, modifier, (err,res)->
@@ -1435,7 +1436,7 @@ if Meteor.isServer
     person = Person.findOne({'faces.id': id})
     if person
       faces = person.faces
-      faces.splice(_.pluck(faces, 'id').indexOf(obj.face_id), 1)
+      faces.splice(_.pluck(faces, 'id').indexOf(id), 1)
       Person.update({_id: person._id},{$set: {faces: faces}})
 
     # Step 4. 向Group 发送一条 mqtt 消息， 告知需要移除 错误识别 的照片
