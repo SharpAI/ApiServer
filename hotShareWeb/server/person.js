@@ -987,9 +987,9 @@ PERSON = {
     modifier["$push"]["perMin."+minutes] = obj;
     DeviceTimeLine.update(selector, modifier, {upsert: true},function(err,res){
       if(err){
-        console.log('updateToDeviceTimeline2 Err:'+err);
+        console.log('updateToDeviceTimeline Err:'+err);
       } else {
-        console.log('updateToDeviceTimeline2 Success');
+        console.log('updateToDeviceTimeline Success');
       }
     });
   },
@@ -1079,6 +1079,50 @@ PERSON = {
       }
     });
 
+  },
+  updateValueToDeviceTimeline: function(uuid,group_id,obj){
+    console.log('updateValueToDeviceTimeline= uuid:'+uuid+', group_id:'+group_id+' ,obj:'+JSON.stringify(obj));
+    if(!uuid || !group_id || !obj){
+      return;
+    }
+    var create_time = obj.ts || Date.now();
+    var hour = new Date(create_time);
+    hour.setMinutes(0);
+    hour.setSeconds(0);
+    hour.setMilliseconds(0);
+
+    var minutes = new Date(create_time);
+    minutes = minutes.getMinutes();
+    console.log("create_time="+create_time+", hour="+hour)
+
+    var selector = {
+      hour: hour,
+      uuid: uuid,
+      group_id: group_id};
+    selector["perMin."+minutes+".img_url"] = obj.img_url;
+    if(!obj.ts){
+      obj.ts = Date.now();
+    }
+    //modifier["$push"]["perMin."+minutes] = obj;
+    console.log("selector="+JSON.stringify(selector));
+    var deviceTimilineItem = DeviceTimeLine.findOne(selector);
+    if (deviceTimilineItem) {
+        console.log('updateValueToDeviceTimeline find Success, deviceTimilineItem='+JSON.stringify(deviceTimilineItem));
+        var stranger_id = "perMin."+minutes+".$.stranger_id";
+        var stranger_name = "perMin."+minutes+".$.stranger_name";
+        var modifier = {$set:{}};//{$set:{stranger_id:obj.stranger_id, stranger_name:obj.stranger_name}}
+        modifier.$set[stranger_id] = obj.stranger_id;
+        modifier.$set[stranger_name] = obj.stranger_name;
+        DeviceTimeLine.update(selector, modifier, function(err,res){
+          if(err){
+            console.log('updateValueToDeviceTimeline update Err:'+err+', obj.img_url='+obj.img_url);
+          } else {
+            console.log('updateValueToDeviceTimeline update Success, obj.img_url='+obj.img_url);
+          }
+        });
+    } else {
+        console.log('updateValueToDeviceTimeline find failed, obj.img_url='+obj.img_url);
+    }
   },
   // 标错时， 修正 WorkAIUserRelations或workStatus
   fixRelationOrWorkStatus: function(group_id, img_url,person_id){

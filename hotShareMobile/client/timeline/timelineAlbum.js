@@ -236,20 +236,32 @@ var setLists = function(overlay) {
         var perMinList = item.perMin[x];
         for (var i=0; i <  perMinList.length; i++) {
           var img = perMinList[i];
+          var person_id, person_name;
+          if (img.stranger_id && img.stranger_name) {
+            person_id = img.stranger_id;
+            person_name = img.stranger_name;
+          } else {
+            person_id = img.person_id;
+            person_name = img.person_name;
+          }
           img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
-          var index = personIds.indexOf(img.person_id);
+          var index = personIds.indexOf(person_id);
           if( !(onlyShowUnknown.get() && img.person_name) && ids.indexOf(img.img_url) < 0 ){
             // if(person_id && img.person_id != person_id ) { // 修改某人签到信息时的处理
             //   continue;
             // }
-
             if(index < 0){
-              personIds.push(img.person_id)
+              personIds.push(person_id)
               tmpObj.images.push(img);
             } else {
               var mergedImgs = tmpObj.images[index].mergedImgs || [];
               mergedImgs.push(img);
               tmpObj.images[index].mergedImgs = mergedImgs;
+              console.log("img="+JSON.stringify(img));
+              console.log("tmpObj.images[index].person_name="+tmpObj.images[index].person_name+", img.person_name="+img.person_name+", img.accuracy="+img.accuracy);
+              if (tmpObj.images[index].person_name == null && img.person_name != null && img.accuracy != false) {
+                tmpObj.images[index].person_name = img.person_name;
+              }
             }
             ids.push(img.img_url);
           }
@@ -477,7 +489,7 @@ Template.timelineAlbum.helpers({
   uuid: function() {
     var uuid = Router.current().params._uuid;
     var device = Devices.findOne({uuid: uuid});
-    return device.name;
+    return device.name; 
   }, 
   lists: function(){
     return timelineLists.get();
@@ -513,15 +525,28 @@ Template.timelineAlbum.helpers({
         if( shouldContinue ) {
           item.perMin[x].forEach(function(img){
             img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
-            var index = personIds.indexOf(img.person_id);
+            var person_id, person_name;
+            if (img.stranger_id && img.stranger_name) {
+              person_id = img.stranger_id;
+              person_name = img.stranger_name;
+            } else {
+              person_id = img.person_id;
+              person_name = img.person_name;
+            }
+            var index = personIds.indexOf(person_id);
             if( !(onlyShowUnknown.get() && img.person_name) ){
               if(index < 0){
-                personIds.push(img.person_id)
+                personIds.push(person_id)
                 tmpObj.images.push(img);
               } else {
                 var mergedImgs = tmpObj.images[index].mergedImgs || [];
                 mergedImgs.push(img);
                 tmpObj.images[index].mergedImgs = mergedImgs;
+                console.log("img="+JSON.stringify(img));
+                console.log("tmpObj.images[index].person_name="+tmpObj.images[index].person_name+", img.person_name="+img.person_name+", img.accuracy="+img.accuracy);
+                if (tmpObj.images[index].person_name == null && img.person_name != null && img.accuracy != false) {
+                  tmpObj.images[index].person_name = img.person_name;
+                }
               }
             }
           });
@@ -574,12 +599,19 @@ Template.timelineAlbum.helpers({
     var arr = arr || [];
     return arr.length + 1;
   },
+  checkMergedImgsCount: function(arr){
+    var arr = arr || [];
+    return arr.length + 1 > 1 ? true : false;
+  },
   mergedIsExtend: function(){
     var id = this.person_id +'_'+this.ts;
     if(mergedExtendLists.get().indexOf(id) > -1){
       return true;
     }
     return false;
+  },
+  get_person_name: function() {
+    console.log("get_person_name: obj="+JSON.stringify(this))
   },
   onlyShowUnknown: function() {
     return onlyShowUnknown.get();

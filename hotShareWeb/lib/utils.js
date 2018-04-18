@@ -52,3 +52,21 @@ forEachAsynSeries = function(dataArray, limit, fn, callback) {
 
     replenish();
 }
+
+getTimeZoneDiffByMs = function(time1, time2) {
+  var diff, timezone_offset;
+  diff = time1 - time2;
+  timezone_offset = diff / (3600 * 1000);
+  timezone_offset = Math.round(timezone_offset);
+  console.log("timezone_offset="+timezone_offset)
+  return timezone_offset * 3600 * 1000;
+};
+
+String.prototype.format = function() {
+    var formatted = this;
+    for( var arg in arguments ) {
+        formatted = formatted.replace("{" + arg + "}", arguments[arg]);
+    }
+    return formatted;
+};
+

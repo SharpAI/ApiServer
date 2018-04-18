@@ -1105,10 +1105,19 @@ if Meteor.isServer
     name = null
     #device = PERSON.upsetDevice(uuid, null)
     create_time = new Date()
+    console.log("insert_msg2: img_ts="+img_ts+", current_ts="+current_ts+", create_time="+create_time)
+    ###
     if img_ts and current_ts
       img_ts = Number(img_ts)
       current_ts = Number(current_ts)
       time_diff = img_ts + (create_time.getTime()　- current_ts)
+      create_time = new Date(time_diff)
+    ###
+    create_time = new Date()
+    if img_ts and current_ts
+      img_ts = Number(img_ts)
+      current_ts = Number(current_ts)
+      time_diff = img_ts + getTimeZoneDiffByMs(create_time.getTime(), current_ts)
       create_time = new Date(time_diff)
 
     #if !people
@@ -1281,6 +1290,196 @@ if Meteor.isServer
   @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
     insert_msg2(id, url, uuid, 'face', accuracy, fuzziness, 0, 0)
 
+    # 平板 发现 某张图片为 错误识别（不涉及标记）， 需要移除 或 修正 相应数据
+  padCallRemove = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id,p_ids)->
+    console.log("padCallRemove: id="+id+", url="+url+", uuid="+uuid+", img_type="+img_type+", accuracy="+accuracy+", fuzziness="+fuzziness+", sqlid="+sqlid+", style="+style+", img_ts="+img_ts+", current_ts="+current_ts+", tracker_id="+tracker_id+", p_ids="+p_ids)
+
+    create_time = new Date()
+    if img_ts and current_ts
+      img_ts = Number(img_ts)
+      current_ts = Number(current_ts)
+      time_diff = img_ts + getTimeZoneDiffByMs(create_time.getTime(), current_ts)
+      create_time = new Date(time_diff)
+
+    hour = new Date(create_time.getTime())
+    hour.setMinutes(0)
+    hour.setSeconds(0)
+    hour.setMilliseconds(0)
+    console.log("hour="+hour)
+
+    minutes = new Date(create_time.getTime())
+    minutes = minutes.getMinutes()
+    console.log("minutes="+minutes)
+
+    # Step 1. 修正考勤记录, WorkAIUserRelations或workStatus 
+    fixWorkStatus = (work_status,in_out)->
+      today = new Date(create_time.getTime())
+      today.setHours(0,0,0,0)
+
+      console.log('hour='+hour+', today='+today+', uuid='+uuid)
+      timeline = DeviceTimeLine.findOne({hour:{$lte: hour, $gt: today},uuid: uuid},{sort: {hour: -1}});
+      if timeline and timeline.perMin # 通过历史记录中的 数据 fix WorkStatus 
+        time = null
+        imgUrl = null
+
+        timelineArray = for mins of timeline.perMin
+          timeline.perMin[mins]
+
+        for obj in timelineArray
+          if obj.img_url is url
+            time = Number(obj.ts)
+            imgUrl = obj.img_url
+            break
+        if in_out is 'in'
+          setObj = {
+            in_time: time,
+            in_image: imgUrl,
+            in_status: 'normal'
+          }
+          if !work_status.out_time 
+            setObj.status = 'in'
+          else if time < work_status.out_time 
+            setObj.status = 'out'
+          else if time >= work_status.out_time
+            setObj.status = 'in'
+
+        if in_out is 'out'
+          setObj = {
+            out_time: time,
+            out_image: imgUrl,
+            out_status: 'normal'
+          }
+          if !work_status.in_time 
+            setObj.status = 'out'
+            setObj.out_status = 'warning'
+          else if time <= work_status.in_time 
+            setObj.status = 'in'
+          else if time > work_status.in_time 
+            setObj.status = 'out'
+
+      else
+        if in_out is 'in'
+          setObj = {
+            status: 'out',
+            in_uuid: null,
+            in_time: null,
+            in_image: null,
+            in_status: 'unknown'
+          }
+        if in_out is 'out'
+          setObj = {
+            status: 'in',
+            out_uuid: null,
+            out_time: null,
+            out_image: null,
+            out_status: 'unknown'
+          }
+          if !work_status.in_time 
+            setObj.status = 'out'
+
+      WorkStatus.update({_id: work_status._id},$set: setObj)
+
+    work_status_in = WorkStatus.findOne({in_image: url})
+    # 匹配到进的考勤
+    if work_status_in
+      console.log('padCallRemove Fix WorkStatus, 需要修正进的考勤')
+      fixWorkStatus(work_status_in,'in')
+    work_status_out = WorkStatus.findOne({out_image: url})
+    # 匹配到出的考勤
+    if work_status_out
+      console.log('padCallRemove Fix WorkStatus, 需要修正出的考勤')
+      fixWorkStatus(work_status_out,'out')
+
+    # Step 2. 从设备时间轴中移除 
+    selector = {
+      hour: hour,
+      uuid: uuid
+    }
+    selector["perMin."+minutes+".img_url"] = url;
+
+    ###
+    console.log('selector='+JSON.stringify(selector))
+    timeline = DeviceTimeLine.findOne(selector)
+    console.log("timeline._id="+JSON.stringify(timeline._id))
+    if timeline
+      minuteArray = timeline.perMin[""+minutes]
+      console.log("minuteArray="+JSON.stringify(minuteArray))
+      minuteArray.splice(_.pluck(minuteArray, 'img_url').indexOf(url), 1)
+      console.log("2, minuteArray="+JSON.stringify(minuteArray))
+
+      modifier = {
+        $set:{}
+      }
+
+      modifier.$set["perMin."+minutes] = minuteArray
+
+      DeviceTimeLine.update({_id: timeline._id}, modifier, (err,res)->
+        if err
+          console.log('padCallRemove DeviceTimeLine, update Err:'+err)
+        else
+          console.log('padCallRemove DeviceTimeLine, update Success')
+      )
+    ###
+    console.log('selector='+JSON.stringify(selector))
+    modifier = {$set:{}}
+    modifier.$set["perMin."+minutes+".$.person_name"] = null
+    modifier.$set["perMin."+minutes+".$.accuracy"] = false
+    DeviceTimeLine.update(selector, modifier, (err,res)->
+      if err
+        console.log('padCallRemove DeviceTimeLine, update Err:'+err)
+      else
+        console.log('padCallRemove DeviceTimeLine, update Success')
+    )
+
+    # Step 3. 如果 person 表中 有此图片记录， 需要移除
+    person = Person.findOne({'faces.id': id})
+    if person
+      faces = person.faces
+      faces.splice(_.pluck(faces, 'id').indexOf(obj.face_id), 1)
+      Person.update({_id: person._id},{$set: {faces: faces}})
+
+    # Step 4. 向Group 发送一条 mqtt 消息， 告知需要移除 错误识别 的照片
+    device = Devices.findOne({uuid: uuid});
+    if device and device.groupId
+      group_id = device.groupId
+      group = SimpleChat.Groups.findOne({_id: group_id})
+
+      to = {
+        id: group._id,
+        name: group.name,
+        icon: group.icon
+      }
+      
+      device_user = Meteor.users.findOne({username: uuid})
+      form = {}
+      if device_user
+        form = {
+          id: device_user._id,
+          name: if (device_user.profile and device_user.profile.fullname) then device_user.profile.fullname else device_user.username,
+          icon: device_user.profile.icon
+        }
+      
+      msg = {
+        _id: new Mongo.ObjectID()._str,
+        form: form,
+        to: to,
+        to_type: 'group',
+        type: 'remove_error_img',
+        id: id, 
+        url: url, 
+        uuid: uuid, 
+        img_type: img_type,
+        img_ts: img_ts,
+        current_ts: current_ts,
+        tid: tracker_id,
+        pids: p_ids
+      }
+
+      try
+        sendMqttGroupMessage(group_id,msg)
+      catch error
+        console.log('try sendMqttGroupMessage Err:',error)
+
   update_group_dataset = (group_id,dataset_url,uuid)->
     unless group_id and dataset_url and uuid
       return
@@ -1349,7 +1548,11 @@ if Meteor.isServer
       fuzziness = this.params.query.fuzziness
       img_ts = this.params.query.img_ts
       current_ts = this.params.query.current_ts
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)
+      if this.params.query.opt and this.params.query.opt is 'remove'
+        padCallRemove(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style, img_ts, current_ts, tracker_id)
+      else
+        insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)
+
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('id')
@@ -1385,8 +1588,68 @@ if Meteor.isServer
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts, tracker_id,p_ids)
+      if this.params.query.opt and this.params.query.opt is 'remove'
+        padCallRemove(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style, img_ts, current_ts, tracker_id)
+      else
+        insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts, tracker_id,p_ids)
+
       this.response.end('{"result": "ok"}\n')
+    )
+  Router.route('restapi/workai_unknown', {where: 'server'}).get(()->
+
+    ).post(()->
+      person_id = ''
+      persons = []
+      if this.request.body.hasOwnProperty('person_id')
+        person_id = this.request.body.person_id
+      if this.request.body.hasOwnProperty('persons')
+        persons = this.request.body.persons
+      console.log("restapi/workai_unknown post: person_id="+person_id+", persons="+JSON.stringify(persons))
+      if (!(persons instanceof Array) or persons.length < 1)
+        console.log("restapi/workai_unknown: this.request.body is not array.")
+        return this.response.end('{"result": "failed!", "cause": "this.request.body is not array."}\n')
+
+      console.log("restapi/workai_unknown: uuid = "+persons[0].uuid)
+      user = Meteor.users.findOne({username: persons[0].uuid})
+      unless user
+        console.log("restapi/workai_unknown: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/workai_unknown: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+      stranger_id = if person_id != '' then person_id else new Mongo.ObjectID()._str
+      #name = PERSON.getName(null, userGroup.group_id, person_id)
+      userGroups.forEach((userGroup)->
+          stranger_name = if person_id != '' then PERSON.getName(null, userGroup.group_id, person_id) else new Mongo.ObjectID()._str
+          console.log("stranger_name="+stranger_name)
+          for person in persons
+              console.log("person="+JSON.stringify(person))
+              # update to DeviceTimeLine
+              create_time = new Date()
+              console.log("create_time.toString()="+create_time.toString())
+              if person.img_ts and person.current_ts
+                img_ts = Number(person.img_ts)
+                current_ts = Number(person.current_ts)
+                time_diff = img_ts + getTimeZoneDiffByMs(create_time.getTime(), current_ts)
+                console.log("time_diff="+time_diff)
+                create_time = new Date(time_diff)
+
+              timeObj = {
+                stranger_id: stranger_id,
+                stranger_name: stranger_name,
+                person_id: person.id,
+                person_name: person.name,
+                img_url: person.img_url,
+                sqlid: person.sqlid, 
+                style: person.style,
+                accuracy: person.accuracy, # 准确度(分数)
+                fuzziness: person.fuzziness#, # 模糊度
+                ts:create_time.getTime()
+              }
+              uuid = person.uuid
+              PERSON.updateValueToDeviceTimeline(uuid,userGroup.group_id,timeObj)
+      )
     )
 
   Router.route('/restapi/workai-group-qrcode', {where: 'server'}).get(()->

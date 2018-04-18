@@ -720,10 +720,19 @@ if Meteor.isServer
     name = null
     #device = PERSON.upsetDevice(uuid, null)
     create_time = new Date()
+    console.log("insert_msg2: img_ts="+img_ts+", current_ts="+current_ts+", create_time="+create_time)
+    ###
     if img_ts and current_ts
       img_ts = Number(img_ts)
       current_ts = Number(current_ts)
       time_diff = img_ts + (create_time.getTime()　- current_ts)
+      create_time = new Date(time_diff)
+    ###
+    create_time = new Date()
+    if img_ts and current_ts
+      img_ts = Number(img_ts)
+      current_ts = Number(current_ts)
+      time_diff = img_ts + getTimeZoneDiffByMs(create_time.getTime(), current_ts)
       create_time = new Date(time_diff)
 
     #if !people
@@ -900,19 +909,31 @@ if Meteor.isServer
 
   # 平板 发现 某张图片为 错误识别（不涉及标记）， 需要移除 或 修正 相应数据
   padCallRemove = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id,p_ids)->
-    hour = new Date(img_ts)
+    console.log("padCallRemove: id="+id+", url="+url+", uuid="+uuid+", img_type="+img_type+", accuracy="+accuracy+", fuzziness="+fuzziness+", sqlid="+sqlid+", style="+style+", img_ts="+img_ts+", current_ts="+current_ts+", tracker_id="+tracker_id+", p_ids="+p_ids)
+
+    create_time = new Date()
+    if img_ts and current_ts
+      img_ts = Number(img_ts)
+      current_ts = Number(current_ts)
+      time_diff = img_ts + getTimeZoneDiffByMs(create_time.getTime(), current_ts)
+      create_time = new Date(time_diff)
+
+    hour = new Date(create_time.getTime())
     hour.setMinutes(0)
     hour.setSeconds(0)
     hour.setMilliseconds(0)
-    
-    minutes = new Date(img_ts)
+    console.log("hour="+hour)
+
+    minutes = new Date(create_time.getTime())
     minutes = minutes.getMinutes()
+    console.log("minutes="+minutes)
 
     # Step 1. 修正考勤记录, WorkAIUserRelations或workStatus 
     fixWorkStatus = (work_status,in_out)->
-      today = new Date(img_ts)
+      today = new Date(create_time.getTime())
       today.setHours(0,0,0,0)
 
+      console.log('hour='+hour+', today='+today+', uuid='+uuid)
       timeline = DeviceTimeLine.findOne({hour:{$lte: hour, $gt: today},uuid: uuid},{sort: {hour: -1}});
       if timeline and timeline.perMin # 通过历史记录中的 数据 fix WorkStatus 
         time = null
@@ -991,19 +1012,41 @@ if Meteor.isServer
       hour: hour,
       uuid: uuid
     }
+    selector["perMin."+minutes+".img_url"] = url;
 
+    ###
+    console.log('selector='+JSON.stringify(selector))
     timeline = DeviceTimeLine.findOne(selector)
+    console.log("timeline._id="+JSON.stringify(timeline._id))
     if timeline
       minuteArray = timeline.perMin[""+minutes]
+      console.log("minuteArray="+JSON.stringify(minuteArray))
       minuteArray.splice(_.pluck(minuteArray, 'img_url').indexOf(url), 1)
+      console.log("2, minuteArray="+JSON.stringify(minuteArray))
 
       modifier = {
         $set:{}
       }
 
-      modifier["$set"]["perMin."+minutes] = minuteArray
+      modifier.$set["perMin."+minutes] = minuteArray
 
-      DeviceTimeLine.update({_id: timeline._id},modifier)
+      DeviceTimeLine.update({_id: timeline._id}, modifier, (err,res)->
+        if err
+          console.log('padCallRemove DeviceTimeLine, update Err:'+err)
+        else
+          console.log('padCallRemove DeviceTimeLine, update Success')
+      )
+    ###
+    console.log('selector='+JSON.stringify(selector))
+    modifier = {$set:{}}
+    modifier.$set["perMin."+minutes+".$.person_name"] = null
+    modifier.$set["perMin."+minutes+".$.accuracy"] = false
+    DeviceTimeLine.update(selector, modifier, (err,res)->
+      if err
+        console.log('padCallRemove DeviceTimeLine, update Err:'+err)
+      else
+        console.log('padCallRemove DeviceTimeLine, update Success')
+    )
 
     # Step 3. 如果 person 表中 有此图片记录， 需要移除
     person = Person.findOne({'faces.id': id})
@@ -1141,10 +1184,10 @@ if Meteor.isServer
       fuzziness = this.params.query.fuzziness
       img_ts = this.params.query.img_ts
       current_ts = this.params.query.current_ts
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)
-
       if this.params.query.opt and this.params.query.opt is 'remove'
         padCallRemove(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style, img_ts, current_ts, tracker_id)
+      else
+        insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)
 
       this.response.end('{"result": "ok"}\n')
     ).post(()->
@@ -1181,13 +1224,71 @@ if Meteor.isServer
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts, tracker_id,p_ids)
-
       if this.params.query.opt and this.params.query.opt is 'remove'
         padCallRemove(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style, img_ts, current_ts, tracker_id)
+      else
+        insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts, tracker_id,p_ids)
 
       this.response.end('{"result": "ok"}\n')
     )
+
+  Router.route('restapi/workai_unknown', {where: 'server'}).get(()->
+
+    ).post(()->
+      person_id = ''
+      persons = []
+      if this.request.body.hasOwnProperty('person_id')
+        person_id = this.request.body.person_id
+      if this.request.body.hasOwnProperty('persons')
+        persons = this.request.body.persons
+      console.log("restapi/workai_unknown post: person_id="+person_id+", persons="+JSON.stringify(persons))
+      if (!(persons instanceof Array) or persons.length < 1)
+        console.log("restapi/workai_unknown: this.request.body is not array.")
+        return this.response.end('{"result": "failed!", "cause": "this.request.body is not array."}\n')
+
+      console.log("restapi/workai_unknown: uuid = "+persons[0].uuid)
+      user = Meteor.users.findOne({username: persons[0].uuid})
+      unless user
+        console.log("restapi/workai_unknown: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/workai_unknown: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+      stranger_id = if person_id != '' then person_id else new Mongo.ObjectID()._str
+      #name = PERSON.getName(null, userGroup.group_id, person_id)
+      userGroups.forEach((userGroup)->
+          stranger_name = if person_id != '' then PERSON.getName(null, userGroup.group_id, person_id) else new Mongo.ObjectID()._str
+          console.log("stranger_name="+stranger_name)
+          for person in persons
+              console.log("person="+JSON.stringify(person))
+              # update to DeviceTimeLine
+              create_time = new Date()
+              console.log("create_time.toString()="+create_time.toString())
+              if person.img_ts and person.current_ts
+                img_ts = Number(person.img_ts)
+                current_ts = Number(person.current_ts)
+                time_diff = img_ts + getTimeZoneDiffByMs(create_time.getTime(), current_ts)
+                console.log("time_diff="+time_diff)
+                create_time = new Date(time_diff)
+
+              timeObj = {
+                stranger_id: stranger_id,
+                stranger_name: stranger_name,
+                person_id: person.id,
+                person_name: person.name,
+                img_url: person.img_url,
+                sqlid: person.sqlid, 
+                style: person.style,
+                accuracy: person.accuracy, # 准确度(分数)
+                fuzziness: person.fuzziness#, # 模糊度
+                ts:create_time.getTime()
+              }
+              uuid = person.uuid
+              PERSON.updateValueToDeviceTimeline(uuid,userGroup.group_id,timeObj)
+      )
+    )
+  
 
   Router.route('/restapi/workai-group-qrcode', {where: 'server'}).get(()->
     group_id = this.params.query.group_id
