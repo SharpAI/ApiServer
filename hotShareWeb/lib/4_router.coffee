@@ -1168,6 +1168,30 @@ if Meteor.isServer
     else
       this.response.end('{"result": "ok", "reason": "params must be an Array"}\n')
   )
+
+  ###
+  payload = {'groupid': groupid, 'uuid': uuid，'fuzziness_from':fuzziness_from, 'fuzziness_to':fuzziness_to,
+   'blury_threshold': blury_threshold, 'score_threshold_main': score_threshold_main, 'score_threshold_2nd': score_threshold_2nd}
+  ###
+  Router.route('/restapi/workai/model_param_update', {where: 'server'}).post(()->   
+    group_id = this.request.body.groupid
+    uuid = this.request.body.uuid
+    if group_id and uuid
+      ModelParam.upsert({groupid: group_id, uuid: uuid}, {$set: this.request.body})
+      this.response.end('{"result": "ok"}\n')
+    else
+      this.response.end('{"result": "ok", "reason": "invalid params"}\n')
+  )
+
+  Router.route('/restapi/workai/model_param', {where: 'server'}).post(()->
+    group_id = this.request.body.groupid
+    uuid = this.request.body.uuid
+    if group_id and uuid
+      params = ModelParam.findOne({groupid: group_id, uuid: uuid})
+      this.response.end(JSON.stringify(params) + '\n')
+    else
+      this.response.end('{"result": "ok", "reason": "invalid params"}\n')
+  )
   
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id

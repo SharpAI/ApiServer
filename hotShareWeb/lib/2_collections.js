@@ -176,6 +176,8 @@ Cameras = new Meteor.Collection('cameras');
 
 Faces = new Meteor.Collection('faces');
 
+ModelParam = new Meteor.Collection('modelParam');
+
 if(Meteor.isServer){
   Cameras.allow({
     insert: function(userId, doc){
