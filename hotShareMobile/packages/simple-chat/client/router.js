@@ -2748,16 +2748,21 @@ Template._simpleChatToChatLabelName.onRendered(function(){
     });
   label_name_text.set('');
 
-  var default_label_name = Session.get('default-label-name');
-  if(default_label_name && default_label_name!=''){
-    Meteor.setTimeout(function(){
-      this.$('#label-input-name').val(default_label_name);
-    },500)
-  }
+  this.autorun(function(){
+    if(Session.get('hasload')){
+      var default_label_name = Session.get('default-label-name');
+      if (default_label_name && default_label_name != '') {
+        Meteor.setTimeout(function () {
+          this.$('#label-input-name').val(default_label_name);
+        }, 100)
+      }
+    }
+  })
 });
 Template._simpleChatToChatLabelName.onDestroyed(function(){
   Session.set('no-back',false);
   Session.set('default-label-name','');
+  Session.set('hasload',undefined);
 });
 Template._simpleChatToChatLabelName.helpers({
   noback:function(){
@@ -2770,6 +2775,7 @@ Template._simpleChatToChatLabelName.helpers({
     var loading = Session.get(this.group_id + "_simpleChatToChatLabelName_loading");
     if (loading != null && loading != undefined) {
       if (loading == false)
+        Session.set('hasload',true);
         return true;
     }
 
