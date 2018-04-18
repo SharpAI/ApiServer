@@ -76,3 +76,4 @@ if Meteor.isServer
     DeviceTimeLine._ensureIndex({uuid: 1})
     DeviceTimeLine._ensureIndex({uuid: 1, group_id: 1})
     DeviceTimeLine._ensureIndex({hour: 1})
+    ModelParam._ensureIndex({groupid: 1, uuid: 1})
