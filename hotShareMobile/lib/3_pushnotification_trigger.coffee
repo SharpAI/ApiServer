@@ -1,7 +1,9 @@
 if Meteor.isServer
+  Fiber = Meteor.npmRequire('fibers')
   Meteor.startup ()->
     @JPush = Meteor.npmRequire "jpush-sdk"
     @client = JPush.buildClient 'c8efd2f69c6cd251faa9252b', '6ca8461df032f8bae4afd11d'
+
   @pushnotification = (type, doc, userId)->
     console.log "type:"+type
     if type is "palsofavourite"
@@ -136,3 +138,69 @@ if Meteor.isServer
         #console.log 'Server PN to GCM '
         token = pushToken.token
         pushServer.sendAndroid 'me', token , '',content, 1
+
+  @sharpai_pushnotification = (type, doc, userId)->
+    group_notify = false
+    console.log "sharpai_pushnotification: type:"+type
+    if type is "notify_stranger"
+      group_notify = true
+      group_name = if doc.group_name then doc.group_name else "公司"
+      content = 'SharpAI '+doc.active_time+'在'+group_name+'发现了'+'陌生人。'
+      extras = {
+        type: "notify_stranger"
+      }
+      toUserId = userId
+    else if type is "notify_knownPeople"
+      group_notify = true
+      group_name = if doc.group_name then doc.group_name else "公司"
+      person_name = if doc.person_name then doc.person_name else "有人"
+      content = 'SharpAI '+doc.active_time+'在'+group_name+'看到了'+person_name+'。'
+      extras = {
+        type: "notify_known_people"
+      }
+      toUserId = userId
+    else
+      content = 'SharpAI欢迎您！'
+      extras = {
+        type: "recomment"
+      }
+      if userId is null or userId is undefined
+         return;
+      toUserId = userId
+
+    console.log("notification content="+content)
+    Fiber(()->
+      if group_notify
+        allUsersCursor = SimpleChat.GroupUsers.find({group_id:doc.group_id})
+        console.log("allUsersCursor.count()="+allUsersCursor.count())
+        if allUsersCursor.count() > 0
+            allUsersCursor.forEach((oneUser)->
+                toUserToken = Meteor.users.findOne({_id: oneUser.user_id})
+                #console.log("toUserToken="+JSON.stringify(toUserToken))
+                unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
+                  pushToken = {type: toUserToken.type, token: toUserToken.token}
+                  #console.log "toUserToken.type:"+toUserToken.type+";toUserToken.token:"+toUserToken.token
+                  if pushToken.type is 'JPush'
+                    token = pushToken.token
+                    console.log 'JPUSH to ' + pushToken.token
+                    client.push().setPlatform 'ios', 'android'
+                      .setAudience JPush.registration_id(token)
+                      .setNotification 'SharpAI',JPush.ios(content,null,null,null,extras),JPush.android(content, null, 1,extras)
+                      #.setMessage(commentText)
+                      .setOptions null, 60
+                      .send (err, res)->
+                        if err
+                          console.log err.message +", "+pushToken.token
+                        else
+                          console.log 'Sendno: ' + res.sendno
+                          console.log 'Msg_id: ' + res.msg_id + ', '+pushToken.token
+                  else if pushToken.type is 'iOS'
+                    console.log 'Server PN to iOS '+pushToken.token
+                    token = pushToken.token
+                    pushServer.sendIOS 'me', token , '', content
+                  else if pushToken.type is 'GCM'
+                    console.log 'Server PN to GCM '
+                    token = pushToken.token
+                    pushServer.sendAndroid 'me', token , '',content, 1
+            )
+    ).run()

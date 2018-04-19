@@ -1383,12 +1383,12 @@ if Meteor.isServer
     # 匹配到进的考勤
     if work_status_in
       console.log('padCallRemove Fix WorkStatus, 需要修正进的考勤')
-      fixWorkStatus(work_status_in,'in')
+      #fixWorkStatus(work_status_in,'in')
     work_status_out = WorkStatus.findOne({out_image: url})
     # 匹配到出的考勤
     if work_status_out
       console.log('padCallRemove Fix WorkStatus, 需要修正出的考勤')
-      fixWorkStatus(work_status_out,'out')
+      #fixWorkStatus(work_status_out,'out')
 
     # Step 2. 从设备时间轴中移除 
     selector = {
@@ -1601,6 +1601,8 @@ if Meteor.isServer
     ).post(()->
       person_id = ''
       persons = []
+      person_name = null 
+      active_time = null
       if this.request.body.hasOwnProperty('person_id')
         person_id = this.request.body.person_id
       if this.request.body.hasOwnProperty('persons')
@@ -1622,10 +1624,16 @@ if Meteor.isServer
       stranger_id = if person_id != '' then person_id else new Mongo.ObjectID()._str
       #name = PERSON.getName(null, userGroup.group_id, person_id)
       userGroups.forEach((userGroup)->
+          console.log("restapi/workai_unknown: userGroup.group_id="+userGroup.group_id)
           stranger_name = if person_id != '' then PERSON.getName(null, userGroup.group_id, person_id) else new Mongo.ObjectID()._str
           console.log("stranger_name="+stranger_name)
           for person in persons
               console.log("person="+JSON.stringify(person))
+              unless active_time
+                active_time = utilFormatTime(Number(person.img_ts))
+              if !person_name && person.name
+                person_name = person.name
+
               # update to DeviceTimeLine
               create_time = new Date()
               console.log("create_time.toString()="+create_time.toString())
@@ -1650,7 +1658,91 @@ if Meteor.isServer
               }
               uuid = person.uuid
               PERSON.updateValueToDeviceTimeline(uuid,userGroup.group_id,timeObj)
+          if person_name
+              #Get Configuration from DB
+              people_config = WorkAIUserRelations.find({'group_id':userGroup.group_id}, {fields:{'hide_it':1}}).fetch()
+              isShow = people_config.some((elem) => elem.person_name == person_name && !elem.hide_it)
+              if isShow
+                  group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
+                  group_name = '公司'
+                  if group && group.name
+                    group_name = group.name
+                  console.log("group_id="+userGroup.group_id)
+                  console.log("Will notify one known people")
+                  sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null)
+          else
+              group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
+              group_name = '公司'
+              is_notify_stranger = true
+              if group && group.settings && group.settings.notify_stranger == false
+                is_notify_stranger = false
+              if group && group.name
+                group_name = group.name
+              console.log("group_id="+userGroup.group_id+", is_notify_stranger="+is_notify_stranger)
+              if is_notify_stranger
+                console.log("Will notify stranger")
+                sharpai_pushnotification("notify_stranger", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name}, null)
       )
+      this.response.end('{"result": "ok"}\n')
+    )
+  Router.route('restapi/workai_multiple_people', {where: 'server'}).get(()->
+
+    ).post(()->
+      person_id = ''
+      persons = []
+      active_time = null
+      if this.request.body.hasOwnProperty('person_id')
+        person_id = this.request.body.person_id
+      if this.request.body.hasOwnProperty('persons')
+        persons = this.request.body.persons
+      console.log("restapi/workai_multiple_people post: person_id="+person_id+", persons="+JSON.stringify(persons))
+      if (!(persons instanceof Array) or persons.length < 1)
+        console.log("restapi/workai_multiple_people: this.request.body is not array.")
+        return this.response.end('{"result": "failed!", "cause": "this.request.body is not array."}\n')
+
+      console.log("restapi/workai_multiple_people: uuid = "+persons[0].uuid)
+      user = Meteor.users.findOne({username: persons[0].uuid})
+      unless user
+        console.log("restapi/workai_multiple_people: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/workai_multiple_people: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+
+      
+      for person in persons
+        console.log("person="+JSON.stringify(person))
+        unless active_time
+          active_time = utilFormatTime(Number(person.img_ts))
+
+      userGroups.forEach((userGroup)->
+          console.log("restapi/workai_multiple_people: userGroup.group_id="+userGroup.group_id)
+          #Get Configuration from DB
+          people_config = WorkAIUserRelations.find({'group_id':userGroup.group_id}, {fields:{'hide_it':1}}).fetch()
+
+          multiple_persons = []
+          for person in persons
+            isShow = people_config.some((elem) => elem.person_name == person.name && !elem.hide_it)
+            if isShow
+              if !multiple_persons.some((elem) => elem == person.name)
+                multiple_persons.append(person.name)
+          if multiple_persons.length == 0
+            console.log("restapi/workai_multiple_people: No people in the request body.")
+            return
+
+          group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
+          group_name = '公司'
+          is_notify_stranger = true
+          if group && group.settings && group.settings.notify_stranger == false
+            is_notify_stranger = false
+          if group && group.name
+            group_name = group.name
+          console.log("group_id="+userGroup.group_id)
+          console.log("Will notify known multiple people")
+          sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:multiple_persons.join(', ')}, null)
+      )
+      this.response.end('{"result": "ok"}\n')
     )
 
   Router.route('/restapi/workai-group-qrcode', {where: 'server'}).get(()->

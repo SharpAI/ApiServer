@@ -70,3 +70,18 @@ String.prototype.format = function() {
     return formatted;
 };
 
+utilFormatTime = function(time) {
+    var now = new Date(time);
+    var ms = now.getTime();
+    var year = now.getFullYear();
+    var month = now.getMonth()+1;
+    var month = now.getMonth()+1<10 ? "0"+(now.getMonth()+1) : now.getMonth()+1;
+    var day = now.getDate()<10 ? "0"+now.getDate() : now.getDate();
+    var hour = now.getHours()<10 ? "0"+now.getHours() : now.getHours();
+    var minute = now.getMinutes()<10 ? "0"+now.getMinutes() : now.getMinutes();
+    var second = now.getSeconds()<10 ? "0"+now.getSeconds() : now.getSeconds();
+    var milSecond = now.getMilliseconds();
+    var divid = year+"-"+month+"-"+day+" "+hour+":"+minute+":"+second;
+    console.log("utilFormatTime: " + divid);
+    return divid;
+};

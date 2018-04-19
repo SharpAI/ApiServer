@@ -9,9 +9,9 @@ if Meteor.isServer
         certData: apnsDevCert
         keyData: apnsDevKey
         gateway: 'gateway.sandbox.push.apple.com'
-    
-    apnsProductionCert = Assets.getText 'ios/apn-production/WorkAI_PN_Production_Cert.pem'
-    apnsProductionKey = Assets.getText 'ios/apn-production/WorkAI_PN_Production_Key.pem'
+
+    apnsProductionCert = Assets.getText 'ios/apn-production/SharpAI_PN_Production_Cert.pem'
+    apnsProductionKey = Assets.getText 'ios/apn-production/SharpAI_PN_Production_Key.pem'
     optionsProduction =
         passphrase: '123456'
         certData: apnsProductionCert
@@ -22,3 +22,4 @@ if Meteor.isServer
 
     pushServer.initFeedback()
     root.pushServer = pushServer
+    #sharpai_pushnotification("notify_stranger", {active_time:utilFormatTime(1524123047645), group_id:"0a3c12765104f7c9c827f6e5", group_name:'Realdoor'}, null)
