@@ -1625,6 +1625,18 @@ Meteor.methods({
     }
     WorkStatus.update(selector,{$set:{hide_it: hide_it}},{multi: true});
   },
+  'update_group_settings': function(group_id, settings){
+    console.log("group_id="+group_id+", settings="+JSON.stringify(settings))
+    if(!group_id || !settings){
+      console.log("update_group_settings: group_id or settings is null.");
+      return;
+    }
+    SimpleChat.Groups.update({_id: group_id},{$set:settings}, function(err, result) {
+        if (err) {
+            console.log("update_group_settings: update settings failed.");
+        }
+    });
+  },
   'initLableDataSet':function(){
     LABLE_DADASET_Handle.initLableDataSet();
   },

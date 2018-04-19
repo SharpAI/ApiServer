@@ -59,6 +59,24 @@ Template.groupUserHide.helpers({
   },
   isLoading: function(){
     return Session.equals('groupUserHideLoaded','loading');
+  },
+  getStrangerConfig: function() {
+    //var result = localStorage.getItem('show_stranger_report');
+    var isShow = false, result = null;
+    var group_id = Router.current().params._id;
+    console.log("getStrangerConfig: group_id = "+group_id);
+    var group = SimpleChat.Groups.findOne({_id:group_id});
+    if (group && group.settings) {
+        result = group.settings.notify_stranger;
+    }
+    console.log("Frank: result="+result)
+    if (result || result == null || result == undefined) {
+        isShow = true;
+    }
+    return {'hide_it': !isShow, 'isShow': isShow}
+  },
+  getIsShow: function(isShow) {
+    console.log("Frank: isShow="+JSON.stringify(isShow));
   }
 });
 
@@ -69,6 +87,15 @@ Template.groupUserHide.events({
   },
   'click .switch':function(e){
     var _id = e.currentTarget.id;
+    if (_id == "stranger_id") {
+        //localStorage.setItem('show_stranger_report', !this.hide_it);
+        var group_id = Router.current().params._id;
+        Meteor.call('update_group_settings', group_id, {'settings.notify_stranger':!this.isShow});
+        this.hide_it = !this.hide_it;
+        this.isShow = !this.isShow;
+        console.log("Frank: this.hide_it="+JSON.stringify(this))
+        return;
+    }
     var isHide = this.hide_it;
     var group_id = this.group_id;
     var person_name = this.person_name;
