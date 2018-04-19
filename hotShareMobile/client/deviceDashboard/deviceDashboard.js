@@ -464,6 +464,8 @@ Template.deviceDashPoppage.events({
             };
 
             Meteor.call('ai-checkin-out', data, function (err, res) { });
+            //重新训练
+            retrain(group_id);
           });
         })
       });

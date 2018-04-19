@@ -9,6 +9,36 @@ var selected2 = new ReactiveVar([]);
 var lebeledPreLists = new ReactiveVar([]);
 var limitSetp = 10;
 
+//重新训练
+retrain = function (group_id) {
+  var group = SimpleChat.Groups.findOne({ _id:group_id });
+  var user = Meteor.user();
+  var msg = {
+    _id: new Mongo.ObjectID()._str,
+    form: {
+      id: Meteor.userId(),
+      name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+      icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
+    },
+    to: {
+      id: group._id,
+      name: group.name,
+      icon: group.icon
+    },
+    to_type: 'group',
+    type: 'text',
+    text: 'train',
+    create_time: new Date(),
+    is_read: false,
+    wait_classify: false
+  };
+  sendMqttGroupMessage(msg.to.id, msg, function (err) {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
+
 Template.groupPhoto.helpers({
   is_type: function(val){
     return type.get() === val;
@@ -485,6 +515,8 @@ Template.groupPhotoImg1.events({
               };
               console.log('removePersonById'+JSON.stringify(trainsetObj));
               sendMqttMessage('/device/'+self.group_id, trainsetObj);
+              //重新训练
+              retrain(self.group_id);
               return PUB.toast('已删除');
             });
           });
@@ -700,6 +732,8 @@ Template.person_labelDataset.events({
         };
         selected2.set([]);
         lebeledPreLists.set([]);
+        //重新训练
+        retrain(lists[0].group_id);
       });
       return;
     }
