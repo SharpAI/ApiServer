@@ -1,16 +1,17 @@
+CurrentEmailTitle = ''
 
-SSR.compileTemplate('srvemailTemplate', Assets.getText('srvemail-template.html'));
+SSR.compileTemplate('srvemailTemplateFast', Assets.getText('srvemail-template-fast.html'));
 
-Template.srvemailTemplate.onCreated(function helloOnCreated() {
+Template.srvemailTemplateFast.onCreated(function helloOnCreated() {
   
 });
 
-Template.srvemailTemplate.helpers({
+Template.srvemailTemplateFast.helpers({
   company_name() {
-    group_id = CurrentGroupId
-    group = SimpleChat.Groups.findOne({_id:group_id});
+    //group_id = CurrentGroupId
+    //group = SimpleChat.Groups.findOne({_id:group_id});
     
-    return group.name
+    return CurrentEmailTitle //group.name
   },
   job_date2(){
     group_id = CurrentGroupId

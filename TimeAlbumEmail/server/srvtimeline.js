@@ -17,16 +17,35 @@ Template.srvtimeline.helpers({
     now = new Date()
     localZeroDateTimestamp = LocalZeroTimezoneTimestamp(now, group.offsetTimeZone)
     
-    console.log("timeLinelists group_id:", group_id)
-    console.log("timeLinelists group", group)
-    console.log("localZeroDateTimestamp", localZeroDateTimestamp)
+    //console.log("timeLinelists group_id:", group_id)
+    //console.log("timeLinelists group", group)
+    //console.log("localZeroDateTimestamp", localZeroDateTimestamp)
 
     timeLists = TimelineLists.find({groupId:group_id, ZeroTimestamp:localZeroDateTimestamp}, {sort
 :{createdAt:1}}).fetch()
 
     for (idx in timeLists) {
-        //console.log(timeLists[idx], timeLists[idx]["createdAt"].getTime())
-        ret_timeLists.push(timeLists[idx])
+      //console.log(timeLists[idx], timeLists[idx]["createdAt"].getTime())
+      
+      timeLists[idx].personLists = []
+      //console.log(timeLists[idx]["faceId"])
+      if (timeLists[idx]["faceId"] && timeLists[idx]["faceId"] != 'unknown'){
+        var faceId = timeLists[idx]["faceId"].split(",");
+        for (i in faceId){
+          //console.log(faceId[i])
+          person = Person.findOne({faceId: faceId[i]})
+          
+          if (person){
+            //console.log(person)
+            var obj = {
+              'name': person.name,
+              'name_img_url':person.url
+            };
+            timeLists[idx].personLists.push(obj)
+          }
+        }
+      }
+      ret_timeLists.push(timeLists[idx])
     }
     
     return ret_timeLists

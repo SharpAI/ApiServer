@@ -19,5 +19,21 @@ Template.emailTemplate.helpers({
     console.log("timeLinelists group", group)
     
     return group.name
+  },
+  job_date2(){
+    group_id = TEST_GROUP_ID
+    console.log("timeLinelists group_id:", group_id)
+    group = SimpleChat.Groups.findOne({_id:group_id});
+    
+    if (group == null){
+      return ""
+    }
+    
+    now = new Date()
+    localDate = LocalDateTimezone(now, group.offsetTimeZone);
+    console.log(localDate.getFullYear(), localDate.getMonth() , localDate.getDate(), 
+      localDate.getHours(), localDate.getMinutes(), localDate.getSeconds())
+
+    return localDate.getFullYear()+ "-"+ localDate.getMonth() + "-" + localDate.getDate() 
   }
 });
