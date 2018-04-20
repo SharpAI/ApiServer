@@ -20,6 +20,8 @@ function fastEmailMessge(timeItem, group) {
     if (group.settings){
         if (group.settings.notify_stranger == true){
             person_valid_lists.push("unknown")
+        }
+        if (group.settings.report == true){
             person_valid_lists.push("activity")
         }
     }else {
