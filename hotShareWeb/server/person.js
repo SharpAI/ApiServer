@@ -1107,7 +1107,7 @@ PERSON = {
     console.log("selector="+JSON.stringify(selector));
     var deviceTimilineItem = DeviceTimeLine.findOne(selector);
     if (deviceTimilineItem) {
-        console.log('updateValueToDeviceTimeline find Success, deviceTimilineItem='+JSON.stringify(deviceTimilineItem));
+        //console.log('updateValueToDeviceTimeline find Success, deviceTimilineItem='+JSON.stringify(deviceTimilineItem));
         var stranger_id = "perMin."+minutes+".$.stranger_id";
         var stranger_name = "perMin."+minutes+".$.stranger_name";
         var modifier = {$set:{}};//{$set:{stranger_id:obj.stranger_id, stranger_name:obj.stranger_name}}

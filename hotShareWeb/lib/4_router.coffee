@@ -1261,7 +1261,7 @@ if Meteor.isServer
     ).post(()->
       person_id = ''
       persons = []
-      person_name = null
+      person_name = null 
       active_time = null
       if this.request.body.hasOwnProperty('person_id')
         person_id = this.request.body.person_id
@@ -1291,8 +1291,9 @@ if Meteor.isServer
               console.log("person="+JSON.stringify(person))
               unless active_time
                 active_time = utilFormatTime(Number(person.img_ts))
-              if !person_name && person.name
-                person_name = person.name
+              if !person_name && person_id != ''
+                person_name = PERSON.getName(null, userGroup.group_id, person_id)
+                console.log("person_name="+person_name)
 
               # update to DeviceTimeLine
               create_time = new Date()
@@ -1319,9 +1320,11 @@ if Meteor.isServer
               uuid = person.uuid
               PERSON.updateValueToDeviceTimeline(uuid,userGroup.group_id,timeObj)
           if person_name
+              console.log("restapi/workai_unknown: person_name="+person_name)
               #Get Configuration from DB
-              people_config = WorkAIUserRelations.find({'group_id':userGroup.group_id}, {fields:{'hide_it':1}}).fetch()
+              people_config = WorkAIUserRelations.find({'group_id':userGroup.group_id}, {fields:{'person_name':1, 'hide_it':1}}).fetch()
               isShow = people_config.some((elem) => elem.person_name == person_name && !elem.hide_it)
+              console.log("people_config="+JSON.stringify(people_config))
               if isShow
                   group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
                   group_name = '公司'
@@ -1379,14 +1382,19 @@ if Meteor.isServer
       userGroups.forEach((userGroup)->
           console.log("restapi/workai_multiple_people: userGroup.group_id="+userGroup.group_id)
           #Get Configuration from DB
-          people_config = WorkAIUserRelations.find({'group_id':userGroup.group_id}, {fields:{'hide_it':1}}).fetch()
+          people_config = WorkAIUserRelations.find({'group_id':userGroup.group_id}, {fields:{'person_name':1, 'hide_it':1}}).fetch()
+          console.log("people_config="+JSON.stringify(people_config))
 
           multiple_persons = []
           for person in persons
-            isShow = people_config.some((elem) => elem.person_name == person.name && !elem.hide_it)
+            if person.accuracy == 0
+              continue
+            person_name = PERSON.getName(null, userGroup.group_id, person.id)
+            console.log("restapi/workai_multiple_people: person_name="+person_name)
+            isShow = people_config.some((elem) => elem.person_name == person_name && !elem.hide_it)
             if isShow
-              if !multiple_persons.some((elem) => elem == person.name)
-                multiple_persons.append(person.name)
+              if !multiple_persons.some((elem) => elem == person_name)
+                multiple_persons.push(person_name)
           if multiple_persons.length == 0
             console.log("restapi/workai_multiple_people: No people in the request body.")
             return
@@ -1403,7 +1411,7 @@ if Meteor.isServer
           sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:multiple_persons.join(', ')}, null)
       )
       this.response.end('{"result": "ok"}\n')
-    )  
+    )
 
   Router.route('/restapi/workai-group-qrcode', {where: 'server'}).get(()->
     group_id = this.params.query.group_id

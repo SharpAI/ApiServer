@@ -153,7 +153,7 @@ if Meteor.isServer
     else if type is "notify_knownPeople"
       group_notify = true
       group_name = if doc.group_name then doc.group_name else "公司"
-      person_name = if doc.person_name then doc.person_name else "有人"
+      person_name = if doc.person_name then doc.person_name else "多个人"
       content = 'SharpAI '+doc.active_time+'在'+group_name+'看到了'+person_name+'。'
       extras = {
         type: "notify_known_people"
