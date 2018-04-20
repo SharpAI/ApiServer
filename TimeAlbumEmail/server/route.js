@@ -5,13 +5,14 @@ function fastEmailMessge(timeItem, group) {
     var needSendMail = false
     var email_title
     CurrentGroupId = timeItem["groupId"]
-    if (CurrentGroupId == '0a3c12765104f7c9c827f6e5' || CurrentGroupId == '29081bb21c3ac758db07f602'){
+//    if (CurrentGroupId == '0a3c12765104f7c9c827f6e5' || CurrentGroupId == '29081bb21c3ac758db07f602'){
 
     to = group.report_emails 
     people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
     
     for (var k in people_config){
-       if (people_config[k].is_hide == undefined || (people_config[k].is_hide && people_config[k].is_hide == false)){
+	console.log(people_config[k].person_name, people_config[k].hide_it)
+       if (people_config[k].hide_it == undefined || people_config[k].hide_it ==  false){
            person_valid_lists.push(people_config[k].person_name)
        }
     }
@@ -23,10 +24,9 @@ function fastEmailMessge(timeItem, group) {
         }
         if (group.settings.report == true){
             person_valid_lists.push("activity")
-        }
+        }      
     }else {
         person_valid_lists.push("unknown")
-        person_valid_lists.push("activity")
     }
     
     console.log("group_settings:", group.settings, person_valid_lists, person_valid_lists.includes('unknown'))
@@ -52,6 +52,11 @@ function fastEmailMessge(timeItem, group) {
                         email_title = group.name +  ' DeepEye 观察到了 ' + person.name;
                         needSendMail = true    
                     }
+                }else if(faceId[i].length > 3){
+                    if (person_valid_lists.includes('unknown')){
+                        email_title = group.name +  ' DeepEye 观察到了' + '不熟悉的人';
+                        needSendMail = true
+                    }
                 }
             }
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
@@ -69,7 +74,6 @@ function fastEmailMessge(timeItem, group) {
             console.log(group._id, group.report_emails);
             
             var from = 'DeepEye<notify@mail.tiegushi.com>';
-            //var subject = group.name + ' Activity Report';
             console.log("send ...")
             
             Email.send({
@@ -80,8 +84,7 @@ function fastEmailMessge(timeItem, group) {
             });
         }
     }
-    
-    }
+//    }
 }
 
 

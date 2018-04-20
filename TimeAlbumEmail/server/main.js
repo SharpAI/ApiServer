@@ -12,14 +12,13 @@ Meteor.startup(() => {
     
     var from = 'DeepEye<notify@mail.tiegushi.com>';
     var subject = 'DeepEye Daily Report';
-    /*
+    
     Email.send({
       to: to,
       from: from,
       subject: subject,
       html: html
     });
-    */
   }
   
   sendJobReport = function (event) {
@@ -70,10 +69,7 @@ Meteor.startup(() => {
       }
     });
 
-    //SyncedCron.start();
-
-    
-    
+    SyncedCron.start();
 });
 
 
