@@ -71,8 +71,8 @@ Template.groupUserHide.helpers({
         result = group.settings.notify_stranger;
     }
     console.log("Frank: result="+result)
-    if (result || result == null || result == undefined) {
-        isShow = true;
+    if (result) {
+        isShow = result;
     }
     return {'hide_it': !isShow, 'isShow': isShow}
   },
@@ -84,8 +84,8 @@ Template.groupUserHide.helpers({
     if (group && group.settings) {
         result = group.settings.report;
     }
-    if (result || result == null || result == undefined) {
-        isShow = true;
+    if (result) {
+        isShow = result;
     }
     return {'hide_it': !isShow, 'isShow': isShow}
   },

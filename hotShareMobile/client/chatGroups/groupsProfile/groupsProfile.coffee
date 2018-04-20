@@ -111,6 +111,11 @@ if Meteor.isClient
       if groupUser and  groupUser.allowUnknowMember
         return true
       return false
+    reciveGif: ()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if group and group.settings
+        return group.settings.receive_gif
+      return false
     whats_up_send: ()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if group
@@ -377,6 +382,13 @@ if Meteor.isClient
           )
     'click #switchRejectUnknowMember':(event)->
       Meteor.call('updateGroupUserallowUnknowMember',Session.get('groupsId'), Meteor.userId())
+    'change #switchReciveGif':(event)->
+      isReceive = false
+      if $('#switchReciveGif').is(":checked") is true
+        isReceive = true
+      group_id = Session.get('groupsId')
+      Meteor.call('update_group_settings', group_id, {'settings.receive_gif':isReceive});
+      return
     'click #switch_whats_up_send':(event)->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if (group && group.whats_up_send)
