@@ -2764,15 +2764,15 @@ Template._simpleChatToChatLabelName.onRendered(function(){
   })
 });
 Template._simpleChatToChatLabelName.onDestroyed(function(){
-  Session.set('no-back',false);
+  // Session.set('no-back',false);
   Session.set('default-label-name','');
   Session.set('hasload',undefined);
 });
 Template._simpleChatToChatLabelName.helpers({
   noback:function(){
-    if(Session.get('no-back')){
-      return Session.get('no-back');
-    }
+    // if(Session.get('no-back')){
+    //   return Session.get('no-back');
+    // }
     return false;
   },
   notLoading: function() {

@@ -467,6 +467,12 @@ Template.timelineAlbum.helpers({
   showHint:function(){
     return Session.get('showHint');
   },
+  showName:function(person_name,accuracy){
+    if(!accuracy || !person_name){
+      return null;
+    }
+    return person_name;
+  },
   isFormGroupchat: function() {
     var formPage = Router.current().params.query.from;
     if (formPage && formPage == 'groupchat') {

@@ -6,6 +6,15 @@
   </div>
   <div class="content" style="padding-top:50px;">
     <ul class="userHideLists">
+      {{#with getReportConfig}}
+          <li class="userHideItem">
+            <img class="icon" src="{{icon}}" width="40" height="40">
+            <div class="right-btn" style="background: #fff;"><input id="report_id" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
+            <p class="userName">积极报告</p>
+            {{#if getIsShow this}}
+            {{/if}}
+          </li>
+      {{/with}}
       {{#with getStrangerConfig}}
           <li class="userHideItem">
             <img class="icon" src="{{icon}}" width="40" height="40">

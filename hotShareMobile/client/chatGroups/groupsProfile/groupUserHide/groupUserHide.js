@@ -10,6 +10,7 @@ Template.groupUserHide.onRendered(function(){
   // 页面滚动监听
   $(document).on('scroll', function(){
     var diff = $('.userHideLists').height() - $('body').scrollTop() - $('body').height() + 50;
+    // var diff = $('.userHideLists').scrollHeight()-$('body').height()-$('.userHideLists').scrollTop()
     if(diff < 0){
       console.log('loading', diff)
       var limit = Session.get('groupUserHideLimit');
@@ -75,6 +76,19 @@ Template.groupUserHide.helpers({
     }
     return {'hide_it': !isShow, 'isShow': isShow}
   },
+  //积极报告
+  getReportConfig:function(){
+    var isShow = false, result = null;
+    var group_id = Router.current().params._id;
+    var group = SimpleChat.Groups.findOne({_id:group_id});
+    if (group && group.settings) {
+        result = group.settings.report;
+    }
+    if (result || result == null || result == undefined) {
+        isShow = true;
+    }
+    return {'hide_it': !isShow, 'isShow': isShow}
+  },
   getIsShow: function(isShow) {
     console.log("Frank: isShow="+JSON.stringify(isShow));
   }
@@ -87,6 +101,13 @@ Template.groupUserHide.events({
   },
   'click .switch':function(e){
     var _id = e.currentTarget.id;
+    if(_id == 'report_id'){
+        var group_id = Router.current().params._id;
+        Meteor.call('update_group_settings', group_id, {'settings.report':!this.isShow});
+        this.hide_it = !this.hide_it;
+        this.isShow = !this.isShow;
+        return;
+    }
     if (_id == "stranger_id") {
         //localStorage.setItem('show_stranger_report', !this.hide_it);
         var group_id = Router.current().params._id;

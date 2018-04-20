@@ -395,7 +395,7 @@ Template.deviceDashPoppage.events({
     var changeLogic = function () {
       //修改:1.删除签到记录 2.加入训练集
       //屏蔽返回按钮
-      Session.set('no-back', true);
+      // Session.set('no-back', true);
       SimpleChat.show_label(group_id, url, function (name) {
         Session.set('default-label-name', '');
         if (!name || name == '') {

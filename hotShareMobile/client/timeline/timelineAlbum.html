@@ -89,13 +89,13 @@
               <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
                 <div class="linked-helper">已选</div>
                 {{> timelineAlbumImg}}
-                <div class="person-name">{{person_name}}</div>
+                <div class="person-name">{{showName person_name accuracy }}</div>
               </div>
               {{#each mergedImgs}}
               <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
                 <div class="linked-helper">已选</div>
                 {{> timelineAlbumImg}}
-                <div class="person-name">{{person_name}}</div>
+                <div class="person-name">{{showName person_name accuracy }}</div>
               </div>
               {{/each}}
               {{else}}
@@ -105,14 +105,14 @@
                 {{#if checkMergedImgsCount mergedImgs}}
                     <div class="merged-count">{{getMergedImgsCount mergedImgs}} 张</div>
                 {{/if}}
-                <div class="person-name">{{person_name}}</div>
+                <div class="person-name">{{showName person_name accuracy }}</div>
               </div>
               {{/if}}
             {{else}}
             <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
               <div class="linked-helper">已选</div>
               {{> timelineAlbumImg}}
-              <div class="person-name">{{person_name}}</div>
+              <div class="person-name">{{showName person_name accuracy }}</div>
             </div>
             {{/if}}
           {{/if}}
@@ -135,7 +135,7 @@
                   <div class="fuzziness">{{fuzziness}}</div>
                 </div>
                 {{/if}}
-                <div class="person-name">{{person_name}}</div>
+                <div class="person-name">{{showName person_name accuracy }}</div>
               </div>
               {{#each mergedImgs}}
               <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
@@ -146,7 +146,7 @@
                   <div class="fuzziness">{{fuzziness}}</div>
                 </div>
                 {{/if}}
-                <div class="person-name">{{person_name}}</div>
+                <div class="person-name">{{showName person_name accuracy }}</div>
               </div>
               {{/each}}
               {{else}}
@@ -155,7 +155,7 @@
                 {{#if checkMergedImgsCount mergedImgs}}
                   <div class="merged-count">{{getMergedImgsCount mergedImgs}} 张</div>
                 {{/if}}
-                <div class="person-name">{{person_name}}</div>
+                <div class="person-name">{{showName person_name accuracy }}</div>
               </div>
               {{/if}}
             {{else}}
@@ -167,7 +167,7 @@
                 <div class="fuzziness">{{fuzziness}}</div>
               </div>
               {{/if}}
-              <div class="person-name">{{person_name}}</div>
+              <div class="person-name">{{showName person_name accuracy }}</div>
             </div>
             {{/if}}
           {{/if}}
