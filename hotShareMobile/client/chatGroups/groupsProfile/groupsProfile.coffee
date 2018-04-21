@@ -112,10 +112,14 @@ if Meteor.isClient
         return true
       return false
     reciveGif: ()->
+      isShow = false
+      result = null
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if group and group.settings
-        return group.settings.receive_gif
-      return false
+        result = group.settings.receive_gif
+      if result is true or result is null or result is undefined
+        isShow = true
+      return isShow
     whats_up_send: ()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if group
@@ -213,6 +217,7 @@ if Meteor.isClient
        return false
     'click .groupUserHide':(event)->
       group_id = Session.get('groupsId')
+      Session.set 'scrollTop',$('html,body').scrollTop()
       PUB.page('/groupUserHide/'+group_id)
     'click #groupsProfilePageback':(event)->
       return PUB.back()

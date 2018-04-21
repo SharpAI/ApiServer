@@ -6,11 +6,10 @@ Template.groupUserHide.onRendered(function(){
   Meteor.subscribe('group-user-relations',group_id,Session.get('groupUserHideLimit'),function(){
     Session.set('groupUserHideLoaded','loaded');
   });
-
+  $('html,body').scrollTop(0);
   // 页面滚动监听
   $(document).on('scroll', function(){
-    var diff = $('.userHideLists').height() - $('body').scrollTop() - $('body').height() + 50;
-    // var diff = $('.userHideLists').scrollHeight()-$('body').height()-$('.userHideLists').scrollTop()
+    var diff = $('.userHideLists').height() - $('html,body').scrollTop() - $('body').height() + 50;
     if(diff < 0){
       console.log('loading', diff)
       var limit = Session.get('groupUserHideLimit');
@@ -71,8 +70,8 @@ Template.groupUserHide.helpers({
         result = group.settings.notify_stranger;
     }
     console.log("Frank: result="+result)
-    if (result) {
-        isShow = result;
+    if (result || result == null || result == undefined) {
+        isShow = true;
     }
     return {'hide_it': !isShow, 'isShow': isShow}
   },
@@ -84,8 +83,8 @@ Template.groupUserHide.helpers({
     if (group && group.settings) {
         result = group.settings.report;
     }
-    if (result) {
-        isShow = result;
+    if (result || result == null || result == undefined) {
+        isShow = true;
     }
     return {'hide_it': !isShow, 'isShow': isShow}
   },
@@ -97,6 +96,9 @@ Template.groupUserHide.helpers({
 Template.groupUserHide.events({
   'click .back': function(e){
     var group_id = Router.current().params._id;
+    Meteor.setTimeout(function(){
+      $('html,body').scrollTop(Session.get('scrollTop'));
+    },50);
     return Router.go('/groupsProfile/group/'+ group_id);
   },
   'click .switch':function(e){
