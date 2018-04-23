@@ -7,16 +7,16 @@ function fastEmailMessge(timeItem, group) {
     CurrentGroupId = timeItem["groupId"]
 //    if (CurrentGroupId == '0a3c12765104f7c9c827f6e5' || CurrentGroupId == '29081bb21c3ac758db07f602'){
 
-    to = group.report_emails 
+    to = group.report_emails
     people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
-    
+
     for (var k in people_config){
 	console.log(people_config[k].person_name, people_config[k].hide_it)
        if (people_config[k].hide_it == undefined || people_config[k].hide_it ==  false){
            person_valid_lists.push(people_config[k].person_name)
        }
     }
-    
+
     //stranger valid
     if (group.settings){
         if (group.settings.notify_stranger == true){
@@ -24,11 +24,11 @@ function fastEmailMessge(timeItem, group) {
         }
         if (group.settings.report == true){
             person_valid_lists.push("activity")
-        }      
+        }
     }else {
         person_valid_lists.push("unknown")
     }
-    
+
     console.log("group_settings:", group.settings, person_valid_lists, person_valid_lists.includes('unknown'))
 
     if (to){
@@ -39,7 +39,7 @@ function fastEmailMessge(timeItem, group) {
             for (i in faceId){
                 console.log(faceId[i])
                 person = Person.findOne({faceId: faceId[i]})
-                
+
                 if (person){
                     console.log(person)
                     var obj = {
@@ -47,10 +47,10 @@ function fastEmailMessge(timeItem, group) {
                       'name_img_url':person.url
                     };
                     timeItem.personLists.push(obj)
-                    
+
                     if (person_valid_lists.includes(person.name)){
                         email_title = group.name +  ' DeepEye 观察到了 ' + person.name;
-                        needSendMail = true    
+                        needSendMail = true
                     }
                 }else if(faceId[i].length > 3){
                     if (person_valid_lists.includes('unknown')){
@@ -66,16 +66,17 @@ function fastEmailMessge(timeItem, group) {
           needSendMail = true
           email_title = group.name +  ' DeepEye 观察到了' + '一些动静';
         }
-            
+
         if(needSendMail){
+            send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title)
             CurrentTimeItem = timeItem
             CurrentEmailTitle = email_title
             var html = SSR.render("srvemailTemplateFast");
             console.log(group._id, group.report_emails);
-            
+
             var from = 'DeepEye<notify@mail.tiegushi.com>';
             console.log("send ...")
-            
+
             Email.send({
                 to: to,
                 from: from,
@@ -92,27 +93,27 @@ function fastEmailMessge(timeItem, group) {
 Router.route( "timelines/add", function() {
     var query   = this.request.query,
         fields  = {};
-    
+
     console.log("query", query)
     if (query.group_id == null){
         this.response.setHeader( 'access-control-allow-origin', '*' );
         this.response.statusCode = 200;
-        this.response.end( 'Error, groupId not passed' ); 
+        this.response.end( 'Error, groupId not passed' );
         return
     }
-    
+
     group = SimpleChat.Groups.findOne({_id: query.group_id});
     if (group == null){
         this.response.setHeader( 'access-control-allow-origin', '*' );
         this.response.statusCode = 200;
-        this.response.end( 'Error, group not exist' ); 
+        this.response.end( 'Error, group not exist' );
         return
     }
-    
+
     now = new Date()
     localDate = LocalDateTimezone(now, group.offsetTimeZone);
     localZeroDateTimestamp = LocalZeroTimezoneTimestamp(now, group.offsetTimeZone)
-    
+
     fields["img_url"] = query.img_url;
     fields["groupId"] = query.group_id;
     fields["uuid"] = query.uuid;
@@ -124,15 +125,15 @@ Router.route( "timelines/add", function() {
     //foo.add(fields)
     fastEmailMessge(fields, group);
     //mail_queue.push(fields)
-    
+
     //console.log("group", group)
-    
+
     console.log("fields", fields)
-  
+
     TimelineLists.insert(fields);
-    
+
     this.response.setHeader( 'access-control-allow-origin', '*' );
     this.response.statusCode = 200;
     this.response.end( 'ok' );
-    
+
 }, { where: "server" });
