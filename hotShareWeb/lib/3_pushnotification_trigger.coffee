@@ -389,6 +389,7 @@ if Meteor.isServer
         console.log("Exception in pushnotification: err="+err);
 
   @sharpai_pushnotification = (type, doc, userId)->
+    return
     group_notify = false
     console.log "sharpai_pushnotification: type:"+type
     if type is "notify_stranger"
