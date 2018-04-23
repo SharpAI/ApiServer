@@ -8,10 +8,10 @@ Template.srvemailTemplateFast.onCreated(function helloOnCreated() {
 
 Template.srvemailTemplateFast.helpers({
   company_name() {
-    //group_id = CurrentGroupId
-    //group = SimpleChat.Groups.findOne({_id:group_id});
-    
-    return CurrentEmailTitle //group.name
+    return CurrentEmailCompanyName
+  },
+  person_name(){
+    return CurrentEmailPersonName
   },
   job_date2(){
     group_id = CurrentGroupId

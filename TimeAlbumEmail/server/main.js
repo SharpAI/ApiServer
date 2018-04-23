@@ -70,6 +70,7 @@ Meteor.startup(() => {
     });
 
     SyncedCron.start();
+    
 });
 
 

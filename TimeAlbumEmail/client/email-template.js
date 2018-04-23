@@ -20,6 +20,9 @@ Template.emailTemplate.helpers({
     
     return group.name
   },
+  person_name(){
+    return 'Xing'
+  },
   job_date2(){
     group_id = TEST_GROUP_ID
     console.log("timeLinelists group_id:", group_id)

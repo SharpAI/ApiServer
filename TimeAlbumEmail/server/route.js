@@ -6,7 +6,9 @@ function fastEmailMessge(timeItem, group) {
     var email_title
     CurrentGroupId = timeItem["groupId"]
 //    if (CurrentGroupId == '0a3c12765104f7c9c827f6e5' || CurrentGroupId == '29081bb21c3ac758db07f602'){
-
+    CurrentEmailCompanyName = group.name
+    CurrentEmailPersonName = ''
+    
     to = group.report_emails 
     people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
     
@@ -49,32 +51,38 @@ function fastEmailMessge(timeItem, group) {
                     timeItem.personLists.push(obj)
                     
                     if (person_valid_lists.includes(person.name)){
-                        email_title = group.name +  ' DeepEye 观察到了 ' + person.name;
-                        needSendMail = true    
+                        needSendMail = true 
+                        if (CurrentEmailPersonName.length > 1){
+                            CurrentEmailPersonName = CurrentEmailPersonName + ',' + person.name
+                        }else{
+                            CurrentEmailPersonName =  person.name
+                        }
                     }
                 }else if(faceId[i].length > 3){
                     if (person_valid_lists.includes('unknown')){
-                        email_title = group.name +  ' DeepEye 观察到了' + '不熟悉的人';
                         needSendMail = true
+                        CurrentEmailPersonName =  '不熟悉的人'
                     }
                 }
             }
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
           needSendMail = true
-          email_title = group.name +  ' DeepEye 观察到了' + '不熟悉的人';
+          CurrentEmailPersonName =  '不熟悉的人'
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
           needSendMail = true
-          email_title = group.name +  ' DeepEye 观察到了' + '一些动静';
+          CurrentEmailPersonName =  '一些动静'
         }
-            
+
         if(needSendMail){
             CurrentTimeItem = timeItem
-            CurrentEmailTitle = email_title
+            
             var html = SSR.render("srvemailTemplateFast");
             console.log(group._id, group.report_emails);
             
             var from = 'DeepEye<notify@mail.tiegushi.com>';
-            console.log("send ...")
+            console.log("send Email ...")
+            
+            email_title = CurrentEmailCompanyName + '观察到了' + CurrentEmailPersonName
             
             Email.send({
                 to: to,
@@ -121,11 +129,10 @@ Router.route( "timelines/add", function() {
     fields["createdAt"] = now
     fields["time"] = localDate.toLocaleString()
     fields["ZeroTimestamp"] = localZeroDateTimestamp
-    //foo.add(fields)
-    fastEmailMessge(fields, group);
-    //mail_queue.push(fields)
     
-    //console.log("group", group)
+    fastEmailMessge(fields, group);
+
+    console.log("group", group)
     
     console.log("fields", fields)
   
