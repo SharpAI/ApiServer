@@ -49,7 +49,7 @@ Template.groupUserHide.helpers({
     // if(this.app_user_icon){
     //   return this.app_user_icon;
     // }
-    return '/userPicture.png';
+    return '/user_new.png';
   },
   isShow:function(){
     return !this.hide_it;

@@ -222,9 +222,9 @@ if (Meteor.isClient) {
       if (Accounts._resetPasswordToken) {
           Session.set('resetPassword', Accounts._resetPasswordToken);
       }
-       WechatShare.isWXAppInstalled(function(result){
-        Session.set('isWXAppInstalled', result);
-      }, function(){});
+      // WechatShare.isWXAppInstalled(function(result){
+      //  Session.set('isWXAppInstalled', result);
+      //}, function(){});
   });
   Template.authOverlay.onRendered(function () {
     // StatusBar.backgroundColorByHexString("#ffffff");
@@ -248,12 +248,12 @@ if (Meteor.isClient) {
       isLoggingIn:function() {
           return Meteor.loggingIn();
       },
-      isWXAppInstalled:function(){
-          if(device.platform === 'iOS'){
-              return Session.get('isWXAppInstalled');
-          }
-          return true;
-      }
+      //isWXAppInstalled:function(){
+      //    if(device.platform === 'iOS'){
+      //        return Session.get('isWXAppInstalled');
+      //    }
+      //    return true;
+      //}
   });
   Template.authOverlay.events({
     'click #anonymous': function () {
