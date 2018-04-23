@@ -904,6 +904,60 @@ if Meteor.isServer
             PERSON.sendPersonInfoToWeb(person_info)
       )
 
+  insert_motion_msg = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id,p_ids)->
+    device = Devices.findOne({uuid: uuid})
+    user = Meteor.users.findOne({username: uuid})
+    unless user
+      return
+    userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+    unless userGroups
+      return
+
+    userGroups.forEach((userGroup)->
+      group = SimpleChat.Groups.findOne({_id:userGroup.group_id});
+      if group.template and group.template._id
+        if group.template.img_type != img_type
+          return
+      name = null
+      name = PERSON.getName(null, userGroup.group_id,id)
+      p_ids_name = [];
+
+      #没有准确度的人一定是没有识别出来的
+      name = if accuracy then name else null
+      #没有识别的人的准确度清0
+      Accuracy =  if name then accuracy else false
+      Fuzziness = fuzziness
+
+      sendMqttMessage('/msg/g/'+ userGroup.group_id, {
+        _id: new Mongo.ObjectID()._str
+        form: {
+          id: user._id
+          name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
+          icon: user.profile.icon
+        }
+        to: {
+          id: userGroup.group_id
+          name: userGroup.group_name
+          icon: userGroup.group_icon
+        }
+        images: [
+          {_id: new Mongo.ObjectID()._str, id: id, people_his_id: id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness, sqlid: sqlid, style: style,p_ids:p_ids_name} # 暂一次只能发一张图
+        ]
+        to_type: "group"
+        type: "text"
+        text: if !name then 'Work AI发现有人在活动' else 'Work AI认为它在刚刚经过的人中发现了 ' + name
+        create_time: new Date()
+        people_id: id
+        people_uuid: uuid
+        people_his_id: id
+        wait_lable: !name
+        event_type: 'motion'
+        is_people: true
+        is_read: false
+        tid:tracker_id
+      })
+    )
+
   @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
     insert_msg2(id, url, uuid, 'face', accuracy, fuzziness, 0, 0)
 
@@ -1242,6 +1296,14 @@ if Meteor.isServer
 
       if this.request.body.hasOwnProperty('p_ids') #可能性最大的三个人的id
         p_ids = this.request.body.p_ids
+
+      event_type = null
+      if this.request.body.hasOwnProperty('event_type')
+        event_type = this.request.body.event_type
+
+      if event_type and event_type is 'motion'
+        insert_motion_msg(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts, tracker_id,p_ids)
+        return this.response.end('{"result": "ok"}\n')
 
       console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type + ' sqlid=' + sqlid + ' style=' + style + 'img_ts=' + img_ts
       unless id and img_url and uuid
