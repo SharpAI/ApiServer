@@ -120,6 +120,15 @@ if Meteor.isClient
       if result is true or result is null or result is undefined
         isShow = true
       return isShow
+    realTimeEmail:()->
+      isShow = false
+      result = null
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if group and group.settings
+        result = group.settings.real_time_email
+      if result is true or result is null or result is undefined
+        isShow = true
+      return isShow
     whats_up_send: ()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if group
@@ -393,6 +402,13 @@ if Meteor.isClient
         isReceive = true
       group_id = Session.get('groupsId')
       Meteor.call('update_group_settings', group_id, {'settings.receive_gif':isReceive});
+      return
+    'change #switchRealTimeEmail':(event)->
+      isRealTime = false
+      if $('#switchRealTimeEmail').is(":checked") is true
+        isRealTime = true
+      group_id = Session.get('groupsId')
+      Meteor.call('update_group_settings', group_id, {'settings.real_time_email':isRealTime});
       return
     'click #switch_whats_up_send':(event)->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})

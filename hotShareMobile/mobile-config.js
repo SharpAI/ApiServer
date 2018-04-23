@@ -79,7 +79,7 @@ App.configurePlugin('org.hotshare.baidutts', {
 });
 
 App.configurePlugin('jpush-phonegap-plugin', {
-  API_KEY: 'c8efd2f69c6cd251faa9252b',
+  API_KEY: 'c84d336dc527ce926b44a815',
   CHANNEL: 'developer-default'
 });
 App.configurePlugin('phonegap-plugin-push', {
