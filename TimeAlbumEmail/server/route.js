@@ -30,7 +30,7 @@ function fastEmailMessge(timeItem, group) {
     }else {
         person_valid_lists.push("unknown")
     }
-
+    person_valid_lists.push('Bobby')
     console.log("group_settings:", group.settings, person_valid_lists, person_valid_lists.includes('unknown'))
 
     if (to){
@@ -51,8 +51,12 @@ function fastEmailMessge(timeItem, group) {
                     timeItem.personLists.push(obj)
 
                     if (person_valid_lists.includes(person.name)){
-                        email_title = group.name +  ' DeepEye 观察到了 ' + person.name;
                         needSendMail = true
+                        if (CurrentEmailPersonName.length > 1){
+                            CurrentEmailPersonName = CurrentEmailPersonName + ',' + person.name
+                        }else{
+                            CurrentEmailPersonName =  person.name
+                        }
                     }
                 }else if(faceId[i].length > 3){
                     if (person_valid_lists.includes('unknown')){
@@ -70,17 +74,21 @@ function fastEmailMessge(timeItem, group) {
         }
 
         if(needSendMail){
-            send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title)
+            email_title = CurrentEmailCompanyName + '观察到了' + CurrentEmailPersonName
+            
+            console.log("send MQTT ...")
+            send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title, group)
             CurrentTimeItem = timeItem
             
+            console.log("prepare Email Template ...")
             var html = SSR.render("srvemailTemplateFast");
             console.log(group._id, group.report_emails);
 
             var from = 'DeepEye<notify@mail.tiegushi.com>';
             console.log("send Email ...")
             
-            email_title = CurrentEmailCompanyName + '观察到了' + CurrentEmailPersonName
             
+            to= 'hzhu@actiontec.com'
             Email.send({
                 to: to,
                 from: from,

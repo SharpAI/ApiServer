@@ -1,6 +1,7 @@
 Devices = new Meteor.Collection('devices');
 
-send_motion_mqtt_msg = function(url, uuid, text) {
+send_motion_mqtt_msg = function(url, uuid, text, group) {
+  console.log("url:", url)
   var device, user, userGroups;
   device = Devices.findOne({
     uuid: uuid
@@ -11,18 +12,8 @@ send_motion_mqtt_msg = function(url, uuid, text) {
   if (!user) {
     return;
   }
-  userGroups = SimpleChat.GroupUsers.find({
-    user_id: user._id
-  });
-  if (!userGroups) {
-    return;
-  }
-  userGroups.forEach(function(userGroup) {
-    var group;
-    group = SimpleChat.Groups.findOne({
-      _id: userGroup.group_id
-    });
-    return sendMqttMessage('/msg/g/' + userGroup.group_id, {
+  
+  return sendMqttMessage('/msg/g/' + group._id, {
       _id: new Mongo.ObjectID()._str,
       form: {
         id: user._id,
@@ -30,9 +21,9 @@ send_motion_mqtt_msg = function(url, uuid, text) {
         icon: user.profile.icon
       },
       to: {
-        id: userGroup.group_id,
-        name: userGroup.group_name,
-        icon: userGroup.group_icon
+        id: group._id,
+        name: group.name,
+        icon: group.icon
       },
       images: [
         {
@@ -46,6 +37,5 @@ send_motion_mqtt_msg = function(url, uuid, text) {
       create_time: new Date(),
       event_type: 'motion',
       is_read: false
-    });
-  });
+    })
 };
