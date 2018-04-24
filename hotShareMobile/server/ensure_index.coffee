@@ -76,3 +76,4 @@ if Meteor.isServer
     DeviceTimeLine._ensureIndex({uuid: 1})
     DeviceTimeLine._ensureIndex({uuid: 1, group_id: 1})
     DeviceTimeLine._ensureIndex({hour: 1})
+    WorkStatus._ensureIndex({in_image:1,out_image:1})

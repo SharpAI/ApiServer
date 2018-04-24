@@ -1060,7 +1060,8 @@ if Meteor.isServer
     if work_status_out
       console.log('padCallRemove Fix WorkStatus, 需要修正出的考勤')
       #fixWorkStatus(work_status_out,'out')
-
+     # 删除考勤
+    WorkStatus.remove({$or:[{in_image: url},{out_image: url}]});
     # Step 2. 从设备时间轴中移除 
     selector = {
       hour: hour,
