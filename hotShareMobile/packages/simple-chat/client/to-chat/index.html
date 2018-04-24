@@ -169,7 +169,7 @@
                 <span class="status haveRead">已读</span>
               {{/if}} -->
             {{/if}}
-            {{#if people_id}}    
+            {{#if people_id}}
             <!--标记消息 start-->  
               {{#if label_complete}}
                 {{#if is_error images}}
@@ -357,7 +357,7 @@
     <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
   </div>
   {{else}}
-  <div class="img_container">
+  <div class="img_container {{eventType}}">
     <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
     {{#if hasAccAndFuzz}}
     <div class="value_bg"><div class="accuracy">{{accuracy}}</div><div class="fuzziness">{{fuzziness}}</div></div>

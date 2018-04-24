@@ -1693,6 +1693,12 @@ Template._simpleChatToChatItem.onRendered(function(){
 });
 
 Template._simpleChatToChatItem.helpers({
+  images: function() {
+    for(var i=0;i<this.images.length;i++){
+      this.images[i].eventType = this.event_type || '';
+    }
+   return this.images;
+  },
   is_system_message:function(){
     if (this.type === 'system') {
       return true;
