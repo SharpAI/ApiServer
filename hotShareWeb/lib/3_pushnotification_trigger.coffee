@@ -389,7 +389,6 @@ if Meteor.isServer
         console.log("Exception in pushnotification: err="+err);
 
   @sharpai_pushnotification = (type, doc, userId)->
-    return
     group_notify = false
     console.log "sharpai_pushnotification: type:"+type
     if type is "notify_stranger"
@@ -447,6 +446,8 @@ if Meteor.isServer
                   else if pushToken.type is 'iOS'
                     console.log 'Server PN to iOS '+pushToken.token
                     token = pushToken.token
+                    if token is "2e8da18650ffb952823a6690c6257a877d5b6338932b77fbe7031435e4404a60"
+                        return
                     pushServer.sendIOS 'me', token , '', content
                   else if pushToken.type is 'GCM'
                     console.log 'Server PN to GCM '
