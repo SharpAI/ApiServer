@@ -8,7 +8,7 @@
     <ul class="userHideLists">
       {{#with getReportConfig}}
           <li class="userHideItem">
-            <img class="icon" src="{{icon}}" width="40" height="40">
+            <img class="icon" src="/active_report.png" width="40" height="40">
             <div class="right-btn" style="background: #fff;"><input id="report_id" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
             <p class="userName">积极报告</p>
             {{#if getIsShow this}}
@@ -17,13 +17,16 @@
       {{/with}}
       {{#with getStrangerConfig}}
           <li class="userHideItem">
-            <img class="icon" src="{{icon}}" width="40" height="40">
+            <img class="icon" src="/user_new.png" width="40" height="40">
             <div class="right-btn" style="background: #fff;"><input id="stranger_id" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
             <p class="userName">不熟悉的人</p>
             {{#if getIsShow this}}
             {{/if}}
           </li>
       {{/with}}
+      <li class="userHideItem" style="background-color:#eee;height:15px;line-height:15px">
+        <!-- <div class="cut-line"></div> -->
+      </li>   
       {{#each lists}}
       {{#if person_name}}
       <li class="userHideItem">

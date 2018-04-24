@@ -49,7 +49,7 @@ Template.groupUserHide.helpers({
     // if(this.app_user_icon){
     //   return this.app_user_icon;
     // }
-    return '/user_new.png';
+    return '/userPicture.png';
   },
   isShow:function(){
     return !this.hide_it;
@@ -83,7 +83,7 @@ Template.groupUserHide.helpers({
     if (group && group.settings) {
         result = group.settings.report;
     }
-    if (result || result == null || result == undefined) {
+    if (result) {
         isShow = true;
     }
     return {'hide_it': !isShow, 'isShow': isShow}
