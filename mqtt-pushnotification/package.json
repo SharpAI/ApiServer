@@ -1,6 +1,6 @@
 {
   "name": "mqtt-pushnotification",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "mqtt-pushnotification server",
   "main": "main.js",
   "scripts": {

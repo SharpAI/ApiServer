@@ -1,4 +1,6 @@
 workai:
+docker build -t lambdazhang/raidcdn:workai-mq-push-1.7.0 .
+
 docker run --log-opt max-size=50m -e SERVICE_NAME=MQTT_Notification_Woekai -e PRODUCTION=true -e SERVICE_INDEX=0 -e DEBUG_MESSAGE=1 -e ALLOW_GROUP_NOTIFICATION=1 -e SERVER_URL=http://workaihost.tiegushi.com/ -e REDIS_PASSWORD='87302aKecatcp' -e REDIS_HOST='rds.tiegushi.com' -e MQTT_URL='ws://mq.tiegushi.com:80' -e MONGO_URL=mongodb://workAIAdmin:weo23biHUI@aidb.tiegushi.com:27017/workai?replicaSet=workaioplog\&readPreference=primaryPreferred\&connectTimeoutMS=30000\&socketTimeoutMS=30000\&poolSize=20 --restart=always --name='workai_mq_push' -t lambdazhang/raidcdn:workai-mq-push-1.0.0
 
 
