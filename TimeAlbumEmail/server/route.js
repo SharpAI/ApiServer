@@ -8,8 +8,8 @@ function fastEmailMessge(timeItem, group) {
 //    if (CurrentGroupId == '0a3c12765104f7c9c827f6e5' || CurrentGroupId == '29081bb21c3ac758db07f602'){
     CurrentEmailCompanyName = group.name
     CurrentEmailPersonName = ''
-    
-    to = group.report_emails 
+
+    to = group.report_emails
     people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
 
     for (var k in people_config){
@@ -50,7 +50,7 @@ function fastEmailMessge(timeItem, group) {
                     };
                     timeItem.personLists.push(obj)
 
-                    if (person_valid_lists.includes(person.name)){
+                    if ( person_valid_lists.includes(person.name) && checkIfSendEvent(group._id,faceId[i])){
                         needSendMail = true
                         if (CurrentEmailPersonName.length > 1){
                             CurrentEmailPersonName = CurrentEmailPersonName + ',' + person.name
@@ -58,19 +58,25 @@ function fastEmailMessge(timeItem, group) {
                             CurrentEmailPersonName =  person.name
                         }
                     }
-                }else if(faceId[i].length > 3){
+                } else if(faceId[i].length > 3){
                     if (person_valid_lists.includes('unknown')){
+                      if(checkIfSendEvent(group._id,'unknown')){
                         needSendMail = true
                         CurrentEmailPersonName =  '不熟悉的人'
+                      }
                     }
                 }
             }
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
-          needSendMail = true
-          CurrentEmailPersonName =  '不熟悉的人'
+          if(checkIfSendEvent(group._id,'unknown')){
+            needSendMail = true
+            CurrentEmailPersonName =  '不熟悉的人'
+          }
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
-          needSendMail = true
-          CurrentEmailPersonName =  '一些动静'
+          if(checkIfSendEvent(group._id,'activity')){
+            needSendMail = true
+            CurrentEmailPersonName =  '一些动静'
+          }
         }
 
         if(needSendMail){
@@ -87,8 +93,7 @@ function fastEmailMessge(timeItem, group) {
             var from = 'DeepEye<notify@mail.tiegushi.com>';
             console.log("send Email ...")
             
-            
-            to= 'hzhu@actiontec.com'
+            //to= 'hzhu@actiontec.com'
             Email.send({
                 to: to,
                 from: from,
@@ -134,11 +139,11 @@ Router.route( "timelines/add", function() {
     fields["createdAt"] = now
     fields["time"] = localDate.toLocaleString()
     fields["ZeroTimestamp"] = localZeroDateTimestamp
-    
+
     fastEmailMessge(fields, group);
 
     console.log("group", group)
-    
+
     console.log("fields", fields)
 
     TimelineLists.insert(fields);
