@@ -394,7 +394,7 @@ if Meteor.isServer
     if type is "notify_stranger"
       group_notify = true
       group_name = if doc.group_name then doc.group_name else "公司"
-      content = 'SharpAI '+doc.active_time+'在'+group_name+'发现了'+'陌生人。'
+      content = 'SharpAI '+'在'+group_name+'发现了'+'陌生人。'
       extras = {
         type: "notify_stranger"
       }
@@ -403,7 +403,7 @@ if Meteor.isServer
       group_notify = true
       group_name = if doc.group_name then doc.group_name else "公司"
       person_name = if doc.person_name then doc.person_name else "多个人"
-      content = 'SharpAI '+doc.active_time+'在'+group_name+'看到了'+person_name+'。'
+      content = 'SharpAI '+'在'+group_name+'看到了'+person_name+'。'
       extras = {
         type: "notify_known_people"
       }
