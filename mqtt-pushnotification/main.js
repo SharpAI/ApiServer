@@ -227,10 +227,15 @@ function sendNotification(message, toUserId ,type, cb) {
             content = message.form.name+ ': ' + msgText;
         }
         if(type === 'groupmessage'){
-          if(message.is_people)
-            content = message.to.name+ ': ' + ' 有新消息';
-          else
+          if(message.is_people) {
+            content = message.to.name+ ': ' + msgText;
+          }
+          else {
             content = message.to.name+ ': ' +  msgText;
+          }
+        }
+        if (msgText.indexOf(message.to.name) == 0) {
+          content = msgText;
         }
         var commentText = '';
         var extras = {
