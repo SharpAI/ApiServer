@@ -31,6 +31,7 @@ send_motion_mqtt_msg = function(url, uuid, text, group) {
           url: url
         }
       ],
+      people_id: 'people_id_gif',
       to_type: "group",
       type: "text",
       text: text,
