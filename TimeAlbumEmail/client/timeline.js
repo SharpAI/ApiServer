@@ -50,6 +50,22 @@ Template.timeline.helpers({
         ret_timeLists.push(timeLists[idx])
     }
     return ret_timeLists
+  },
+  company_name() {
+    group_id = TEST_GROUP_ID
+    console.log("timeLinelists group_id:", group_id)
+    group = SimpleChat.Groups.findOne({_id:group_id});
+    
+    if (group == null){
+      return ""
+    }
+    
+    console.log("timeLinelists group", group)
+    
+    return group.name
+  },
+  person_name(){
+    return 'Xing'
   }
 });
 

@@ -12,6 +12,12 @@ Template.srvtimelinefast.helpers({
 
     return ret_timeLists
 
-  }
+  },
+  company_name() {
+    return CurrentEmailCompanyName
+  },
+  person_name(){
+    return CurrentEmailPersonName
+  },
 });
 
