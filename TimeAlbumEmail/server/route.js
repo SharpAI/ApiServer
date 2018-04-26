@@ -62,7 +62,11 @@ function fastEmailMessge(timeItem, group) {
                     if (person_valid_lists.includes('unknown')){
                       if(checkIfSendEvent(group._id,'unknown')){
                         needSendMail = true
-                        CurrentEmailPersonName =  '不熟悉的人'
+			if (CurrentEmailPersonName.length > 1){
+                            CurrentEmailPersonName = CurrentEmailPersonName + ',不熟悉的人'
+                        }else{
+                            CurrentEmailPersonName =  '不熟悉的人'
+                        } 
                       }
                     }
                 }
