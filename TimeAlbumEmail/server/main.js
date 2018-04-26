@@ -53,7 +53,7 @@ Meteor.startup(() => {
         console.log("exception in sendJobReport", ex);
       }
     }
-/*
+
     // 邮件发送
     SyncedCron.add({
       name: 'send report email 23:00 pm every day2',
@@ -70,7 +70,6 @@ Meteor.startup(() => {
     });
 
     SyncedCron.start();
-*/    
 });
 
 
