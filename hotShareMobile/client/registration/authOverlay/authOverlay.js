@@ -56,9 +56,9 @@ if (Meteor.isClient) {
                     });
                    var relations = WorkAIUserRelations.findOne({'app_user_id':Meteor.userId()});
                    if (!relations) {
-                      Meteor.setTimeout(function(){
-                        Router.go('/timeline');
-                      },500);
+                      // Meteor.setTimeout(function(){
+                      return Router.go('/timeline');
+                      // },500);
                     }
                    return Router.go(gotoPage);
                 }

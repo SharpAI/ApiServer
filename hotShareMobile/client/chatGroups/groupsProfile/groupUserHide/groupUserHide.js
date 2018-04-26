@@ -6,10 +6,11 @@ Template.groupUserHide.onRendered(function(){
   Meteor.subscribe('group-user-relations',group_id,Session.get('groupUserHideLimit'),function(){
     Session.set('groupUserHideLoaded','loaded');
   });
+  Session.set('noshowPerson',true);
   $('html,body').scrollTop(0);
   // 页面滚动监听
   $(document).on('scroll', function(){
-    var diff = $('.userHideLists').height() - $('html,body').scrollTop() - $('body').height() + 50;
+    var diff = $('.userHideLists').height() - $('html,body').scrollTop() - $('body').height() + 40;
     if(diff < 0){
       console.log('loading', diff)
       var limit = Session.get('groupUserHideLimit');
@@ -60,41 +61,55 @@ Template.groupUserHide.helpers({
   isLoading: function(){
     return Session.equals('groupUserHideLoaded','loading');
   },
-  getStrangerConfig: function() {
-    //var result = localStorage.getItem('show_stranger_report');
+  getConfig:function(type){
     var isShow = false, result = null;
     var group_id = Router.current().params._id;
-    console.log("getStrangerConfig: group_id = "+group_id);
     var group = SimpleChat.Groups.findOne({_id:group_id});
     if (group && group.settings) {
-        result = group.settings.notify_stranger;
+      switch(type){
+        case 'push':
+          result = group.settings.push_notification;
+          break;
+        case 'stranger':
+          result = group.settings.notify_stranger;
+          break;
+        case 'email':
+          result = group.settings.real_time_email;
+          break;
+        case 'report':
+          result = group.settings.report;
+          break;
+        case 'stranger':
+          result = group.settings.notify_stranger;
+          break;
+        case 'other':
+          result = group.settings.other;
+          break;
+      }
     }
-    console.log("Frank: result="+result)
     if (result || result == null || result == undefined) {
-        isShow = true;
-    }
-    return {'hide_it': !isShow, 'isShow': isShow}
-  },
-  //积极报告
-  getReportConfig:function(){
-    var isShow = false, result = null;
-    var group_id = Router.current().params._id;
-    var group = SimpleChat.Groups.findOne({_id:group_id});
-    if (group && group.settings) {
-        result = group.settings.report;
-    }
-    if (result) {
         isShow = true;
     }
     return {'hide_it': !isShow, 'isShow': isShow}
   },
   getIsShow: function(isShow) {
     console.log("Frank: isShow="+JSON.stringify(isShow));
+  },
+  noshowPerson:function(){
+    return Session.get('noshowPerson');
   }
 });
 
 Template.groupUserHide.events({
+  'click #goPerson':function(e){
+    Session.set('noshowPerson',false);
+  },
   'click .back': function(e){
+    var noshowPerson = Session.get('noshowPerson');
+    if(!noshowPerson){
+      Session.set('noshowPerson',true);
+      return;
+    }
     var group_id = Router.current().params._id;
     Meteor.setTimeout(function(){
       $('html,body').scrollTop(Session.get('scrollTop'));
@@ -118,6 +133,27 @@ Template.groupUserHide.events({
         this.isShow = !this.isShow;
         console.log("Frank: this.hide_it="+JSON.stringify(this))
         return;
+    }
+    if(_id == "push"){
+      var group_id = Router.current().params._id;
+      Meteor.call('update_group_settings', group_id, {'settings.push_notification':!this.isShow});
+      this.hide_it = !this.hide_it;
+      this.isShow = !this.isShow;
+      return;
+    }
+    if(_id == "email"){
+      var group_id = Router.current().params._id;
+      Meteor.call('update_group_settings', group_id, {'settings.real_time_email':!this.isShow});
+      this.hide_it = !this.hide_it;
+      this.isShow = !this.isShow;
+      return;
+    }
+    if(_id == "other"){
+      var group_id = Router.current().params._id;
+      Meteor.call('update_group_settings', group_id, {'settings.other':!this.isShow});
+      this.hide_it = !this.hide_it;
+      this.isShow = !this.isShow;
+      return;
     }
     var isHide = this.hide_it;
     var group_id = this.group_id;

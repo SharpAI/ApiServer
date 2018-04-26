@@ -21,7 +21,8 @@
                 <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">公司部门信息</div>
                 {{#if isGroup}}
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
-                    {{#if isGroupCreator}}
+                    <!-- {{#if isGroupCreator}} -->
+                    {{#if isGroupAdmin}}
                     <li class="name editName">
                         <label>公司名称</label>
                         <div class="value">{{groupName}}<i class="fa fa-angle-right"></i></div>
@@ -121,15 +122,15 @@
                         <label>接收gif动图</label>
                         <div class="value"><input id="switchReciveGif" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf reciveGif}}></div>
                     </li>
-                    <li class="">
+                    <!-- <li class="">
                         <label>实时邮件</label>
                         <div class="value"><input id="switchRealTimeEmail" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf realTimeEmail}}></div>
-                    </li>
+                    </li> -->
                 </ul>
                 {{#if isGroupAdmin}}
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="groupUserHide">
-                        <label>报告栏成员管理</label>
+                        <label>通知管理</label>
                         <div class="value"><i class="fa fa-angle-right"></i></div>
                     </li>
                 </ul>
