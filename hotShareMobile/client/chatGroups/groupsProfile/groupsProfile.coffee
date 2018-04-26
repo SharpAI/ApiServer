@@ -493,7 +493,7 @@ if Meteor.isClient
           #Router.go('/selectTemplate');
           return
         Meteor.call('updateGroupName',Session.get('groupsId'),e.target.text.value,(error)->
-            SimpleChat.MsgSession.update({toUserId:to},{$set:{toUserName:e.target.text.value}})
+            SimpleChat.MsgSession.update({toUserId:Session.get('groupsId')},{$set:{toUserName:e.target.text.value}})
           )
 
         Session.set("groupsProfileMenu","groupInformation")

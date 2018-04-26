@@ -36,7 +36,7 @@ Template._simpleChatToChat.helpers({
       }
       //消息类型不是system和url则先判断 images,如果是空数组则不显示item
       //解决有些chat item为空白,待验证
-      if(doc.type != 'system' && doc.type != 'url' && doc.type != 'text'){
+      if(doc.type != 'system' && doc.type != 'url' && doc.type != 'text' && doc.type != 'image'){
         if(!doc.images || doc.images.length == 0){
           return;
         }
