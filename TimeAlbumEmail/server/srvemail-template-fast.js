@@ -5,7 +5,7 @@ SSR.compileTemplate('srvemailTemplateFast', Assets.getText('srvemail-template-fa
 Template.srvemailTemplateFast.onCreated(function helloOnCreated() {
   
 });
-
+/*
 Template.srvemailTemplateFast.helpers({
   company_name() {
     return CurrentEmailCompanyName
@@ -29,3 +29,4 @@ Template.srvemailTemplateFast.helpers({
     return localDate.getFullYear()+ "-"+ localDate.getMonth() + "-" + localDate.getDate() 
   }
 });
+*/

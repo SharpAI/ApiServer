@@ -6,8 +6,8 @@ function fastEmailMessge(timeItem, group) {
     var email_title
     CurrentGroupId = timeItem["groupId"]
 //    if (CurrentGroupId == '0a3c12765104f7c9c827f6e5' || CurrentGroupId == '29081bb21c3ac758db07f602'){
-    CurrentEmailCompanyName = group.name
-    CurrentEmailPersonName = ''
+    var EmailCompanyName = group.name
+    var EmailPersonName = ''
 
     to = group.report_emails
     people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
@@ -30,7 +30,11 @@ function fastEmailMessge(timeItem, group) {
     }else {
         person_valid_lists.push("unknown")
     }
-    person_valid_lists.push('Bobby')
+    
+    // person_valid_lists.push('Bobby') //debug
+    // person_valid_lists.push('unknown') //debug
+    // person_valid_lists.push('activity') //debug
+    
     console.log("group_settings:", group.settings, person_valid_lists, person_valid_lists.includes('unknown'))
 
     if (to){
@@ -52,20 +56,20 @@ function fastEmailMessge(timeItem, group) {
 
                     if ( person_valid_lists.includes(person.name) && checkIfSendEvent(group._id,faceId[i])){
                         needSendMail = true
-                        if (CurrentEmailPersonName.length > 1){
-                            CurrentEmailPersonName = CurrentEmailPersonName + ',' + person.name
+                        if (EmailPersonName.length > 1){
+                            EmailPersonName = EmailPersonName + ',' + person.name
                         }else{
-                            CurrentEmailPersonName =  person.name
+                            EmailPersonName =  person.name
                         }
                     }
                 } else if(faceId[i].length > 3){
                     if (person_valid_lists.includes('unknown')){
                       if(checkIfSendEvent(group._id,'unknown')){
                         needSendMail = true
-			if (CurrentEmailPersonName.length > 1){
-                            CurrentEmailPersonName = CurrentEmailPersonName + ',不熟悉的人'
+			            if (EmailPersonName.length > 1){
+                            EmailPersonName = EmailPersonName + ',不熟悉的人'
                         }else{
-                            CurrentEmailPersonName =  '不熟悉的人'
+                            EmailPersonName =  '不熟悉的人'
                         } 
                       }
                     }
@@ -74,30 +78,34 @@ function fastEmailMessge(timeItem, group) {
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
           if(checkIfSendEvent(group._id,'unknown')){
             needSendMail = true
-            CurrentEmailPersonName =  '不熟悉的人'
+            EmailPersonName =  '不熟悉的人'
           }
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
           if(checkIfSendEvent(group._id,'activity')){
             needSendMail = true
-            CurrentEmailPersonName =  '一些动静'
+            EmailPersonName =  '一些动静'
           }
         }
 
         if(needSendMail){
-            email_title = CurrentEmailCompanyName + '观察到了' + CurrentEmailPersonName
+            email_title = EmailCompanyName + '观察到了' + EmailPersonName
             
-            console.log("send MQTT ...")
-            send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title, group)
-            CurrentTimeItem = timeItem
+            console.log("send MQTT ...", email_title)
+            //send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title, group)
             
             console.log("prepare Email Template ...")
-            var html = SSR.render("srvemailTemplateFast");
+            var ret_timeLists = []
+            timeItem["company_name"] = EmailCompanyName
+            timeItem["person_name"] = EmailPersonName
+            ret_timeLists.push(timeItem)
+
+            var html = SSR.render("srvemailTemplateFast", {company_name:EmailCompanyName, person_name:EmailPersonName, timeLinelists:ret_timeLists});
             console.log(group._id, group.report_emails);
 
             var from = 'DeepEye<notify@mail.tiegushi.com>';
             console.log("send Email ...")
             
-            //to= 'hzhu@actiontec.com'
+            // to= 'hzhu@actiontec.com'
             Email.send({
                 to: to,
                 from: from,

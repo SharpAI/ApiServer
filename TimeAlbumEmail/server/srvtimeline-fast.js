@@ -2,7 +2,7 @@ SSR.compileTemplate('srvtimelinefast', Assets.getText('srvtimeline-fast.html'));
 
 Template.srvtimelinefast.onCreated(function helloOnCreated() {
 });
-
+/*
 Template.srvtimelinefast.helpers({
   timeLinelists() {
     var ret_timeLists = []
@@ -21,3 +21,4 @@ Template.srvtimelinefast.helpers({
   },
 });
 
+*/
