@@ -91,7 +91,7 @@ function fastEmailMessge(timeItem, group) {
             email_title = EmailCompanyName + '观察到了' + EmailPersonName
             
             console.log("send MQTT ...", email_title)
-            //send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title, group)
+            send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title, group)
             
             console.log("prepare Email Template ...")
             var ret_timeLists = []
