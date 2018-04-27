@@ -6,12 +6,12 @@
   </div>
   <div class="content" style="padding-top:40px;">
     <ul class="userHideLists">
-        <li class="sub_head"><p>实时事件通知方式</p></li>
+        <li class="sub_head"><p>请选择通知方式</p></li>
         {{#with getConfig 'push'}}
             <li class="userHideItem">
               <img class="icon" src="/push.png" width="40" height="40">
               <div class="right-btn" style="background: #fff;"><input id="push" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
-              <p class="userName">app推送</p>
+              <p class="userName">通过APP推送通知</p>
               {{#if getIsShow this}}
               {{/if}}
             </li>
@@ -20,12 +20,12 @@
             <li class="userHideItem">
               <img class="icon" src="/email.png" width="40" height="40">
               <div class="right-btn" style="background: #fff;"><input id="email" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
-              <p class="userName">实时邮件</p>
+              <p class="userName">通过邮件通知</p>
               {{#if getIsShow this}}
               {{/if}}
             </li>
         {{/with}}
-        <li class="sub_head"><p>以下事件发生时，提醒您</p></li>
+        <li class="sub_head"><p>以下事件发生时，通知您</p></li>
         {{#with getConfig 'report'}}
             <li class="userHideItem">
               <img class="icon" src="/active_report.png" width="40" height="40">
@@ -53,7 +53,7 @@
               {{/if}}
             </li>
         {{/with}} -->
-        
+
         <!-- {{#with getConfig 'other'}}
         <li class="userHideItem">
           <img class="icon" src="/other.png" width="40" height="40">
@@ -66,9 +66,9 @@
         {{#if isLoading}}
         <div class="loading"><img src="/loading.gif" width="24" height="24"/> &nbsp;加载中</div>
         {{/if}}
-   
 
-      <li class="sub_head"><p>以下熟人出现时，提醒您</p></li> 
+
+      <li class="sub_head"><p>以下熟人出现时，通知您</p></li>
       {{#each lists}}
       {{#if person_name}}
       <li class="userHideItem">
@@ -87,7 +87,7 @@
       <div class="loading"><img src="/loading.gif" width="24" height="24"/> &nbsp;加载中</div>
       {{/if}}
     </ul>
-    
+
   </div>
 
 </div>
