@@ -4,6 +4,8 @@ function fastEmailMessge(timeItem, group) {
     var person_valid_lists = []
     var needSendMail = false
     var email_title
+    var gifOn = false
+    var emailOn = false
     CurrentGroupId = timeItem["groupId"]
 //    if (CurrentGroupId == '0a3c12765104f7c9c827f6e5' || CurrentGroupId == '29081bb21c3ac758db07f602'){
     var EmailCompanyName = group.name
@@ -27,14 +29,20 @@ function fastEmailMessge(timeItem, group) {
         if (group.settings.report == true){
             person_valid_lists.push("activity")
         }
+        if (group.settings.receive_gif == true){
+            gifOn = true
+        }
+        if (group.settings.real_time_email == true){
+            emailOn = true
+        }
     }else {
         person_valid_lists.push("unknown")
     }
-    
+
     // person_valid_lists.push('Bobby') //debug
     // person_valid_lists.push('unknown') //debug
     // person_valid_lists.push('activity') //debug
-    
+
     console.log("group_settings:", group.settings, person_valid_lists, person_valid_lists.includes('unknown'))
 
     if (to){
@@ -87,12 +95,13 @@ function fastEmailMessge(timeItem, group) {
           }
         }
 
-        if(needSendMail){
-            email_title = EmailCompanyName + '观察到了' + EmailPersonName
-            
+        email_title = EmailCompanyName + '观察到了' + EmailPersonName
+        if(gifOn){
             console.log("send MQTT ...", email_title)
             send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title, group)
-            
+        }
+
+        if(needSendMail && emailOn){
             console.log("prepare Email Template ...")
             var ret_timeLists = []
             timeItem["company_name"] = EmailCompanyName
@@ -104,7 +113,7 @@ function fastEmailMessge(timeItem, group) {
 
             var from = 'DeepEye<notify@mail.tiegushi.com>';
             console.log("send Email ...")
-            
+
             // to= 'hzhu@actiontec.com'
             Email.send({
                 to: to,
