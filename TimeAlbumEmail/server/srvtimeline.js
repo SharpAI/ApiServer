@@ -50,6 +50,12 @@ Template.srvtimeline.helpers({
     
     return ret_timeLists
 
+  },
+  company_name() {
+    group_id = CurrentGroupId
+    group = SimpleChat.Groups.findOne({_id:group_id});
+    
+    return group.name
   }
 });
 
