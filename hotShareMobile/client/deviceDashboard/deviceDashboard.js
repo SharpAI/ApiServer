@@ -144,6 +144,15 @@ Template.deviceDashboard.helpers({
     });
     return lists;
   },
+  zeroLists: function() {
+    if (isOut.get()) {
+      lists = Template.deviceDashboard.__helpers.get('unCkeckLists').call();
+    }
+    else {
+      lists = Template.deviceDashboard.__helpers.get('checkInLists').call();
+    }
+    return lists.length == 0;
+  },
   unCkeckLists: function() {
     // var now = new Date();
     // var _today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
