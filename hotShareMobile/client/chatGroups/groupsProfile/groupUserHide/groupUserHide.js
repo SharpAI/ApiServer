@@ -85,6 +85,9 @@ Template.groupUserHide.helpers({
         case 'other':
           result = group.settings.other;
           break;
+        case 'gif':
+          result = group.settings.receive_gif;
+          break;
       }
     }
     if (result || result == null || result == undefined) {
@@ -151,6 +154,13 @@ Template.groupUserHide.events({
     if(_id == "other"){
       var group_id = Router.current().params._id;
       Meteor.call('update_group_settings', group_id, {'settings.other':!this.isShow});
+      this.hide_it = !this.hide_it;
+      this.isShow = !this.isShow;
+      return;
+    }
+    if(_id == "gif_id"){
+      var group_id = Router.current().params._id;
+      Meteor.call('update_group_settings', group_id, {'settings.receive_gif':!this.isShow});
       this.hide_it = !this.hide_it;
       this.isShow = !this.isShow;
       return;

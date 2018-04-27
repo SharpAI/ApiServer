@@ -490,7 +490,7 @@ Template.groupPhotoImg1.events({
     // remove or reName Person
     var options = {
       title: '请选择',
-      buttonLabels: ['查看此人的全部照片','删除此人的全部照片','重命名此人'],
+      buttonLabels: ['查看此人的全部照片','删除此人','重命名此人'],
       addCancelButtonWithLabel: '取消',
       androidEnableCancelButton: true
     };

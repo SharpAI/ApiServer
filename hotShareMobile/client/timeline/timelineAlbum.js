@@ -620,14 +620,27 @@ Template.timelineAlbum.helpers({
     console.log("get_person_name: obj="+JSON.stringify(this))
   },
   onlyShowUnknown: function() {
-    return onlyShowUnknown.get();
+    // return onlyShowUnknown.get();
+    if(onlyShowUnknown.get()){
+      return "checked";
+    }
+    return "";
   },
   filterTimeRange: function() {
     var range = timeRange.get();
     if(range.length > 0 && range[0] && range[1]) {
-      return true;
+      // return true;
+      return "checked";
     }
-    return false;
+    // return false;
+    return '';
+  },
+  showAll:function(){
+    var range = timeRange.get();
+    if(onlyShowUnknown.get() || (range.length > 0 && range[0] && range[1])){
+      return ''
+    }
+    return 'checked'
   }
 
 });
