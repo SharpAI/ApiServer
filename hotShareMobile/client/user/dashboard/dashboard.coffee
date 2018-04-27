@@ -138,6 +138,12 @@ if Meteor.isClient
   Template.my_email.events
     'click #btn_save' :->
       Users = Meteor.users
+      #正则验证邮箱格式
+      my_edit_email = $('#my_edit_email').val()
+      ret = my_edit_email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+      if not ret
+        PUB.toast '无效邮箱地址!'
+        return
       new_email = [{address: $('#my_edit_email').val(), verified: false}]
       Meteor.subscribe('allUsers');
       userExist = Users.find({emails: new_email}).fetch()[0]
