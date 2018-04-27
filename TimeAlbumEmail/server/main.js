@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(() => {
   // code to run on server at startup
-  process.env.MAIL_URL = 'smtp://postmaster%40tiegushi.com:a7e104e236965118d8f1bd3268f36d8c@smtp.mailgun.org:587'
+  process.env.MAIL_URL = 'smtp://postmaster%40email.tiegushi.com:1b3e27a9f18007d6fedf46c9faed519a@smtp.mailgun.org:587'
   TEST_GROUP_ID = '0a3c12765104f7c9c827f6e5'
 
   sendGroupJobReport = function (group) {
@@ -10,8 +10,8 @@ Meteor.startup(() => {
     console.log("SEND MAIL", group._id, group.report_emails);
     to = group.report_emails
     
-    var from = 'DeepEye<notify@mail.tiegushi.com>';
-    var subject = 'DeepEye Daily Report';
+    var from = 'DeepEye<notify@email.tiegushi.com>';
+    var subject = group.name + ' Daily Report';
     
     Email.send({
       to: to,
@@ -23,11 +23,12 @@ Meteor.startup(() => {
   
   sendJobReport = function (event) {
       try {
+        console.log("email begin")
         var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
         groups.forEach(function(group) {
           var time_offset = 8;
           if (group._id && group.report_emails){//== TEST_GROUP_ID){
-            console.log("EMAIS", group.report_emails);
+            console.log("EMAIS", group._id, group.name, group.report_emails);
             if (group && group.offsetTimeZone) {
               time_offset = group.offsetTimeZone;
             }
@@ -43,11 +44,13 @@ Meteor.startup(() => {
                 timeLists = TimelineLists.find({groupId:group._id, ZeroTimestamp:localZeroDateTimestamp}, {sort
   :{createdAt:1}}).fetch()
                 if (timeLists.length > 0){
+                  console.log("need send")
                   sendGroupJobReport(group);
                 }
             }
           }
         });
+        console.log("email finish")
       }
       catch(ex) {
         console.log("exception in sendJobReport", ex);

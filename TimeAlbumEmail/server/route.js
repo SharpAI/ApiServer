@@ -2,12 +2,11 @@
 //declare a simple async function
 function fastEmailMessge(timeItem, group) {
     var person_valid_lists = []
-    var needSendMail = false
+    var needSend = false
     var email_title
-    var gifOn = false
+    var pushOn = false
     var emailOn = false
-    CurrentGroupId = timeItem["groupId"]
-//    if (CurrentGroupId == '0a3c12765104f7c9c827f6e5' || CurrentGroupId == '29081bb21c3ac758db07f602'){
+    var CurrentGroupId = timeItem["groupId"]
     var EmailCompanyName = group.name
     var EmailPersonName = ''
 
@@ -15,7 +14,7 @@ function fastEmailMessge(timeItem, group) {
     people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
 
     for (var k in people_config){
-	console.log(people_config[k].person_name, people_config[k].hide_it)
+	//console.log(people_config[k].person_name, people_config[k].hide_it)
        if (people_config[k].hide_it == undefined || people_config[k].hide_it ==  false){
            person_valid_lists.push(people_config[k].person_name)
        }
@@ -29,33 +28,30 @@ function fastEmailMessge(timeItem, group) {
         if (group.settings.report == true){
             person_valid_lists.push("activity")
         }
-        if (group.settings.receive_gif == true){
-            gifOn = true
+        if (group.settings.push_notification == undefined || group.settings.push_notification == true){
+            pushOn = true
         }
-        if (group.settings.real_time_email == true){
+        if (group.settings.real_time_email == undefined || group.settings.real_time_email == true){
             emailOn = true
         }
     }else {
         person_valid_lists.push("unknown")
     }
-
+    
     // person_valid_lists.push('Bobby') //debug
     // person_valid_lists.push('unknown') //debug
     // person_valid_lists.push('activity') //debug
 
-    console.log("group_settings:", group.settings, person_valid_lists, person_valid_lists.includes('unknown'))
+    //console.log("group_settings:", group.settings, person_valid_lists, person_valid_lists.includes('unknown'))
 
     if (to){
         timeItem.personLists = []
-        console.log(timeItem["faceId"])
+        
         if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
             var faceId = timeItem["faceId"].split(",");
             for (i in faceId){
-                console.log(faceId[i])
                 person = Person.findOne({faceId: faceId[i]})
-
                 if (person){
-                    console.log(person)
                     var obj = {
                       'name': person.name,
                       'name_img_url':person.url
@@ -63,7 +59,7 @@ function fastEmailMessge(timeItem, group) {
                     timeItem.personLists.push(obj)
 
                     if ( person_valid_lists.includes(person.name) && checkIfSendEvent(group._id,faceId[i])){
-                        needSendMail = true
+                        needSend = true
                         if (EmailPersonName.length > 1){
                             EmailPersonName = EmailPersonName + ',' + person.name
                         }else{
@@ -73,7 +69,7 @@ function fastEmailMessge(timeItem, group) {
                 } else if(faceId[i].length > 3){
                     if (person_valid_lists.includes('unknown')){
                       if(checkIfSendEvent(group._id,'unknown')){
-                        needSendMail = true
+                        needSend = true
 			            if (EmailPersonName.length > 1){
                             EmailPersonName = EmailPersonName + ',不熟悉的人'
                         }else{
@@ -85,24 +81,24 @@ function fastEmailMessge(timeItem, group) {
             }
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
           if(checkIfSendEvent(group._id,'unknown')){
-            needSendMail = true
+            needSend = true
             EmailPersonName =  '不熟悉的人'
           }
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
           if(checkIfSendEvent(group._id,'activity')){
-            needSendMail = true
+            needSend = true
             EmailPersonName =  '一些动静'
           }
         }
-
+        console.log("SETTING:", group.settings, pushOn, emailOn, needSend)
         email_title = EmailCompanyName + '观察到了' + EmailPersonName
-        if(gifOn){
+        if(needSend && pushOn){
             console.log("send MQTT ...", email_title)
             send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title, group)
         }
-
-        if(needSendMail && emailOn){
-            console.log("prepare Email Template ...")
+        
+        if(needSend && emailOn){
+            console.log("Send Email ...", email_title)
             var ret_timeLists = []
             timeItem["company_name"] = EmailCompanyName
             timeItem["person_name"] = EmailPersonName
@@ -111,10 +107,9 @@ function fastEmailMessge(timeItem, group) {
             var html = SSR.render("srvemailTemplateFast", {company_name:EmailCompanyName, person_name:EmailPersonName, timeLinelists:ret_timeLists});
             console.log(group._id, group.report_emails);
 
-            var from = 'DeepEye<notify@mail.tiegushi.com>';
-            console.log("send Email ...")
-
-            // to= 'hzhu@actiontec.com'
+            var from = 'DeepEye<notify@email.tiegushi.com>';
+            
+            //to= 'hzhu@actiontec.com' //debug
             Email.send({
                 to: to,
                 from: from,
@@ -123,7 +118,6 @@ function fastEmailMessge(timeItem, group) {
             });
         }
     }
-//    }
 }
 
 
@@ -163,9 +157,8 @@ Router.route( "timelines/add", function() {
 
     fastEmailMessge(fields, group);
 
-    console.log("group", group)
-
-    console.log("fields", fields)
+    //console.log("group", group)
+    //console.log("fields", fields)
 
     TimelineLists.insert(fields);
 
