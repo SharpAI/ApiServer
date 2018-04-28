@@ -34,9 +34,9 @@
         <li role="presentation"><a id="clearFilter" role="menuitem" tabindex="-1">显示全部</a></li>
       </ul> -->
       <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more">
-        <li role="presentation" id="timeRange"><input type="radio" {{filterTimeRange}}><label>时间范围</label></li>
-        <li role="presentation" id="onlyShowUnknown"><input type="radio" {{onlyShowUnknown}}><label>未识别</label></li>
-        <li role="presentation" id="clearFilter"><input type="radio" {{showAll}}><label>显示全部</label></li>
+        <!-- <li role="presentation" id="timeRange"><input type="radio" {{filterTimeRange}}><label>时间范围</label></li> -->
+        <li role="presentation" ><label id="onlyShowUnknown" for="1"><input id="1" type="radio" {{onlyShowUnknown}}><span>未识别</span></label></li>
+        <li role="presentation" ><label id="clearFilter" for="2"><input id="2" type="radio" {{showAll}}><span>显示全部</span></label></li>
         <li role="separator" class="divider"></li>
         <li role="presentation"><p style="line-height:25px">提示：建议标注15张以上清晰照片。（标注照片越多，AI识别就越准确）</p></li>
       </ul>

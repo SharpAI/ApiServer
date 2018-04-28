@@ -11,7 +11,7 @@ var onlyShowUnknown = new ReactiveVar(false);
 
 var timelineLists = new ReactiveVar([]);
 var timelineIds = new ReactiveVar([]);
-
+var dropdownTimer = null;
 var initTimeRangeSet = function() {
   var now = new Date();
   $('#timeRange').mobiscroll().range({
@@ -653,22 +653,35 @@ Template.timelineAlbum.events({
   'click .back': function(){
     return PUB.back();
   },
-  'click #onlyShowUnknown': function() {
+  'click #onlyShowUnknown': function(e,t) {
+    if(dropdownTimer){
+      Meteor.clearTimeout(dropdownTimer);
+      dropdownTimer = null;
+    }
+    e.stopPropagation(); 
     if(onlyShowUnknown.get()) {
       onlyShowUnknown.set(false);
     } else {
       onlyShowUnknown.set(true);
     }
     setLists(true);
+    dropdownTimer = Meteor.setTimeout(function(){
+      t.$('#btn-more').trigger('click');
+    },500);
   },
-  'click #clearFilter': function(e) {
+  'click #clearFilter': function(e,t) {
+    if(dropdownTimer){
+      Meteor.clearTimeout(dropdownTimer);
+      dropdownTimer = null;
+    }
+    e.stopPropagation(); 
     onlyShowUnknown.set(false);
     timeRange.set([]);
     // reset limit
     limit.set(5);
     // go back to top
     $('.content').scrollTop(0);
-
+    
     var uuid = Router.current().params._uuid;
     var selector = getSelector();
     Session.set('timelineAlbumLoading',true);
@@ -676,6 +689,9 @@ Template.timelineAlbum.events({
       Session.set('timelineAlbumLoading',false);
       setLists(true);
     });
+    dropdownTimer = Meteor.setTimeout(function(){
+      t.$('#btn-more').trigger('click');
+    },500);
   },
   // 展开合并的图片
   'click .images-merged': function(e){

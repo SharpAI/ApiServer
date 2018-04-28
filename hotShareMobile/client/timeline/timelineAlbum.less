@@ -213,7 +213,7 @@
   //   font-size: 20px;
   //   margin: auto 15px;
   // }
-  input[type="radio"] + label::before {
+  input[type="radio"] + span::before {
     content: "\a0"; /*不换行空格*/
     display: inline-block;
     vertical-align: middle;
@@ -226,7 +226,7 @@
     text-indent: .15em;
     line-height: 1; 
   }
-  input[type="radio"]:checked + label::before {
+  input[type="radio"]:checked + span::before {
     background-color: #01cd78;
     background-clip: content-box;
     padding: .2em;
