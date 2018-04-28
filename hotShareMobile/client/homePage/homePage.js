@@ -15,12 +15,38 @@ Template.homePage.onRendered(function () {
   });
 });
 
+var homePageMethods = {
+  initGroupListIndex: function() {
+    var noSortList = SimpleChat.GroupUsers.find({ user_id: Meteor.userId(), index: {$exists: false} }, { sort: { create_time: -1 } }).fetch();
+    var sortList = SimpleChat.GroupUsers.find({ user_id: Meteor.userId(), index: {$exists: true} }, { sort: { index: 1 } }).fetch();
+    if (noSortList.length === 0) {
+      return;
+    }
+    noSortList.concat(sortList).forEach(function (item, index) {
+      SimpleChat.GroupUsers.update({ _id: item._id}, { $set: { index: index } });
+    });
+  },
+  moveGroupItem: function(targetIndex) {
+    var targetId = SimpleChat.GroupUsers.findOne({ index : targetIndex })._id;
+    var currentItemId = SimpleChat.GroupUsers.findOne({ index : this.index })._id;
+    SimpleChat.GroupUsers.update({ _id: targetId }, { $set: { index: this.index } });
+    SimpleChat.GroupUsers.update({ _id: currentItemId }, { $set: { index: targetIndex } });
+  }
+};
+
+Template.homePage.onCreated(function() {
+  homePageMethods.initGroupListIndex();
+});
+
 Template.homePage.helpers({
   companys: function () {
     var lists = [];
-    SimpleChat.GroupUsers.find({ user_id: Meteor.userId() }, { sort: { create_time: -1 } }).forEach(function (item) {
+    var noSortList = SimpleChat.GroupUsers.find({ user_id: Meteor.userId(), index: {$exists: false} }, { sort: { create_time: -1 } }).fetch();
+    var sortList = SimpleChat.GroupUsers.find({ user_id: Meteor.userId(), index: {$exists: true} }, { sort: { index: 1 } }).fetch();
+    noSortList.concat(sortList).forEach(function (item) {
       var group = SimpleChat.Groups.findOne({ _id: item.group_id });
       if (group) {
+        group.index = item.index;   
         lists.push(group);
       }
     });
@@ -62,6 +88,9 @@ Template.homePage.helpers({
   getInCount: function () {
     var group_id = this._id;
     return WorkStatus.find({ group_id: this._id, date: Session.get('theCurrentDay'), status: { $in: ['in', 'out'] } }).count();
+  },
+  isShowDownArrow: function(index) {
+    return index < SimpleChat.GroupUsers.find({ user_id: Meteor.userId() }).count() - 1;
   }
 });
 
@@ -135,6 +164,14 @@ Template.homePage.events({
   'click .goGroupReporter': function (event) {
     event.stopImmediatePropagation();
     return PUB.page('/comReporter/' + this._id);
+  },
+  'click .sort-arrow-up': function(event) {
+    event.stopImmediatePropagation();
+    homePageMethods.moveGroupItem.call(this, this.index - 1);
+  },
+  'click .sort-arrow-down': function(event) {
+    event.stopImmediatePropagation();
+    homePageMethods.moveGroupItem.call(this, this.index + 1);
   }
 })
 Template.notice.onCreated(function(){

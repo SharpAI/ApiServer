@@ -39,9 +39,19 @@
   {{#each companys}}
   <ul class="companyUl">
     <li class="mainInfo goGroupProfile" id="{{_id}}">
+      {{#if index}}
+      <div class="sort-arrow sort-arrow-up clearfix">
+        <div class="value"><i class="fa fa-angle-up"></i></div>
+      </div>
+      {{/if}}
       <div class="icon"><img src="/img/default-company-logo.png"/></div>
       <label>{{name}}</label>
       <div class="value"> 管理 <i class="fa fa-cog"></i></div>
+      {{#if isShowDownArrow index}}
+        <div class="sort-arrow sort-arrow-down clearfix">
+          <div class="value"><i class="fa fa-angle-down"></i></div>
+        </div>
+      {{/if}}
     </li>
     <li class="goGroupPerson">
       <div class="icon"><img src="/group_users.png"/></div>
