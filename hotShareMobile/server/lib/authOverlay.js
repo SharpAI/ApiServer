@@ -24,8 +24,8 @@ if (Meteor.isServer) {
     });
     Accounts.loginServiceConfiguration.insert({
       service: 'wechat',
-      appId: 'wxcd969948062270d4',
-      secret: '4526af2f822225de70a9d125b7e111e9'
+      appId: 'wx637c7894a6f687b8',
+      secret: 'bf0f7fbc8688a52ac3d958062e22b31b'
     });
     Meteor.publish('allUsers', function() {
       return Meteor.users.find();

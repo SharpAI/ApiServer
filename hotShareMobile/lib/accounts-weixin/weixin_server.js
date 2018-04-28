@@ -1,8 +1,8 @@
 if (Meteor.isServer) {
-  var WECHAT_APPID = 'wxcd969948062270d4';     // 移动应用的 APPID
-  var WECHAT_AppSecret = '4526af2f822225de70a9d125b7e111e9';
-  var WEB_WECHAT_APPID = 'wxcd969948062270d4'; // 网站应用的 APPID
-  var WEB_WECHAT_AppSecret = '4526af2f822225de70a9d125b7e111e9';
+  var WECHAT_APPID = 'wx637c7894a6f687b8';     // 移动应用的 APPID
+  var WECHAT_AppSecret = 'bf0f7fbc8688a52ac3d958062e22b31b';
+  var WEB_WECHAT_APPID = 'wx637c7894a6f687b8'; // 网站应用的 APPID
+  var WEB_WECHAT_AppSecret = 'bf0f7fbc8688a52ac3d958062e22b31b';
   var Oauth2Result = new Meteor.Collection('oauth2Result');
   
   Router.route('/oauth2/wechat', function () {

@@ -4,7 +4,7 @@ if (Meteor.isClient) {
     var _getUserInfo = function(){
       if(Meteor.isCordova){
         var redirectUrl = "http://workaihost.tiegushi.com/oauth2/wechat";
-        var url = "https://open.weixin.qq.com/connect/qrconnect?appid=wxcd969948062270d4&redirect_uri="+ encodeURI(redirectUrl)+"&response_type=code&scope=snsapi_login&state=";
+        var url = "https://open.weixin.qq.com/connect/qrconnect?appid=wx637c7894a6f687b8&redirect_uri="+ encodeURI(redirectUrl)+"&response_type=code&scope=snsapi_login&state=";
         var ref = cordova.InAppBrowser.open(url, '_blank', 'hidden=no,toolbarposition=top,hiddenimport=yes');
         ref.addEventListener('loadstop', function(event) {
           if(event.url.indexOf('/oauth2/wechat/result') != -1){
