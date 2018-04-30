@@ -9,7 +9,8 @@ function fastEmailMessge(timeItem, group) {
     var CurrentGroupId = timeItem["groupId"]
     var EmailCompanyName = group.name
     var EmailPersonName = ''
-
+    var MQTTPersonName = ''
+    
     to = group.report_emails
     people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
 
@@ -65,16 +66,18 @@ function fastEmailMessge(timeItem, group) {
                         }else{
                             EmailPersonName =  person.name
                         }
+                        MQTTPersonName = '有人活动'
                     }
                 } else if(faceId[i].length > 3){
                     if (person_valid_lists.includes('unknown')){
                       if(checkIfSendEvent(group._id,'unknown')){
                         needSend = true
 			            if (EmailPersonName.length > 1){
-                            EmailPersonName = EmailPersonName + ',不熟悉的人'
+                            EmailPersonName = EmailPersonName + ',陌生人'
                         }else{
-                            EmailPersonName =  '不熟悉的人'
+                            EmailPersonName =  '陌生人'
                         } 
+                        MQTTPersonName = '有陌生人活动'
                       }
                     }
                 }
@@ -82,26 +85,27 @@ function fastEmailMessge(timeItem, group) {
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
           if(checkIfSendEvent(group._id,'unknown')){
             needSend = true
-            EmailPersonName =  '不熟悉的人'
+            EmailPersonName =  '有陌生人活动'
+            MQTTPersonName = '有陌生人活动'
           }
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
           if(checkIfSendEvent(group._id,'activity')){
             needSend = true
-            EmailPersonName =  '一些动静'
+            EmailPersonName =  '有人活动'
+            MQTTPersonName = '有人活动'
           }
         }
+        
+        email_title = EmailCompanyName + ' AI发现' + EmailPersonName
+        var mqtt_title = 'AI发现' + MQTTPersonName
         console.log("SETTING:", group.settings, pushOn, emailOn, needSend)
-        email_title = EmailCompanyName + '观察到了' + EmailPersonName
+        
         if(needSend && pushOn){
-            var mqtt_title = ''
-            console.log("send MQTT ...", email_title)
-            if (email_title.includes("不熟悉的人")){
-                mqtt_title = email_title
-            }
             console.log("send MQTT ...", mqtt_title)
             send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],mqtt_title, group)
         }
         
+        timeItem["email_title"] = email_title
         if(needSend && emailOn){
             console.log("Send Email ...", email_title)
             var ret_timeLists = []
@@ -115,6 +119,7 @@ function fastEmailMessge(timeItem, group) {
             var from = 'DeepEye<notify@email.tiegushi.com>';
             
             //to= 'hzhu@actiontec.com' //debug
+
             Email.send({
                 to: to,
                 from: from,
