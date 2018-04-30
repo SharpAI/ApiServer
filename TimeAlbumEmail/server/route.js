@@ -93,8 +93,13 @@ function fastEmailMessge(timeItem, group) {
         console.log("SETTING:", group.settings, pushOn, emailOn, needSend)
         email_title = EmailCompanyName + '观察到了' + EmailPersonName
         if(needSend && pushOn){
+            var mqtt_title = ''
             console.log("send MQTT ...", email_title)
-            send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],email_title, group)
+            if (email_title.includes("不熟悉的人")){
+                mqtt_title = email_title
+            }
+            console.log("send MQTT ...", mqtt_title)
+            send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],mqtt_title, group)
         }
         
         if(needSend && emailOn){
