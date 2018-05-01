@@ -29,7 +29,7 @@ Template.srvtimeline.helpers({
       
       timeLists[idx].personLists = []
       //console.log(timeLists[idx]["faceId"])
-      if (timeLists[idx]["faceId"] && timeLists[idx]["faceId"] != 'unknown'){
+      if (timeLists[idx]["faceId"] && timeLists[idx]["faceId"] != 'unknown' && timeLists[idx]["faceId"] != 'activity'){
         var faceId = timeLists[idx]["faceId"].split(",");
         for (i in faceId){
           //console.log(faceId[i])
@@ -44,8 +44,8 @@ Template.srvtimeline.helpers({
             timeLists[idx].personLists.push(obj)
           }
         }
+        ret_timeLists.push(timeLists[idx])
       }
-      ret_timeLists.push(timeLists[idx])
     }
     
     return ret_timeLists
