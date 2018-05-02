@@ -307,7 +307,7 @@
                   </div>
                 {{/if}}
               {{/if}}
-              <div class="show_more" style="display:none; position: absolute;right: -5px;top: -5px;height: 48px;line-height: 48px;left:10px;text-align: right; padding: 0;font-size: 20px; padding-right: 20px;"><i class="fa fa-angle-up"></i></div>
+              <div class="show_more" style="display:none; position: absolute;right: -5px;top: -5px;height: 48px;line-height: 48px;left:10px;text-align: right; padding: 0;font-size: 20px; padding-right: 20px;"><i class="fa fa-angle-right"></i></div>
               {{show_images images}}
             <!--标记消息 end-->
             {{/if}}
@@ -357,7 +357,7 @@
     <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
   </div>
   {{else}}
-  <div class="img_container {{eventType}}">
+  <div class="img_container _close {{eventType}}">
     <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
     {{#if hasAccAndFuzz}}
     <div class="value_bg"><div class="accuracy">{{accuracy}}</div><div class="fuzziness">{{fuzziness}}</div></div>
