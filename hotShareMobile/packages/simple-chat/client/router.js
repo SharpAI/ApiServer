@@ -2223,7 +2223,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
   //   if (!err)
   //     updateNewMessage(msgObj.to.id);
   // });
-  clearMoreOldMessage();
+  // clearMoreOldMessage();
 };
 
 var shouldScrollToBottom = function(msg){
