@@ -97,8 +97,8 @@ Template._simpleChatToChat.onRendered(function(){
   page_data = this.data;
   if(!page_data)
     return;
-  if(typeof(device) == "undefined")
-    return
+  // if(typeof(device) == "undefined")
+  //   return
   if(Meteor.isCordova && device.platform === 'iOS'){
    try{
      Keyboard.shrinkView(true);
@@ -490,6 +490,9 @@ Template._simpleChatToChat.onRendered(function(){
       }
       if ($box.scrollTop()+$box.height() >= $box_ul.height()) {
         Session.set('newMsgCount',0);
+      }
+      if($box.scrollTop() === 0){
+        $box.scrollTop(2);
       }
     });
 
