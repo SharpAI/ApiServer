@@ -2096,7 +2096,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
       return;
     }
     // 如果是设备发来的 训练相关消息 且 消息接收方不是 Admin
-    if ( ( (msgObj && msgObj.form && msgObj.form.name && msgObj.form.name.match(/\[(.{1,})/gim) ) || msgObj.is_device_traing ) && !isAdmin ) {
+    if ( ( (msgObj && msgObj.form && msgObj.form.name && msgObj.form.name.match(/\[(.{1,})/gim) ) || msgObj.is_device_traing ) /*&& !isAdmin*/ ) {
       console.log('===sr===. getMessage 设备训练, '+ JSON.stringify(msgObj) );
       rmMsgKey(msgKey, '#2074');
       return;
