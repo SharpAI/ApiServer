@@ -15,7 +15,9 @@ Template.groupDevices.events({
   'click .back': function(){
     return PUB.back();
   },
-  'click #goTimelime': function(e){
+  'click .goTimelime': function(e){
+    var group_id = Router.current().params._id;
+    Session.set("channel",'groupDevices/'+group_id);
     return PUB.page('/timelineAlbum/'+e.currentTarget.id+'?from=timeline');
   },
   'click .deviceItem > label':function(){
