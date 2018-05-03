@@ -26,10 +26,10 @@ var homePageMethods = {
       SimpleChat.GroupUsers.update({ _id: item._id}, { $set: { index: index } });
     });
   },
-  moveGroupItem: function(targetIndex) {
-    var targetId = SimpleChat.GroupUsers.findOne({ index : targetIndex })._id;
-    var currentItemId = SimpleChat.GroupUsers.findOne({ index : this.index })._id;
-    SimpleChat.GroupUsers.update({ _id: targetId }, { $set: { index: this.index } });
+  moveGroupItem: function(currentIndex, targetIndex) {
+    var targetId = SimpleChat.GroupUsers.findOne({ user_id: Meteor.userId(), index : targetIndex })._id;
+    var currentItemId = SimpleChat.GroupUsers.findOne({ user_id: Meteor.userId(), index : currentIndex })._id;
+    SimpleChat.GroupUsers.update({ _id: targetId }, { $set: { index: currentIndex } });
     SimpleChat.GroupUsers.update({ _id: currentItemId }, { $set: { index: targetIndex } });
   }
 };
@@ -41,12 +41,11 @@ Template.homePage.onCreated(function() {
 Template.homePage.helpers({
   companys: function () {
     var lists = [];
-    var noSortList = SimpleChat.GroupUsers.find({ user_id: Meteor.userId(), index: {$exists: false} }, { sort: { create_time: -1 } }).fetch();
-    var sortList = SimpleChat.GroupUsers.find({ user_id: Meteor.userId(), index: {$exists: true} }, { sort: { index: 1 } }).fetch();
-    noSortList.concat(sortList).forEach(function (item) {
+    var sortList = SimpleChat.GroupUsers.find({ user_id: Meteor.userId() }, { sort: { index: 1 } }).fetch();
+    sortList.forEach(function (item) {
       var group = SimpleChat.Groups.findOne({ _id: item.group_id });
       if (group) {
-        group.index = item.index;   
+        group.index = item.index;
         lists.push(group);
       }
     });
@@ -167,11 +166,11 @@ Template.homePage.events({
   },
   'click .sort-arrow-up': function(event) {
     event.stopImmediatePropagation();
-    homePageMethods.moveGroupItem.call(this, this.index - 1);
+    homePageMethods.moveGroupItem.call(this, this.index, this.index - 1);
   },
   'click .sort-arrow-down': function(event) {
     event.stopImmediatePropagation();
-    homePageMethods.moveGroupItem.call(this, this.index + 1);
+    homePageMethods.moveGroupItem.call(this, this.index, this.index + 1);
   }
 })
 Template.notice.onCreated(function(){
