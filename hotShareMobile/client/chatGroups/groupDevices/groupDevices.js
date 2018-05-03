@@ -20,7 +20,7 @@ Template.groupDevices.events({
     Session.set("channel",'groupDevices/'+group_id);
     return PUB.page('/timelineAlbum/'+e.currentTarget.id+'?from=timeline');
   },
-  'click .deviceItem > label':function(){
+  'click .goEdit':function(){
     var self = this;
     if(!self.name){
       self.name = '未知设备';
@@ -49,11 +49,13 @@ Template.setDevicename.events({
       PUB.toast('设备名没有修改');
       return;
     }
-    Devices.update({_id:this._id},{
-      $set:{
-        name:newName
+    Meteor.call('change_device_name',this._id,this.uuid,this.groupId,newName,function(err){
+      if(err){
+        console.log(err);
+        PUB.toast('修改失败，请重试');
+      }else{
+        return PUB.back();
       }
-    })
-    return PUB.back();
+    }) 
   }
 })

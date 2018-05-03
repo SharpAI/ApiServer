@@ -11,12 +11,14 @@
     {{#each lists}}
       {{#if uuid}}
       <li id="" class="deviceItem" style="height:60px;padding:10px 0">
+          <span class="goEdit">
           <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
           {{#if name}}
           <label style="margin-left:48px;">{{name}}</label>
           {{else}}
           <label style="margin-left:48px;">未知设备</label>
           {{/if}}
+          </span>
           <div id="{{uuid}}" class="value goTimelime" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
       </li>
       {{/if}}
