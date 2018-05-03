@@ -1488,12 +1488,19 @@ Template._simpleChatToChat.events({
       if (cmd != 'train' && cmd != 'ping' && cmd != 'syncstatusinfo' && cmd != 'finalsyncdatasets')
         msg.wait_clearqueue= true;
 
-      Messages.insert(msg, function(){
+      /* do not show debug messages */
+      Meteor.setTimeout(function(){
         sendMqttMsg(msg);
         // Session.set('shouldScrollToBottom',true);
         // 用户输入
         setScrollToBottom();
-      });
+      }, 0);
+      /*Messages.insert(msg, function(){
+        sendMqttMsg(msg);
+        // Session.set('shouldScrollToBottom',true);
+        // 用户输入
+        setScrollToBottom();
+      });*/
       return false;
     }catch(ex){console.log(ex); return false;}
   },
@@ -2106,6 +2113,13 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     if ( ( (msgObj && msgObj.form && msgObj.form.name && msgObj.form.name.match(/\[(.{1,})/gim) ) || msgObj.is_device_traing ) /*&& !isAdmin*/ ) {
       console.log('===sr===. getMessage 设备训练, '+ JSON.stringify(msgObj) );
       rmMsgKey(msgKey, '#2074');
+      return;
+    }
+
+    // discard train message by auto training
+    if (msgObj && msgObj.is_trigger_train && msgObj.text && msgObj.text == 'train') {
+      console.log('===sr===. remove auto train msg, '+ JSON.stringify(msgObj) );
+      rmMsgKey(msgKey, '#2075');
       return;
     }
     
