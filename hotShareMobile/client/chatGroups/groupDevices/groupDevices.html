@@ -17,10 +17,31 @@
           {{else}}
           <label style="margin-left:48px;">未知设备</label>
           {{/if}}
-          <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
+          <div id="goTimelime" class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
       </li>
       {{/if}}
     {{/each}}
   </ul>
   </div>
+</template>
+
+<template name="setDevicename">
+  <div class="setGroupname comFadeIn">
+      <div class="head" style="position: fixed;">
+          <div class="title" style="position:relative;">
+              <div class="left-btn">取消</div>
+              <span class="Contacts">设备名</span>
+              <div class="right-btn">保存</div>
+          </div>
+      </div>
+  </div>
+  <ul class="set-up comFadeIn" style="position: fixed; top:60px; left:0; right:0;">
+      <li>
+          <div class="input">
+              <form class="setGroupname-form">
+                  <input class="text" type="text" id="text" placeholder="请输入设备名" value="{{name}}" style="color: black;" />
+              </form>
+          </div>
+      </li>
+  </ul>
 </template>

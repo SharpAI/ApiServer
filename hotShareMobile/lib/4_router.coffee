@@ -633,6 +633,13 @@ if Meteor.isClient
     Router.route '/setGroupname',()->
       this.render 'setGroupname'
       return
+    Router.route '/setDevicename',()->
+      this.render 'setDevicename',{
+        data:()->
+          curDevice = Session.get('curDevice');
+          return curDevice
+      }
+      return
     Router.route '/checkInOutMsgList',()->
       this.render 'checkInOutMsgList'
       return
