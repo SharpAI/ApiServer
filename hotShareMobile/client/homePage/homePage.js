@@ -164,11 +164,11 @@ Template.homePage.events({
     event.stopImmediatePropagation();
     return PUB.page('/comReporter/' + this._id);
   },
-  'click .sort-arrow-up': function(event) {
+  'click .sort-arrow-up .fa': function(event) {
     event.stopImmediatePropagation();
     homePageMethods.moveGroupItem.call(this, this.index, this.index - 1);
   },
-  'click .sort-arrow-down': function(event) {
+  'click .sort-arrow-down .fa': function(event) {
     event.stopImmediatePropagation();
     homePageMethods.moveGroupItem.call(this, this.index, this.index + 1);
   }

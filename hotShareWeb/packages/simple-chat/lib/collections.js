@@ -99,6 +99,9 @@ if(Meteor.isServer){
         return true;
       }
       return false;
+    },
+    update: function(userId, doc, fields) {
+      return _.without(fields, 'index').length === 0;
     }
   });
 }
