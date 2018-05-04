@@ -58,3 +58,50 @@ format_date = function(val, format){
   }
   return format;
 };
+
+get_diff_time2 = function(curTime,lastTime=0){
+var minute = 1000 * 60;
+var hour = minute * 60;
+var day = hour * 24;
+var halfamonth = day * 15;
+var month = day * 30;
+var diffValue = curTime - lastTime;
+var result = {
+    isShow: false
+}
+if(diffValue < 0){return;}
+if(diffValue > 5*minute){
+    result.isShow = true;
+    result.time = getTimeStr(curTime);
+    result.lastTime = curTime;
+}
+return result;
+};
+function getTimeStr(dateTimeStamp){
+    var minute = 1000 * 60;
+    var hour = minute * 60;
+    var day = hour * 24;
+    var halfamonth = day * 15;
+    var month = day * 30;
+    var now = new Date().getTime();
+    var diffValue = now - dateTimeStamp;
+    // if(diffValue)
+    
+}
+function isToday(dateTimeStamp){
+    var today = moment();
+    if(moment(dateTimeStamp).isSame(today,'day')){
+        return true;
+    }
+    return false;
+}
+function isYesterday(dateTimeStamp){
+    var yesterday = moment().subtract(1, 'day');
+    if(moment(dateTimeStamp).isSame(yesterday,'day')){
+        return true;
+    }
+    return false;
+}
+function isWithinAweek(dateTimeStamp){
+    var A_WEEK_OLD = moment().subtract(7, 'days').startOf('day');
+}
