@@ -2223,9 +2223,14 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
       return;
     }
     return Messages.insert(msgObj, function(err, _id){
-      rmMsgKey(msgKey, '#2179');  
-    }
-    );
+      if (err)
+        return console.log('insert msg error:', err);
+      
+      if (msgObj && msgObj._id == _id && _id != null){
+        console.log('msgObj._id:'+ msgObj._id)
+        rmMsgKey(msgKey, '#2179');
+      }
+    });
   }
 
   onMqttMessage(topic, msg, msgKey);
