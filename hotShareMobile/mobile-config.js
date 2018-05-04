@@ -1,6 +1,6 @@
 App.info({
   id: 'org.sharpai.everywhere',
-  version: '1.0.28',
+  version: '1.0.31',
   name: 'sharpai',
   description: 'Share everything with everyone',
   author: 'hotShare Design Team',
@@ -37,7 +37,7 @@ App.icons({
   'android_mdpi': 'resource/icon_48.png',
   'android_hdpi': 'resource/icon_72.png',
   'android_xhdpi': 'resource/icon_96.png',
-  'android_xxhdpi': 'resource/device_icon_192.png',
+  'android_xxhdpi': 'resource/icon.png',
   'android_xxxhdpi': 'resource/icon_192.png'
 });
 
