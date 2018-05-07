@@ -13,6 +13,50 @@ Tinytest.add('accounts - config validates keys', function (test) {
   });
 });
 
+Tinytest.add('accounts - config - token lifetime', function (test) {
+  const loginExpirationInDays = Accounts._options.loginExpirationInDays;
+  Accounts._options.loginExpirationInDays = 2;
+  test.equal(Accounts._getTokenLifetimeMs(), 2 * 24 * 60 * 60 * 1000);
+  Accounts._options.loginExpirationInDays = loginExpirationInDays;
+});
+
+Tinytest.add('accounts - config - unexpiring tokens', function (test) {
+  const loginExpirationInDays = Accounts._options.loginExpirationInDays;
+
+  // When setting loginExpirationInDays to null in the global Accounts
+  // config object, make sure the returned token lifetime represents an
+  // unexpiring token date (is very far into the future).
+  Accounts._options.loginExpirationInDays = null;
+  test.equal(
+    Accounts._getTokenLifetimeMs(),
+    Accounts.LOGIN_UNEXPIRING_TOKEN_DAYS * 24 * 60 * 60 * 1000,
+  );
+
+  // Verify token expiration date retrieval returns a Date.
+  // (verifies https://github.com/meteor/meteor/issues/9066)
+  test.isTrue(
+    !isNaN(Accounts._tokenExpiration(new Date())),
+    'Returned token expiration should be a Date',
+  );
+
+  // Verify the token expiration check works properly.
+  // (verifies https://github.com/meteor/meteor/issues/9066)
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + 200);
+  test.isFalse(Accounts._tokenExpiresSoon(futureDate));
+
+  Accounts._options.loginExpirationInDays = loginExpirationInDays;
+});
+
+Tinytest.add('accounts - config - default token lifetime', function (test) {
+  const options = Accounts._options;
+  Accounts._options = {};
+  test.equal(
+    Accounts._getTokenLifetimeMs(),
+    Accounts.DEFAULT_LOGIN_EXPIRATION_DAYS * 24 * 60 * 60 * 1000,
+  );
+  Accounts._options = options;
+});
 
 var idsInValidateNewUser = {};
 Accounts.validateNewUser(function (user) {
@@ -421,5 +465,55 @@ Tinytest.add(
     onLoginStopper.stop();
     onLogoutStopper.stop();
     onLoginFailureStopper.stop();
+  }
+);
+
+Tinytest.add(
+  'accounts - verify onExternalLogin hook can update oauth user profiles',
+  function (test) {
+    // Verify user profile data is saved properly when not using the
+    // onExternalLogin hook.
+    let facebookId = Random.id();
+    const uid1 = Accounts.updateOrCreateUserFromExternalService(
+      'facebook',
+      { id: facebookId },
+      { profile: { foo: 1 } },
+    ).id;
+    let users =
+      Meteor.users.find({ 'services.facebook.id': facebookId }).fetch();
+    test.length(users, 1);
+    test.equal(users[0].profile.foo, 1);
+
+    // Verify user profile data can be modified using the onExternalLogin
+    // hook, for existing users.
+    Accounts.onExternalLogin((options) => {
+      options.profile.foo = 2;
+      return options;
+    });
+    Accounts.updateOrCreateUserFromExternalService(
+      'facebook',
+      { id: facebookId },
+      { profile: { foo: 1 } },
+    );
+    users = Meteor.users.find({ 'services.facebook.id': facebookId }).fetch();
+    test.length(users, 1);
+    test.equal(users[0].profile.foo, 2);
+
+    // Verify user profile data can be modified using the onExternalLogin
+    // hook, for new users.
+    facebookId = Random.id();
+    const uid2 = Accounts.updateOrCreateUserFromExternalService(
+      'facebook',
+      { id: facebookId },
+      { profile: { foo: 3 } },
+    ).id;
+    users = Meteor.users.find({ 'services.facebook.id': facebookId }).fetch();
+    test.length(users, 1);
+    test.equal(users[0].profile.foo, 2);
+
+    // Cleanup
+    Meteor.users.remove(uid1);
+    Meteor.users.remove(uid2);
+    Accounts._onExternalLoginHook = null;
   }
 );

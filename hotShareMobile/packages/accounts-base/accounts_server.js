@@ -68,18 +68,15 @@ export class AccountsServer extends AccountsCommon {
 
   // @override of "abstract" non-implementation in accounts_common.js
   userId() {
-    // This function only works if called inside a method. In theory, it
-    // could also be called from publish statements, since they also
-    // have a userId associated with them. However, given that publish
-    // functions aren't reactive, using any of the infomation from
-    // Meteor.user() in a publish function will always use the value
-    // from when the function first runs. This is likely not what the
-    // user expects. The way to make this work in a publish is to do
-    // Meteor.find(this.userId).observe and recompute when the user
-    // record changes.
-    var currentInvocation = DDP._CurrentInvocation.get();
+    // This function only works if called inside a method or a pubication.
+    // Using any of the infomation from Meteor.user() in a method or
+    // publish function will always use the value from when the function first
+    // runs. This is likely not what the user expects. The way to make this work
+    // in a method or publish function is to do Meteor.find(this.userId).observe
+    // and recompute when the user record changes.
+    const currentInvocation = DDP._CurrentMethodInvocation.get() || DDP._CurrentPublicationInvocation.get();
     if (!currentInvocation)
-      throw new Error("Meteor.userId can only be invoked in method calls. Use this.userId in publish functions.");
+      throw new Error("Meteor.userId can only be invoked in method calls or publications.");
     return currentInvocation.userId;
   }
 
@@ -122,6 +119,20 @@ export class AccountsServer extends AccountsCommon {
 
     this._onCreateUserHook = func;
   }
+
+  /**
+   * @summary Customize oauth user profile updates
+   * @locus Server
+   * @param {Function} func Called whenever a user is logged in via oauth. Return the profile object to be merged, or throw an `Error` to abort the creation.
+   */
+  onExternalLogin(func) {
+    if (this._onExternalLoginHook) {
+      throw new Error("Can only call onExternalLogin once");
+    }
+
+    this._onExternalLoginHook = func;
+  }
+
 };
 
 var Ap = AccountsServer.prototype;
@@ -353,6 +364,7 @@ Ap._attemptLogin = function (
       ),
       result.options || {}
     );
+    ret.type = attempt.type;
     this._successfulLogin(methodInvocation.connection, attempt);
     return ret;
   }
@@ -1075,6 +1087,23 @@ Ap._generateStampedLoginToken = function () {
 /// TOKEN EXPIRATION
 ///
 
+function expirePasswordToken(accounts, oldestValidDate, tokenFilter, userId) {
+  const userFilter = userId ? {_id: userId} : {};
+  const resetRangeOr = {
+    $or: [
+      { "services.password.reset.when": { $lt: oldestValidDate } },
+      { "services.password.reset.when": { $lt: +oldestValidDate } }
+    ]
+  };
+  const expireFilter = { $and: [tokenFilter, resetRangeOr] };
+
+  accounts.users.update({...userFilter, ...expireFilter}, {
+    $unset: {
+      "services.password.reset": ""
+    }
+  }, { multi: true });
+}
+
 // Deletes expired tokens from the database and closes all open connections
 // associated with these tokens.
 //
@@ -1132,23 +1161,39 @@ Ap._expirePasswordResetTokens = function (oldestValidDate, userId) {
 
   oldestValidDate = oldestValidDate ||
     (new Date(new Date() - tokenLifetimeMs));
-  var userFilter = userId ? {_id: userId} : {};
 
-  this.users.update(_.extend(userFilter, {
+  var tokenFilter = {
     $or: [
-      { "services.password.reset.when": { $lt: oldestValidDate } },
-      { "services.password.reset.when": { $lt: +oldestValidDate } }
+      { "services.password.reset.reason": "reset"},
+      { "services.password.reset.reason": {$exists: false}}
     ]
-  }), {
-    $unset: {
-      "services.password.reset": {
-        $or: [
-          { when: { $lt: oldestValidDate } },
-          { when: { $lt: +oldestValidDate } }
-        ]
-      }
-    }
-  }, { multi: true });
+  };
+
+  expirePasswordToken(this, oldestValidDate, tokenFilter, userId);
+}
+
+// Deletes expired password enroll tokens from the database.
+//
+// Exported for tests. Also, the arguments are only used by
+// tests. oldestValidDate is simulate expiring tokens without waiting
+// for them to actually expire. userId is used by tests to only expire
+// tokens for the test user.
+Ap._expirePasswordEnrollTokens = function (oldestValidDate, userId) {
+  var tokenLifetimeMs = this._getPasswordEnrollTokenLifetimeMs();
+
+  // when calling from a test with extra arguments, you must specify both!
+  if ((oldestValidDate && !userId) || (!oldestValidDate && userId)) {
+    throw new Error("Bad test. Must specify both oldestValidDate and userId.");
+  }
+
+  oldestValidDate = oldestValidDate ||
+    (new Date(new Date() - tokenLifetimeMs));
+
+  var tokenFilter = {
+    "services.password.reset.reason": "enroll"
+  };
+
+  expirePasswordToken(this, oldestValidDate, tokenFilter, userId);
 }
 
 // @override from accounts_common.js
@@ -1172,6 +1217,7 @@ function setExpireTokensInterval(accounts) {
   accounts.expireTokenInterval = Meteor.setInterval(function () {
     accounts._expireTokens();
     accounts._expirePasswordResetTokens();
+    accounts._expirePasswordEnrollTokens();
   }, EXPIRE_TOKENS_INTERVAL_MS);
 }
 
@@ -1396,14 +1442,20 @@ Ap.updateOrCreateUserFromExternalService = function (
 
   var user = this.users.findOne(selector);
 
+  // When creating a new user we pass through all options. When updating an
+  // existing user, by default we only process/pass through the serviceData
+  // (eg, so that we keep an unexpired access token and don't cache old email
+  // addresses in serviceData.email). The onExternalLogin hook can be used when
+  // creating or updating a user, to modify or pass through more options as
+  // needed.
+  var opts = user ? {} : options;
+  if (this._onExternalLoginHook) {
+    opts = this._onExternalLoginHook(options, user);
+  }
+
   if (user) {
     pinEncryptedFieldsToUser(serviceData, user._id);
 
-    // We *don't* process options (eg, profile) for update, but we do replace
-    // the serviceData (eg, so that we keep an unexpired access token and
-    // don't cache old email addresses in serviceData.email).
-    // XXX provide an onUpdateUser hook which would let apps update
-    //     the profile too
     var setAttrs = {};
     _.each(serviceData, function (value, key) {
       setAttrs["services." + serviceName + "." + key] = value;
@@ -1411,6 +1463,7 @@ Ap.updateOrCreateUserFromExternalService = function (
 
     // XXX Maybe we should re-use the selector above and notice if the update
     //     touches nothing?
+    setAttrs = _.extend({}, setAttrs, opts);
     this.users.update(user._id, {
       $set: setAttrs
     });
@@ -1419,15 +1472,13 @@ Ap.updateOrCreateUserFromExternalService = function (
       type: serviceName,
       userId: user._id
     };
-
   } else {
-    // Create a new user with the service data. Pass other options through to
-    // insertUserDoc.
+    // Create a new user with the service data.
     user = {services: {}};
     user.services[serviceName] = serviceData;
     return {
       type: serviceName,
-      userId: this.insertUserDoc(options, user)
+      userId: this.insertUserDoc(opts, user)
     };
   }
 };
@@ -1468,6 +1519,8 @@ function setupUsersCollection(users) {
                      { sparse: 1 });
   // For expiring login tokens
   users._ensureIndex("services.resume.loginTokens.when", { sparse: 1 });
+  // For expiring password tokens
+  users._ensureIndex('services.password.reset.when', { sparse: 1 });
 }
 
 ///
