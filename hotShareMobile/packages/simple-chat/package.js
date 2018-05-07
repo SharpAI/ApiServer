@@ -5,7 +5,7 @@ Package.describe({
 
 Package.onUse(function (api) {
   api.export('SimpleChat');
-  api.use(['mongo', 'accounts-base', 'iron:router', 'less']);
+  api.use(['mongo', 'accounts-base', 'iron:router', 'less','momentjs:moment']);
   api.use(['templating', 'jquery', 'reactive-var', 'blaze-html-templates', 'session'], ['client']);
 
   // lib
