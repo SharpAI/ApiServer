@@ -25,15 +25,15 @@ Template._simpleChatToChat.helpers({
 
     is_loading.set(true);
     page_data.messages().forEach(function (doc) {
-      doc.show_time_str = get_diff_time((new Date(doc.create_time)).getTime());
-      doc.has_show_time = true;
+      // doc.show_time_str = get_diff_time((new Date(doc.create_time)).getTime());
+      // doc.has_show_time = true;
 
-      if (res.length > 0){
-        for(var i=res.length-1;i>=0;i--){
-          if (res[i].show_time_str === doc.show_time_str)
-            res[i].has_show_time = false;
-        }
-      }
+      // if (res.length > 0){
+      //   for(var i=res.length-1;i>=0;i--){
+      //     if (res[i].show_time_str === doc.show_time_str)
+      //       res[i].has_show_time = false;
+      //   }
+      // }
       //陌生人标红
       if(doc.text && doc.text.indexOf('陌生人')!=-1 && doc.type == 'text'){
         doc.text = doc.text.replace('陌生人','<span style="color:red">陌生人</span>')
@@ -53,7 +53,20 @@ Template._simpleChatToChat.helpers({
       });
     console.log('load message:', new Date() - now, 'ms');
     is_loading.set(false);
-
+    var lastTime;
+    for(var i=0;i<res.length;i++){
+      var time_res;
+      if(!lastTime){
+        time_res = get_diff_time2(new Date(res[i].create_time).getTime());
+      }else{
+        time_res = get_diff_time2(new Date(res[i].create_time).getTime(),lastTime);
+      }
+      if(time_res.isShow){
+        lastTime = time_res.lastTime;
+        res[i].show_time_str = time_res.time;
+        res[i].has_show_time = true;
+      }
+    }
     console.log('current user')
     return res;
   },
