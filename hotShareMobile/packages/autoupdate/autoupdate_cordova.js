@@ -27,7 +27,8 @@ var retry = new Retry({
 var failures = 0;
 
 Autoupdate._retrySubscription = function() {
-  /*var appId = __meteor_runtime_config__.appId;
+  /*
+  var appId = __meteor_runtime_config__.appId;
   Meteor.subscribe("meteor_autoupdate_clientVersions", appId, {
     onError: function(error) {
       console.log("autoupdate subscription failed:", error);
@@ -61,7 +62,7 @@ Autoupdate._retrySubscription = function() {
   });
   */
 };
-
+/*
 Meteor.startup(function() {
   WebAppLocalServer.onNewVersionReady(function() {
     if (Package.reload) {
@@ -71,7 +72,7 @@ Meteor.startup(function() {
 
   Autoupdate._retrySubscription();
 });
-
+*/
 var newVersionAvailable = function() {
   //WebAppLocalServer.checkForUpdates();
 }
