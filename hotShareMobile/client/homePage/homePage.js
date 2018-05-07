@@ -13,6 +13,8 @@ Template.homePage.onRendered(function () {
       Session.set('WorkStatusLoading', false);
     }
   });
+
+  homePageMethods.createMoveAnimate(this);  
 });
 
 var homePageMethods = {
@@ -31,6 +33,31 @@ var homePageMethods = {
     var currentItemId = SimpleChat.GroupUsers.findOne({ user_id: Meteor.userId(), index : currentIndex })._id;
     SimpleChat.GroupUsers.update({ _id: targetId }, { $set: { index: currentIndex } });
     SimpleChat.GroupUsers.update({ _id: currentItemId }, { $set: { index: targetIndex } });
+  },
+  createMoveAnimate: function(context) {
+    context.find('.content')._uihooks = {
+      moveElement: function (node, next) {
+        var $node = $(node),
+            $next = $(next),
+            height = $node.outerHeight(),
+            oldTop = $node.offset().top,
+            newTop = 0,
+            $inBetween = $next.nextUntil($node);
+        
+        if ($inBetween.length === 0) {
+          $inBetween = $node.nextUntil($next);
+        }
+        $node.insertBefore($next);
+        newTop = $node.offset().top;
+        $node.removeClass('animate')
+        .css('top', oldTop - newTop);
+        $inBetween.removeClass('animate')
+        .css('top', oldTop - newTop > 0 ? -height : height);
+        $node.offset();
+        $node.add($inBetween).addClass('animate')
+        .css('top', 0);
+      }
+    };
   }
 };
 
