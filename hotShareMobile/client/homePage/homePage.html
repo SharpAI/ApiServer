@@ -38,7 +38,7 @@
   <div class="content" style="padding-top: 40px;{{hide_content}}">
   {{#each companys}}
   <ul class="companyUl">
-    <li class="mainInfo goGroupProfile" id="{{_id}}">
+    <li class="mainInfo" id="{{_id}}">
       {{#if index}}
       <div class="sort-arrow sort-arrow-up clearfix">
         <i class="fa arrow-icon-up"></i>
@@ -46,12 +46,17 @@
       {{/if}}
       <div class="icon"><img src="/img/default-company-logo.png"/></div>
       <label>{{name}}</label>
-      <div class="value"> 管理 <i class="fa fa-cog"></i></div>
+      <!--<div class="value"> 管理 <i class="fa fa-cog"></i></div>-->
       {{#if isShowDownArrow index}}
         <div class="sort-arrow sort-arrow-down clearfix">
           <i class="fa arrow-icon-down"></i>
         </div>
       {{/if}}
+    </li>
+    <li class="goGroupProfile" id="{{_id}}">
+      <div class="icon"><img src="/group_set.png"/></div>
+      <label>公司管理</label>
+      <div class="value"><i class="fa fa-angle-right"></i></div>
     </li>
     <li class="goGroupPerson">
       <div class="icon"><img src="/group_users.png"/></div>
