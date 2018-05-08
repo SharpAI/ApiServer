@@ -169,7 +169,8 @@ format_date = function(val, format){
   return format;
 };
 
-get_diff_time2 = function(curTime,lastTime=0){
+get_diff_time2 = function(curTime,lastTime){
+lastTime = lastTime || 0;
 var minute = 1000 * 60;
 var hour = minute * 60;
 var day = hour * 24;
