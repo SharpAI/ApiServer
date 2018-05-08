@@ -1272,6 +1272,19 @@ var setScrollToBottom = function(){
   }, 200);
 };
 
+var isInDevMode = function(){
+  var ret_val = false;
+  var res = Session.get('inDevMode');
+  if (res == null || res == undefined) {
+    res = localStorage.getItem('inDevMode');
+  }
+  if (res == true || res == 'true') {
+    ret_val = true;
+  }
+  Session.set('inDevMode', ret_val);
+  return ret_val;
+}
+
 Template._simpleChatToChat.helpers({
   title: function(){
     if(this.type != 'user'){
@@ -1313,16 +1326,7 @@ Template._simpleChatToChat.helpers({
     return true;
   },
   inDevMode:function(){
-    var ret_val = false;
-    var res = Session.get('inDevMode');
-    if (res == null || res == undefined) {
-      res = localStorage.getItem('inDevMode');
-    }
-    if (res == true || res == 'true') {
-      ret_val = true;
-    }
-    Session.set('inDevMode', ret_val);
-    return ret_val;
+    return isInDevMode();
   }
 });
 
@@ -1501,19 +1505,45 @@ Template._simpleChatToChat.events({
       if (cmd != 'train' && cmd != 'ping' && cmd != 'syncstatusinfo' && cmd != 'finalsyncdatasets')
         msg.wait_clearqueue= true;
 
+      var isAdmin = false;
+
+      var user = Meteor.user();
+      var group = SimpleChat.Groups.findOne({_id: this.id});
+      var groupUser = SimpleChat.GroupUsers.findOne({group_id: this.id, user_id: Meteor.userId()})
+
+      // 接收消息方是否是群管理员
+      if (groupUser &&  groupUser.isGroupAdmin ) {
+        isAdmin = true;
+      }
+      
+      // 接收消息方是否是群创建者
+      if (group && group.creator && group.creator.id && group.creator.id == Meteor.userId() ) {
+        isAdmin = true;
+      }
+      // 接收消息方是否是超级管理员
+      if( user && user.profile && user.profile.userType && user.profile.userType == 'admin' ) {
+        isAdmin = true;
+      }
+
       /* do not show debug messages */
-      Meteor.setTimeout(function(){
-        sendMqttMsg(msg);
-        // Session.set('shouldScrollToBottom',true);
-        // 用户输入
-        setScrollToBottom();
-      }, 0);
-      /*Messages.insert(msg, function(){
-        sendMqttMsg(msg);
-        // Session.set('shouldScrollToBottom',true);
-        // 用户输入
-        setScrollToBottom();
-      });*/
+      if (isInShowMsgMode(isAdmin, isInDevMode())) {
+        Messages.insert(msg, function(){
+          sendMqttMsg(msg);
+          // Session.set('shouldScrollToBottom',true);
+          // 用户输入
+          setScrollToBottom();
+        });
+      }
+      else {
+        Meteor.setTimeout(function(){
+          sendMqttMsg(msg);
+          // Session.set('shouldScrollToBottom',true);
+          // 用户输入
+          setScrollToBottom();
+        }, 0);
+      }
+      
+      
       return false;
     }catch(ex){console.log(ex); return false;}
   },
@@ -2043,6 +2073,10 @@ var clearMoreOldMessage = function(){
    }
 }
 
+var isInShowMsgMode = function(isAdmin, isDevMode) {
+  return isAdmin && isDevMode;
+}
+
 SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
@@ -2123,14 +2157,14 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
       return;
     }
     // 如果是设备发来的 训练相关消息 且 消息接收方不是 Admin
-    if ( ( (msgObj && msgObj.form && msgObj.form.name && msgObj.form.name.match(/\[(.{1,})/gim) ) || msgObj.is_device_traing ) /*&& !isAdmin*/ ) {
+    if ( ( (msgObj && msgObj.form && msgObj.form.name && msgObj.form.name.match(/\[(.{1,})/gim) ) || msgObj.is_device_traing ) && !isInShowMsgMode(isAdmin, isInDevMode()) ) {
       console.log('===sr===. getMessage 设备训练, '+ JSON.stringify(msgObj) );
       rmMsgKey(msgKey, '#2074');
       return;
     }
 
     // discard train message by auto training
-    if (msgObj && msgObj.is_trigger_train && msgObj.text && msgObj.text == 'train') {
+    if (msgObj && msgObj.is_trigger_train && msgObj.text && msgObj.text == 'train' && !isInShowMsgMode(isAdmin, isInDevMode())) {
       console.log('===sr===. remove auto train msg, '+ JSON.stringify(msgObj) );
       rmMsgKey(msgKey, '#2075');
       return;
