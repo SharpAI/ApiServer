@@ -2114,6 +2114,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     var groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: Meteor.userId()})
 
     // 如果是等待标记（即：未识别）的消息,不予显示
+    //手动上传的图片 wait_label = true #Line 1960
     if (msgObj.wait_lable) {
       rmMsgKey(msgKey, '#2030');
       return;
