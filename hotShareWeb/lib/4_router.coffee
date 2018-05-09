@@ -903,7 +903,7 @@ if Meteor.isServer
           if person_info
             PERSON.sendPersonInfoToWeb(person_info)
           console.log("device.in_out", device, relation)
-          if ((device.in_out is 'inout' or  device.uuid is '28D6R17505001070') and relation)
+          if ((device.name.includes('inout') or device.in_out is 'inout' or  device.uuid is '28D6R17505001070') and relation)
             Devices.update({_id: device._id}, {$set: {in_out:'inout'}}); 
             console.log("activity_update_time")
             activity_update_time(person._id, create_time, url)
