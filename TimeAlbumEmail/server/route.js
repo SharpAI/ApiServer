@@ -76,8 +76,10 @@ function fastEmailMessge(timeItem, group) {
                             EmailPersonName = EmailPersonName + ',陌生人'
                         }else{
                             EmailPersonName =  '陌生人'
-                        } 
-                        MQTTPersonName = '有陌生人活动'
+                        }
+                        if (MQTTPersonName != '有人活动'){
+                            MQTTPersonName = '有陌生人活动'
+                        }
                       }
                     }
                 }
