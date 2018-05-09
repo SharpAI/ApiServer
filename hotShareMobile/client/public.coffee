@@ -73,11 +73,11 @@ pages = ['/user', '/bell', '/search']
         if history is undefined or history is ""
             history = new Array()
         #footerPages = ['/home', '/search', '/addPost', '/bell', '/user']
-        footerPages = ['home', 'search', 'addPost', 'bell', 'user']
+        footerPages = ['home', 'timeline', 'message', 'user']
         #if current view is one of footer pages, and record the position of these pages
         for page in footerPages
             if view is page                
-                Session.set 'document_body_scrollTop_'+view, document.body.scrollTop
+                Session.set 'document_body_scrollTop_'+view, $('.content').scrollTop()
                 break
         #if pageName is one of footer pages, we will clear history and need to return back to the last position
         Session.set 'document_body_scrollTop', 0
@@ -101,7 +101,7 @@ pages = ['/user', '/bell', '/search']
                 break
         unless view is undefined or view is ""
             scroll_top = document.body.scrollTop
-            if view is 'home'
+            if _.contains(footerPages,view)
                 scroll_top = $('.content').scrollTop()
             if history.length > 0 and view is history[history.length-1].view
                 history[history.length-1].scrollTop = scroll_top

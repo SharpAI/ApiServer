@@ -74,7 +74,10 @@ if Meteor.isClient
       console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
       setTimeout(
         ()->
-            document.body.scrollTop = Session.get("document_body_scrollTop")
+            if show_foot_url.indexOf(location.pathname) isnt -1
+              $('.content').scrollTop(Session.get("document_body_scrollTop"))
+            else
+              document.body.scrollTop = Session.get("document_body_scrollTop")
         0
       )
       return show_foot_url.indexOf(location.pathname) isnt -1
