@@ -467,8 +467,8 @@ Template.timelineAlbum.helpers({
   showHint:function(){
     return Session.get('showHint');
   },
-  showName:function(person_name,accuracy){
-    if(!accuracy || !person_name){
+  showName:function(person_name,accuracy,label_times){
+    if(!accuracy && !label_times){
       return null;
     }
     return person_name;
