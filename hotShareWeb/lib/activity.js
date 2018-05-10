@@ -31,6 +31,7 @@ activity_update_time = function (person_id, create_time, image_url){
     var act_time = create_time.getTime()
     var ai_in_time, ai_lastest_in_time, ai_out_time, checkin_time, checkout_time;
     var first_in = false
+    var in_image_url, lastin_image_url, out_image_url;
 
     relation = WorkAIUserRelations.findOne({'ai_persons.id':person_id})
 
@@ -52,37 +53,43 @@ activity_update_time = function (person_id, create_time, image_url){
     if (!relation.ai_in_time ||
 	relation.ai_in_time > act_time){
 	ai_in_time = act_time
+	in_image_url = image_url
     }else {
 	ai_in_time = relation.ai_in_time
+	in_image_url = relation.ai_in_image
     }
-          /*
+              /*
   if (relation.checkin_time > act_time){
     checkin_time = act_time
   }else {
     checkin_time = relation.checkin_time
   }
-	  */
+	      */
 
     if (!relation.ai_lastest_in_time ||
 	relation.ai_lastest_in_time < act_time){
 	ai_lastest_in_time = act_time
-
+	lastin_image_url = image_url
     }else {
 	ai_lastest_in_time = relation.ai_lastest_in_time
+	lastin_image_url = relation.ai_lastest_in_image
     }
 
     if (first_in) {
 	ai_out_time = relation.ai_out_time
+	out_image_url = image_url
     }else {
 	if (!relation.ai_out_time ||
 	    relation.ai_out_time < act_time){
 	    ai_out_time = act_time
+	    out_image_url = image_url
 	}else {
 	    ai_out_time = relation.ai_out_time
+	    out_image_url = relation.ai_out_image
 	}
     }
 
-          /*
+              /*
     if (relation.checkout_time){
         if (relation.checkout_time > act_time){
             checkout_time = relation.checkout_time 
@@ -90,17 +97,17 @@ activity_update_time = function (person_id, create_time, image_url){
             checkout_time = act_time
         }
     }
-	  */
+	      */
 
     var setObj = {
 	ai_in_time:ai_in_time,
-	ai_in_image: image_url,
+	ai_in_image: in_image_url,
 
 	ai_lastest_in_time:ai_lastest_in_time,
-	ai_lastest_in_image:image_url,
+	ai_lastest_in_image:lastin_image_url,
 
 	ai_out_time:ai_out_time,
-	ai_out_image: image_url
+	ai_out_image: out_image_url
     }
 
     console.log("setObj", setObj)
@@ -174,15 +181,19 @@ activity_update_time = function (person_id, create_time, image_url){
     }else {
 	if (!workstatus.in_time || workstatus.in_time > act_time){
 	    in_time = act_time
+	    in_image = image_url
 	}else {
 	    in_time = workstatus.in_time
+	    in_image = workstatus.in_image
 	}
 
 	if (!workstatus.out_time ||
 	    workstatus.out_time < act_time){
 	    out_time = act_time
+	    out_image = image_url
 	}else {
 	    out_time = workstatus.out_time
+	    out_image = workstatus.out_image
 	}
 
 	if (first_in || in_time == out_time){
@@ -194,9 +205,9 @@ activity_update_time = function (person_id, create_time, image_url){
 	setObj = {
 	    status : now_status,
 	    in_time:in_time,
-	    in_image:image_url,
+	    in_image:in_image,
 	    out_time:out_time,
-	    out_image:image_url,
+	    out_image:out_image,
 	}
 
 	console.log("setObj", setObj)
