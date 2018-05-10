@@ -53,7 +53,7 @@ if(Meteor.isClient){
         if(!mqtt_connection){
             var pahoMqttOptions = {
                 timeout: 30,
-                keepAliveInterval: 10,
+                keepAliveInterval:60,
                 cleanSession: false,
                 onSuccess:onConnect,
                 onFailure:onFailure,
@@ -61,6 +61,7 @@ if(Meteor.isClient){
             };
             //mqtt_connection=myMqtt.connect('ws://tmq.tiegushi.com:80',mqttOptions);
             mqtt_connection=new Paho.MQTT.Client('mq.tiegushi.com', Number(80), clientId);
+            //mqtt_connection=new Paho.MQTT.Client('183.136.238.174', Number(8083), clientId);
             mqtt_connection.onConnectionLost = onConnectionLost;
             mqtt_connection.onMessageArrived = onMessageArrived;
             mqtt_connection.onMessageDelivered = onMessageDelivered;
