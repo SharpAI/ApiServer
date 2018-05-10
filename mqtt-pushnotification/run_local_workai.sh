@@ -2,7 +2,7 @@
 DEBUG_MESSAGE=0 ALLOW_GROUP_NOTIFICATION=1 \
 REDIS_PASSWORD='87302aKecatcp' REDIS_HOST='rds.tiegushi.com' \
 SERVER_URL='http://workaihost.tiegushi.com/' \
-MQTT_URL='ws://mq.tiegushi.com:80' \
+MQTT_URL='mqtt://mq.tiegushi.com:8080' \
 SERVICE_NAME='MQTT_Notification' \
 PRODUCTION='true' \
 SERVICE_INDEX=0 \
