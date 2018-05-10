@@ -219,8 +219,8 @@ function sendEmailMessageByGroupUser(timeItem,group_user){
         pushOn = true;
         emailOn = true;
     }
-    var to = Meteor.users.findOne({_id:group_user.user_id});
-    if (to && to.emails && to.emails[0]){
+    // var to = Meteor.users.findOne({_id:group_user.user_id});
+    // if (to && to.emails && to.emails[0]){
         if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
             for (person in timeItem.personLists){
                     if ( person_valid_lists.includes(person.name)){
@@ -237,15 +237,16 @@ function sendEmailMessageByGroupUser(timeItem,group_user){
             needSend = true
         }
         if(needSend && emailOn){
-            return to.emails[0].address; 
+            return group_user.report_emails 
         }
-    }
+    // }
 }
 function sendMessage(timeItem,group){
     var EmailPersonName = ''
     var MQTTPersonName = ''
     var email_title
     var EmailCompanyName = group.name
+    var show_type
     timeItem.personLists = []
     if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
         var faceId = timeItem["faceId"].split(",");
@@ -272,8 +273,17 @@ function sendMessage(timeItem,group){
         for (person in timeItem.personLists){
                 if ( person.name != '陌生人'){
                     MQTTPersonName = '有人活动'
+                    var p = WorkAIUserRelations.findOne({'group_id':group._id,'person_name':person.name})
+                    if(p){
+                        if(show_type.length > 1){
+                            show_type = show_type+','+p._id;
+                        }else{
+                            show_type = p.id
+                        }         
+                    }    
                 }else {
                     MQTTPersonName = '有陌生人活动'
+                    show_type = 'unknown'
                 }
                 if (EmailPersonName.length > 1){
                     EmailPersonName = EmailPersonName + ',' + person.name
@@ -284,14 +294,16 @@ function sendMessage(timeItem,group){
     }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
         MQTTPersonName = '有陌生人活动'
         EmailPersonName =  '有陌生人活动'
+        show_type = 'unknown'
     }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
         MQTTPersonName = '有人活动'
         MQTTPersonName = '有人活动'
+        show_type = 'activity'
     }
     email_title = EmailCompanyName + ' AI发现' + EmailPersonName
     var mqtt_title = 'AI发现' + MQTTPersonName
     timeItem["email_title"] = email_title
-    send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],mqtt_title, group)
+    send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],mqtt_title, group,show_type)
 
     groupUsers = SimpleChat.GroupUsers.find({group_id:group._id,is_device:{$ne:true}}).fetch()
     var ret_timeLists = []

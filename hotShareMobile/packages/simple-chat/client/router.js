@@ -2112,7 +2112,25 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     var user = Meteor.user();
     var group = SimpleChat.Groups.findOne({_id: group_id});
     var groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: Meteor.userId()})
-
+    //通知管理个人化设置
+    if(groupUser.settings && groupUser.settings.push_notification === false){
+      if(msgObj.event_type == 'motion'){
+        rmMsgKey(msgKey,'#3000');
+      }
+    }else{
+      if(msgObj.event_type == 'motion'){
+        if(msgObj.show_type == 'unknown'&&groupUser.settings && groupUser.settings.notify_stranger === false){
+          rmMsgKey(msgKey,'#3010');
+        }else if(msgObj.show_type == 'activity'&&groupUser.settings && groupUser.settings.report === false){
+          rmMsgKey(msgKey,'#3020');
+        }else{
+          var shurenArr = msgObj.show_type.split(',');
+          if(groupUser.settings && groupUser.settings.not_notify_acquaintance && _.contains(groupUser.settings.not_notify_acquaintance,shurenArr[0])){
+            rmMsgKey(msgKey,'#3030');
+          }
+        }
+      }
+    }
     // 如果是等待标记（即：未识别）的消息,不予显示
     //手动上传的图片 wait_label = true #Line 1960
     if (msgObj.wait_lable) {
