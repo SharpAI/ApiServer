@@ -33,6 +33,7 @@ Package.onUse(function (api) {
     'client/nlp_label/chatItemUrl.html', 'client/nlp_label/chatItemUrl.js','client/nlp_label/chatItemUrl.less', 'client/nlp_label/nlp_device.html', 'client/nlp_label/nlp_device.js', 'client/nlp_label/nlp_label.html', 'client/nlp_label/nlp_label.js', 'client/nlp_label/nlp_remove.html', 'client/nlp_label/nlp_remove.js','client/nlp_label/nlp_error.html', 'client/nlp_label/nlp_error.js',
     'client/router.js',
     'client/tips/tips.html','client/tips/tips.js','client/tips/tips.less',
-    'client/oneself_msg/oneself_msg.html','client/oneself_msg/oneself_msg.js'
+    'client/oneself_msg/oneself_msg.html','client/oneself_msg/oneself_msg.js',
+    'client/to-chat/tools_bar.html', 'client/to-chat/tools_bar.js'
   ], 'client');
 });

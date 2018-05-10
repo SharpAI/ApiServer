@@ -332,6 +332,8 @@ if Meteor.isClient
     # bind group user 
     'click .bindGroupUser':(e)->
       PUB.page('/bindGroupUser')
+    'click .collect':(e)->
+      PUB.page('/collectList')
     # edit day Tasks
     'click .editDayTasks': (e)->
       group_id = $(e.currentTarget).data('groupid')

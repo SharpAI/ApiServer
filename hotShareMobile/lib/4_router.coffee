@@ -307,7 +307,11 @@ if Meteor.isClient
       return
     Router.route '/comReporter/:_id',()->
       this.render 'companyItem'
-      return  
+      return
+    Router.route '/collectList',()->
+      Meteor.subscribe('collectedMessages')
+      this.render 'collectList'
+      return
 
     # Router.route '/posts/:_id', {
     #     waitOn: ->

@@ -42,6 +42,7 @@
         </div>
         {{/if}}
       </div>
+
       <div class="footer"><form class="input-form">
         <div id="container"></div>
         <style type="text/css">
@@ -61,6 +62,9 @@
         <div class="send-btn"><input class="btn" type="submit" value="发送" style="border-radius: 5px;" /></div>
       </form></div>
     </div>
+
+    {{> toolsBarDown}}
+    {{> toolsBarUp}}
 
     {{> _checkGroupDevice}}
     
@@ -149,12 +153,12 @@
       <div class="icon">{{> _simpleChatToChatItemIcon2}}</div>
       <div class="name">{{form.name}}</div>
       {{#if is_url_type}}
-        <div class="url">{{text}}
+        <div class="url msg-content">{{text}}
           {{> _simpleChatToChatItemNLPText}}
         </div>
       {{else}}
         {{#if is_text_type type}}
-          <div class="text" style="{{has_p_ids_style}}">{{{text}}}
+          <div class="text msg-content" style="{{has_p_ids_style}}">{{{text}}}
             {{#if wait_classify}}
               <center><!-- <div>努力分析中...</div> --><i class="fa fa-spinner fa-pulse"></i></center>
             {{/if}}
@@ -314,7 +318,7 @@
             {{> _checkAgentMsgItem}}
           </div>
         {{else}}
-          <div class="img">
+          <div class="img msg-content">
             {{#if is_me form.id}}
               {{#if status_sending send_status}}
               <div class="status"><img src="/loading.gif" /></div>

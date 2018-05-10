@@ -10,10 +10,17 @@ var $box = null;
 var $box_ul = null;
 
 var label_name_text =  new ReactiveVar('');
+var touchTimeout = null;
+var toolsBar = null;
 
 Array.prototype.removeByIndex= function(index){
   return this.slice(0,index).concat(this.slice(index+1,this.length));
 }
+
+
+Template._simpleChatToChat.onCreated(function() {
+  // Blaze.render(Template.toolsBarDown, document.body);
+});
 
 Template._simpleChatToChat.helpers({
   getMsg: function(){
@@ -1008,7 +1015,22 @@ Template._simpleChatToChatItem.events({
     //data.need_show_label_now = true;
     // data.input_name_direct = true;
     Template._simpleChatLabelDevice.open(data);
+  },
+  'touchstart .msg-content': function(event) {
+    var dataItem = this;
+    touchTimeout = Meteor.setTimeout(function() {
+      console.log(toolsBar);
+      toolsBar = toolsBarFactory.createToolsBar(event.target);
+      console.log(toolsBar);
+      toolsBar.show(event.target);
+      toolsBar.addItem(dataItem);
+    }, 1000);
+    
+  },
+  'touchend .msg-content': function(event) {
+    Meteor.clearTimeout(touchTimeout);
   }
+
 });
 
 Template._simpleChatToChatLabel.helpers({
@@ -1669,6 +1691,9 @@ Template._simpleChatToChat.events({
     //  主动点击有 x 条新消息
      setScrollToBottom();
      Session.set('newMsgCount',0);
+  },
+  'click .msg-box':function(e){
+    toolsBar.hide();
   }
 });
 

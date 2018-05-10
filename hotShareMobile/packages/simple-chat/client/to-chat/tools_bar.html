@@ -1,0 +1,21 @@
+<template name="toolsBarMenus">
+  <ul class="tools-menus">
+      {{#each menus}}
+        <li id="{{key}}">{{name}}</li>
+      {{/each}}
+    </ul>
+</template>
+
+<template name="toolsBarDown">
+  <div class="tools-bar-wrap tools-bar-wrap-down">
+    {{> toolsBarMenus}}
+    <div class="arrow arrow-down"></div>
+  </div>
+</template>
+
+<template name="toolsBarUp">
+  <div class="tools-bar-wrap tools-bar-wrap-up">
+    <div class="arrow arrow-up"></div>
+    {{> toolsBarMenus}}
+  </div>
+</template>

@@ -474,3 +474,47 @@
   ._cgd_device_lists{background: #fff;margin: 0;padding: 10px;position: absolute;top: 50px;bottom: 10px;overflow: hidden;overflow-y: auto;left: 0;right: 0;height: 100%;}
   ._cgd_device_item{ height: 40px;line-height: 40px;font-size: 14px;border-bottom: 1px solid #efefef;}
 }
+
+//工具条
+.tools-bar-wrap {
+  position: absolute;
+  z-index: 999;
+  top: 100px;
+  display: none;
+  .tools-menus {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: rgba(0, 0, 0, 1);
+    display: flex;
+    li {
+      width: 49px;
+      padding: 5px 0;
+      text-align: center;
+      border-right: 1px solid #fff;
+    }
+    li:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+    li:last-child {
+      border-right: none;
+    }
+  }
+  .arrow {
+    position: absolute;
+    left: 50%;
+    margin-left: -5px;
+    border-color: transparent;
+    border-width: 10px;
+    border-style: solid;
+  }
+  .arrow-down {
+    bottom: -20px;
+    border-top-color: #000;
+    border-width: 10px;
+  }
+  .arrow-up {
+    top: -20px;
+    border-bottom-color: #000;
+    border-width: 10px;
+  }
+}
