@@ -56,6 +56,9 @@ Template.srvtimeline.helpers({
     group = SimpleChat.Groups.findOne({_id:group_id});
     
     return group.name
+  },
+  hasPersonList: function(personList) {
+    return personList.length > 0;
   }
 });
 

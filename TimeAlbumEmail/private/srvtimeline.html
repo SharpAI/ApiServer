@@ -7,6 +7,7 @@
                   </div>
                   
                   <div style="padding: 20px 20px 30px; text-align: center; color: #c8c8c8; background: #fff; border-radius: 0 0 4px 4px;">
+                    {{#if hasPersonList personLists}}
                     <div style="position: relative; width: 100%; margin-top: -75px; text-align: center;">
                       <div style="display: inline-block;">
                         {{#each personLists}}
@@ -21,6 +22,7 @@
                         {{/each}}
                       </div>
                     </div>
+                    {{/if}}
                     <div style="font-size: 18px; margin-top: 20px; color: #a2a0a0; text-align: center;">{{company_name}} Daily Report</div>
                     <div style="margin-top: 15px; color: #00c4ff; text-align: center;">{{time}}</div>
                   </div>
