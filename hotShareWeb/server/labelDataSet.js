@@ -221,3 +221,28 @@ LABLE_DADASET_Handle = {
     });
   }
 };
+
+if (Meteor.isServer) {
+  function updateImgCount(group_id, name) {
+    Meteor.setTimeout(function(){
+      var cnt = LableDadaSet.find({group_id: group_id, name: name}).count();
+      Person.update({group_id: group_id, name: name}, {$set: {imgCount: cnt}}, function(err, ret){
+      });
+    }, 2000);
+  };
+
+  Meteor.startup(function(){
+    LableDadaSet.find({createAt: {$gt: new Date()}}).observe({
+      added(doc) {
+        if (doc.group_id && doc.name) {
+          updateImgCount(doc.group_id, doc.name);
+        }
+      },
+      removed(doc) {
+        if (doc.group_id && doc.name) {
+          updateImgCount(doc.group_id, doc.name);
+        }
+      }
+    });
+  });
+}
