@@ -1,13 +1,18 @@
+
+isMultipleChoice = new ReactiveVar(false);
 var currentToolsBar;
+var choiceMenu = new ReactiveVar({
+  key: 'multipleChoice',
+  name: '多选'
+});
 
 Template.toolsBarMenus.helpers({
-  menus: [{
-    key: 'collect',
-    name: '收藏'
-  }, {
-    key: 'multipleChoice',
-    name: '多选'
-  }]
+  menus: function() {
+    return [{
+      key: 'collect',
+      name: '收藏'
+    }, choiceMenu.get()]
+  }
 });
 
 Template.toolsBarDown.helpers({
@@ -21,6 +26,20 @@ var handleEvents = function() {
   Template.toolsBarMenus.events({
     'click #collect': function(event) {
       currentToolsBar.collect();
+      currentToolsBar.hide();
+      isMultipleChoice.set(false);
+    },
+    'click #multipleChoice, click #cancelChoice': function(event) {
+      if (this.key === 'cancelChoice' && isMultipleChoice.get()) {
+        currentToolsBar.hide();
+      }
+      currentToolsBar.toggleChoiceState();
+      if (isMultipleChoice.get()) {
+        choiceMenu.set({
+          key: 'cancelChoice',
+          name: '取消'
+        });
+      }
     }
   });
 };
@@ -28,13 +47,23 @@ var handleEvents = function() {
 var toolsBarBase = {
   toolsBar: null,
   selectedItems: [],
+  init: function(srcElement) {
+    this.selectedItems.length = 0;
+    isMultipleChoice.set(false);
+    choiceMenu.set({
+      key: 'multipleChoice',
+      name: '多选'
+    });
+    this.show(srcElement);
+  },
+  show: function() {},
   addItem: function(item) {
     this.selectedItems.push(item);
   },
   removeItem: function(item) {
-    for (var i = 0, len = selectedItems.length; i < len; i++) {
-      if (selectedItems[i] === item) {
-        selectedItems.splice(i, 1);
+    for (var i = 0, len = this.selectedItems.length; i < len; i++) {
+      if (this.selectedItems[i] === item) {
+        this.selectedItems.splice(i, 1);
         break;
       }
     }
@@ -57,25 +86,21 @@ var toolsBarBase = {
   },
   collect: function() {
     this.selectedItems.forEach(function(item) {
-      var updateItem = {
-        isCollect: true,
-        collectDate: new Date()
-      };
-      Messages.update({_id: item._id}, {$set: updateItem});
+      if (CollectMessages.findOne({_id: item._id})) return;
+      CollectMessages.insert(item);
     });
-    var queryCondition = {
-      $or: [
-        {'form.id': Meteor.userId()},
-        {'to.id': Meteor.userId()}
-      ],
-      isCollect: true
-    };
-    var collectList = Messages.find(queryCondition).fetch();
-    console.log(collectList);
-    $('.tools-bar-wrap').hide();
   },
   hide: function() {
     this.toolsBar.hide();
+    this.resetSelectedItems();
+  },
+  toggleChoiceState: function() {
+    isMultipleChoice.set(!isMultipleChoice.get());
+  },
+  resetSelectedItems: function() {
+    this.selectedItems.forEach(function(item) {
+      item.checked = false;
+    });
   }
 };
 
@@ -113,7 +138,6 @@ toolsBarFactory = {
     var srcollTop = document.documentElement.scrollTop;
     var toolsBarHeight = $('.tools-bar-wrap').height();
     var headerHeight = $('.header').height();
-    console.log(srcollTop);
     if (srcollTop + toolsBarHeight + headerHeight < srcOffsetTop) {
       return currentToolsBar = msgDownToolsBar;
     } else {

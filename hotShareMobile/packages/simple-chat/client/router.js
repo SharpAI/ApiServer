@@ -1019,18 +1019,24 @@ Template._simpleChatToChatItem.events({
   'touchstart .msg-content': function(event) {
     var dataItem = this;
     touchTimeout = Meteor.setTimeout(function() {
-      console.log(toolsBar);
       toolsBar = toolsBarFactory.createToolsBar(event.target);
-      console.log(toolsBar);
-      toolsBar.show(event.target);
+      toolsBar.init(event.target);
+      dataItem.checked = true;
       toolsBar.addItem(dataItem);
     }, 1000);
     
   },
   'touchend .msg-content': function(event) {
     Meteor.clearTimeout(touchTimeout);
+  },
+  'change input[name=msg-multiple-choice]': function(event) {
+    this.checked = !this.checked;
+    if (this.checked) {
+      toolsBar.addItem(this);
+    } else {
+      toolsBar.removeItem(this);
+    }
   }
-
 });
 
 Template._simpleChatToChatLabel.helpers({
@@ -1693,7 +1699,9 @@ Template._simpleChatToChat.events({
      Session.set('newMsgCount',0);
   },
   'click .msg-box':function(e){
-    toolsBar.hide();
+    if (!isMultipleChoice.get()) {
+      toolsBar.hide();
+    }
   }
 });
 
@@ -1775,6 +1783,9 @@ Template._simpleChatToChatItem.onRendered(function(){
 });
 
 Template._simpleChatToChatItem.helpers({
+  isMultipleChoice: function() {
+    return isMultipleChoice.get();
+  },
   images: function() {
     for(var i=0;i<this.images.length;i++){
       this.images[i].eventType = this.event_type || '';

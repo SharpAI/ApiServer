@@ -1,10 +1,6 @@
 Template.collectList.helpers({
   collectList: function () {
-     var queryCondition = {
-      isCollect: true
-    };
-    var list = SimpleChat.Messages.find(queryCondition).fetch();
-    console.log(SimpleChat.Messages.find().fetch());
+    var list = SimpleChat.CollectMessages.find({}).fetch();
     return list;
   },
   
@@ -31,8 +27,6 @@ Template.collectItem.helpers({
   }
 });
 
-
-
 Template.collectList.events({
   'click .back': function(e) {
     return Router.go('/user');
@@ -41,7 +35,7 @@ Template.collectList.events({
 
 Template.collectItem.events({
   'click .delBtn': function(e) {
-    SimpleChat.Messages.update({_id: this._id}, {$unset: {isCollect: ''}});
+    SimpleChat.CollectMessages.remove({_id: this._id});
   },
 });
 

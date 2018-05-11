@@ -31,12 +31,14 @@ if(Meteor.isServer){
     MsgSession = new Ground.Collection(PRFIX + 'msg_session', { connection: null });
     MsgAdminRelays = new Ground.Collection(PRFIX + 'msg_admin_realy', { connection: null });
     GroupPhotoLabel = new Ground.Collection(PRFIX + 'group_photo_label', { connection: null }); // 群相册下已标注的消息
+    CollectMessages = new Ground.Collection(PRFIX + 'collect_messages', { connection: null });
 
     SimpleChat.Messages = Messages;
     SimpleChat.GroupPhotoLabel = GroupPhotoLabel;
     SimpleChat.MsgSession = MsgSession;
     SimpleChat.MessageTemp = MessageTemp;
     SimpleChat.MsgAdminRelays = MsgAdminRelays;
+    SimpleChat.CollectMessages = CollectMessages;
     
     // 历史消息
     withMessageHisEnable = true;

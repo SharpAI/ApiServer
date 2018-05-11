@@ -12,6 +12,32 @@
     </ul>
   </div>
 </div>
+
+<script>
+  $(function() {
+    console.log(touch);
+    touch.on('body', 'swipeup swipedown', function(ev){
+      $('.swiperElem').animate({left: '0px'},100);
+    });
+    touch.live('.collect-list', 'swipeup swipedown', '.swiperElem', function(ev){
+      $('.swiperElem').animate({left: '0px'},100);
+    });
+    touch.live('.collect-list', 'swipeleft swipeing', '.swiperElem', function(ev){
+        var x = ev.x;
+        if(x < -40){
+          x = -100;
+        } else {
+          x = 0;
+        }
+        console.log($(ev.target))
+        $(ev.target).parents('.swiperElem').animate({left: x+'px'},100);
+      });
+      
+    touch.live('.collect-list', 'swiperight swipeing', '.swiperElem', function(ev){
+      $(ev.target).parents('.swiperElem').animate({left: '0px'},100);
+    });
+});
+  </script>
 </template>
 
 <template name="collectItem">
@@ -30,27 +56,7 @@
       <span>{{collectDate}}</span>
     </p>
     <div class="delBtn-wrap">
-      <div class="delBtn">删除</div>
+      <div class="delBtn"></div>
     </div>
   </li>
-
-  <script>
-  $(function() {
-    console.log(touch);
-    touch.live('.swiperElem', 'swipeleft swipeing', function(ev){
-        var x = ev.x;
-        if(x < -40){
-          x = -100;
-        } else {
-          x = 0;
-        }
-        console.log($(ev.target))
-        $(ev.target).parents('.swiperElem').animate({left: x+'px'},100);
-      });
-      
-    touch.live('.swiperElem', 'swiperight swipeing', function(ev){
-      $(ev.target).parents('.swiperElem').animate({left: '0px'},100);
-    });
-});
-  </script>
 </template>

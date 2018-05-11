@@ -92,16 +92,10 @@ Meteor.publish('group-user-relations',function(group_id,limit){
 });
 
 Meteor.publish('collectedMessages', function(limit) {
-  var queryCondition = {
-    $and: [
-      {$or: [
-        {'form.id': Meteor.userId()},
-        {'to.id': Meteor.userId()}
-      ]},
-      {isCollect: {$exists: true}}
-    ]
-  };
-  return Messages.find(queryCondition, {limit: limit || 20});
+  // var queryCondition = {
+  //  isCollect: true
+  // };
+  return CollectMessages.find({}, {limit: limit || 20});
 });
 
 // Meteor.publish('group-user-relations',function(group_id){

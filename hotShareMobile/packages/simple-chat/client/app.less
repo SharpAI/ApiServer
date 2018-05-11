@@ -102,8 +102,11 @@
               div._close:nth-child(n+5){display: none !important;}
             }
           }
+          .icon-wrap{
+            position: absolute; top: 0px; background-color: #fff; z-index: 2;
+          }
           .icon{
-            width: 40px; height: 40px; position: absolute; top: 0px; background-color: #fff; z-index: 2;
+            width: 40px; height: 40px;
             img{width: 100%; height: 100%; object-fit: cover;}
           }
           .img{
@@ -208,18 +211,18 @@
         .system_message{background-color: #ccc;color: #fff;line-height: 24px;font-size: 12px;text-align: center;border-radius: 5px;margin: 0px auto;display: table;padding-left: 10px;padding-right: 10px;}
         li.ta{
           padding-left: 60px; min-height: 40px;
-          .icon{left: 0px;}
+          .icon-wrap{left: 0px;}
           .text{background-color: #fff; color: #000;}
           .url{background-color: #fff; color: #000;}
           .show_more{color: #9e9e9e;}
-          .icon:before{content: " ";position: absolute; top: 10px;left: 50px;width: 0; height: 0;border-bottom: 10px solid transparent;border-top: 10px solid transparent;border-right: 10px solid #d2d2d2;}
-          .icon:after{content: " ";position: absolute; top: 10px;left: 52px;width: 0; height: 0;border-bottom: 10px solid transparent;border-top: 10px solid transparent;border-right: 10px solid #fff;}
+          .icon-wrap:before{content: " ";position: absolute; top: 10px;left: 50px;width: 0; height: 0;border-bottom: 10px solid transparent;border-top: 10px solid transparent;border-right: 10px solid #d2d2d2;}
+          .icon-wrap:after{content: " ";position: absolute; top: 10px;left: 52px;width: 0; height: 0;border-bottom: 10px solid transparent;border-top: 10px solid transparent;border-right: 10px solid #fff;}
         }
         li.me{
           text-align: right; padding-right: 60px; min-height: 40px; padding-top: 0px;
           .label_complete .remark{color: #e4e2f4;}
           .show_more{color: #e4e2f4;}
-          .icon{right: 0px;}
+          .icon-wrap{right: 0px;}
           .text{background-color: @master_color; color: #fff; text-align: left;}
           .url{background-color: @master_color; color: #fff; text-align: left;
             h4{color: #fff;}
@@ -228,8 +231,8 @@
             .showmore{color: #e4e2f4;}
           }
           .img{background-color: @master_color;}
-          .icon:before{content: " ";position: absolute; top: 10px;right: 52px;width: 0; height: 0;border-bottom: 10px solid transparent;border-top: 10px solid transparent;border-left: 10px solid #d2d2d2;}
-          .icon:after{content: " ";position: absolute; top: 10px;right:52px;width: 0; height: 0;border-bottom: 10px solid transparent;border-top: 10px solid transparent;border-left: 10px solid @master_color;}
+          .icon-wrap:before{content: " ";position: absolute; top: 10px;right: 52px;width: 0; height: 0;border-bottom: 10px solid transparent;border-top: 10px solid transparent;border-left: 10px solid #d2d2d2;}
+          .icon-wrap:after{content: " ";position: absolute; top: 10px;right:52px;width: 0; height: 0;border-bottom: 10px solid transparent;border-top: 10px solid transparent;border-left: 10px solid @master_color;}
           .line-label-box{
             display: block;
             >div{color:#fff;}
@@ -241,11 +244,58 @@
           .name{display: block; font-size: 12px; color: #616161; margin-bottom: 3px;}
         }
         li.ta{
-          .icon:before, .icon:after{ top: 30px;}
+          .icon-wrap:before, .icon-wrap:after{ top: 30px;}
         }
         li.me{
-          .icon:before, .icon:after{ top: 30px;}
+          .icon-wrap:before, .icon-wrap:after{ top: 30px;}
         }
+        .custom-checkbox-lable {
+          position: relative;
+          display: block;
+          width: 20px;
+          height: 20px;
+          margin: 0 auto;
+          input[type=checkbox] {
+            opacity: 0;
+            display: block;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            top: -2px;
+            left: 0;
+            z-index: 999;
+          }
+          input[type=checkbox]:checked + .custom-checkbox-innerIcon {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: green;
+          }
+          input[type=checkbox]:checked + :after {
+            display: block;
+          }
+        }
+        .custom-checkbox-innerIcon {
+          width: 18px;
+          height: 18px;
+          border: 1px solid #aaa;
+          border-radius: 50%;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+        .custom-checkbox-innerIcon:after {
+          content: '';
+          width: 10px;
+          height: 6px;
+          border-left: 1px solid #fff;
+          border-bottom: 1px solid #fff;
+          transform: rotate(-45deg);
+          position: absolute;
+          top: 4px;
+          left: 4px;
+        }
+
       }
       .hasNewMsg{
         position: fixed;
