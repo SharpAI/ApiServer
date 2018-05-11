@@ -10,8 +10,8 @@
         {{#with getConfig 'push'}}
             <li class="userHideItem">
               <img class="icon" src="/push.png" width="40" height="40">
-              <div class="right-btn" style="background: #fff;"><input id="push" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
-              <p class="userName">通过APP推送通知</p>
+              <div class="right-btn" style="background: #fff;"><input id="push" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
+              <p class="userName">APP推送通知</p>
               {{#if getIsShow this}}
               {{/if}}
             </li>
@@ -19,8 +19,8 @@
         {{#with getConfig 'email'}}
             <li class="userHideItem">
               <img class="icon" src="/email.png" width="40" height="40">
-              <div class="right-btn" style="background: #fff;"><input id="email" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
-              <p class="userName">通过邮件通知</p>
+              <div class="right-btn" style="background: #fff;"><input id="email" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
+              <p class="userName">邮件通知</p>
               {{#if getIsShow this}}
               {{/if}}
             </li>
@@ -29,7 +29,7 @@
         {{#with getConfig 'report'}}
             <li class="userHideItem">
               <img class="icon" src="/active_report.png" width="40" height="40">
-              <div class="right-btn" style="background: #fff;"><input id="report_id" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
+              <div class="right-btn" style="background: #fff;"><input id="report_id" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
               <p class="userName">动静报告</p>
               {{#if getIsShow this}}
               {{/if}}
@@ -38,7 +38,7 @@
         {{#with getConfig 'stranger'}}
             <li class="userHideItem">
               <img class="icon" src="/user_new.png" width="40" height="40">
-              <div class="right-btn" style="background: #fff;"><input id="stranger_id" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
+              <div class="right-btn" style="background: #fff;"><input id="stranger_id" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
               <p class="userName">不熟悉的人</p>
               {{#if getIsShow this}}
               {{/if}}
@@ -47,7 +47,7 @@
         <!-- {{#with getConfig 'gif'}}
             <li class="userHideItem">
               <img class="icon" src="/gif.png" width="40" height="40">
-              <div class="right-btn" style="background: #fff;"><input id="gif_id" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
+              <div class="right-btn" style="background: #fff;"><input id="gif_id" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
               <p class="userName">gif动图</p>
               {{#if getIsShow this}}
               {{/if}}
@@ -57,15 +57,15 @@
         <!-- {{#with getConfig 'other'}}
         <li class="userHideItem">
           <img class="icon" src="/other.png" width="40" height="40">
-          <div class="right-btn" style="background: #fff;"><input id="other" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
+          <div class="right-btn" style="background: #fff;"><input id="other" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
           <p class="userName">其他事件</p>
           {{#if getIsShow this}}
           {{/if}}
         </li>
         {{/with}} -->
-        {{#if isLoading}}
+        <!-- {{#if isLoading}}
         <div class="loading"><img src="/loading.gif" width="24" height="24"/> &nbsp;加载中</div>
-        {{/if}}
+        {{/if}} -->
 
 
       <li class="sub_head"><p>以下熟人出现时，通知您</p></li>
@@ -73,7 +73,7 @@
       {{#if person_name}}
       <li class="userHideItem">
         <img class="icon" src="{{icon}}" width="40" height="40">
-        <div class="right-btn" style="background: #fff;"><input id="{{_id}}" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
+        <div class="right-btn" style="background: #fff;"><input id="{{_id}}" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
         <!-- {{#if isHide}}
         <div id="{{_id}}" class="right-btn btnShow">显示</div>
         {{else}}

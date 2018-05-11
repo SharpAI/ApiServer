@@ -27,7 +27,7 @@
 @signUpUserNameLength = 16
 @withPostTitleMaxLength = 180      #byte
 @withPostSubTitleMaxLength = 120   #byte
-@withShowGroupsUserMaxCount = 29
+@withShowGroupsUserMaxCount = 10
 @withThumbInTextSection = false
 @withUserInfoShowInPostHeader = false
 @withInlineComment = false
