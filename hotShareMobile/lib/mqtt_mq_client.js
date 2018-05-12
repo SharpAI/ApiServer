@@ -93,23 +93,27 @@ if(Meteor.isClient){
                 //mqtt_connection.subscribe('workai');
                 subscribeMyChatGroups();
                 subscribeMqttUser(Meteor.userId());
-                sendMqttMessage('/presence/'+Meteor.userId(),{online:true})
-                if (unsendMessages.length > 0) {
-                    var unsendMsg;
-                    var fifo = unsendMessages.reverse();
-                    // Send all queued messages down socket connection
-                    console.log('onConnect: Send all unsendMessages message: '+unsendMessages.length);
-                    while ((unsendMsg = fifo.pop())) {
-                        var topic = unsendMsg.topic;
-                        var message = unsendMsg.message;
-                        var callback = unsendMsg.callback;
-                        var timeoutTimer = unsendMsg.timer;
-                        clearTimeout(timeoutTimer);
-                        timeoutTimer = null;
-                        sendMqttMessage(topic, message, callback);
-                        console.log('unsendMessages send message='+JSON.stringify(message));
-                    }
-                }
+                
+                setTimeout(function(){
+                    console.log("sendMqttMessage /presence")
+                    sendMqttMessage('/presence/'+Meteor.userId(),{online:true})
+                    if (unsendMessages.length > 0) {
+                        var unsendMsg;
+                        var fifo = unsendMessages.reverse();
+                        // Send all queued messages down socket connection
+                        console.log('onConnect: Send all unsendMessages message: '+unsendMessages.length);
+                        while ((unsendMsg = fifo.pop())) {
+                            var topic = unsendMsg.topic;
+                            var message = unsendMsg.message;
+                            var callback = unsendMsg.callback;
+                            var timeoutTimer = unsendMsg.timer;
+                            clearTimeout(timeoutTimer);
+                            timeoutTimer = null;
+                            sendMqttMessage(topic, message, callback);
+                            console.log('unsendMessages send message='+JSON.stringify(message));
+                        }
+                    }    
+                }, 20*1000)
             };
             function onFailure(msg) {
                 console.log('mqtt onFailure: errorCode='+msg.errorCode);
