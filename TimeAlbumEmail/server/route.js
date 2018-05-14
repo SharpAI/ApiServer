@@ -222,7 +222,8 @@ function sendEmailMessageByGroupUser(timeItem,group_user){
     // var to = Meteor.users.findOne({_id:group_user.user_id});
     // if (to && to.emails && to.emails[0]){
         if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
-            for (person in timeItem.personLists){
+            for (i in timeItem.personLists){
+                    var person = timeItem.personLists[i]
                     if ( person_valid_lists.includes(person.name)){
                         needSend = true
                     }else if(person.name == '陌生人'){
@@ -251,7 +252,10 @@ function sendMessage(timeItem,group){
     if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
         var faceId = timeItem["faceId"].split(",");
             for (i in faceId){
-                person = Person.findOne({faceId: faceId[i]})
+                if(!faceId[i]){
+                    continue;
+                }
+                var person = Person.findOne({faceId: faceId[i]})
                 if (person){
                     var obj = {
                       'name': person.name,
@@ -270,7 +274,8 @@ function sendMessage(timeItem,group){
             }
     }
     if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
-        for (person in timeItem.personLists){
+        for (k in timeItem.personLists){
+                var person = timeItem.personLists[k];
                 if ( person.name != '陌生人'){
                     MQTTPersonName = '有人活动'
                     var p = WorkAIUserRelations.findOne({'group_id':group._id,'person_name':person.name})
@@ -278,7 +283,7 @@ function sendMessage(timeItem,group){
                         if(show_type.length > 1){
                             show_type = show_type+','+p._id;
                         }else{
-                            show_type = p.id
+                            show_type = p._id
                         }         
                     }    
                 }else {
