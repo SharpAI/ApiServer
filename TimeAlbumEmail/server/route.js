@@ -322,6 +322,9 @@ function sendMessage(timeItem,group){
             to.push(address);
         }
     }
+    if(to.length == 0){
+        return;
+    }
     var html = SSR.render("srvemailTemplateFast", {company_name:EmailCompanyName, person_name:EmailPersonName, timeLinelists:ret_timeLists});
     var from = 'DeepEye<notify@email.tiegushi.com>';
     Email.send({
