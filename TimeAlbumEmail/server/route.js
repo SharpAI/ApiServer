@@ -291,11 +291,11 @@ function sendMessage(timeItem,group){
                     EmailPersonName =  person.name
                 }
         }
-    }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
+    }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown'){
         MQTTPersonName = '有陌生人活动'
         EmailPersonName =  '有陌生人活动'
         show_type = 'unknown'
-    }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
+    }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity'){
         MQTTPersonName = '有人活动'
         MQTTPersonName = '有人活动'
         show_type = 'activity'
