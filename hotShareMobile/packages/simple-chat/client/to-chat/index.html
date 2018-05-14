@@ -149,18 +149,28 @@
   <li id="{{_id}}"><span class="system_message">{{text}}</span></li>
   {{else}}
     <!--{{#if showUnknowMember to.id}}-->
-    <li id="{{_id}}" class="data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
+    <li id="{{_id}}" class="{{multipleChoiceClass}} data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
       
       <div class="icon-wrap">
         {{#if isMultipleChoice}}
-          <lable class="custom-checkbox-lable" for="msg-multiple-choice">
-            <input name="msg-multiple-choice" type="checkbox" checked="{{checked}}">
-            <div class="custom-checkbox-innerIcon"></div>
-          </lable>
+          {{#if is_ta form.id}}
+            <lable class="custom-checkbox-lable" for="msg-multiple-choice">
+              <input name="msg-multiple-choice" type="checkbox" checked="{{checked}}">
+              <div class="custom-checkbox-innerIcon"></div>
+            </lable>
+          {{/if}}  
         {{/if}}
         <div class="icon">
           {{> _simpleChatToChatItemIcon2}}
         </div>
+        {{#if isMultipleChoice}}
+          {{#if is_me form.id}}
+            <lable class="custom-checkbox-lable" for="msg-multiple-choice">
+              <input name="msg-multiple-choice" type="checkbox" checked="{{checked}}">
+              <div class="custom-checkbox-innerIcon"></div>
+            </lable>
+          {{/if}}  
+        {{/if}}
         </div>
       <div class="name">{{form.name}}</div>
       {{#if is_url_type}}

@@ -309,7 +309,7 @@ if Meteor.isClient
       this.render 'companyItem'
       return
     Router.route '/collectList',()->
-      Meteor.subscribe('collectedMessages')
+      Meteor.subscribe('collectedMessages', {sort: {collectDate: -1}, limit: 10})
       this.render 'collectList'
       return
 

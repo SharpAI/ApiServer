@@ -1786,6 +1786,13 @@ Template._simpleChatToChatItem.helpers({
   isMultipleChoice: function() {
     return isMultipleChoice.get();
   },
+  multipleChoiceClass: function() {
+    if (isMultipleChoice.get()) {
+      return 'multiple-choice';
+    } else {
+      return '';
+    }
+  },
   images: function() {
     for(var i=0;i<this.images.length;i++){
       this.images[i].eventType = this.event_type || '';
@@ -1850,6 +1857,9 @@ Template._simpleChatToChatItem.helpers({
   },
   is_me: function(id){
     return id === Meteor.userId();
+  },
+  is_ta: function(id){
+    return id !== Meteor.userId();
   },
   status_sending: function(val){
     return val === 'sending';

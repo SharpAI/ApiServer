@@ -87,6 +87,7 @@ var toolsBarBase = {
   collect: function() {
     this.selectedItems.forEach(function(item) {
       if (CollectMessages.findOne({_id: item._id})) return;
+      item.collectDate = new Date();
       CollectMessages.insert(item);
     });
   },

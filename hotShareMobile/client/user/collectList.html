@@ -45,10 +45,17 @@
     <div class="item-content">
       {{#if isImage type}}
         {{#each images}}
-          <img src="{{url}}">
+          <img class="swipebox" src="{{url}}">
         {{/each}}
       {{else}}
-        {{{text}}}
+        {{#if isMotion}}
+          <p>{{{text}}}</p>
+          {{#each images}}
+            <img class="swipebox" src="{{url}}">
+          {{/each}}
+        {{else}}
+          {{{text}}}
+        {{/if}}
       {{/if}}
     </div>
     <p class="item-summary">

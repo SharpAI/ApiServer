@@ -103,9 +103,10 @@
             }
           }
           .icon-wrap{
-            position: absolute; top: 0px; background-color: #fff; z-index: 2;
+            position: absolute; top: 0px; z-index: 2;
           }
           .icon{
+            display: inline-block;
             width: 40px; height: 40px;
             img{width: 100%; height: 100%; object-fit: cover;}
           }
@@ -238,6 +239,24 @@
             >div{color:#fff;}
           }
         }
+        li.ta.multiple-choice {
+          padding-left: 80px;
+          .icon-wrap:before {
+            left: 70px;
+          }
+          .icon-wrap:after {
+            left: 72px;
+          }
+        }
+        li.me.multiple-choice {
+          padding-right: 80px;
+          .icon-wrap:before {
+            right: 72px;
+          }
+          .icon-wrap:after {
+            right: 72px;
+          }
+        }
       }
       ul.group-list{
         li{
@@ -251,10 +270,11 @@
         }
         .custom-checkbox-lable {
           position: relative;
-          display: block;
+          display: inline-block;
           width: 20px;
           height: 20px;
           margin: 0 auto;
+          vertical-align: middle;
           input[type=checkbox] {
             opacity: 0;
             display: block;
@@ -292,8 +312,8 @@
           border-bottom: 1px solid #fff;
           transform: rotate(-45deg);
           position: absolute;
-          top: 4px;
-          left: 4px;
+          top: 5px;
+          left: 5px;
         }
 
       }
