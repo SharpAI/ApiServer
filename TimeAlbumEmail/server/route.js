@@ -319,7 +319,6 @@ function sendMessage(timeItem,group){
     }
     var html = SSR.render("srvemailTemplateFast", {company_name:EmailCompanyName, person_name:EmailPersonName, timeLinelists:ret_timeLists});
     var from = 'DeepEye<notify@email.tiegushi.com>';
-    this.unblock();
     Email.send({
         to: to.toString(),
         from: from,
