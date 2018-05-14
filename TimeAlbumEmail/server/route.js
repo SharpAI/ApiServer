@@ -246,7 +246,7 @@ function sendMessage(timeItem,group){
     var MQTTPersonName = ''
     var email_title
     var EmailCompanyName = group.name
-    var show_type
+    var show_type = ''
     timeItem.personLists = []
     if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
         var faceId = timeItem["faceId"].split(",");
@@ -297,7 +297,7 @@ function sendMessage(timeItem,group){
         show_type = 'unknown'
     }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity'){
         MQTTPersonName = '有人活动'
-        MQTTPersonName = '有人活动'
+        EmailPersonName = '有人活动'
         show_type = 'activity'
     }
     email_title = EmailCompanyName + ' AI发现' + EmailPersonName
