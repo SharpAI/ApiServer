@@ -1228,8 +1228,6 @@ if Meteor.isServer
         )
       'updateGroupReportEmails':(groupId,emails)->
         SimpleChat.Groups.update({_id:groupId},{$set:{report_emails:emails}})
-      'updateGroupUserReportEmails':(groupId,userId,emails)->
-        SimpleChat.GroupUsers.update({group_id:groupId,user_id:userId},{$set:{report_emails:emails}})
       'updateGroupName':(groupId,name)->
         SimpleChat.Groups.update({_id:groupId},{$set:{name:name}})
         SimpleChat.GroupUsers.update({group_id:groupId},{$set:{group_name:name}},{multi: true})

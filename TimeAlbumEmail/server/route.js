@@ -1,4 +1,3 @@
-DEBUG_ON = false
 
 //declare a simple async function
 function fastEmailMessge(timeItem, group) {
@@ -110,14 +109,14 @@ function fastEmailMessge(timeItem, group) {
         
         timeItem["email_title"] = email_title
         if(needSend && emailOn){
-            DEBUG_ON && console.log("Send Email ...", email_title)
+            console.log("Send Email ...", email_title)
             var ret_timeLists = []
             timeItem["company_name"] = EmailCompanyName
             timeItem["person_name"] = EmailPersonName
             ret_timeLists.push(timeItem)
 
             var html = SSR.render("srvemailTemplateFast", {company_name:EmailCompanyName, person_name:EmailPersonName, timeLinelists:ret_timeLists});
-            DEBUG_ON && console.log(group._id, group.report_emails);
+            console.log(group._id, group.report_emails);
 
             var from = 'DeepEye<notify@email.tiegushi.com>';
             
@@ -180,162 +179,3 @@ Router.route( "timelines/add", function() {
     this.response.end( 'ok' );
 
 }, { where: "server" });
-
-function sendEmailMessageByGroupUser(timeItem,group_user){
-    var person_valid_lists = []
-    var needSend = false
-    // var email_title
-    var pushOn = false
-    var emailOn = false
-    var CurrentGroupId = timeItem["groupId"]
-    // to = group.report_emails
-    people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
-
-    for (var k in people_config){
-        if(!group_user.settings || !group_user.settings.not_notify_acquaintance){
-            person_valid_lists.push(people_config[k].person_name)
-        }else if(!_.contains(group_user.settings.not_notify_acquaintance,people_config[k]._id)){
-            person_valid_lists.push(people_config[k].person_name)
-        }
-    }
-
-    DEBUG_ON && console.log('group_user_settings----',group_user.settings)
-    //stranger valid
-    if (group_user.settings){
-        if (group_user.settings.notify_stranger == undefined || group_user.settings.notify_stranger == true){
-            person_valid_lists.push("unknown")
-        }
-        if (group_user.settings.report == undefined ||group_user.settings.report == true){
-            person_valid_lists.push("activity")
-        }
-        if (group_user.settings.push_notificoatin == undefined || group_user.settings.push_notification == true){
-            pushOn = true
-        }
-        if (group_user.settings.real_time_email == undefined || group_user.settings.real_time_email == true){
-            DEBUG_ON && console.log('real_time_email----',group_user.settings.real_time_email)
-            emailOn = true
-        }
-    }else {
-        person_valid_lists.push("unknown");
-        person_valid_lists.push("activity");
-        pushOn = true;
-        emailOn = true;
-    }
-    DEBUG_ON && console.log('report emails: ',group_user.report_emails)
-    // var to = Meteor.users.findOne({_id:group_user.user_id});
-    // if (to && to.emails && to.emails[0]){
-        if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
-            for (i in timeItem.personLists){
-                    var person = timeItem.personLists[i]
-                    if ( person_valid_lists.includes(person.name)){
-                        needSend = true
-                    }else if(person.name == '陌生人'){
-                    if (person_valid_lists.includes('unknown')){
-                        needSend = true
-                    }
-                }
-            }
-        }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown' && person_valid_lists.includes('unknown')){
-            needSend = true
-        }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
-            needSend = true
-        }
-
-        if(needSend && emailOn){
-            return group_user.report_emails 
-        }
-    // }
-}
-function sendMessage(timeItem,group){
-    var EmailPersonName = ''
-    var MQTTPersonName = ''
-    var email_title
-    var EmailCompanyName = group.name
-    var show_type = ''
-    timeItem.personLists = []
-    if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
-        var faceId = timeItem["faceId"].split(",");
-            for (i in faceId){
-                if(!faceId[i]){
-                    continue;
-                }
-                var person = Person.findOne({faceId: faceId[i]})
-                if (person){
-                    var obj = {
-                      'name': person.name,
-                      'name_img_url':person.url,
-                      'faceId':faceId[i]
-                    };
-                    timeItem.personLists.push(obj)
-                }else{
-                    var obj = {
-                        'name': '陌生人',
-                        'name_img_url':'',
-                        'faceId':faceId[i]
-                      };
-                      timeItem.personLists.push(obj)
-                }
-            }
-    }
-    if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
-        for (k in timeItem.personLists){
-                var person = timeItem.personLists[k];
-                if ( person.name != '陌生人'){
-                    MQTTPersonName = '有人活动'
-                    var p = WorkAIUserRelations.findOne({'group_id':group._id,'person_name':person.name})
-                    if(p){
-                        if(show_type.length > 1){
-                            show_type = show_type+','+p._id;
-                        }else{
-                            show_type = p._id
-                        }         
-                    }    
-                }else {
-                    MQTTPersonName = '有陌生人活动'
-                    show_type = 'unknown'
-                }
-                if (EmailPersonName.length > 1){
-                    EmailPersonName = EmailPersonName + ',' + person.name
-                }else{
-                    EmailPersonName =  person.name
-                }
-        }
-    }else if (timeItem["faceId"] && timeItem["faceId"] == 'unknown'){
-        MQTTPersonName = '有陌生人活动'
-        EmailPersonName =  '有陌生人活动'
-        show_type = 'unknown'
-    }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity'){
-        MQTTPersonName = '有人活动'
-        EmailPersonName = '有人活动'
-        show_type = 'activity'
-    }
-    email_title = EmailCompanyName + ' AI发现' + EmailPersonName
-    var mqtt_title = 'AI发现' + MQTTPersonName
-    timeItem["email_title"] = email_title
-    send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],mqtt_title, group,show_type)
-
-    groupUsers = SimpleChat.GroupUsers.find({group_id:group._id,is_device:{$ne:true}}).fetch()
-    var ret_timeLists = []
-    timeItem["company_name"] = EmailCompanyName
-    timeItem["person_name"] = EmailPersonName
-    ret_timeLists.push(timeItem)
-    var to = [];
-    for(var i in groupUsers){
-        var address = sendEmailMessageByGroupUser(timeItem,groupUsers[i])
-        if(address){
-            to.push(address);
-        }
-    }
-    if(to.length == 0){
-        return;
-    }
-    var html = SSR.render("srvemailTemplateFast", {company_name:EmailCompanyName, person_name:EmailPersonName, timeLinelists:ret_timeLists});
-    var from = 'DeepEye<notify@email.tiegushi.com>';
-    DEBUG_ON && console.log('sending email to....', to.toString())
-    Email.send({
-        to: to.toString(),
-        from: from,
-        subject: email_title,
-        html: html
-    });
-}
