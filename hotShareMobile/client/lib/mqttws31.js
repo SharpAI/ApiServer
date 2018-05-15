@@ -768,7 +768,7 @@ var PahoMQTT = (function (global) {
 		if (!("ArrayBuffer" in global && global.ArrayBuffer !== null)) {
 			throw new Error(format(ERROR.UNSUPPORTED, ["ArrayBuffer"]));
 		}
-		this._trace("Paho.MQTT.Client", uri, host, port, path, clientId);
+		console.log("Paho.MQTT.Client", uri, host, port, path, clientId);
 
 		this.host = host;
 		this.port = port;
@@ -1112,6 +1112,7 @@ var PahoMQTT = (function (global) {
 			default:
 				throw Error(format(ERROR.INVALID_STORED_DATA, [key, storedMessage]));
 		}
+		console.log("localStorage saved", prefix+this._localKey+wireMessage.messageIdentifier, wireMessage.payloadMessage.payloadString)
 		localStorage.setItem(prefix+this._localKey+wireMessage.messageIdentifier, JSON.stringify(storedMessage));
 	};
 
@@ -1285,10 +1286,12 @@ var PahoMQTT = (function (global) {
 									
 						// If this is a re flow of a PUBREL after we have restarted receivedMessage will not exist.
 						if (receivedMessage) {
+							console.log("calling receivedMessage")
 							this._receiveMessage(receivedMessage);
 						}
-						
-					}
+					}	
+					console.log('LOOP end calling _receiveMessage' );
+					this._receivedMessages = {};
 				}
 				// Client connected and ready for business.
 				if (wireMessage.returnCode === 0) {
@@ -1512,9 +1515,16 @@ var PahoMQTT = (function (global) {
 
 	/** @ignore */
 	ClientImpl.prototype._receiveMessage = function (wireMessage) {
+		console.log("_receiveMessage")
 		if (this.onMessageArrived) {
 			var msgKey = "Received:"+this._localKey+wireMessage.messageIdentifier;
-			this.onMessageArrived(wireMessage.payloadMessage, msgKey);
+			var onMessageArrived = this.onMessageArrived
+			console.log("_receiveMessage ", msgKey)
+			
+			setTimeout(function(wireMessage, msgKey, onMessageArrived){
+				console.log("onMessageArrived ", msgKey)
+				onMessageArrived(wireMessage.payloadMessage, msgKey);	
+			}, 1, wireMessage, msgKey, onMessageArrived)
 		}
 	};
 

@@ -52,7 +52,7 @@ if(Meteor.isClient){
     initMQTT = function(clientId){
         if(!mqtt_connection){
             var pahoMqttOptions = {
-                timeout: 30,
+                timeout: 30, 
                 keepAliveInterval:60,
                 cleanSession: false,
                 onSuccess:onConnect,
@@ -97,22 +97,28 @@ if(Meteor.isClient){
                 setTimeout(function(){
                     console.log("sendMqttMessage /presence")
                     sendMqttMessage('/presence/'+Meteor.userId(),{online:true})
-                    if (unsendMessages.length > 0) {
-                        var unsendMsg;
-                        var fifo = unsendMessages.reverse();
-                        // Send all queued messages down socket connection
-                        console.log('onConnect: Send all unsendMessages message: '+unsendMessages.length);
-                        while ((unsendMsg = fifo.pop())) {
-                            var topic = unsendMsg.topic;
-                            var message = unsendMsg.message;
-                            var callback = unsendMsg.callback;
-                            var timeoutTimer = unsendMsg.timer;
-                            clearTimeout(timeoutTimer);
-                            timeoutTimer = null;
-                            sendMqttMessage(topic, message, callback);
-                            console.log('unsendMessages send message='+JSON.stringify(message));
-                        }
-                    }    
+                    // if (unsendMessages.length > 0) {
+                    //     var unsendMsg;
+                    //     var fifo = unsendMessages.reverse();
+                    //     // Send all queued messages down socket connection
+                    //     console.log('onConnect: Send all unsendMessages message: '+unsendMessages.length);
+                    //     var len = unsendMessages.length
+                    //     var i = 0;
+                    //     while ((unsendMsg = fifo.pop())) {
+                    //         var topic = unsendMsg.topic;
+                    //         var message = unsendMsg.message;
+                    //         var callback = unsendMsg.callback;
+                    //         var timeoutTimer = unsendMsg.timer;
+                    //         clearTimeout(timeoutTimer);
+                    //         timeoutTimer = null;
+                    //         sendMqttMessage(topic, message, callback);
+                    //         console.log('unsendMessages send message='+JSON.stringify(message));
+                    //         i++
+                    //         if (i >= len){
+                    //             break;
+                    //         }
+                    //     }
+                    // }    
                 }, 20*1000)
             };
             function onFailure(msg) {
