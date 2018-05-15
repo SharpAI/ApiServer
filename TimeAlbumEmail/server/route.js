@@ -1,3 +1,4 @@
+DEBUG_ON = false
 
 //declare a simple async function
 function fastEmailMessge(timeItem, group) {
@@ -107,14 +108,14 @@ function fastEmailMessge(timeItem, group) {
         
         timeItem["email_title"] = email_title
         if(needSend && emailOn){
-            console.log("Send Email ...", email_title)
+            DEBUG_ON && console.log("Send Email ...", email_title)
             var ret_timeLists = []
             timeItem["company_name"] = EmailCompanyName
             timeItem["person_name"] = EmailPersonName
             ret_timeLists.push(timeItem)
 
             var html = SSR.render("srvemailTemplateFast", {company_name:EmailCompanyName, person_name:EmailPersonName, timeLinelists:ret_timeLists});
-            console.log(group._id, group.report_emails);
+            DEBUG_ON && console.log(group._id, group.report_emails);
 
             var from = 'DeepEye<notify@email.tiegushi.com>';
             
@@ -199,6 +200,7 @@ function sendEmailMessageByGroupUser(timeItem,group_user){
         }
     }
 
+    DEBUG_ON && console.log('group_user_settings----',group_user.settings)
     //stranger valid
     if (group_user.settings){
         if (group_user.settings.notify_stranger == undefined || group_user.settings.notify_stranger == true){
@@ -207,10 +209,11 @@ function sendEmailMessageByGroupUser(timeItem,group_user){
         if (group_user.settings.report == undefined ||group_user.settings.report == true){
             person_valid_lists.push("activity")
         }
-        if (group_user.settings.push_notificoatin == undefined || group.settings.push_notification == true){
+        if (group_user.settings.push_notificoatin == undefined || group_user.settings.push_notification == true){
             pushOn = true
         }
-        if (group_user.settings.real_time_email == undefined || group.settings.real_time_email == true){
+        if (group_user.settings.real_time_email == undefined || group_user.settings.real_time_email == true){
+            DEBUG_ON && console.log('real_time_email----',group_user.settings.real_time_email)
             emailOn = true
         }
     }else {
@@ -219,6 +222,7 @@ function sendEmailMessageByGroupUser(timeItem,group_user){
         pushOn = true;
         emailOn = true;
     }
+    DEBUG_ON && console.log('report emails: ',group_user.report_emails)
     // var to = Meteor.users.findOne({_id:group_user.user_id});
     // if (to && to.emails && to.emails[0]){
         if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
@@ -237,6 +241,7 @@ function sendEmailMessageByGroupUser(timeItem,group_user){
         }else if (timeItem["faceId"] && timeItem["faceId"] == 'activity' && person_valid_lists.includes('activity')){
             needSend = true
         }
+
         if(needSend && emailOn){
             return group_user.report_emails 
         }
@@ -327,6 +332,7 @@ function sendMessage(timeItem,group){
     }
     var html = SSR.render("srvemailTemplateFast", {company_name:EmailCompanyName, person_name:EmailPersonName, timeLinelists:ret_timeLists});
     var from = 'DeepEye<notify@email.tiegushi.com>';
+    DEBUG_ON && console.log('sending email to....', to.toString())
     Email.send({
         to: to.toString(),
         from: from,
