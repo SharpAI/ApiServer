@@ -32,7 +32,20 @@ Template.groupUserHide.onRendered(function(){
 Template.groupUserHide.helpers({
   lists: function () {
     var group_id = Router.current().params._id;
-    return  WorkAIUserRelations.find({'group_id':group_id}).fetch();
+    var list = WorkAIUserRelations.find({'group_id':group_id}).fetch();
+    var groupUser = SimpleChat.GroupUsers.findOne({group_id:group_id,user_id:Meteor.userId()});
+    var arr = [];
+    if(groupUser.settings && groupUser.settings.not_notify_acquaintance){
+      arr = groupUser.settings.not_notify_acquaintance;
+    }
+    for(var i=0;i<list.length;i++){
+      if(arr.length == 0 || !_.contains(arr,list[i]._id)){
+        list[i].hide_it = false;
+      }else{
+        list[i].hide_it = true;
+      }
+    }
+    return list;
   },
   icon: function (){
     if(this.ai_in_image){
@@ -64,29 +77,27 @@ Template.groupUserHide.helpers({
   getConfig:function(type){
     var isShow = false, result = null;
     var group_id = Router.current().params._id;
-    var group = SimpleChat.Groups.findOne({_id:group_id});
-    if (group && group.settings) {
+     //个性化设置
+    var groupUser = SimpleChat.GroupUsers.findOne({group_id:group_id,user_id:Meteor.userId()});
+    if (groupUser && groupUser.settings) {
       switch(type){
         case 'push':
-          result = group.settings.push_notification;
+          result = groupUser.settings.push_notification;
           break;
         case 'stranger':
-          result = group.settings.notify_stranger;
+          result = groupUser.settings.notify_stranger;
           break;
         case 'email':
-          result = group.settings.real_time_email;
+          result = groupUser.settings.real_time_email;
           break;
         case 'report':
-          result = group.settings.report;
-          break;
-        case 'stranger':
-          result = group.settings.notify_stranger;
+          result = groupUser.settings.report;
           break;
         case 'other':
-          result = group.settings.other;
+          result = groupUser.settings.other;
           break;
         case 'gif':
-          result = group.settings.receive_gif;
+          result = groupUser.settings.receive_gif;
           break;
       }
     }
@@ -121,9 +132,10 @@ Template.groupUserHide.events({
   },
   'click .switch':function(e){
     var _id = e.currentTarget.id;
+    var user_id = Meteor.userId();
     if(_id == 'report_id'){
         var group_id = Router.current().params._id;
-        Meteor.call('update_group_settings', group_id, {'settings.report':!this.isShow});
+        Meteor.call('update_groupuser_settings', group_id,user_id,{'settings.report':!this.isShow});
         this.hide_it = !this.hide_it;
         this.isShow = !this.isShow;
         return;
@@ -131,7 +143,7 @@ Template.groupUserHide.events({
     if (_id == "stranger_id") {
         //localStorage.setItem('show_stranger_report', !this.hide_it);
         var group_id = Router.current().params._id;
-        Meteor.call('update_group_settings', group_id, {'settings.notify_stranger':!this.isShow});
+        Meteor.call('update_groupuser_settings', group_id, user_id,{'settings.notify_stranger':!this.isShow});
         this.hide_it = !this.hide_it;
         this.isShow = !this.isShow;
         console.log("Frank: this.hide_it="+JSON.stringify(this))
@@ -139,44 +151,51 @@ Template.groupUserHide.events({
     }
     if(_id == "push"){
       var group_id = Router.current().params._id;
-      Meteor.call('update_group_settings', group_id, {'settings.push_notification':!this.isShow});
+      Meteor.call('update_groupuser_settings', group_id, user_id,{'settings.push_notification':!this.isShow});
       this.hide_it = !this.hide_it;
       this.isShow = !this.isShow;
       return;
     }
     if(_id == "email"){
       var group_id = Router.current().params._id;
-      Meteor.call('update_group_settings', group_id, {'settings.real_time_email':!this.isShow});
+      Meteor.call('update_groupuser_settings', group_id, user_id,{'settings.real_time_email':!this.isShow});
       this.hide_it = !this.hide_it;
       this.isShow = !this.isShow;
       return;
     }
     if(_id == "other"){
       var group_id = Router.current().params._id;
-      Meteor.call('update_group_settings', group_id, {'settings.other':!this.isShow});
+      Meteor.call('update_groupuser_settings', group_id, user_id,{'settings.other':!this.isShow});
       this.hide_it = !this.hide_it;
       this.isShow = !this.isShow;
       return;
     }
     if(_id == "gif_id"){
       var group_id = Router.current().params._id;
-      Meteor.call('update_group_settings', group_id, {'settings.receive_gif':!this.isShow});
+      Meteor.call('update_groupuser_settings', group_id, user_id,{'settings.receive_gif':!this.isShow});
       this.hide_it = !this.hide_it;
       this.isShow = !this.isShow;
       return;
     }
     var isHide = this.hide_it;
+    this.hide_it = !isHide;
     var group_id = this.group_id;
     var person_name = this.person_name;
-    WorkAIUserRelations.update({_id: _id},{
-        $set: {hide_it: !isHide}
-      }, function(err, result){
-        // PUB.hideWaitLoading();
-        if(err){
-          return console.log(err);
-        }
-        Meteor.call('update_workai_hide_it', group_id, person_name, !isHide);
-      });
+    // WorkAIUserRelations.update({_id: _id},{
+    //     $set: {hide_it: !isHide}
+    //   }, function(err, result){
+    //     // PUB.hideWaitLoading();
+    //     if(err){
+    //       return console.log(err);
+    //     }
+    //     Meteor.call('update_workai_hide_it', group_id, person_name, !isHide);
+    //   });
+    Meteor.call('update_groupuser_settings_arr', group_id, user_id, _id, !isHide, function (err) {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    })
   },
   'click .btnShow': function(e){
     var _id = e.currentTarget.id;

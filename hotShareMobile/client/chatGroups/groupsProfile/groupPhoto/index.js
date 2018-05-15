@@ -586,6 +586,8 @@ Template.labelDatasetImg.helpers({
 
 Template.labelDatasetImg.events({
   'click li': function(e){
+    e.preventDefault();
+    e.stopPropagation();
     var id = this._id;
     var res = selected2.get();
     var index = res.indexOf(id);

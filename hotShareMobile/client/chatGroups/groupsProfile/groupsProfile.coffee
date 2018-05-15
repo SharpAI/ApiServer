@@ -556,9 +556,9 @@ if Meteor.isClient
     reportEmails: ()->
       emails = []
       groupId = Session.get 'groupsId'
-      group = SimpleChat.Groups.findOne({_id: groupId})
-      if group.report_emails
-        report_emails = group.report_emails
+      groupUser = SimpleChat.GroupUsers.findOne({group_id: groupId,user_id:Meteor.userId()})
+     if groupUser.report_emails
+       report_emails = groupUser.report_emails
         rmails = report_emails.split(',')
         for emailAddr in rmails
           emails.push({ reportEmailAddr: emailAddr })
@@ -576,22 +576,24 @@ if Meteor.isClient
         PUB.toast '无效邮箱地址!'
         return
       groupId = Session.get 'groupsId'
-      group = SimpleChat.Groups.findOne({_id: groupId})
-      if group.report_emails
+      user_id = Meteor.userId()
+      groupUser = SimpleChat.GroupUsers.findOne({group_id: groupId,user_id:user_id})
+      if groupUser.report_emails
         report_emails = group.report_emails + ',' + ss
       else
         report_emails = ss
 
-      Meteor.call('updateGroupReportEmails', groupId, report_emails)
+      Meteor.call('updateGroupUserReportEmails', groupId, user_id,report_emails)
 
       $(".inpEmail").val("")
     'click .deleEmaile':(event)->
       groupId = Session.get 'groupsId'
       newEmails = ''
       isFirst = true
-      group = SimpleChat.Groups.findOne({_id: groupId})
-      if group.report_emails
-        aMails = group.report_emails.split(',')
+      user_id = Meteor.userId()
+      groupUser = SimpleChat.GroupUsers.findOne({group_id: groupId,user_id:user_id})
+      if groupUser.report_emails
+        aMails = groupUser.report_emails.split(',')
         for em in aMails
           if em isnt this.reportEmailAddr
             if isFirst
@@ -599,4 +601,4 @@ if Meteor.isClient
               newEmails = newEmails + em
             else
               newEmails = newEmails + ',' + em
-      Meteor.call('updateGroupReportEmails', groupId, newEmails)
+      Meteor.call('updateGroupUserReportEmails', groupId, user_id,newEmails)

@@ -1637,6 +1637,29 @@ Meteor.methods({
         }
     });
   },
+  'update_groupuser_settings': function (group_id, user_id, settings) {
+    console.log("group_id=" + group_id + ", user_id=" + user_id + ", settings=" + JSON.stringify(settings))
+    if (!group_id || !settings || !user_id) {
+      console.log("update_groupuser_settings: group_id or settings or user_id is null.");
+      return;
+    }
+    SimpleChat.GroupUsers.update({ group_id: group_id, user_id: user_id }, { $set: settings }, function (err, result) {
+      if (err) {
+        console.log("update_groupuser_settings: update settings failed.");
+      }
+    });
+  },
+  'update_groupuser_settings_arr': function (group_id, user_id, workai_id, ishide) {
+    if (!group_id || !user_id || !workai_id) {
+      return;
+    }
+    //add
+    if (ishide) {
+      SimpleChat.GroupUsers.update({ group_id: group_id, user_id: user_id }, { $addToSet: { 'settings.not_notify_acquaintance': workai_id } })
+    } else {
+      SimpleChat.GroupUsers.update({ group_id: group_id, user_id: user_id }, { $pull: { 'settings.not_notify_acquaintance': workai_id } })
+    }
+  },
   'initLableDataSet':function(){
     LABLE_DADASET_Handle.initLableDataSet();
   },
