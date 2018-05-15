@@ -5,24 +5,29 @@
     <strong>收藏</strong>
   </div>
   <div class="content">
-    <ul class="collect-list">
-      {{#each collectList}}
-        {{> collectItem}}
-      {{/each}}
-    </ul>
+    {{> collectItemWrap}}
   </div>
 </div>
 
-<script>
-  $(function() {
-    console.log(touch);
-    touch.on('body', 'swipeup swipedown', function(ev){
-      $('.swiperElem').animate({left: '0px'},100);
-    });
-    touch.live('.collect-list', 'swipeup swipedown', '.swiperElem', function(ev){
-      $('.swiperElem').animate({left: '0px'},100);
-    });
-    touch.live('.collect-list', 'swipeleft swipeing', '.swiperElem', function(ev){
+
+</template>
+
+<template name="collectItemWrap">
+  <ul class="collect-list">
+    {{#each collectList}}
+      {{> collectItem}}
+    {{/each}}
+  </ul>
+
+  <script>
+    $(function() {
+      touch.on('body', 'swipeup swipedown', function(ev){
+        $('.swiperElem').animate({left: '0px'},100);
+      });
+      touch.live('.collect-list', 'swipeup swipedown', '.swiperElem', function(ev){
+        $('.swiperElem').animate({left: '0px'},100);
+      });
+      touch.live('.collect-list', 'swipeleft swipeing', '.swiperElem', function(ev){
         var x = ev.x;
         if(x < -40){
           x = -100;
@@ -32,13 +37,12 @@
         console.log($(ev.target))
         $(ev.target).parents('.swiperElem').animate({left: x+'px'},100);
       });
-      
-    touch.live('.collect-list', 'swiperight swipeing', '.swiperElem', function(ev){
-      $(ev.target).parents('.swiperElem').animate({left: '0px'},100);
+      touch.live('.collect-list', 'swiperight swipeing', '.swiperElem', function(ev){
+        $(ev.target).parents('.swiperElem').animate({left: '0px'},100);
+      });
     });
-});
   </script>
-</template>
+</template>  
 
 <template name="collectItem">
   <li class="swiperElem">

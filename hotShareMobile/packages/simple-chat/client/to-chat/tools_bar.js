@@ -25,9 +25,14 @@ Template.toolsBarDown.helpers({
 var handleEvents = function() {
   Template.toolsBarMenus.events({
     'click #collect': function(event) {
+      if (currentToolsBar.selectedItems.length === 0) {
+        PUB.toast('请选择要收藏的消息');
+        return;
+      }
       currentToolsBar.collect();
       currentToolsBar.hide();
       isMultipleChoice.set(false);
+      PUB.toast('已收藏');
     },
     'click #multipleChoice, click #cancelChoice': function(event) {
       if (this.key === 'cancelChoice' && isMultipleChoice.get()) {

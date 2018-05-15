@@ -1,12 +1,11 @@
 var limit = 10;
 var pageSize = 10;
 
-Template.collectList.helpers({
+Template.collectItemWrap.helpers({
   collectList: function () {
     var list = SimpleChat.CollectMessages.find({}, {sort: {collectDate: -1}, limit: limit}).fetch();
     return list;
-  },
-  
+  }
 });
 
 Template.collectItem.helpers({
@@ -69,8 +68,8 @@ var loadMore = function() {
     if (loadedCount !== limit) return;
     limit += pageSize;
     Meteor.subscribe('collectedMessages', {sort: {collectDate: -1}, limit: limit});
-    $('body').empty();
-    Blaze.render(Template.collectList, document.body);
+    $('.collect-page .content').empty();
+    Blaze.render(Template.collectItemWrap, $('.collect-page .content')[0]);
   }
 };
 
