@@ -312,6 +312,9 @@ if Meteor.isClient
       Meteor.subscribe('collectedMessages', {sort: {collectDate: -1}, limit: 10})
       this.render 'collectList'
       return
+    Router.route '/newLabel',()->
+      this.render 'newLabel'
+      return
 
     # Router.route '/posts/:_id', {
     #     waitOn: ->

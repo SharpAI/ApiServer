@@ -727,60 +727,60 @@ var setMsgList = function(where, action){
 };
 
 Template._simpleChatToChatItem.events({
-  'tap li img.swipebox': function(e){
-    var imgs = []
-    var index = 0;
-    var selected = 0;
-    var data = Blaze.getData($(e.currentTarget).attr('data-type') === 'images' ? $(e.currentTarget).parent().parent().parent()[0] : $('#'+this._id)[0]);
+  // 'tap li img.swipebox': function(e){
+  //   var imgs = []
+  //   var index = 0;
+  //   var selected = 0;
+  //   var data = Blaze.getData($(e.currentTarget).attr('data-type') === 'images' ? $(e.currentTarget).parent().parent().parent()[0] : $('#'+this._id)[0]);
 
-    console.log('data:', data);
-    // $('li#' + data._id + ' img.swipebox').each(function(){
-    //   imgs.push({
-    //     href: $(this).attr('src'),
-    //     title: ''
-    //   });
-    //   if($(e.currentTarget).attr('src') === $(this).attr('src'))
-    //     selected = index;
-    //   index += 1;
-    // });
-    if(data.images.length > 0){
-      for(var i=0;i<data.images.length;i++){
-        imgs.push({
-          href: data.images[i].url,
-          title: ''
-        });
-        if(data.images[i].url === $(e.currentTarget).attr('src'))
-          selected = i;
-      }
-    }
-    if(imgs.length > 0){
-      console.log('imgs:', imgs);
-      var labelView = null;
+  //   console.log('data:', data);
+  //   // $('li#' + data._id + ' img.swipebox').each(function(){
+  //   //   imgs.push({
+  //   //     href: $(this).attr('src'),
+  //   //     title: ''
+  //   //   });
+  //   //   if($(e.currentTarget).attr('src') === $(this).attr('src'))
+  //   //     selected = index;
+  //   //   index += 1;
+  //   // });
+  //   if(data.images.length > 0){
+  //     for(var i=0;i<data.images.length;i++){
+  //       imgs.push({
+  //         href: data.images[i].url,
+  //         title: ''
+  //       });
+  //       if(data.images[i].url === $(e.currentTarget).attr('src'))
+  //         selected = i;
+  //     }
+  //   }
+  //   if(imgs.length > 0){
+  //     console.log('imgs:', imgs);
+  //     var labelView = null;
 
-      $.swipebox(imgs, {
-        initialIndexOnArray: selected,
-        hideCloseButtonOnMobile : true,
-        loopAtEnd: false,
-        beforeOpen: function(){
-          if (data.people_id)
-            Session.set('SimpleChatToChatLabelImage', data.images[selected]);
-            labelView = Blaze.renderWithData(Template._simleChatToSwipeBox, data, document.body);
-        },
-        afterClose: function(){
-          if (data.people_id)
-            Blaze.remove(labelView);
-        },
-        indexChanged: function(index){
-          var data = Blaze.getData($('.simple-chat-swipe-box')[0]);
-          var $img = $('#swipebox-overlay .slide.current img');
+  //     $.swipebox(imgs, {
+  //       initialIndexOnArray: selected,
+  //       hideCloseButtonOnMobile : true,
+  //       loopAtEnd: false,
+  //       beforeOpen: function(){
+  //         if (data.people_id)
+  //           Session.set('SimpleChatToChatLabelImage', data.images[selected]);
+  //           labelView = Blaze.renderWithData(Template._simleChatToSwipeBox, data, document.body);
+  //       },
+  //       afterClose: function(){
+  //         if (data.people_id)
+  //           Blaze.remove(labelView);
+  //       },
+  //       indexChanged: function(index){
+  //         var data = Blaze.getData($('.simple-chat-swipe-box')[0]);
+  //         var $img = $('#swipebox-overlay .slide.current img');
 
-          console.log($img.attr('src'));
-          console.log(_.pluck(data.images, 'url'));
-          Session.set('SimpleChatToChatLabelImage', data.images[index]);
-        }
-      });
-    }
-  },
+  //         console.log($img.attr('src'));
+  //         console.log(_.pluck(data.images, 'url'));
+  //         Session.set('SimpleChatToChatLabelImage', data.images[index]);
+  //       }
+  //     });
+  //   }
+  // },
   'click .sendfiled':function(e){
     sendMqttMsg(this);
   },
@@ -1016,19 +1016,19 @@ Template._simpleChatToChatItem.events({
     // data.input_name_direct = true;
     Template._simpleChatLabelDevice.open(data);
   },
-  'touchstart .msg-content': function(event) {
-    var dataItem = this;
-    touchTimeout = Meteor.setTimeout(function() {
-      toolsBar = toolsBarFactory.createToolsBar(event.target);
-      toolsBar.init(event.target);
-      dataItem.checked = true;
-      toolsBar.addItem(dataItem);
-    }, 1000);
+  // 'touchstart .msg-content': function(event) {
+  //   var dataItem = this;
+  //   touchTimeout = Meteor.setTimeout(function() {
+  //     toolsBar = toolsBarFactory.createToolsBar(event.target);
+  //     toolsBar.init(event.target);
+  //     dataItem.checked = true;
+  //     toolsBar.addItem(dataItem);
+  //   }, 1000);
     
-  },
-  'touchend .msg-content': function(event) {
-    Meteor.clearTimeout(touchTimeout);
-  },
+  // },
+  // 'touchend .msg-content': function(event) {
+  //   Meteor.clearTimeout(touchTimeout);
+  // },
   'change input[name=msg-multiple-choice]': function(event) {
     this.checked = !this.checked;
     if (this.checked) {
@@ -1698,11 +1698,11 @@ Template._simpleChatToChat.events({
      setScrollToBottom();
      Session.set('newMsgCount',0);
   },
-  'tap .msg-box':function(e){
-    if (!isMultipleChoice.get()) {
-      toolsBar.hide();
-    }
-  }
+  // 'tap .msg-box':function(e){
+  //   if (!isMultipleChoice.get()) {
+  //     toolsBar.hide();
+  //   }
+  // }
 });
 
 var renderMoreButtonTimeout = null;
@@ -3109,3 +3109,69 @@ SimpleChat.onShowTipsMessages = function(need_show,type){
   Session.set('simple_chat_need_show_tips',need_show);
   Session.set('simple_chat_tips_type',type);
 };
+
+
+$(function() {
+  touch.on('body', 'tap', '.msg-box', function(ev){
+    console.log('feww');
+    if (!isMultipleChoice.get() && toolsBar) {
+      toolsBar.hide();
+    }
+  });
+
+  touch.on('body', 'tap', 'li img.swipebox', function(e){
+   var imgs = []
+    var index = 0;
+    var selected = 0;
+    console.log(e.target);
+    var data = Blaze.getData($(e.target).attr('data-type') === 'images' ? $(e.target).parent().parent().parent()[0] : $('#'+this._id)[0]);
+
+    console.log('data:', data);
+    if(data.images.length > 0){
+      for(var i=0;i<data.images.length;i++){
+        imgs.push({
+          href: data.images[i].url,
+          title: ''
+        });
+        if(data.images[i].url === $(e.target).attr('src'))
+          selected = i;
+      }
+    }
+    if(imgs.length > 0){
+      console.log('imgs:', imgs);
+      var labelView = null;
+
+      $.swipebox(imgs, {
+        initialIndexOnArray: selected,
+        hideCloseButtonOnMobile : true,
+        loopAtEnd: false,
+        beforeOpen: function(){
+          if (data.people_id)
+            Session.set('SimpleChatToChatLabelImage', data.images[selected]);
+            labelView = Blaze.renderWithData(Template._simleChatToSwipeBox, data, document.body);
+        },
+        afterClose: function(){
+          if (data.people_id)
+            Blaze.remove(labelView);
+        },
+        indexChanged: function(index){
+          var data = Blaze.getData($('.simple-chat-swipe-box')[0]);
+          var $img = $('#swipebox-overlay .slide.current img');
+
+          console.log($img.attr('src'));
+          console.log(_.pluck(data.images, 'url'));
+          Session.set('SimpleChatToChatLabelImage', data.images[index]);
+        }
+      });
+    }
+  });
+
+  touch.on('body', 'hold', '.msg-content', function(event){
+    var dataItem = Blaze.getData($(event.target).parent()[0]);
+    toolsBar = toolsBarFactory.createToolsBar(event.target);
+    toolsBar.init(event.target);
+    dataItem.checked = true;
+    toolsBar.addItem(dataItem);
+  });
+  
+});
