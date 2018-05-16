@@ -291,7 +291,7 @@
             border: none;
             background: green;
           }
-          input[type=checkbox]:checked + :after {
+          input[type=checkbox]:checked + .custom-checkbox-innerIcon:after {
             display: block;
           }
         }
@@ -306,6 +306,7 @@
         }
         .custom-checkbox-innerIcon:after {
           content: '';
+          display: none;
           width: 10px;
           height: 6px;
           border-left: 1px solid #fff;

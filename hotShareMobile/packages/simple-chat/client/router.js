@@ -727,7 +727,7 @@ var setMsgList = function(where, action){
 };
 
 Template._simpleChatToChatItem.events({
-  'click li img.swipebox': function(e){
+  'tap li img.swipebox': function(e){
     var imgs = []
     var index = 0;
     var selected = 0;
@@ -1698,7 +1698,7 @@ Template._simpleChatToChat.events({
      setScrollToBottom();
      Session.set('newMsgCount',0);
   },
-  'click .msg-box':function(e){
+  'tap .msg-box':function(e){
     if (!isMultipleChoice.get()) {
       toolsBar.hide();
     }
