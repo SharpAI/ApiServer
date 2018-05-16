@@ -13,5 +13,15 @@ Meteor.methods({
         var user = Meteor.users.findOne({username:uuid});
         SimpleChat.GroupUsers.update({group_id:groupId,user_id:user._id},{$set:{user_name:newName}});
         return;
+    },
+    //删除设备
+    delete_device:function(deviceId,uuid,groupId){
+        //1.从device里删除
+        Devices.remove({_id:deviceId});
+        //2.从GroupUsers里删除
+        var user = Meteor.users.findOne({username:uuid});
+        SimpleChat.GroupUsers.remove({group_id:groupId,user_id:user._id});
+        //3.从users里移除
+        Meteor.users.remove({username:uuid});
     }
 })

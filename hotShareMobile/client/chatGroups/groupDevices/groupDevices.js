@@ -12,6 +12,47 @@ Template.groupDevices.helpers({
 
 
 Template.groupDevices.events({
+  'click label':function(e){
+    var self = this;
+    var td = $(e.currentTarget);
+    var text = $(e.currentTarget).text();
+    var input = $('<input type="text" class="edit" value="'+text+'">');
+    $(e.currentTarget).html(input);
+    $('input').click(function(){
+      return false;
+    }); //阻止表单默认点击行为
+    var len = text.length;
+    // $('input').setSelectionRange(len,len);
+    $('input').select();
+    $('input').blur(function(event){
+      var nextxt=$(event.currentTarget).val();
+      if(nextxt == ''||nextxt == self.name){
+        nextxt = self.name;
+      }else{
+        Meteor.call('change_device_name',self._id,self.uuid,self.groupId,nextxt,function(err){
+          if(err){
+            console.log(err);
+            PUB.toast('修改失败，请重试');
+            td.html(self.name);
+          }
+        }) 
+      }
+      td.html(nextxt);
+    }); //表单失去焦点文本框变成文本
+  },
+  'click .delBtnContent':function(e){
+    var uuid = $(e.currentTarget).data('uuid');
+    var id = e.currentTarget.id;
+    var group_id = Router.current().params._id;
+    //删除设备
+    Meteor.call('delete_device',id,uuid,group_id,function(err){
+      if(err){
+        console.log(err);
+        return;
+      }
+      PUB.toast('删除成功');
+    })
+  },
   'click .back': function(){
     return PUB.back();
   },
