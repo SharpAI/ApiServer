@@ -2090,8 +2090,8 @@ var clearMsgForGroundDB = function(){
         if (myGroup) {
           myGroup.forEach(function(item){
             var msg = MessagesHis.find({'to.id': item.group_id}).fetch();
-            if (msg && msg.length > 100) {
-              for (var i = 0; i < msg.length - 100; i++) {
+            if (msg && msg.length > 500) {
+              for (var i = 0; i < msg.length - 500; i++) {
                 MessagesHis.remove({_id:msg[i]._id});
               }
             }
@@ -2127,7 +2127,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
-      localStorage.removeItem(msgKey); 
+      localforage.removeItem(msgKey); 
     }
   }
   
@@ -2335,7 +2335,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
   //   if (!err)
   //     updateNewMessage(msgObj.to.id);
   // });
-  // clearMoreOldMessage();
+  clearMoreOldMessage();
 };
 
 var shouldScrollToBottom = function(msg){
@@ -2369,7 +2369,7 @@ var onMqttMessage = function(topic, msg, msgKey) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
-      localStorage.removeItem(msgKey); 
+      localforage.removeItem(msgKey); 
     }
   }
   
@@ -2690,7 +2690,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
-      localStorage.removeItem(msgKey); 
+      localforage.removeItem(msgKey); 
     }
   }
   if (!topic.startsWith('/msg/l/')){
