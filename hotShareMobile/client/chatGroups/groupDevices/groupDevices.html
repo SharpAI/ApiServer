@@ -31,6 +31,7 @@
     {{#each lists}}
       {{#if uuid}}
       <li id="" class="deviceItem swiperElem" style="height:60px;padding:10px 0;position:relative">
+        <div>
           <!-- <span class="goEdit"> -->
           <img class="usericon" src="/device.png" width="40" height="40" style="border-radius:4px;">
           {{#if name}}
@@ -41,6 +42,7 @@
           <!-- </span> -->
           <div id="{{uuid}}" class="value goTimelime" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
           <div id="{{_id}}" class="delBtnContent" data-uuid="{{uuid}}">删除</div>
+        </div>
       </li>
       {{/if}}
     {{/each}}
