@@ -9,12 +9,6 @@ Template.collectItemWrap.helpers({
 });
 
 Template.collectItem.helpers({
-  isImage: function(type) {
-    return type === 'image';
-  },
-  isMotion: function() {
-    return this.event_type === 'motion';
-  },
   name: function() {
     if (this.form.id !== Meteor.userId) {
       return this.form.name;
@@ -45,7 +39,8 @@ Template.collectItem.events({
   'click img.swipebox': function(e) {
     var initialIndex;
     var parentItemData = Blaze.getData(Template.collectItem.view);
-    var images = parentItemData.images.map(function(item, index) {
+    var originImages = parentItemData.images || [{url: parentItemData.url}];
+    var images = originImages.map(function(item, index) {
       if (item.url === e.target.src) {
         initialIndex = index;
       }

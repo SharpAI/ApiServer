@@ -47,20 +47,12 @@
 <template name="collectItem">
   <li class="swiperElem">
     <div class="item-content">
-      {{#if isImage type}}
+        {{#if text}}
+          <p>{{{text}}}</p>
+        {{/if}}
         {{#each images}}
           <img class="swipebox" src="{{url}}">
         {{/each}}
-      {{else}}
-        {{#if isMotion}}
-          <p>{{{text}}}</p>
-          {{#each images}}
-            <img class="swipebox" src="{{url}}">
-          {{/each}}
-        {{else}}
-          {{{text}}}
-        {{/if}}
-      {{/if}}
     </div>
     <p class="item-summary">
       <span>{{name}}</span>

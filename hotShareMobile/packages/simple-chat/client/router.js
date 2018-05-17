@@ -3167,7 +3167,7 @@ $(function() {
   });
 
   touch.on('body', 'hold', '.msg-content', function(event){
-    var dataItem = Blaze.getData($(event.target).parent()[0]);
+    var dataItem = Blaze.getData($(event.target).parents('li:first')[0]);
     toolsBar = toolsBarFactory.createToolsBar(event.target);
     toolsBar.init(event.target);
     dataItem.checked = true;
