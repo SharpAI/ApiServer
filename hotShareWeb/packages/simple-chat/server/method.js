@@ -148,7 +148,7 @@ Set_perf_link = function(group_id,perf_info){
       console.log("companyId is: " + companyId)
       Groups.update({_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}});
       GroupUsers.update({group_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}}, {multi: true});
-      AI_system_register_devices(group_id,null);
+      //AI_system_register_devices(group_id,null);
   }
 }
 
@@ -330,7 +330,7 @@ Meteor.methods({
           });
         }
       }
-      AI_system_register_company(id,user._id);
+      //AI_system_register_company(id,user._id);
     });
     return id;
   },
@@ -488,7 +488,7 @@ Meteor.methods({
   },
   'ai-system-register-devices':function(group_id,uuid){
     console.log("AI_system_register_devices group_id= " + group_id+'& uuid='+uuid)
-    AI_system_register_devices(group_id,uuid);
+    //AI_system_register_devices(group_id,uuid);
     return 'succ';
   },
   'ai-checkin-out':function(data){

@@ -335,7 +335,7 @@ if Meteor.isClient
       if perf_url is null
           console.log "perf url is null, browser: " + perf_url
           perf_url = 'http://aixd.raidcdn.cn/reporter/f5ZocsFpQn9CApmy8'
-      cordova.InAppBrowser.open(perf_url, '_system')
+      #cordova.InAppBrowser.open(perf_url, '_system')
     'click .emptyMessages':(event)->
       PUB.confirm('确定要清空训练记录吗？',()->
         type = Session.get('groupsType')

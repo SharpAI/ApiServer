@@ -79,7 +79,7 @@ if (Meteor.isServer){
       }
 
       // TODO通知WEB
-      if (doc.params && doc.params.person_info){
+      /*if (doc.params && doc.params.person_info){
         var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/rmout';
         //var ai_system_url = process.env.AI_SYSTEM_URL || 'http://192.168.0.121:3030/restapi/rmout';
         doc.params.person_info.fromWorkai = true;
@@ -90,7 +90,7 @@ if (Meteor.isServer){
             return console.log("post person info to aixd.raidcdn failed " + error);
           }
         });
-      }
+      }*/
       return true;
     }
   });

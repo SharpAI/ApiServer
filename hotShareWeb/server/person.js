@@ -258,7 +258,7 @@ PERSON = {
     personInfo.in_out = groupDevice.in_out;
     Activity.insert(personInfo);
 
-    var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
+    /*var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
     personInfo.fromWorkai = true;
     HTTP.call('POST', ai_system_url, {
       data: personInfo, timeout: 5*1000
@@ -266,7 +266,7 @@ PERSON = {
       if (error) {
         return console.log("post person info to aixd.raidcdn failed " + error);
       }
-    });
+    });*/
   },
   checkIsToday:function(checktime,group_id){
     var isToday = true;
