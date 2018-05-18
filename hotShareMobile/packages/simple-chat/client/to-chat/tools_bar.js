@@ -91,7 +91,10 @@ var toolsBarBase = {
   },
   collect: function() {
     this.selectedItems.forEach(function(item) {
-      if (CollectMessages.findOne({_id: item._id})) return;
+      if (CollectMessages.findOne({_id: item._id})) {
+        CollectMessages.update({_id: item._id}, {$set: {collectDate: new Date()}});
+        return;
+      }
       item.collectDate = new Date();
       CollectMessages.insert(item);
     });
