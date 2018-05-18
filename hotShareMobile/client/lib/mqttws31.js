@@ -1372,54 +1372,6 @@ var PahoMQTT = (function (global) {
 					this._receivedMessages = {};
 				}else {
 
-					function getLocalStorageMaxSize(error) {
-					  if (localStorage) {
-					    var max = 10 * 1024 * 1024,
-					        i = 64,
-					        string1024 = '',
-					        string = '',
-					        // generate a random key
-					        testKey = 'size-test-' + Math.random().toString(),
-					        minimalFound = 0,
-					        error = error || 25e4;
-					
-					    // fill a string with 1024 symbols / bytes    
-					    while (i--) string1024 += 1e16;
-					
-					    i = max / 1024;
-					
-					    // fill a string with 'max' amount of symbols / bytes    
-					    while (i--) string += string1024;
-					
-					    i = max;
-					
-					    // binary search implementation
-					    while (i > 1) {
-					      try {
-					        localStorage.setItem(testKey, string.substr(0, i));
-					        localStorage.removeItem(testKey);
-					
-					        if (minimalFound < i - error) {
-					          minimalFound = i;
-					          i = i * 1.5;
-					        }
-					        else break;
-					      } catch (e) {
-					        localStorage.removeItem(testKey);
-					        i = minimalFound + (i - minimalFound) / 2;
-					      }
-					    }
-					
-					    return minimalFound;
-					  }
-					}
-					maxSize = getLocalStorageMaxSize()
-					console.log("#1 getLocalStorageMaxSize", maxSize)
-					//if (maxSize == 0){
-					//	console.log("clean MessageHis")
-					//	localStorage.removeItem("_storage.simple_chat_messagesHis.db.data")
-					//}
-
 					console.log('LOOP begin clean _sentMessages' );
 					for (var key in this._sentMessages) {
 						console.log('LOOP calling _sentMessages', key);
