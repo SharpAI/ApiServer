@@ -4,7 +4,9 @@
       <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
       <p class="head-text">新人观察</p>
       <div class="newLabel-head-right">
-        <div class="no-person-btn"></div>
+        {{#if showNoPersonBtn}}
+          <div class="no-person-btn">无法识别的物体</div>
+        {{/if}}
         <div class="right-handle-btn"></div>
       </div>
     </div>

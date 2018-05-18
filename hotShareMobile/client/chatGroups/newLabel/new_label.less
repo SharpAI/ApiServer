@@ -9,19 +9,38 @@
     display: flex;
     align-items: center;
     height: 60px;
+    position: fixed;
+    width: 100%;
     .leftButton {
       width: 40px;
+      font-size: 32px;
     }
     .head-text {
       flex: 1;
       text-align: center;
       margin-bottom: 0;
+      font-size: 16px;
+    }
+    .newLabel-head-right {
+      position: relative;
+      margin-right: 15px;
     }
     .right-handle-btn {
       width: 23px;
       height: 6px;
       background: url(icon/icon-head-handle.png) no-repeat;
       background-size: contain;
+    }
+    .no-person-btn {
+      position: absolute;
+      width: 130px;
+      text-align: center;
+      right: 0;
+      top: -14px;
+      background: #fff;
+      border-radius: 4px;
+      padding: 6px 5px;
+      color: #333;
     }
   }
   .content {
