@@ -14,9 +14,14 @@
         top: 0px;
     }
     .edit{
-        height: 30px;
-        line-height: 30px;
+        /* height: 30px; */
+        /* line-height: 30px; */
         color:red;
+        padding-left: 10px;
+        padding-right: 10px
+    }
+    .name{
+        margin-left: 10px;
     }
 </style>
   <div class="head">
@@ -34,11 +39,21 @@
         <div>
           <!-- <span class="goEdit"> -->
           <img class="usericon" src="/device.png" width="40" height="40" style="border-radius:4px;">
-          {{#if name}}
-          <label style="margin-left:48px;">{{name}}</label>
-          {{else}}
-          <label style="margin-left:48px;">未知设备</label>
-          {{/if}}
+          <!-- {{#if isEditing uuid}} -->
+            <!-- {{#if name}}
+            <input class="edit" value="{{name}}">
+            {{else}}
+            <input class="edit" value="未知设备">
+            {{/if}} -->
+          <!-- {{else}} -->
+            {{#if name}}
+            <span class="name" style="{{isShow uuid 1}}">{{name}}</span>
+            <input class="edit" id="{{getId uuid}}" style="{{isShow uuid 2}}" value="{{name}}">
+            {{else}}
+            <span class="name" style="{{isShow uuid 1}}">未知设备</span>
+            <input class="edit" id="{{getId uuid}}" style="{{isShow uuid 2}}" value="未知设备">
+            {{/if}}
+          <!-- {{/if}} -->
           <!-- </span> -->
           <div id="{{uuid}}" class="value goTimelime" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
           <div id="{{_id}}" class="delBtnContent" data-uuid="{{uuid}}">删除</div>
