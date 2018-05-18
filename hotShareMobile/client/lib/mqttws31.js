@@ -821,6 +821,7 @@ var PahoMQTT = (function (global) {
 				this.restore(key);
 			}
 		}
+		this._restore_once = false
 	};
 
 	// Messaging Client public instance members.
@@ -1444,23 +1445,26 @@ var PahoMQTT = (function (global) {
 					console.log('LOOP end calling _receiveMessage' );
 					this._receivedMessages = {};
 					
-					var that = this
-					localforage.keys().then(function(keys) {
-					    // An array of all the key names.
-					    console.log(keys);
-					    for (var i in keys){
-					    	var keyName = keys[i]
-					    	
-					    	if (keyName.indexOf("Received:"+that._localKey) === 0){
-								localforage.getItem(keyName).then(function (value) {
-									that.restore2(value);
-								})
+					if (!this._restore_once){
+						this._restore_once = true
+						var that = this
+						localforage.keys().then(function(keys) {
+						    // An array of all the key names.
+						    console.log(keys);
+						    for (var i in keys){
+						    	var keyName = keys[i]
+						    	
+						    	if (keyName.indexOf("Received:"+that._localKey) === 0){
+									localforage.getItem(keyName).then(function (value) {
+										that.restore2(value);
+									})
+								}
 							}
-						}
-					}).catch(function(err) {
-					    // This code runs if there were any errors
-					    console.log(err);
-					});
+						}).catch(function(err) {
+						    // This code runs if there were any errors
+						    console.log(err);
+						});
+					}
 				}
 				// Client connected and ready for business.
 				if (wireMessage.returnCode === 0) {
