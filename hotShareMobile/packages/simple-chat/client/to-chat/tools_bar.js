@@ -135,7 +135,10 @@ var msgUpToolsBar = $.extend({},toolsBarBase, {
   getTargetTop: function(srcElement) {
     var srcOffsetTop = $(srcElement).offset().top;
     var toolsBarHeight = this.toolsBar.height();
-    var targetTop = srcOffsetTop + toolsBarHeight;
+    var srcollTop = document.documentElement.scrollTop;
+    var headerHeight = $('.header').height();
+    // var targetTop = srcOffsetTop + toolsBarHeight;
+    var targetTop = srcollTop + headerHeight + toolsBarHeight;
     return targetTop;
   }
 });
