@@ -2,6 +2,7 @@ Devices = new Meteor.Collection('devices');
 
 send_motion_mqtt_msg = function(url, uuid, text, group,show_type) {
   console.log("url:", url)
+  console.log('show_type:',show_type);
   var device, user, userGroups;
   device = Devices.findOne({
     uuid: uuid

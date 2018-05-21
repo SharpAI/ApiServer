@@ -168,7 +168,8 @@ Router.route( "timelines/add", function() {
     fields["time"] = localDate.toLocaleString()
     fields["ZeroTimestamp"] = localZeroDateTimestamp
 
-    fastEmailMessge(fields, group);
+    // fastEmailMessge(fields, group);
+    sendMessage(fields,group);
 
     //console.log("group", group)
     //console.log("fields", fields)
@@ -309,6 +310,7 @@ function sendMessage(timeItem,group){
         EmailPersonName = '有人活动'
         show_type = 'activity'
     }
+    console.log('===>',show_type);
     email_title = EmailCompanyName + ' AI发现' + EmailPersonName
     var mqtt_title = 'AI发现' + MQTTPersonName
     timeItem["email_title"] = email_title

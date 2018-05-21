@@ -2162,17 +2162,21 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     if (groupUser.settings && groupUser.settings.push_notification === false) {
       if (msgObj.event_type == 'motion') {
         rmMsgKey(msgKey, '#3000');
+        return;
       }
     } else {
       if (msgObj.event_type == 'motion') {
         if (msgObj.show_type == 'unknown' && groupUser.settings && groupUser.settings.notify_stranger === false) {
           rmMsgKey(msgKey, '#3010');
+          return;
         } else if (msgObj.show_type == 'activity' && groupUser.settings && groupUser.settings.report === false) {
           rmMsgKey(msgKey, '#3020');
+          return;
         } else {
           var shurenArr = msgObj.show_type.split(',');
           if (groupUser.settings && groupUser.settings.not_notify_acquaintance && _.contains(groupUser.settings.not_notify_acquaintance, shurenArr[0])) {
             rmMsgKey(msgKey, '#3030');
+            return;
           }
         }
       }
