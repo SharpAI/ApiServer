@@ -52,6 +52,14 @@ Template._simpleChatToChat.helpers({
           return;
         }
       }  
+      if (toolsBar && toolsBar.selectedItems.length > 0) {
+        for (var i = 0, len = toolsBar.selectedItems.length; i < len; i++) {
+          if (toolsBar.selectedItems[i]._id === doc._id) {
+            doc.checked = true;
+            break;
+          }
+        }
+      }
       res.splice(0, 0, doc);
     });
     if(page_data.type != 'group')
@@ -3135,7 +3143,6 @@ SimpleChat.onShowTipsMessages = function(need_show,type){
 
 $(function() {
   touch.on('body', 'tap', '.msg-box', function(ev){
-    console.log('feww');
     if (!isMultipleChoice.get() && toolsBar) {
       toolsBar.hide();
     }
