@@ -84,6 +84,7 @@ Template.deviceDashboard.onRendered(function () {
     onClick: function(s){
       var index = s.clickedIndex;
       var _curTime = dateList.get()[index];
+      isLoading.set(true);
       Meteor.subscribe('WorkStatusByGroup',_curTime.utc, group_id,{
         onReady:function(){
          isLoading.set(false);
