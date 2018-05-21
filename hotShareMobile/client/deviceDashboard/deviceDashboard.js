@@ -10,6 +10,23 @@ var theCurrentDay = new ReactiveVar(null);
 var theDisplayDay = new ReactiveVar(null);
 var popObj = new ReactiveVar({});
 var isLoading = new ReactiveVar(false);
+var dateList = new ReactiveVar([]);
+var curTime = new ReactiveVar(null);
+ //前7天加入dateList
+var _dateList = [];
+for(var i=7;i>-1;i--){
+   var t = moment().subtract(i, 'day');
+   var weekStr = t.format('ddd');
+   var d = t.format('MM/DD');
+   var utc = Date.UTC(t.year(),t.month(),t.date(),0,0,0,0);
+   _dateList.push({
+     week:weekStr,
+     date:d,
+     utc:utc,
+     id:(7-i)+'date'
+   })
+ }
+ dateList.set(_dateList);
 var parseDate = function(currentDay){
   //var today = new Date(Session.get('today'));
   var year = currentDay.getFullYear();
@@ -54,15 +71,37 @@ var parseDate = function(currentDay){
   return date;
 };
 Template.deviceDashboard.onRendered(function () {
+  var group_id = Router.current().params.group_id;
   isOut.set(false);
   isLoading.set(true);
   var now = new Date();
+  var swiper = new Swiper('#slideDate',{
+    slidesPerView :'auto',
+    resistanceRatio : 0,
+    onInit: function(s){
+      //Swiper初始化了
+    },
+    onClick: function(s){
+      var index = s.clickedIndex;
+      var _curTime = dateList.get()[index];
+      isLoading.set(true);
+      Meteor.subscribe('WorkStatusByGroup',_curTime.utc, group_id,{
+        onReady:function(){
+         isLoading.set(false);
+       }
+      });
+      // alert(s.clickedIndex);
+      $('#'+curTime.get().id).removeClass('selected');
+      curTime.set(_curTime);
+      $('#'+_curTime.id).addClass('selected');
+    }
+  });
+  swiper.slideTo(7,0,false);
+  curTime.set(dateList.get()[7]);
+  $('#'+curTime.get().id).addClass('selected');
   var _today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
       0, 0, 0, 0);
-
-  var group_id = Router.current().params.group_id;
-
   date.set(_date); //UTC日期
   today.set(_today);
   theDisplayDay.set(_today); // 当前显示日期
@@ -78,11 +117,11 @@ Template.deviceDashboard.onRendered(function () {
       }
     }
   });
-  Meteor.subscribe('WorkStatusByGroup',date.get(), group_id,{
+  Meteor.subscribe('WorkStatusByGroup',curTime.get().utc, group_id,{
      onReady:function(){
       isLoading.set(false);
       var checkin_names = ckeckInNames.get();
-      WorkStatus.find({group_id: group_id, date: date.get()}).forEach(function(item) {
+      WorkStatus.find({group_id: group_id, date: curTime.get().utc}).forEach(function(item) {
         if(!item.in_time && !item.out_time) {
           checkin_names.push(item.person_name);
         }
@@ -104,6 +143,9 @@ Template.deviceDashboard.onRendered(function () {
 });
 
 Template.deviceDashboard.helpers({
+  dateList:function(){
+    return dateList.get();
+  },
   showHint:function(){
     return Session.get('showHint');
   },
@@ -137,7 +179,7 @@ Template.deviceDashboard.helpers({
     // today.set(_today);
 
     var lists = [];
-    WorkStatus.find({group_id: group_id, date: theCurrentDay.get()}).forEach( function (item) {
+    WorkStatus.find({group_id: group_id, date:curTime.get().utc}).forEach( function (item) {
       if (item.in_time || item.out_time) {
         lists.push(item);
       }
@@ -162,7 +204,7 @@ Template.deviceDashboard.helpers({
     var group_id = Router.current().params.group_id;
 
     var lists = [];
-    WorkStatus.find({group_id: group_id, date: theCurrentDay.get()}).forEach( function (item) {
+    WorkStatus.find({group_id: group_id, date:curTime.get().utc}).forEach( function (item) {
       if (item.in_time || item.out_time) {
         lists.push(item.person_name);
       }

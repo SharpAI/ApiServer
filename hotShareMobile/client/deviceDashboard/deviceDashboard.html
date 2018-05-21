@@ -9,7 +9,7 @@
     <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
     <div class="rightButton" style="padding-top:0;"><i class="fa fa-exchange fa-fw" style="font-size:20px;"></i></div>
   </div>
-  <div class="date-head">
+  <div class="date-head" style="display:none">
       <p class="time">{{day_title}}</p>
       <ul class="navigation">
         {{#if has_day_before}}
@@ -19,6 +19,17 @@
         <li class="nextDay"><i class="fa fa-angle-right" aria-hidden="true"></i></li>
         {{/if}}
       </ul>
+  </div>
+  <div class="swiper-container date-head" id="slideDate" style="padding:0px;background-color:#4682B4;">
+    <ul class="swiper-wrapper">
+    {{#each dateList}}
+      <li id="{{id}}" class="swiper-slide" style="flex-direction:column">
+        <div>{{date}}</div>
+        <div>{{week}}</div>
+        <!-- <div>10/20</div> -->
+      </li>
+    {{/each}}
+    </ul>
   </div>
   {{#if zeroLists}}
   <div style="font-size:16px;text-align:center;padding:50px;"><a style="color:rgb(0, 119, 255);" id="zeroLists">暂无考勤记录</a></div>

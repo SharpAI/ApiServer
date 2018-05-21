@@ -1,7 +1,22 @@
 <template name="workStatusPopPage">
 {{> _checkGroupDevice}}
 <div class="workStatusPopPage">
-  <div class="workStatusHead">
+  <div class="head">
+      <strong style="width: 100%;">{{name}}</strong>
+      <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+  </div>
+  <div class="swiper-container date-head" id="slideDate2" style="padding:0px;background-color:#4682B4;width:auto;height:auto">
+      <ul class="swiper-wrapper">
+      {{#each dateList}}
+        <li id="{{id}}" class="swiper-slide" style="flex-direction:column">
+          <div>{{date}}</div>
+          <div>{{week}}</div>
+          <!-- <div>10/20</div> -->
+        </li>
+      {{/each}}
+      </ul>
+    </div>
+  <div class="workStatusHead" style="display:none">
     <!--<div class="imgHelper">
       <img src="/img/default-company-logo.png"/>
     </div>-->
@@ -16,7 +31,7 @@
       {{/if}}
     </ul>
   </div>
-  <div class="swichToCluster" align="right" style="color:blue; padding-right:20px;">
+  <div class="swichToCluster" align="right" style="color:blue; padding-right:20px;padding-top:5px">
     <button id="switch" type="button">查看未标注的人</button>
     {{#if _checkGroupDevice_status}}
     {{/if}}
@@ -77,7 +92,7 @@
     <div class="noData"><img src="/img/company-nodata.png"/><p>暂无数据</p></div>
     {{/if}}
   {{/if}}
-  <div id="closeStausPop"><i class="fa fa-close fa-fw"></i></div>
+  <!-- <div id="closeStausPop"><i class="fa fa-close fa-fw"></i></div> -->
 
     <!-- Modal EditWhatUp Start -->
   <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

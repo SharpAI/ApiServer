@@ -9,6 +9,24 @@ var today = new ReactiveVar(null);
 var todayUTC = new ReactiveVar(null);
 
 var whatsup = new ReactiveVar({});
+var dateList = new ReactiveVar([]);
+var curTime = new ReactiveVar(null);
+ //前7天加入dateList
+var _dateList = [];
+for(var i=7;i>-1;i--){
+   var t = moment().subtract(i, 'day');
+   var weekStr = t.format('ddd');
+   var d = t.format('MM/DD');
+   var utc = Date.UTC(t.year(),t.month(),t.date(),0,0,0,0);
+   _dateList.push({
+     t:t,
+     week:weekStr,
+     date:d,
+     utc:utc,
+     id:(7-i)+'date'
+   })
+ }
+dateList.set(_dateList);
 workStatusPopPage = {
   show: function(template, showClose){
     workStatusPopPage.close();
@@ -112,6 +130,30 @@ Template.workStatusPopPage.onRendered(function(){
   group.set(data);
 
   var now = new Date();
+  var swiper = new Swiper('#slideDate2',{
+    slidesPerView :'auto',
+    resistanceRatio : 0,
+    onInit: function(s){
+      //Swiper初始化了
+    },
+    onClick: function(s){
+      var index = s.clickedIndex;
+      var _curTime = dateList.get()[index];
+      isLoading.set(true);
+      Meteor.subscribe('group_workstatus', group.get()._id, _curTime.utc, {
+        onReady:function(){
+          isLoading.set(false);
+        }  
+      });
+      // alert(s.clickedIndex);
+      $('#'+curTime.get().id).removeClass('selected');
+      curTime.set(_curTime);
+      $('#'+_curTime.id).addClass('selected');
+    }
+  });
+  swiper.slideTo(7,0,false);
+  curTime.set(dateList.get()[7]);
+  $('#'+curTime.get().id).addClass('selected');
   var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
       0, 0, 0, 0);
@@ -121,11 +163,16 @@ Template.workStatusPopPage.onRendered(function(){
   theDisplayDay.set(displayDate); // 当前显示日期
   today.set(displayDate); // 今天
   isLoading.set(true);
-  Meteor.subscribe('group_workstatus',data._id, date, function(){
-    isLoading.set(false);
+  Meteor.subscribe('group_workstatus',data._id, curTime.get().utc,{
+    onReady:function(){
+      isLoading.set(false);
+    } 
   });
 });
 Template.workStatusPopPage.helpers({
+  dateList:function(){
+    return dateList.get();
+  },
   has_day_before:function(group_id){
     var lastday =  today.get() - 7 * 24 * 60 * 60 *1000; //7天前
     return theDisplayDay.get() > lastday;
@@ -145,10 +192,10 @@ Template.workStatusPopPage.helpers({
     return isLoading.get();
   },
   hasWorkStatus: function () {
-    return WorkStatus.find({group_id: group.get()._id,date: theCurrentDay.get()}).count() > 0;
+    return WorkStatus.find({group_id: group.get()._id,date: curTime.get().utc}).count() > 0;
   },
   lists: function(){
-    return WorkStatus.find({group_id: group.get()._id,date: theCurrentDay.get()}).fetch();
+    return WorkStatus.find({group_id: group.get()._id,date: curTime.get().utc}).fetch();
   },
   devices: function(){
     var group_id = Session.get('modifyMyStatus_group_id') || group.get()._id;
@@ -302,6 +349,9 @@ Template.workStatusPopPage.events({
   'click #closeStausPop': function(){
     return workStatusPopPage.close();
   },
+  'click .back':function(){
+    return workStatusPopPage.close();
+  },
   // edit What's up
   'click .editWhatsup': function(e){
     whatsup.set({
@@ -378,10 +428,12 @@ Template.workStatusPopPage.events({
     
     var group_id = group.get()._id;
 
-    var currentDay = theDisplayDay.get(); //当前显示的日期
-    currentDay = new Date(currentDay);
-    currentDay.setHours(23);
-    currentDay.setMinutes(59);
+    // var currentDay = theDisplayDay.get(); //当前显示的日期
+    // currentDay = new Date(currentDay);
+    // currentDay.setHours(23);
+    // currentDay.setMinutes(59);
+    var t = curTime.get().t;
+    var currentDay = new Date(t.year(),t.month(),t.date(),23,59,0);
     Session.set('wantModifyTime',currentDay);
 
     if(isMyself){
@@ -399,10 +451,13 @@ Template.workStatusPopPage.events({
     
     var group_id = group.get()._id;
     
-    var currentDay = theDisplayDay.get(); //当前显示的日期
-    currentDay = new Date(currentDay);
-    currentDay.setHours(23);
-    currentDay.setMinutes(59);
+    // var currentDay = theDisplayDay.get(); //当前显示的日期
+    // currentDay = new Date(currentDay);
+    // currentDay.setHours(23);
+    // currentDay.setMinutes(59);
+    // Session.set('wantModifyTime',currentDay);
+    var t = curTime.get().t;
+    var currentDay = new Date(t.year(),t.month(),t.date(),23,59,0);
     Session.set('wantModifyTime',currentDay);
 
     if(isMyself){

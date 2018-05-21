@@ -201,7 +201,7 @@ function getTimeStr(dateTimeStamp){
     }else if(isYesterday(dateTimeStamp)){
         return '昨天 '+moment(dateTimeStamp).format("ahh:mm");
     }else if(isWithinAweek(dateTimeStamp)){
-        return moment(dateTimeStamp).format('dddd ahh:mm');
+        return moment(dateTimeStamp).format('ddd ahh:mm');
     }else if(isCurYear(dateTimeStamp)){
         return moment(dateTimeStamp).format('MMMD日 ahh:mm');
     }else {
