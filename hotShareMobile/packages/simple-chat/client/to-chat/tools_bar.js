@@ -62,12 +62,19 @@ var toolsBarBase = {
     this.show(srcElement);
   },
   show: function() {},
+  setPositionAndDisplay: function(srcElement) {
+    this.toolsBar.css({
+      left: this.getTargetLeft(srcElement),
+      top: this.getTargetTop(srcElement)
+    });
+    this.toolsBar.show();
+  },
   addItem: function(item) {
     this.selectedItems.push(item);
   },
   removeItem: function(item) {
     for (var i = 0, len = this.selectedItems.length; i < len; i++) {
-      if (this.selectedItems[i] === item) {
+      if (this.selectedItems[i]._id === item._id) {
         this.selectedItems.splice(i, 1);
         break;
       }
@@ -116,22 +123,14 @@ var toolsBarBase = {
 var msgDownToolsBar = $.extend({},toolsBarBase, {
   show: function(srcElement) {
     this.toolsBar = $('.tools-bar-wrap-down');
-    this.toolsBar.css({
-      left: this.getTargetLeft(srcElement),
-      top: this.getTargetTop(srcElement)
-    });
-    this.toolsBar.show();
+    this.setPositionAndDisplay(srcElement);
   }
 });
 
 var msgUpToolsBar = $.extend({},toolsBarBase, {
   show: function(srcElement) {
     this.toolsBar = $('.tools-bar-wrap-up');
-    this.toolsBar.css({
-      left: this.getTargetLeft(srcElement),
-      top: this.getTargetTop(srcElement)
-    });
-    this.toolsBar.show();
+    this.setPositionAndDisplay(srcElement);
   },
   getTargetTop: function(srcElement) {
     var srcOffsetTop = $(srcElement).offset().top;
