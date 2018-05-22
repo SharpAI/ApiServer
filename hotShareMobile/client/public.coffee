@@ -157,6 +157,9 @@ pages = ['/user', '/bell', '/search']
                     Router.go('/add')
                 else if page.view is 'home'
                     Router.go('/')
+                else if page.view is 'message' and Session.get('_timelineAlbumFromGroupId')
+                    Router.go('/simple-chat/to/group?id=' + Session.get('_timelineAlbumFromGroupId'))
+                    Session.set('_timelineAlbumFromGroupId', '')
                 else
                     Router.go('/'+page.view)
             else
