@@ -59,3 +59,34 @@ ul#msg-session{
       opacity: 0;
     }
 }
+
+.modaling{
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0,0,0,0.5);
+  text-align: center;
+  z-index:1000;//9999;
+}
+.syncing{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -71px;
+  margin-left: -80px;
+  // width: 160px;
+  // height: 100px;
+  .icon{
+    font-size: 80px;
+    animation: spin 1000ms infinite linear;
+  }
+  .tip{
+    font-size: 20px;
+  }
+}
+@keyframes spin {
+  0%   { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}

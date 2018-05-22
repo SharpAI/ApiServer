@@ -1645,23 +1645,19 @@ var PahoMQTT = (function (global) {
 		if (this.onMessageArrived) {
 			var msgKey = "Received:"+this._localKey+wireMessage.messageIdentifier;
 			var onMessageArrived = this.onMessageArrived
-			
 			RevMessages.push({
 				payload:wireMessage.payloadMessage, 
 				msgKey:msgKey
 			});
-			
 			if (this.internal == undefined){
 				this.internal = setInterval(function(onMessageArrived){
 					console.log("Interval ", RevMessages.length)
 					if (RevMessages.length){
 						var i = 0
 						var Msg
-						
 						while (Msg = RevMessages.shift()) {
 							console.log("onMessageArrived ", Msg.msgKey)
-							onMessageArrived(Msg.payload, Msg.msgKey);
-							
+							onMessageArrived(Msg.payload, Msg.msgKey,RevMessages.length);
 							i++
 							if (i >=2){
 								break;

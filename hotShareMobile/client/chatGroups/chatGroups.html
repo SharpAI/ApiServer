@@ -1,4 +1,7 @@
 <template name="chatGroups">
+  {{#if syncing}}
+  {{> sync}}
+  {{/if}}
   <div class="chatGroups home">
     <div class="head">
       <strong>消息</strong>
@@ -81,4 +84,15 @@
     });
   })
   </script>
+</template>
+
+<template name="sync">
+  <div class="modaling">
+      <div class="syncing">
+          <div class="icon"><i class="fa fa-refresh" aria-hidden="true"></i></div>
+          <div class="tip">正在同步离线消息</div>
+      </div>
+      
+  </div>
+
 </template>

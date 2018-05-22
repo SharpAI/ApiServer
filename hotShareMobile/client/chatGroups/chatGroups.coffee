@@ -19,6 +19,8 @@ if Meteor.isClient
     #         if (target.data("visible"))
     #             target.data("visible", false);
   Template.chatGroups.helpers
+    syncing:()->
+      Session.get('history_message')
     showBubbleTipHintTemplate:()->
       Session.equals('needShowBubble','true')
     msgSession2: ()->

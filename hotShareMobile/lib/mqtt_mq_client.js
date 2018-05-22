@@ -8,11 +8,17 @@ if(Meteor.isClient){
     var uninsertMessages = [];
     var uninsertMessages_msgKey = [];
     mqtt_connection = null;
+    Session.set('history_message',true);
     //mqtt_connected = false;
-    var onMessageArrived = function(message, msgKey) {
+    var onMessageArrived = function(message, msgKey,len) {
         console.log("onMessageArrived:"+message.payloadString);
         console.log('message.destinationName= '+message.destinationName);
         console.log('message= ', msgKey, JSON.stringify(message));
+        var history = Session.get('history_message');
+        if(history && len == 0){
+            console.log('sync finish');
+            Session.set('history_message',false);
+        }
         function reciveMsg(message, msgKey){
             try {
                 var topic = message.destinationName;
