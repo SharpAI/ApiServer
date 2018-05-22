@@ -324,7 +324,7 @@ function sendMessage(timeItem,group){
     var to = [];
     for(var i in groupUsers){
         var address = sendEmailMessageByGroupUser(timeItem,groupUsers[i])
-        if(address){
+        if(address && !_.contains(to,address)){
             to.push(address);
         }
     }
