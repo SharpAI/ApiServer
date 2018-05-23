@@ -2175,7 +2175,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
         return;
       }
     } else {
-      if (msgObj.event_type == 'motion') {
+      if (msgObj.event_type == 'motion' && msgObj.show_type) {
         if (msgObj.show_type == 'unknown' && groupUser.settings && groupUser.settings.notify_stranger === false) {
           rmMsgKey(msgKey, '#3010');
           return;

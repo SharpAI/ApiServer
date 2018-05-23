@@ -330,7 +330,7 @@ Meteor.methods({
           });
         }
       }
-      AI_system_register_company(id,user._id);
+      // AI_system_register_company(id,user._id);
     });
     return id;
   },
