@@ -2258,12 +2258,14 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
       return;
     }
     //console.log('》》》》》》》》》》》》》》》》》try to find Messages');
-    var msgCount = Messages.find(where).count();
-    if (msgCount < 10) {
-      onMqttMessage(topic, msg, msgKey);
-      return;
-    }
+    //var msgCount = Messages.find(where).count();
+    //if (msgCount < 10) {
+    //  onMqttMessage(topic, msg, msgKey);
+    //  return;
+    //}
   }
+  
+  
   if (msgObj.to_type === 'user' && msgObj.to.id == Meteor.userId()) {
     if (msgObj.type === 'haveReadMsg') {
       Messages.find({'form.id':Meteor.userId(),'to.id':msgObj.form.id,is_read:false}).forEach(function(item){
@@ -2340,13 +2342,13 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     }
   }
   if (!msgObj.is_people){
-    shouldScrollToBottom(msgObj);
+    //shouldScrollToBottom(msgObj);
     //应当避免消息重复
     if (Messages.findOne({_id:msgObj._id})) {
       //消息已存在
       rmMsgKey(msgKey, '#2175');
-      return;
-    }
+      return; 
+    } 
     return Messages.insert(msgObj, function(err, _id){
       if (err)
         return console.log('insert msg error:', err);
@@ -2402,17 +2404,17 @@ var onMqttMessage = function(topic, msg, msgKey) {
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
       localforage.removeItem(msgKey); 
-    }
+    } 
   }
   
   //console.log('>>>>>>>>>>>>> onMqttMessage has been called :'+msg);
   var insertMsg = function(msgObj, type){
     if(msgObj.admin_remove){
       rmMsgKey(msgKey, '#2232');
-      return;
-    }
+      return; 
+    } 
     console.log(type, msgObj._id);
-    shouldScrollToBottom(msgObj);
+    shouldScrollToBottom(msgObj);  
     Messages.insert(msgObj, function(err, _id){
       if (err)
         return console.log('insert msg error:', err);

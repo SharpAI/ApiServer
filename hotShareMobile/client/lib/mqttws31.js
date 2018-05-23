@@ -1402,7 +1402,7 @@ var PahoMQTT = (function (global) {
 						var that = this
 						localforage.keys().then(function(keys) {
 						    // An array of all the key names.
-						    console.log(keys);
+						    console.log("StoredKeys", keys.length);
 						    for (var i in keys){
 						    	var keyName = keys[i]
 						    	
@@ -1659,10 +1659,10 @@ var PahoMQTT = (function (global) {
 							console.log("onMessageArrived ", Msg.msgKey)
 							onMessageArrived(Msg.payload, Msg.msgKey,RevMessages.length);
 							i++
-							if (i >=2){
+							if (i >= 16){  
 								break;
 							}
-						}
+						}   
 					}
 				}, 250, onMessageArrived)
 			}
