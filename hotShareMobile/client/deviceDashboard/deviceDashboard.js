@@ -239,8 +239,9 @@ Template.deviceDashboard.helpers({
       return '-/-';
     }
     
-    var time = new Date(ts);
-    return time.shortTime(time_offset.get());
+    // var time = new Date(ts);
+    // return time.shortTime(time_offset.get());
+    return moment(ts).utcOffset(time_offset.get()).format('ahh:mm');
   }
 });
 
@@ -333,8 +334,10 @@ Template.deviceDashPoppage.helpers({
       url: url,
       name: obj.person_name,
       in_company_tlen: in_company_tlen,
-      in_time: obj.in_time? (new Date(obj.in_time)).shortTime(time_offset.get()): null,
-      out_time: obj.out_time? (new Date(obj.out_time)).shortTime(time_offset.get()): null
+      // in_time: obj.in_time? (new Date(obj.in_time)).shortTime(time_offset.get()): null,
+      // out_time: obj.out_time? (new Date(obj.out_time)).shortTime(time_offset.get()): null
+      in_time: obj.in_time? (moment(obj.in_time).utcOffset(time_offset.get()).format('ahh:mm')): null,
+      out_time: obj.out_time? (moment(obj.out_time).utcOffset(time_offset.get()).format('ahh:mm')): null
     }
   }
 });

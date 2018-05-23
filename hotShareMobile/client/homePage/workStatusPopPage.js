@@ -279,8 +279,9 @@ Template.workStatusPopPage.helpers({
       time_offset = _group.offsetTimeZone;
     }
     if(time){
-      time = new Date(time);
-      time = time.shortTime(time_offset)
+      // time = new Date(time);
+      // time = time.shortTime(time_offset)
+      time = moment(time).utcOffset(time_offset).format('ahh:mm');
     } else {
       time = '--:--';
     }
