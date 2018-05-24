@@ -43,62 +43,13 @@ if(Meteor.isServer){
     SimpleChat.CollectMessages = CollectMessages;
     
     // 历史消息
-    withMessageHisEnable = true;
+    withMessageHisEnable = true; 
     if (withMessageHisEnable){
       console.log('=> 聊天室启用历史消息');
       Messages = new Mongo.Collection(PRFIX + 'new_messages', { connection: null })
       MessagesHis = new Ground.Collection(PRFIX + 'messagesHis', { connection: null });
       SimpleChat.Messages = Messages;
       SimpleChat.MessagesHis = MessagesHis;
-
-
-			function getLocalStorageMaxSize(error) {
-			  if (localStorage) {
-			    var max = 10 * 1024 * 1024,
-			        i = 64,
-			        string1024 = '',
-			        string = '',
-			        // generate a random key
-			        testKey = 'size-test-' + Math.random().toString(),
-			        minimalFound = 0,
-			        error = error || 25e4;
-			
-			    // fill a string with 1024 symbols / bytes    
-			    while (i--) string1024 += 1e16;
-			
-			    i = max / 1024;
-			
-			    // fill a string with 'max' amount of symbols / bytes    
-			    while (i--) string += string1024;
-			
-			    i = max;
-			
-			    // binary search implementation
-			    while (i > 1) {
-			      try {
-			        localStorage.setItem(testKey, string.substr(0, i));
-			        localStorage.removeItem(testKey);
-			
-			        if (minimalFound < i - error) {
-			          minimalFound = i;
-			          i = i * 1.5;
-			        }
-			        else break;
-			      } catch (e) {
-			        localStorage.removeItem(testKey);
-			        i = minimalFound + (i - minimalFound) / 2;
-			      }
-			    }
-			
-			    return minimalFound;
-			  }
-			}
-			maxSize = getLocalStorageMaxSize()
-			console.log("#1 getLocalStorageMaxSize", maxSize)
-			if (maxSize == 0){
-			  MessagesHis.clear()
-				console.log("clean MessageHis")
-			}
 
       Messages.after.insert(function (userId, doc) {
         if (doc.hasFromHistory)
