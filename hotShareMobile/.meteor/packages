@@ -62,7 +62,7 @@ standard-minifier-css@1.2.0_1
 standard-minifier-js@1.2.0_1
 shell-server
 feiwu:simple-chat
-ground:db
+ground:db@2.0.0
 sraita:echarts@0.0.1
 sraita:video-js@1.0.0
 video-analysis@1.0.0
