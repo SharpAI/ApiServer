@@ -1500,6 +1500,8 @@ Template._simpleChatToChat.events({
       text = "syncstatusinfo";
     else if (cmd == "finalsyncdatasets")
       text = "finalsyncdatasets";
+    else if (cmd == "uploadlogs")
+      text = "uploadlogs";
     else {
       return;
     }
@@ -1540,7 +1542,7 @@ Template._simpleChatToChat.events({
         wait_classify:false,
         send_status: 'sending'
       };
-      if (cmd != 'train' && cmd != 'ping' && cmd != 'syncstatusinfo' && cmd != 'finalsyncdatasets')
+      if (cmd != 'train' && cmd != 'ping' && cmd != 'syncstatusinfo' && cmd != 'finalsyncdatasets' && cmd != 'uploadlogs')
         msg.wait_clearqueue= true;
 
       var isAdmin = false;
