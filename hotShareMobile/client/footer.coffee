@@ -72,15 +72,17 @@ if Meteor.isClient
     display_footer:()->
       show_foot_url = ['/','/message','/timeline', '/explore', '/user','/faces']
       console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
+      console.log("show_foot_url", show_foot_url, location, location.pathname, Router.current().route.path())
+      
       setTimeout(
         ()->
-            if show_foot_url.indexOf(location.pathname) isnt -1
+            if show_foot_url.indexOf(Router.current().route.path()) isnt -1
               $('.content').scrollTop(Session.get("document_body_scrollTop"))
             else
               document.body.scrollTop = Session.get("document_body_scrollTop")
         0
       )
-      return show_foot_url.indexOf(location.pathname) isnt -1
+      return show_foot_url.indexOf(Router.current().route.path()) isnt -1
       # Meteor.isCordova
     fade:->
       if isAndroidFunc()
