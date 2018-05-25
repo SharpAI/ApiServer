@@ -2101,7 +2101,7 @@ var clearMsgForGroundDB = function(){
         var myGroup = GroupUsers.find({user_id: Meteor.userId()});
         if (myGroup) {
           myGroup.forEach(function(item){
-            var msg = MessagesHis.find({'to.id': item.group_id}).fetch();
+            var msg = MessagesHis.find({'to.id': item.group_id}, {sort: {create_time: 1}}).fetch();
             if (msg && msg.length > 500) {
               for (var i = 0; i < msg.length - 500; i++) {
                 MessagesHis.remove({_id:msg[i]._id});
