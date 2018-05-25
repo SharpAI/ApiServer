@@ -66,15 +66,15 @@
             {{#if cancel}}
             <img src="/isLoading.gif" width="100%" height="auto" />
             {{else}}
-            <img src="/workai.png" width="100%" height="auto" />
+            <img src="/loadError.png" width="100%" height="auto" />
             {{/if}}
         </div>
         <div class="score-box">
-            <label>识别分数: {{label_score}}</label>
+            <label>识别分数:&nbsp;&nbsp;&nbsp;{{label_score}}</label>
             <button id="goTimeLine">去标注</button>
         </div>
         <div class="score-box">
-            <label>角度分数: {{roate_score}}</label>
+            <label>角度分数:&nbsp;&nbsp;&nbsp;{{roate_score}}</label>
             <button id="goLink">查看文档</button>
         </div>
         {{#if cancel}}

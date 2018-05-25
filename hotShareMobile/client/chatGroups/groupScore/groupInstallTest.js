@@ -193,10 +193,13 @@ Template.score.events({
 })
 var message_queue = [];
 GroupInstallTest = function(message){
+    message = JSON.parse(message);
+    console.log('GroupInstallTest');
     if(message.event_type == "motion"){
         return;
     }
     if(message.images && message.images.length>0){
         message_queue.push.apply(message_queue,message.images);
-    }  
+    } 
+    console.log('GroupInstallTest',message_queue.length); 
 }
