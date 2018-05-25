@@ -125,6 +125,9 @@ Template.homePage.events({
     Session.set('deviceDashboardTitle', this.name);
     return PUB.page('/device/dashboard/' + this._id);
   },
+  'click .goInstallTest':function(e){
+    return PUB.page('/groupInstallTest/'+this._id);
+  },
   'click .goGroupPerson': function (e) {
     return PUB.page('/groupPerson/' + this._id);
   },

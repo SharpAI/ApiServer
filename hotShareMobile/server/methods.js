@@ -23,5 +23,9 @@ Meteor.methods({
         SimpleChat.GroupUsers.remove({group_id:groupId,user_id:user._id});
         //3.从users里移除
         Meteor.users.remove({username:uuid});
+    },
+    update_install_status:function(group_id,install_status){
+        console.log(install_status);
+        SimpleChat.Groups.update({_id:group_id},{$set:install_status});
     }
 })

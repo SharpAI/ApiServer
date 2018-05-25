@@ -31,6 +31,10 @@ if(Meteor.isClient){
                 if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
                 {
                     SimpleChat.onMqttMessage(topic, message.payloadString, msgKey);
+                    var isTesting = Session.get('isStarting');
+                    if(isTesting && (topic == '/msg/g/'+isTesting.group_id) && isTesting.isTesting){
+                        GroupInstallTest(message.payloadString);
+                    }
                 }
                 else if (topic.startsWith('/msg/l/'))
                     SimpleChat.onMqttLabelMessage(topic, message.payloadString, msgKey);

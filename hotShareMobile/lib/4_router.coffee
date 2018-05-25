@@ -290,6 +290,9 @@ if Meteor.isClient
       Session.set('nextPostID',this.params._id)
       this.render 'redirect'
       return
+    Router.route '/groupInstallTest/:_id',()->
+      this.render 'groupInstallTest'
+      return
     Router.route '/groupPerson/:_id', ()->
       this.render 'groupPerson'
       return

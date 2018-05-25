@@ -1,0 +1,84 @@
+<template name="groupInstallTest">
+    <div class="groupInstallTest">
+        <div class="head">
+            <strong>部署评测</strong>
+            {{#if canleft}}
+            <div class="leftButton back">
+                <i class="fa fa-angle-left fa-fw"></i>
+            </div>
+            {{/if}}
+        </div>
+        <div class="content" style="padding-top: 40px;">
+            {{#if isTesting}}
+            {{> score}}
+            {{else}}
+            <div id="gif" class="swiper-container gif-box">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><img src="/1.gif" width="100%" height="auto" /></div>
+                    <div class="swiper-slide"><img src="/2.gif" width="100%" height="auto" /></div>
+                    <div class="swiper-slide"><img src="/3.gif" width="100%" height="auto" /></div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <!-- <img src="/isLoading.gif" width="100%" height="auto" /> -->
+            </div>
+            
+            <div class="checkbox-custom checkbox-default">
+                <input type="checkbox" id="a" {{astatus}}>
+                <label for="a">按照摄像头说明安装好</label>
+            </div>
+            <div class="checkbox-custom checkbox-default">
+                <input type="checkbox" id="b" {{bstatus}}>
+                <label for="b">盒子启动-能正常扫到盒子</label>
+            </div>
+            <div class="checkbox-custom checkbox-default">
+                <input type="checkbox" id="c" {{cstatus}}>
+                <label for="c">摄像头配置-调整摄像头参数及shinobi导入</label>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+    {{#with popupConfig}}
+    {{> popup}}
+    {{/with}}
+    {{> _checkGroupDevice}}
+</template>
+
+<template name="popup">
+    <div class="popup" style="{{isShow}}">
+        <div class="pp-dialog">
+            <div class="pp-header">
+                <span class="close">
+                    <i class="fa fa-close"></i>
+                </span>
+            </div>
+            <div class="pp-content">
+                    {{content}}
+            </div>
+            <div class="pp-foot">
+                <button id="operate" style="color: #00c4ff;">{{btn}}</button>
+            </div>
+        </div>
+    </div>
+</template>
+<template name="score">
+    <div class="score">
+        <div class="gif-box">
+            {{#if cancel}}
+            <img src="/isLoading.gif" width="100%" height="auto" />
+            {{else}}
+            <img src="/workai.png" width="100%" height="auto" />
+            {{/if}}
+        </div>
+        <div class="score-box">
+            <label>识别分数: {{label_score}}</label>
+            <button id="goTimeLine">去标注</button>
+        </div>
+        <div class="score-box">
+            <label>角度分数: {{roate_score}}</label>
+            <button id="goLink">查看文档</button>
+        </div>
+        {{#if cancel}}
+        <button id="cancel">正在测试中，取消评测</button>
+        {{/if}}
+    </div>
+</template>
