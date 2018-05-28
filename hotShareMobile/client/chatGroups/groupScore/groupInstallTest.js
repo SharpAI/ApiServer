@@ -69,10 +69,10 @@ Template.groupInstallTest.events({
     'click input[type=checkbox]':function(e){
         var group_id = Router.current().params._id;
         console.log(e.currentTarget.id);
-        var isFinish = $(e.currentTarget.id).is(':checked');
+        var isFinish = $("#"+e.currentTarget.id).is(':checked');
         var key = 'installStatus.'+e.currentTarget.id;
         var setting = {};
-        setting[key] = !isFinish;
+        setting[key] = isFinish;
         Meteor.call('update_install_status',group_id,setting,function(err){
             if(err){
                 console.log(err);
@@ -99,28 +99,6 @@ Template.groupInstallTest.events({
         })
         showPop.set(false);
         //开始测试
-        Meteor.setTimeout(function(){
-            var st = Session.get('isStarting');
-            st.isTesting = false;
-            st.showScore = true;
-            Session.set('isStarting',st);
-            var totalCount = message_queue.length;
-            var labelArr = _.filter(message_queue,function(m){
-                if(m.label &&  m.label != ''){
-                    return true;
-                }
-                return false;
-            });
-            var frontArr = _.filter(message_queue,function(m){
-                return m.style == 'front'
-            });
-            if(totalCount == 0){
-                return;
-            }
-            labelScore.set(Math.floor(labelArr.length/totalCount * 100) + '');
-            roateScore.set(Math.floor(frontArr.length/totalCount * 100) + '');
-            message_queue = [];
-        }, 2*60*1000);
     },
 
 })
@@ -144,6 +122,40 @@ Template.score.helpers({
         return true;
     }
 })
+var progress = 0;
+var timer;
+Template.score.onRendered(function(){
+    timer = Meteor.setInterval(function(){
+        progress = progress + 1;
+        $('.progress-bar').css('width',Math.floor(progress/120 * 100)+"%");
+        if(progress == 120){
+            Meteor.clearInterval(timer);
+            $('.progress').hide();
+            var st = Session.get('isStarting');
+            st.isTesting = false;
+            st.showScore = true;
+            Session.set('isStarting',st);
+            var totalCount = message_queue.length;
+            var labelArr = _.filter(message_queue,function(m){
+                if(m.label &&  m.label != ''){
+                    return true;
+                }
+                return false;
+            });
+            var frontArr = _.filter(message_queue,function(m){
+                return m.style == 'front'
+            });
+            var front_len = frontArr.length;
+            if(totalCount != 0){
+                roateScore.set(Math.floor(frontArr.length/totalCount * 100) + '');
+            }
+            if(front_len != 0){
+                labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
+            }
+            message_queue = [];
+        }
+    },1000);
+})
 Template.score.events({
     'click #cancel':function(e){
         var st = Session.get('isStarting');
@@ -151,6 +163,7 @@ Template.score.events({
         st.showScore = true;
         Session.set('isStarting',st);
         message_queue = [];
+        Meteor.clearInterval(timer);
     },
     'click #goTimeLine':function(){
         var group_id = Router.current().params._id;
