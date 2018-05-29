@@ -120,21 +120,44 @@ Template.score.helpers({
             return false;
         }
         return true;
+    },
+    isSuccess:function(){
+        var s = Session.get('isStarting');
+        if(s && s.status == "success"){
+            return true;
+        }
+        return false;
+    },
+    testres:function(tag){
+        console.log(tag);
+        if(tag == 1 && labelScore.get()>70){
+            return true;
+        }
+        if(tag == 2 && roateScore.get()>70){
+            return true;
+        }
+        return false;
     }
 })
-var progress = 0;
+// var progress = 0;
 var timer;
 Template.score.onRendered(function(){
-    timer = Meteor.setInterval(function(){
-        progress = progress + 1;
-        $('.progress-bar').css('width',Math.floor(progress/120 * 100)+"%");
-        if(progress == 120){
-            Meteor.clearInterval(timer);
+    // if(timer){
+    //     Meteor.clearTimeout(timer);
+    //     timer = null;
+    // }
+    $('.progress-bar').addClass('time');
+    timer = Meteor.setTimeout(function(){
+        // progress = progress + 1;
+        // $('.progress-bar').css('width',Math.floor(progress/120 * 100)+"%");
+        // if(progress == 120){
+            // Meteor.clearTimeout(timer);
+            // timer = null;
             $('.progress').hide();
             var st = Session.get('isStarting');
             st.isTesting = false;
             st.showScore = true;
-            Session.set('isStarting',st);
+            
             var totalCount = message_queue.length;
             var labelArr = _.filter(message_queue,function(m){
                 if(m.label &&  m.label != ''){
@@ -147,14 +170,24 @@ Template.score.onRendered(function(){
             });
             var front_len = frontArr.length;
             if(totalCount != 0){
-                roateScore.set(Math.floor(frontArr.length/totalCount * 100) + '');
+                roateScore.set(Math.floor(front_len/totalCount * 100) + '');
+            }else{
+                roateScore.set('0');
             }
             if(front_len != 0){
                 labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
+            }else{
+                labelScore.set('0');
             }
             message_queue = [];
-        }
-    },1000);
+            if(totalCount == 0 || front_len == 0){
+                st.status = "fail";
+            }else{
+                st.status = "success";
+            }
+            Session.set('isStarting',st);
+        // }
+    },120*1000);
 })
 Template.score.events({
     'click #cancel':function(e){

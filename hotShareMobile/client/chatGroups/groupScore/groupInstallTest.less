@@ -6,6 +6,7 @@
         // img{
             // max-height: 200px;
         // }
+        text-align: center;
         padding-bottom: 40px;
     }
 
@@ -140,12 +141,21 @@
     button{
         // width: 80px;
         margin-left: 20px;
-        color: white;
+        color: rgb(228, 62, 62);
         border-radius: 5px;
-        background: #EE82EE;
+        background:rgb(184, 182, 182);
         height: 40px;
+        border: none;
     }
     #cancel{
         margin-top: 20px;
     }
+    .time{
+        animation: timer 120s linear 1;
+    }
+}
+
+@keyframes timer{
+    0%{width: 0%}
+    100%{width: 100%}
 }

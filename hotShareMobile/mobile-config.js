@@ -1,6 +1,6 @@
 App.info({
   id: 'org.sharpai.everywhere',
-  version: '1.0.48',
+  version: '1.0.54',
   name: 'sharpai',
   description: 'Share everything with everyone',
   author: 'hotShare Design Team',
@@ -43,17 +43,17 @@ App.icons({
 
 App.launchScreens({
   //'iphone': 'resource/splash_768_1024.png',
-  'iphone_2x': 'resource/splash_640_960.png',
-  'iphone5': 'resource/splash_640_1136.png',
-  'iphone6': 'resource/splash_750_1334.png',
-  'iphone6p_portrait': 'resource/splash_1242_2208.png',
-  'ipad_portrait': 'resource/splash_768_1024.png',
-  'ipad_portrait_2x': 'resource/splash_1536_2048.png',
+  'iphone_2x': 'resource/splash_theme_640_960.png',
+  'iphone5': 'resource/splash_theme_640_1136.png',
+  'iphone6': 'resource/splash_theme_750_1334.png',
+  'iphone6p_portrait': 'resource/splash_theme_1242_2208.png',
+  'ipad_portrait': 'resource/splash_theme_768_1024.png',
+  'ipad_portrait_2x': 'resource/splash_theme_1536_2048.png',
   //'android_ldpi_portrait': 'resource/splash.png',
-  'android_mdpi_portrait': 'resource/splash_320_470.png',
-  'android_hdpi_portrait': 'resource/splash_480_640.png',
-  'android_xhdpi_portrait': 'resource/splash_720_960.png',
-  'android_xxhdpi_portrait': 'resource/splash_1080_1440.png'
+  'android_mdpi_portrait': 'resource/splash_theme_320_470.png',
+  'android_hdpi_portrait': 'resource/splash_theme_480_640.png',
+  'android_xhdpi_portrait': 'resource/splash_theme_720_960.png',
+  'android_xxhdpi_portrait': 'resource/splash_theme_1080_1440.png'
 });
 
 App.configurePlugin('cordova-plugin-x-socialsharing', {
