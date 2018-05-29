@@ -163,7 +163,7 @@ Router.route(AppConfig.path + '/to/:type', {
     var type = slef.params.type
     var where = null;
 
-    list_limit.set(10);
+    list_limit.set(15);
 
     if(type === 'group'){
       where = {'to.id': to, to_type: type}; // 没有判断是否在群的处理。自动加群
@@ -406,7 +406,7 @@ Template._simpleChatToChat.onRendered(function(){
     Meteor.subscribe('device_by_groupId', slef.data.id);
   }
 
-  Meteor.setTimeout(function(){
+  setTimeout(function(){
     $box = $('.box');
     $box_ul = $('.box ul');
 
@@ -509,11 +509,12 @@ Template._simpleChatToChat.onRendered(function(){
     });
 
     $box.scroll(function () {
+      console.log("$box.scrollTop()="+$box.scrollTop()+", is_loading.get()="+is_loading.get());
       if($box.scrollTop() === 0 && !is_loading.get()){
         // if(slef.data.messages.count() >= list_limit.get())
         is_loading.set(true);
         list_limit.set(list_limit.get()+list_limit_val);
-        Meteor.setTimeout(function(){is_loading.set(false);}, 500);
+        setTimeout(function(){is_loading.set(false);}, 500);
         loadMoreMesage(page_data.where, {limit: list_limit.get(), sort: {create_time: -1}}, list_limit.get());
       }
       if ($box.scrollTop()+$box.height() >= $box_ul.height()) {
@@ -2101,8 +2102,10 @@ var clearMsgForGroundDB = function(){
         var myGroup = GroupUsers.find({user_id: Meteor.userId()});
         if (myGroup) {
           myGroup.forEach(function(item){
-            var msg = MessagesHis.find({'to.id': item.group_id}, {sort: {create_time: 1}}).fetch();
-            if (msg && msg.length > 500) {
+            var cursor = MessagesHis.find({'to.id': item.group_id}, {sort:{create_time: 1}, fields:{_id:1}});
+            var msgLength = cursor.count();
+            if (msgLength > 500) {
+              var msg = cursor.fetch();
               for (var i = 0; i < msg.length - 500; i++) {
                 MessagesHis.remove({_id:msg[i]._id});
               }
@@ -2115,17 +2118,19 @@ var clearMsgForGroundDB = function(){
 }
 var clearMoreOldMessage = function(){
    if (clearMsgTime) {
-    Meteor.clearTimeout(clearMsgTime);
+    clearTimeout(clearMsgTime);
     clearMsgTime = null;
    }
-   if (clearMsgLastTime && new Date() - clearMsgLastTime > 1000*300) {
+   if (!clearMsgLastTime || new Date().getTime() - clearMsgLastTime > 1000*300) {
+    console.log("clearMoreOldMessage...1");
     clearMsgForGroundDB();
-    clearMsgLastTime = new Date();
+    clearMsgLastTime = new Date().getTime();
    }
    else{
-    clearMsgTime = Meteor.setTimeout(function(){
+    clearMsgTime = setTimeout(function(){
+      console.log("clearMoreOldMessage...2");
       clearMsgForGroundDB();
-      clearMsgLastTime = new Date();
+      clearMsgLastTime = new Date().getTime();
       clearMsgTime = null;
     },1000*60);
    }
@@ -2135,11 +2140,12 @@ var isInShowMsgMode = function(isAdmin, isDevMode) {
   return isAdmin && isDevMode;
 }
 
-SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
+SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
-      localforage.removeItem(msgKey); 
+      //localforage.removeItem(msgKey); 
+      mqttCallback && mqttCallback();
     }
   }
   
@@ -2151,7 +2157,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     initCollection();
   }
 
-  console.log('SimpleChat.onMqttMessage:'+msg);
+  //console.log('SimpleChat.onMqttMessage:'+msg);
   if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))){
     rmMsgKey(msgKey, '#2021');
     return;
@@ -2171,7 +2177,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     var group = SimpleChat.Groups.findOne({_id: group_id});
     var groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: Meteor.userId()})
     //通知管理个人化设置
-    if (groupUser.settings && groupUser.settings.push_notification === false) {
+    if (groupUser && groupUser.settings && groupUser.settings.push_notification === false) {
       if (msgObj.event_type == 'motion') {
         rmMsgKey(msgKey, '#3000');
         return;
@@ -2184,7 +2190,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
         } else if (msgObj.show_type == 'activity' && groupUser.settings && groupUser.settings.report === false) {
           rmMsgKey(msgKey, '#3020');
           return;
-        } else {
+        } else if (msgObj.show_type) {
           var shurenArr = msgObj.show_type.split(',');
           if (groupUser.settings && groupUser.settings.not_notify_acquaintance && _.contains(groupUser.settings.not_notify_acquaintance, shurenArr[0])) {
             rmMsgKey(msgKey, '#3030');
@@ -2260,11 +2266,11 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
       return;
     }
     //console.log('》》》》》》》》》》》》》》》》》try to find Messages');
-    //var msgCount = Messages.find(where).count();
-    //if (msgCount < 10) {
-    //  onMqttMessage(topic, msg, msgKey);
-    //  return;
-    //}
+    /*var msgCount = Messages.find(where).count();
+    if (msgCount < 10) {
+      onMqttMessage(topic, msg, msgKey);
+      return;
+    }*/
   }
   
   
@@ -2344,13 +2350,13 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     }
   }
   if (!msgObj.is_people){
-    //shouldScrollToBottom(msgObj);
+    shouldScrollToBottom(msgObj);
     //应当避免消息重复
     if (Messages.findOne({_id:msgObj._id})) {
       //消息已存在
       rmMsgKey(msgKey, '#2175');
-      return; 
-    } 
+      return;
+    }
     return Messages.insert(msgObj, function(err, _id){
       if (err)
         return console.log('insert msg error:', err);
@@ -2362,7 +2368,10 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
     });
   }
 
-  onMqttMessage(topic, msg, msgKey);
+  
+  setImmediateWrap(function() {
+    onMqttMessage(topic, msg, msgKey, mqttCallback);
+  });
   // MessageTemp.insert({
   //   topic: topic,
   //   msg: msgObj,
@@ -2375,6 +2384,8 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey) {
 };
 
 var shouldScrollToBottom = function(msg){
+    return;
+    console.log("shouldScrollToBottom in...");
   // if (msg.to_type === page_data.type && msg.to.id === page_data.id){
       var $box = $('.box');
       var $box_ul = $('.box ul');
@@ -2401,22 +2412,23 @@ var shouldScrollToBottom = function(msg){
   // }
 };
 
-var onMqttMessage = function(topic, msg, msgKey) {
+var onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
-      localforage.removeItem(msgKey); 
-    } 
+      //localforage.removeItem(msgKey); 
+      mqttCallback && mqttCallback();
+    }
   }
   
   //console.log('>>>>>>>>>>>>> onMqttMessage has been called :'+msg);
   var insertMsg = function(msgObj, type){
     if(msgObj.admin_remove){
       rmMsgKey(msgKey, '#2232');
-      return; 
-    } 
+      return;
+    }
     console.log(type, msgObj._id);
-    shouldScrollToBottom(msgObj);  
+    shouldScrollToBottom(msgObj);
     Messages.insert(msgObj, function(err, _id){
       if (err)
         return console.log('insert msg error:', err);
@@ -2541,67 +2553,70 @@ var onMqttMessage = function(topic, msg, msgKey) {
 
   var accuracy_default = 0.85; //期望准确值
 
-  if (msgObj.tid && msgObj.tid !== '') {
-    /**
-     * people_uuid: 设备uuid ， 只对同一个设备 的图片 合并
-     * people_id: faceId ,
-     * tid: 轨迹id 
-     * */
-    //最近十条记录
-    var targetArray = Messages.find({to_type: msgObj.to_type,'to.id': msgObj.to.id,create_time: {$lte: msgObj.create_time},people_uuid:msgObj.people_uuid}, {limit: 10, sort: {create_time: -1}}).fetch();
-    for (var i = 0; i < targetArray.length; i++) {
-      if (targetArray[i].label_complete !== true && targetArray[i].label_start !== true) {
-        //tid 相同且没完成标记
-        if (targetArray[i].tid === msgObj.tid) {
-          targetMsg = targetArray[i];
-          console.log('找到符合条件tid=' + msgObj.tid + '的记录~');
-          break;
+  if (msgObj.images && msgObj.images.length > 0) {
+      console.log("msgObj.images.length="+msgObj.images.length);
+      if (msgObj.tid && msgObj.tid !== '') {
+        /**
+         * people_uuid: 设备uuid ， 只对同一个设备 的图片 合并
+         * people_id: faceId ,
+         * tid: 轨迹id 
+         * */
+        //最近十条记录
+        var targetArray = Messages.find({to_type: msgObj.to_type,'to.id': msgObj.to.id,create_time: {$lte: msgObj.create_time},people_uuid:msgObj.people_uuid}, {limit: 10, sort: {create_time: -1}}).fetch();
+        for (var i = 0; i < targetArray.length; i++) {
+          if (targetArray[i].label_complete !== true && targetArray[i].label_start !== true) {
+            //tid 相同且没完成标记
+            if (targetArray[i].tid === msgObj.tid) {
+              targetMsg = targetArray[i];
+              console.log('找到符合条件tid=' + msgObj.tid + '的记录~');
+              break;
+            }
+            else{
+              //一分钟以前的
+              if (targetArray[i].create_time < whereTime) {
+                break;
+              }
+              //tid不同的未识别people_id相同
+              if (msgObj.wait_lable && targetArray[i].people_id === msgObj.people_id) {
+                targetMsg = targetArray[i];
+                console.log('tid不同但是people_id相同 都是：' + msgObj.people_id + '的记录~');
+              }
+              //tid不同但是识别结果相同
+              else if (!msgObj.wait_lable && !targetArray[i].wait_lable && targetArray[i].images && msgObj.images && targetArray[i].images.length > 0 && targetArray[i].images.length > 0 && targetArray[i].images[0].label == msgObj.images[0].label && msgObj.images[0].accuracy >= accuracy_default) {
+                targetMsg = targetArray[i];
+                console.log('tid不同但是识别结果相同 都是：' + msgObj.images[0].label + '的记录~');
+                break;
+              }
+            }
+          }
         }
-        else{
-          //一分钟以前的
-          if (targetArray[i].create_time < whereTime) {
-            break;
-          }
-          //tid不同的未识别people_id相同
-          if (msgObj.wait_lable && targetArray[i].people_id === msgObj.people_id) {
-            targetMsg = targetArray[i];
-            console.log('tid不同但是people_id相同 都是：' + msgObj.people_id + '的记录~');
-          }
-          //tid不同但是识别结果相同
-          else if (!msgObj.wait_lable && !targetArray[i].wait_lable && targetArray[i].images && msgObj.images && targetArray[i].images.length > 0 && targetArray[i].images.length > 0 && targetArray[i].images[0].label == msgObj.images[0].label && msgObj.images[0].accuracy >= accuracy_default) {
-            targetMsg = targetArray[i];
-            console.log('tid不同但是识别结果相同 都是：' + msgObj.images[0].label + '的记录~');
-            break;
-          }
-        }
+        //tid相同但是识别的名字不同,且识别度在0.85以上时不合并
+        // if (targetMsg && targetMsg.tid === msgObj.tid && !targetMsg.wait_lable && !msgObj.wait_lable && targetMsg.images && msgObj.images && targetMsg.images.length > 0 && msgObj.images.length > 0 && targetMsg.images[0].label != msgObj.images[0].label && msgObj.images[0].accuracy >= accuracy_default) {
+        //   targetMsg = null;
+        // }
       }
-    }
-    //tid相同但是识别的名字不同,且识别度在0.85以上时不合并
-    // if (targetMsg && targetMsg.tid === msgObj.tid && !targetMsg.wait_lable && !msgObj.wait_lable && targetMsg.images && msgObj.images && targetMsg.images.length > 0 && msgObj.images.length > 0 && targetMsg.images[0].label != msgObj.images[0].label && msgObj.images[0].accuracy >= accuracy_default) {
-    //   targetMsg = null;
-    // }
-  }
-  else{
-      if (msgObj.wait_lable){where.people_id = msgObj.people_id;}
-      else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
-      else {return Messages.insert(msgObj,function(err, _id){
-      rmMsgKey(msgKey, '#2365');
-      if (err)
-        console.log('insert msg error:', err);
-    })}
+      else{
+          if (msgObj.wait_lable){where.people_id = msgObj.people_id;}
+          else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
+          else {return Messages.insert(msgObj,function(err, _id){
+          rmMsgKey(msgKey, '#2365');
+          if (err)
+            console.log('insert msg error:', err);
+        })}
 
-      console.log('SimpleChat.SimpleChat where:', where);
-      targetMsg = Messages.findOne(where, {sort: {create_time: -1}});
-      //是否是最后一条
-      var is_last_msg = false;
-      if (targetMsg) {
-        var lastMsg = Messages.findOne({to_type:msgObj.to_type,'to.id':msgObj.to.id}, {sort: {create_time: -1}});
-        if (targetMsg._id === lastMsg._id) {
-          is_last_msg = true;
-        }
-      }
-      if (!is_last_msg) {
-        return insertMsg(msgObj, '不是最后一条消息');
+          console.log('SimpleChat.SimpleChat where:', where);
+          targetMsg = Messages.findOne(where, {sort: {create_time: -1}});
+          //是否是最后一条
+          var is_last_msg = false;
+          if (targetMsg) {
+            var lastMsg = Messages.findOne({to_type:msgObj.to_type,'to.id':msgObj.to.id}, {sort: {create_time: -1}});
+            if (targetMsg._id === lastMsg._id) {
+              is_last_msg = true;
+            }
+          }
+          if (!is_last_msg) {
+            return insertMsg(msgObj, '不是最后一条消息');
+          }
       }
   }
   // TODO: 还存在问题

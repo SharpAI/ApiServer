@@ -16,9 +16,58 @@ if(Meteor.isServer){
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users', options);
   // MsgSession = new Mongo.Collection(PRFIX + 'msg_session');
 }else{
+  withMessageHisEnable = true;
   Groups = new Mongo.Collection(PRFIX + 'groups');
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users');
   MessageTemp = new Mongo.Collection(PRFIX + 'messages_temp', { connection: null });
+
+  checkAllGroundDBLoaded = function() {
+    if (!withMessageHisEnable && Messages) {
+        console.log("GroundDB: Messages is not Null");
+        if (!Messages.isLoaded) {
+            console.log("GroundDB: Messages.isLoaded is true;");
+            return false;
+        }
+    }
+    if (!MessagesHis || !MsgSession || !MsgAdminRelays || !GroupPhotoLabel || !CollectMessages) {
+        console.log("GroundDB: initializing...");
+        return false;
+    }
+    if (!MessagesHis.isLoaded || !MsgSession.isLoaded || !MsgAdminRelays.isLoaded || !GroupPhotoLabel.isLoaded || !CollectMessages.isLoaded) {
+        var info = '';
+        if (!MessagesHis.isLoaded) {
+            info += 'MessagesHis'
+        }
+        if (!MsgSession.isLoaded) {
+            info += ', MsgSession'
+        }
+        if (!MsgAdminRelays.isLoaded) {
+            info += ', MsgAdminRelays'
+        }
+        if (!GroupPhotoLabel.isLoaded) {
+            info += ', GroupPhotoLabel'
+        }
+        if (!CollectMessages.isLoaded) {
+            info += ', CollectMessages'
+        }
+        console.log("GroundDB: "+info+" still loading...");
+        return false;
+    }
+    return true;
+  }
+  checkMsgSessionLoaded = function() {
+    if (!MsgSession) {
+        console.log("GroundDB: MsgSession initializing...");
+        return false;
+    }
+    if (!MsgSession.isLoaded) {
+        console.log("GroundDB: MsgSession still loading...");
+        return false;
+    }
+    return true;
+  }
+  SimpleChat.checkAllGroundDBLoaded = checkAllGroundDBLoaded;
+  SimpleChat.checkMsgSessionLoaded = checkMsgSessionLoaded;
 
   initCollection = function() {
     //var LocalMessagesObservor = new PersistentMinimongo2(Messages, 'workai');
@@ -27,7 +76,9 @@ if(Meteor.isServer){
       return;
     }
 
-    Messages = new Ground.Collection(PRFIX + 'messages', { connection: null })
+    if (!withMessageHisEnable) {
+        Messages = new Ground.Collection(PRFIX + 'messages', { connection: null })
+    }
     MsgSession = new Ground.Collection(PRFIX + 'msg_session', { connection: null });
     MsgAdminRelays = new Ground.Collection(PRFIX + 'msg_admin_realy', { connection: null });
     GroupPhotoLabel = new Ground.Collection(PRFIX + 'group_photo_label', { connection: null }); // 群相册下已标注的消息
@@ -43,7 +94,6 @@ if(Meteor.isServer){
     SimpleChat.CollectMessages = CollectMessages;
     
     // 历史消息
-    withMessageHisEnable = true; 
     if (withMessageHisEnable){
       console.log('=> 聊天室启用历史消息');
       Messages = new Mongo.Collection(PRFIX + 'new_messages', { connection: null })
@@ -76,8 +126,9 @@ if(Meteor.isServer){
       });
 
       loadMoreMesage = function(where, option, limit){
-        Meteor.setTimeout(function(){
+        setTimeout(function(){
           console.log('加载历史消息');
+          console.log("where="+JSON.stringify(where)+", option="+JSON.stringify(option));
           var lastMsg = Messages.findOne(where,{sort: {create_time: -1}});
           var lastMsgHis = MessagesHis.findOne(where,{sort: {create_time: -1}});
           if (lastMsg && lastMsgHis && (lastMsg.create_time - lastMsgHis.create_time < 0)) {
@@ -121,7 +172,7 @@ if(Meteor.isServer){
 
   // 生成聊天会话
   var updateMsgSession = function(doc){
-    console.log('updateMsgSession');
+    //console.log('updateMsgSession: doc='+JSON.stringify(doc));
 
     if (doc.hasFromHistory)
       return;
@@ -171,7 +222,9 @@ if(Meteor.isServer){
     msgObj.msgcreate_time = doc.create_time;
 
     var msgSession = MsgSession.findOne({userId: Meteor.userId(), toUserId: msgObj.toUserId});
+    //console.log("Frank: Meteor.userId()="+Meteor.userId()+", msgObj.toUserId="+msgObj.toUserId);
     if (msgSession){
+      //console.log("Frank: msgSession="+JSON.stringify(msgSession));
       if (msgSession.msgcreate_time && msgObj.msgcreate_time - msgSession.msgcreate_time < 0 ) {
         msgObj.lastText = msgSession.lastText;
         msgObj.msgcreate_time = msgSession.msgcreate_time;

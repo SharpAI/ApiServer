@@ -12,7 +12,8 @@ if(Meteor.isClient){
                 timeout: 30*1000,
                 cleanSession: false,
                 onSuccess:onConnect,
-                onFailure:onFailure
+                onFailure:onFailure,
+                reconnect:true
             };
             //mqtt_connection=myMqtt.connect('ws://tmq.tiegushi.com:80',mqttOptions);
             mqtt_connection=new Paho.MQTT.Client('mq.tiegushi.com', Number(80), clientId);
@@ -103,9 +104,9 @@ if(Meteor.isClient){
             };
 
             function onMessageArrived(message) {
-                console.log("onMessageArrived:"+message.payloadString);
-                console.log('message.destinationName= '+message.destinationName);
-                console.log('message= '+JSON.stringify(message));
+                //console.log("onMessageArrived:"+message.payloadString);
+                //console.log('message.destinationName= '+message.destinationName);
+                //console.log('message= '+JSON.stringify(message));
                 try {
                     var topic = message.destinationName;
                     console.log('on mqtt message topic: ' + topic + ', message: ' + message.payloadString);

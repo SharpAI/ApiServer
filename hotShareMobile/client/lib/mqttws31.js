@@ -96,14 +96,15 @@ function onMessageArrived(message) {
 	}
 })(this, function LibraryFactory(){
 
-RevMessages = []
-
 localforage.config({
     driver      : localforage.IndexedDB, 
     name        : 'localforage',
     storeName   : 'keyvaluepairs', 
     description : 'some description'
 });
+var localStorage = localforage;
+global.localStorage = localforage;
+localforage.setItem("Frank_test_localforage", "content");
 
 var PahoMQTT = (function (global) {
 
@@ -776,7 +777,7 @@ var PahoMQTT = (function (global) {
 		if (!("ArrayBuffer" in global && global.ArrayBuffer !== null)) {
 			throw new Error(format(ERROR.UNSUPPORTED, ["ArrayBuffer"]));
 		}
-		console.log("Paho.MQTT.Client", uri, host, port, path, clientId);
+		this._trace("Paho.MQTT.Client", uri, host, port, path, clientId);
 
 		this.host = host;
 		this.port = port;
@@ -815,13 +816,46 @@ var PahoMQTT = (function (global) {
 		// Used to determine the transmission sequence of stored sent messages.
 		this._sequence = 0;
 
+
 		// Load the local state, if any, from the saved version, only restore state relevant to this client.
-		for (var key in localStorage){
-			if (   key.indexOf("Sent:"+this._localKey) === 0 || key.indexOf("Received:"+this._localKey) === 0){
-				this.restore(key);
-			}
-		}
-		this._restore_once = false
+		/*for (var key in localStorage)
+			if (   key.indexOf("Sent:"+this._localKey) === 0 || key.indexOf("Received:"+this._localKey) === 0)
+			this.restore(key);*/
+        var that = this;
+        localStorage.keys().then(function(keys) {
+            // An array of all the key names.
+            /*for (var i in keys) {
+                var key = keys[i];
+                console.log("Frank key="+key);
+                if ((typeof key=='string') && key.constructor==String) {
+                    if (key.indexOf("Sent:"+that._localKey) === 0)
+                        that.restore(value);
+                    if (key.indexOf("Received:"+that._localKey) === 0) {
+                        localStorage.getItem(key).then(function (value) {
+                            that.restore2(value);
+                        });
+                    }
+                }
+            }*/
+            forEachAsynSeries(keys, 1, function(key, index, callback) {
+                console.log("Frank key="+key);
+                if ((typeof key=='string') && key.constructor==String) {
+                    if (key.indexOf("Sent:"+that._localKey) === 0)
+                        that.restore(value);
+                    if (key.indexOf("Received:"+that._localKey) === 0) {
+                        localStorage.getItem(key).then(function (value) {
+                            that.restore2(value);
+                        });
+                    }
+                }
+                return callback && callback();
+            }, function(){
+                console.log('localStorage.keys: loop all done');
+            })
+        }).catch(function(err) {
+            // This code runs if there were any errors
+            console.log('localStorage.keys() err='+err);
+        });
 	};
 
 	// Messaging Client public instance members.
@@ -1122,54 +1156,9 @@ var PahoMQTT = (function (global) {
 			default:
 				throw Error(format(ERROR.INVALID_STORED_DATA, [key, storedMessage]));
 		}
-		console.log("localStorage saved", prefix+this._localKey+wireMessage.messageIdentifier, wireMessage.payloadMessage.payloadString)
 		localStorage.setItem(prefix+this._localKey+wireMessage.messageIdentifier, JSON.stringify(storedMessage));
-		console.log("localStorage saved success")
 	};
-	
-	ClientImpl.prototype.store2 = function(prefix, wireMessage) {
-		var storedMessage = {type:wireMessage.type, messageIdentifier:wireMessage.messageIdentifier, version:1};
 
-		switch(wireMessage.type) {
-		  case MESSAGE_TYPE.PUBLISH:
-			  if(wireMessage.pubRecReceived)
-				  storedMessage.pubRecReceived = true;
-
-			  // Convert the payload to a hex string.
-			  storedMessage.payloadMessage = {};
-			  var hex = "";
-			  var messageBytes = wireMessage.payloadMessage.payloadBytes;
-			  for (var i=0; i<messageBytes.length; i++) {
-				if (messageBytes[i] <= 0xF)
-				  hex = hex+"0"+messageBytes[i].toString(16);
-				else
-				  hex = hex+messageBytes[i].toString(16);
-			  }
-			  storedMessage.payloadMessage.payloadHex = hex;
-
-			  storedMessage.payloadMessage.qos = wireMessage.payloadMessage.qos;
-			  storedMessage.payloadMessage.destinationName = wireMessage.payloadMessage.destinationName;
-			  if (wireMessage.payloadMessage.duplicate)
-				  storedMessage.payloadMessage.duplicate = true;
-			  if (wireMessage.payloadMessage.retained)
-				  storedMessage.payloadMessage.retained = true;
-
-			  // Add a sequence number to sent messages.
-			  if ( prefix.indexOf("Sent:") === 0 ) {
-				  if ( wireMessage.sequence === undefined )
-					  wireMessage.sequence = ++this._sequence;
-				  storedMessage.sequence = wireMessage.sequence;
-			  }
-			  break;
-
-			default:
-				throw Error(format(ERROR.INVALID_STORED_DATA, [key, storedMessage]));
-		}
-		console.log("localforage saved", prefix+this._localKey+wireMessage.messageIdentifier, wireMessage.payloadMessage.payloadString)
-		localforage.setItem(prefix+this._localKey+wireMessage.messageIdentifier, JSON.stringify(storedMessage));
-		console.log("localforage saved success")
-	};
-	
 	ClientImpl.prototype.restore = function(key) {
 		var value = localStorage.getItem(key);
 		var storedMessage = JSON.parse(value);
@@ -1211,46 +1200,43 @@ var PahoMQTT = (function (global) {
 			this._receivedMessages[wireMessage.messageIdentifier] = wireMessage;
 		}
 	};
-	
-	ClientImpl.prototype.restore2 = function(val) {
-		var value = val;
-		var storedMessage = JSON.parse(value);
 
-		var wireMessage = new WireMessage(storedMessage.type, storedMessage);
+    ClientImpl.prototype.restore2 = function(value) {
+        var storedMessage = JSON.parse(value);
+        var wireMessage = new WireMessage(storedMessage.type, storedMessage);
 
-		switch(storedMessage.type) {
-		  case MESSAGE_TYPE.PUBLISH:
-			  // Replace the payload message with a Message object.
-			  var hex = storedMessage.payloadMessage.payloadHex;
-			  var buffer = new ArrayBuffer((hex.length)/2);
-			  var byteStream = new Uint8Array(buffer);
-			  var i = 0;
-			  while (hex.length >= 2) {
-				  var x = parseInt(hex.substring(0, 2), 16);
-				  hex = hex.substring(2, hex.length);
-				  byteStream[i++] = x;
-			  }
-			  var payloadMessage = new Paho.MQTT.Message(byteStream);
+        switch(storedMessage.type) {
+          case MESSAGE_TYPE.PUBLISH:
+              // Replace the payload message with a Message object.
+              var hex = storedMessage.payloadMessage.payloadHex;
+              var buffer = new ArrayBuffer((hex.length)/2);
+              var byteStream = new Uint8Array(buffer);
+              var i = 0;
+              while (hex.length >= 2) {
+                  var x = parseInt(hex.substring(0, 2), 16);
+                  hex = hex.substring(2, hex.length);
+                  byteStream[i++] = x;
+              }
+              var payloadMessage = new Paho.MQTT.Message(byteStream);
 
-			  payloadMessage.qos = storedMessage.payloadMessage.qos;
-			  payloadMessage.destinationName = storedMessage.payloadMessage.destinationName;
-			  if (storedMessage.payloadMessage.duplicate)
-				  payloadMessage.duplicate = true;
-			  if (storedMessage.payloadMessage.retained)
-				  payloadMessage.retained = true;
-			  wireMessage.payloadMessage = payloadMessage;
+              payloadMessage.qos = storedMessage.payloadMessage.qos;
+              payloadMessage.destinationName = storedMessage.payloadMessage.destinationName;
+              if (storedMessage.payloadMessage.duplicate)
+                  payloadMessage.duplicate = true;
+              if (storedMessage.payloadMessage.retained)
+                  payloadMessage.retained = true;
+              wireMessage.payloadMessage = payloadMessage;
 
-			  break;
+              break;
 
-			default:
-			  throw Error(format(ERROR.INVALID_STORED_DATA, [key, value]));
-		}
+            default:
+              throw Error(format(ERROR.INVALID_STORED_DATA, [key, value]));
+        }
 
-		this._receivedMessages[wireMessage.messageIdentifier] = wireMessage;
-		console.log("restore2 calling receivedMessage")
-		this._receiveMessage(wireMessage);
-	};
-	
+        this._receivedMessages[wireMessage.messageIdentifier] = wireMessage;
+        this._receiveMessage(wireMessage);
+    };
+
 	ClientImpl.prototype._process_queue = function () {
 		var message = null;
 		// Process messages in order they were added
@@ -1370,54 +1356,21 @@ var PahoMQTT = (function (global) {
 						localStorage.removeItem("Received:"+this._localKey+receivedMessage.messageIdentifier);
 					}
 					this._receivedMessages = {};
-				}else {
+				} else {
+                    var i = 0;
+                    for (var key in this._receivedMessages) {
+                        i += 1;
+                        console.log('LOOP calling _receiveMessage: key=' + key+", i="+i);
+                        var receivedMessage = this._receivedMessages[key];
 
-					console.log('LOOP begin clean _sentMessages' );
-					for (var key in this._sentMessages) {
-						console.log('LOOP calling _sentMessages', key);
-						var sentMessage = this._sentMessages[key];
-						localStorage.removeItem("Sent:"+this._localKey+sentMessage.messageIdentifier);
-					}
-					this._sentMessages = {};
-					console.log('LOOP end clean _sentMessages' );
-					
-					//loop to call receivedMessage callback
-					console.log('LOOP begin calling _receiveMessage' );
-					for (var key in this._receivedMessages) {
-						console.log('LOOP calling _receiveMessage', key);
-						var receivedMessage = this._receivedMessages[key];
-									
-						// If this is a re flow of a PUBREL after we have restarted receivedMessage will not exist.
-						if (receivedMessage) {
-							console.log("calling receivedMessage")
-							this._receiveMessage(receivedMessage);
-							localStorage.removeItem("Received:"+this._localKey+receivedMessage.messageIdentifier);
-						}
-					}	
-					console.log('LOOP end calling _receiveMessage' );
-					this._receivedMessages = {};
-					
-					if (!this._restore_once){
-						this._restore_once = true
-						var that = this
-						localforage.keys().then(function(keys) {
-						    // An array of all the key names.
-						    console.log("StoredKeys", keys.length);
-						    for (var i in keys){
-						    	var keyName = keys[i]
-						    	
-						    	if (keyName.indexOf("Received:"+that._localKey) === 0){
-									localforage.getItem(keyName).then(function (value) {
-										that.restore2(value);
-									})
-								}
-							}
-						}).catch(function(err) {
-						    // This code runs if there were any errors
-						    console.log(err);
-						});
-					}
-				}
+                        // If this is a re flow of a PUBREL after we have restarted receivedMessage will not exist.
+                        if (receivedMessage) {
+                            console.log("calling receivedMessage, "+receivedMessage.messageIdentifier);
+                            this._receiveMessage(receivedMessage);
+                            //localStorage.removeItem("Received:"+this._localKey+receivedMessage.messageIdentifier);
+                        }
+                    }
+                }
 				// Client connected and ready for business.
 				if (wireMessage.returnCode === 0) {
 
@@ -1620,7 +1573,7 @@ var PahoMQTT = (function (global) {
 				break;
 
 			case 1:
-				this.store2("Received:", wireMessage);
+                this.store("Received:", wireMessage);
 				var pubAckMessage = new WireMessage(MESSAGE_TYPE.PUBACK, {messageIdentifier:wireMessage.messageIdentifier});
 				this._schedule_message(pubAckMessage);
 				this._receiveMessage(wireMessage);
@@ -1641,31 +1594,25 @@ var PahoMQTT = (function (global) {
 
 	/** @ignore */
 	ClientImpl.prototype._receiveMessage = function (wireMessage) {
-		//console.log("_receiveMessage")
 		if (this.onMessageArrived) {
-			var msgKey = "Received:"+this._localKey+wireMessage.messageIdentifier;
-			var onMessageArrived = this.onMessageArrived
-			RevMessages.push({
-				payload:wireMessage.payloadMessage, 
-				msgKey:msgKey
-			});
-			if (this.internal == undefined){
-				this.internal = setInterval(function(onMessageArrived){
-					console.log("Interval ", RevMessages.length)
-					if (RevMessages.length){
-						var i = 0
-						var Msg
-						while (Msg = RevMessages.shift()) {
-							console.log("onMessageArrived ", Msg.msgKey)
-							onMessageArrived(Msg.payload, Msg.msgKey,RevMessages.length);
-							i++
-							if (i >= 16){  
-								break;
-							}
-						}   
-					}
-				}, 250, onMessageArrived)
-			}
+            //this.onMessageArrived(wireMessage.payloadMessage);
+            var that = this;
+            var msgKey = "Received:"+this._localKey+wireMessage.messageIdentifier;
+	        this.onMessageArrived(wireMessage.payloadMessage, msgKey, this._receivedMessages.length, function() {
+                try {
+                    /*localforage.length(function(length) {
+                        console.log("localforage.length="+length);
+                    });*/
+                    //console.log("_receiveMessage: callback in, "+wireMessage.messageIdentifier);
+                    localStorage.removeItem(msgKey);
+                    if (that._receivedMessages[wireMessage.messageIdentifier] != null && that._receivedMessages[wireMessage.messageIdentifier] != undefined) {
+                        //console.log("_receiveMessage: remove from _receivedMessages. "+wireMessage.messageIdentifier);
+                        delete that._receivedMessages[wireMessage.messageIdentifier];
+                    }
+                } catch (error) {
+                    console.log("localStorage.removeItem exception: error="+JSON.stringify(error));
+                }
+            });
 		}
 	};
 

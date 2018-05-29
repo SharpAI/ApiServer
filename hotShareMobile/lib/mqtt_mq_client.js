@@ -8,10 +8,10 @@ if(Meteor.isClient){
     var uninsertMessages = [];
     var uninsertMessages_msgKey = [];
     mqtt_connection = null;
-    Session.set('history_message',true);
+    Session.set('history_message',false);
     var noMessageTimer = null; 
     //mqtt_connected = false;
-    var onMessageArrived = function(message, msgKey,len) {
+    var onMessageArrived = function(message, msgKey,len, mqttCallback) {
         console.log("onMessageArrived:"+message.payloadString);
         console.log('message.destinationName= '+message.destinationName);
         console.log('message= ', msgKey, JSON.stringify(message));
@@ -30,20 +30,22 @@ if(Meteor.isClient){
                 console.log('on mqtt message topic: ' + topic + ', message: ' + message.payloadString);
                 if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
                 {
-                    SimpleChat.onMqttMessage(topic, message.payloadString, msgKey);
+                    SimpleChat.onMqttMessage(topic, message.payloadString, msgKey, mqttCallback);
                     var isTesting = Session.get('isStarting');
                     if(isTesting && (topic == '/msg/g/'+isTesting.group_id) && isTesting.isTesting){
                         GroupInstallTest(message.payloadString);
                     }
                 }
                 else if (topic.startsWith('/msg/l/'))
-                    SimpleChat.onMqttLabelMessage(topic, message.payloadString, msgKey);
+                    SimpleChat.onMqttLabelMessage(topic, message.payloadString, msgKey, mqttCallback);
             } catch (ex) {
                 console.log('exception onMqttMessage: ' + ex);
             }
         }
         if (Session.equals('GroupUsersLoaded',true)) {
-            reciveMsg(message, msgKey);
+            setImmediateWrap(function() {
+                reciveMsg(message, msgKey);
+            });
         }
         else{
             console.log('subscribe get my group!');
@@ -446,11 +448,22 @@ if(Meteor.isClient){
     };
     Deps.autorun(function(){
         if(Meteor.userId()){
-            Meteor.setTimeout(function(){
-                initMQTT(Meteor.userId());
-            },1000)
+            function startMQTT() {
+                if (SimpleChat.checkMsgSessionLoaded()) {
+                    console.log("GroundDB all loaded!");
+                    initMQTT(Meteor.userId());
+                } else {
+                    console.log("Waiting for loading GroundDB...");
+                    setTimeout(function(){
+                        startMQTT();
+                    },500);
+                }
+            }
+            setTimeout(function(){
+                startMQTT();
+            },500);
         } else {
-            uninitMQTT()
+            uninitMQTT();
         }
     });
 }

@@ -1,3 +1,13 @@
+setImmediateWrap = function(fn) {
+    if (typeof setImmediate === 'function') {
+        return setImmediate(fn);
+    } else if (typeof process === 'object' && typeof process.nextTick === 'function') {
+        return process.nextTick(fn);
+    } else {
+        return setTimeout(fn, 0);
+    }
+}
+
 forEachAsynSeries = function(dataArray, limit, fn, callback) {
     var done = false;
     var running = 0;
