@@ -2,39 +2,15 @@
     <div class="groupInstallTest">
         <div class="head">
             <strong>部署评测</strong>
-            {{#if canleft}}
             <div class="leftButton back">
                 <i class="fa fa-angle-left fa-fw"></i>
             </div>
-            {{/if}}
+            <div class="rightButton check">
+                <i class="fa fa-ellipsis-h fa-fw" aria-hidden="true"></i>
+            </div>
         </div>
         <div class="content" style="padding-top: 40px;">
-            {{#if isTesting}}
             {{> score}}
-            {{else}}
-            <div id="gif" class="swiper-container gif-box">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide"><img src="/1.gif" width="100%" height="auto" /></div>
-                    <div class="swiper-slide"><img src="/2.gif" width="100%" height="auto" /></div>
-                    <div class="swiper-slide"><img src="/3.gif" width="100%" height="auto" /></div>
-                </div>
-                <div class="swiper-pagination"></div>
-                <!-- <img src="/isLoading.gif" width="100%" height="auto" /> -->
-            </div>
-            
-            <div class="checkbox-custom checkbox-default">
-                <input type="checkbox" id="a" {{astatus}}>
-                <label for="a">按照摄像头说明安装好</label>
-            </div>
-            <div class="checkbox-custom checkbox-default">
-                <input type="checkbox" id="b" {{bstatus}}>
-                <label for="b">盒子启动-能正常扫到盒子</label>
-            </div>
-            <div class="checkbox-custom checkbox-default">
-                <input type="checkbox" id="c" {{cstatus}}>
-                <label for="c">摄像头配置-调整摄像头参数及shinobi导入</label>
-            </div>
-            {{/if}}
         </div>
     </div>
     {{#with popupConfig}}
@@ -47,12 +23,13 @@
     <div class="popup" style="{{isShow}}">
         <div class="pp-dialog">
             <div class="pp-header">
-                <span class="close">
+                <div class="close">
                     <i class="fa fa-close"></i>
-                </span>
+                </div>
+                <h3 class="title">{{head}}</h3>
             </div>
             <div class="pp-content">
-                    {{content}}
+                    {{{content}}}
             </div>
             <div class="pp-foot">
                 <button id="operate" style="color: #00c4ff;">{{btn}}</button>
@@ -102,8 +79,8 @@
                 {{/if}}
             {{/if}}
         </div>
-        {{#if cancel}}
-        <button id="cancel">正在测试中，取消评测</button>
+        {{#if showBtn}}
+        <button id="restart">重新评测</button>
         {{/if}}
     </div>
 </template>

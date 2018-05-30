@@ -1,110 +1,116 @@
-var showPop = new ReactiveVar(false);
+//0:不显示 1:开始测试 2:点击右上角 3:安装检查
+var showPop = new ReactiveVar(0);
 var labelScore = new ReactiveVar('-/-');
 var roateScore = new ReactiveVar('-/-');
+var timer;
 Template.groupInstallTest.onRendered(function(){
     var group_id = Router.current().params._id;
     Meteor.subscribe('device_by_groupId',group_id);
-    var mySwiper = new Swiper('#gif',{
-        pagination: '.swiper-pagination',
-    });
-    var group = SimpleChat.Groups.findOne({_id:group_id});
-    if(group.installStatus && group.installStatus.a && group.installStatus.b && group.installStatus.c){
-        showPop.set(true);
-    }
+    showPop.set(1);
 })
 
 Template.groupInstallTest.helpers({
-    astatus:function(){
-        var group_id = Router.current().params._id;
-        var group = SimpleChat.Groups.findOne({_id:group_id});
-        if(group.installStatus && group.installStatus.a){
-            return "checked";
-        }
-        return "";
-    },
-    bstatus:function(){
-        var group_id = Router.current().params._id;
-        var group = SimpleChat.Groups.findOne({_id:group_id});
-        if(group.installStatus && group.installStatus.b){
-            return "checked";
-        }
-        return "";
-    },
-    cstatus:function(){
-        var group_id = Router.current().params._id;
-        var group = SimpleChat.Groups.findOne({_id:group_id});
-        if(group.installStatus && group.installStatus.c){
-            return "checked";
-        }
-        return "";
-    },
-    canleft:function(){
-        var s = Session.get('isStarting');
-        if(!s || !s.isTesting){
-            return true;
-        }
-        return false;
-    },
     popupConfig:function(){
-        var isShow = showPop.get()?"":"display:none;"
+        var s = showPop.get();
+        var isShow = s === 0?"display:none;":"";
+        var content = '';
+        var btn = '';
+        var head = '';
+        switch(s){
+            case 1:
+                content = '点击开始之前，请确保只有一人进入摄像头画面，点击开始之后，请距离1-2米正面对着摄像头20秒后离开';
+                btn = '开始';
+                break;
+            case 2:
+                content = '请点击右上角查看帮助';
+                btn = '确定';
+                break;
+            case 3:
+                head = '请按以下步骤检查';
+                content = '<p>1.按照摄像头说明安装好</p><p>2.盒子启动-能正常扫到盒子</p><p>3.摄像头配置-调整摄像头参数及shinobi导入</p>';
+                btn = "确定";
+                break;
+
+        }
         return {
             isShow:isShow,
-            content:"点击开始之前，请确保只有一人进入摄像头画面，点击开始之后，请距离1-2米正面对着摄像头20秒后离开",
-            btn:"开始"
+            content:content,
+            btn:btn,
+            head:head
         }
     },
-    isTesting:function(){
-        var s = Session.get('isStarting');
-        var group_id = Router.current().params._id;
-        if(s&&s.group_id == group_id){
-            if(s.showScore){
-                return true;
-            }
-            return s.isTesting;
-        }
-        return false;
-    }
 })
 Template.groupInstallTest.events({
-    'click input[type=checkbox]':function(e){
-        var group_id = Router.current().params._id;
-        console.log(e.currentTarget.id);
-        var isFinish = $("#"+e.currentTarget.id).is(':checked');
-        var key = 'installStatus.'+e.currentTarget.id;
-        var setting = {};
-        setting[key] = isFinish;
-        Meteor.call('update_install_status',group_id,setting,function(err){
-            if(err){
-                console.log(err);
-                return;
-            }
-            var group = SimpleChat.Groups.findOne({_id:group_id});
-            if(group.installStatus && group.installStatus.a && group.installStatus.b && group.installStatus.c){
-                showPop.set(true);
-            }
-        });
+    'click .check':function(e){
+        showPop.set(3);
     },
     'click .back':function(e){
         e.preventDefault();
         e.stopPropagation();
+        var s = Session.get('isStarting');
+        if(s && s.isTesting){
+            return PUB.toast('正在测试中，请勿离开');
+        }
         Session.set('isStarting',null);
         return PUB.back();
     },
     'click #operate':function(e){
         e.stopPropagation();
-        var group_id = Router.current().params._id;
-        Session.set('isStarting',{
-            isTesting:true,
-            group_id:group_id
-        })
-        showPop.set(false);
-        //开始测试
+        var t = showPop.get();
+        if(t == 1){
+            var group_id = Router.current().params._id;
+            Session.set('isStarting',{
+                isTesting:true,
+                group_id:group_id
+            })
+            //开始测试
+            $('.progress-bar').addClass('time');
+            timer = Meteor.setTimeout(test_score,40*1000);
+        }
+        showPop.set(0);
     },
 
 })
+var test_score = function(){
+    $('.progress').hide();
+    $('.progress-bar').removeClass('time');
+    var st = Session.get('isStarting');
+    st.isTesting = false;
+    st.showScore = true;
+    
+    var totalCount = message_queue.length;
+    var labelArr = _.filter(message_queue,function(m){
+        if(m.label &&  m.label != ''){
+            return true;
+        }
+        return false;
+    });
+    var frontArr = _.filter(message_queue,function(m){
+        return m.style == 'front'
+    });
+    var front_len = frontArr.length;
+    if(totalCount != 0){
+        roateScore.set(Math.floor(front_len/totalCount * 100) + '');
+    }else{
+        roateScore.set('0');
+        showPop.set(2);
+    }
+    if(front_len != 0){
+        labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
+    }else{
+        labelScore.set('0');
+    }
+    message_queue = [];
+    if(totalCount == 0 || front_len == 0){
+        st.status = "fail";
+    }else{
+        st.status = "success";
+    }
+    Session.set('isStarting',st);
+}
 Template.popup.events({
     'click .close':function(){
-        showPop.set(false);
+        showPop.set(0);
     }
 })
 Template.score.helpers({
@@ -116,14 +122,14 @@ Template.score.helpers({
     },
     cancel:function(){
         var s = Session.get('isStarting');
-        if(!s || !s.isTesting){
-            return false;
+        if(!s || s.isTesting){
+            return true;
         }
-        return true;
+        return false;
     },
     isSuccess:function(){
         var s = Session.get('isStarting');
-        if(s && s.status == "success"){
+        if(s.status == "success"){
             return true;
         }
         return false;
@@ -137,66 +143,30 @@ Template.score.helpers({
             return true;
         }
         return false;
-    }
+    },
+    showBtn:function(){
+        var s = Session.get('isStarting');
+        if(!s || s.isTesting){
+            return false;
+        }
+        return true;
+    },
 })
-// var progress = 0;
-var timer;
+
 Template.score.onRendered(function(){
-    // if(timer){
-    //     Meteor.clearTimeout(timer);
-    //     timer = null;
-    // }
-    $('.progress-bar').addClass('time');
-    timer = Meteor.setTimeout(function(){
-        // progress = progress + 1;
-        // $('.progress-bar').css('width',Math.floor(progress/120 * 100)+"%");
-        // if(progress == 120){
-            // Meteor.clearTimeout(timer);
-            // timer = null;
-            $('.progress').hide();
-            var st = Session.get('isStarting');
-            st.isTesting = false;
-            st.showScore = true;
-            
-            var totalCount = message_queue.length;
-            var labelArr = _.filter(message_queue,function(m){
-                if(m.label &&  m.label != ''){
-                    return true;
-                }
-                return false;
-            });
-            var frontArr = _.filter(message_queue,function(m){
-                return m.style == 'front'
-            });
-            var front_len = frontArr.length;
-            if(totalCount != 0){
-                roateScore.set(Math.floor(front_len/totalCount * 100) + '');
-            }else{
-                roateScore.set('0');
-            }
-            if(front_len != 0){
-                labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
-            }else{
-                labelScore.set('0');
-            }
-            message_queue = [];
-            if(totalCount == 0 || front_len == 0){
-                st.status = "fail";
-            }else{
-                st.status = "success";
-            }
-            Session.set('isStarting',st);
-        // }
-    },40*1000);
 })
 Template.score.events({
-    'click #cancel':function(e){
-        var st = Session.get('isStarting');
-        st.isTesting = false;
-        st.showScore = true;
-        Session.set('isStarting',st);
+    'click #restart':function(e){
+        labelScore.set('-/-');
+        roateScore.set('-/-');
         message_queue = [];
-        Meteor.clearInterval(timer);
+        var st = Session.get('isStarting');
+        st.isTesting = true;
+        st.showScore = null;
+        Session.set('isStarting',st);
+        $('.progress').show();
+        $('.progress-bar').addClass('time');
+        timer = Meteor.setTimeout(test_score,40*1000);
     },
     'click #goTimeLine':function(){
         var group_id = Router.current().params._id;
