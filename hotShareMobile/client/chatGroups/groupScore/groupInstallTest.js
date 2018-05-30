@@ -49,7 +49,7 @@ Template.groupInstallTest.helpers({
         var isShow = showPop.get()?"":"display:none;"
         return {
             isShow:isShow,
-            content:"请在点击开始之后,1分钟内到摄像头面前正面站立大概1分钟左右离开,然后查看评测分数,根据分数调整配置",
+            content:"点击开始之前，请确保只有一人进入摄像头画面，点击开始之后，请距离1-2米正面对着摄像头20秒后离开",
             btn:"开始"
         }
     },
@@ -187,7 +187,7 @@ Template.score.onRendered(function(){
             }
             Session.set('isStarting',st);
         // }
-    },120*1000);
+    },40*1000);
 })
 Template.score.events({
     'click #cancel':function(e){

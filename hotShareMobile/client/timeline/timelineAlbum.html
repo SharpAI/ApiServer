@@ -50,7 +50,7 @@
     {{else}}
     {{#if lists}}
     <ul class="timeLine">
-      <div style="color: #FF9800;font-size: 16px;"> 点击头像，选择您的上/下班时间&nbsp;&nbsp;&nbsp;<a id="goHint" style="color:rgb(0, 119, 255)">未识别照片?</a></div>
+      <div style="color: #FF9800;font-size: 16px;position: relative"> 点击头像，选择您的上/下班时间<button id="goHint" style="color:rgb(0, 119, 255)">标注助手</button></div>
       <!--{{#each lists}}
       {{#if isShowTime}}
       <div class="timeLine-time"> 
@@ -248,10 +248,32 @@
   <!-- select person end-->
 
   {{#if showHint}}
-  {{>notice}}
+  {{>zhoushou}}
   {{/if}}
 </template>
 
 <template name="timelineAlbumImg">
   <img class="lazy" data-original="{{img_url}}" />
+</template>
+<template name="zhoushou">
+    <div class="zhoushou" style="z-index: 1000;">
+        <div class="head">
+          <strong>公司陌生人</strong>
+          <div id="farhint" class="leftButton">
+            <i class="fa fa-angle-left fa-fw"></i>
+          </div>
+        </div>
+        <div class="content" style="padding-top: 40px;">
+          <div class="img-box">
+              <img src="/biaozhu.png" width="100%" height="auto">
+          </div>
+          <div class="describe">
+              <p>“来了吗”自带算法会选择部分照片进行人脸识别。</p>
+              <p>这里展示的是没有被系统选中的照片。</p>
+              <p>更多标识带来更好的识别体验，</p>
+              <p>我们希望您可以继续选择清晰正脸的照片进行标注。</p>
+          </div>
+          
+        </div>
+      </div>
 </template>

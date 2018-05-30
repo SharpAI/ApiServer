@@ -647,7 +647,7 @@ Template.timelineAlbum.helpers({
 
 Template.timelineAlbum.events({
   'click #goHint':function(){
-    Session.set('notice-from','timelineAlbum');
+    // Session.set('notice-from','timelineAlbum');
     Session.set('showHint',true);
   },
   'click .back': function(){
@@ -1248,3 +1248,11 @@ Template.timelineAlbumImg.onRendered(function(){
   var $img = this.$('img');
   lazyloadInit($('ul.timeLine'));
 });
+Template.zhoushou.events({
+  'click #farhint':function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    Session.set('showHint',false);
+    return false;
+  }
+})
