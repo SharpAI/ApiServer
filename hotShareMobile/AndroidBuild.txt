@@ -50,6 +50,9 @@ vim gradle.properties
 加入一下内容：
 android.useDeprecatedNdk=true
 
+替换ｂｕｉｌｄ．ｇｒａｄｌｅ文件
+cp ~/workspace/hotShare/hotShareMobile/android.build.gradle ./build.gradle
+
 生成ｇｒａｄｌｅｗ文件
 gradle wrapper
 
