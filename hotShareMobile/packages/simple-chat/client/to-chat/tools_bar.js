@@ -91,7 +91,7 @@ var toolsBarBase = {
     return targetLeft;
   },
   getTargetTop: function(srcElement) {
-    var srcOffsetTop = $(srcElement).offset().top;
+    var srcOffsetTop = $(srcElement).parents('li:first')[0].offsetTop + 20;
     var toolsBarHeight = this.toolsBar.height();
     var targetTop = srcOffsetTop - toolsBarHeight;
     return targetTop;
