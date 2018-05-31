@@ -510,6 +510,10 @@ Template._simpleChatToChat.onRendered(function(){
 
     $box.scroll(function () {
       console.log("$box.scrollTop()="+$box.scrollTop()+", is_loading.get()="+is_loading.get());
+      if(!isMultipleChoice.get() && toolsBar){
+        toolsBar.hide();
+        toolsBar = null;
+      }
       if($box.scrollTop() === 0 && !is_loading.get()){
         // if(slef.data.messages.count() >= list_limit.get())
         is_loading.set(true);
@@ -1441,10 +1445,16 @@ Template._checkGroupDevice.events({
     Session.set('_checkGroupDevice_status', 'status_open_device');
     console.log("_checkGroupDevice_status set to status_open_device")
     Session.set('_timelineAlbumFromGroupId', this.groupId);
+    var path = Session.get('toPath');
+    if(path && path!=''){
+      Session.set('toPath',null);
+      return PUB.page(path+'/'+this.uuid);
+    }
     return PUB.page('/timelineAlbum/'+this.uuid+'?from=groupchat');
   },
   'click ._checkGroupDevice, click ._cgd_close': function(e) {
     Session.set('_groupChatDeviceLists',[]);
+    Session.set('toPath',null);
     return $('._checkGroupDevice').fadeOut();
   },
   'click ._cgd_close': function(e) {

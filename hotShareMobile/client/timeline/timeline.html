@@ -1,18 +1,19 @@
 <template name="timeline">
   <div class="timeline">
       <div class="head">
-        <strong class="top-home-btn active">设备列表</strong>
+        <strong class="top-home-btn active">时间轴</strong>
         <!-- <div class="leftButton back">
           <i class="fa fa-angle-left fa-fw"></i>
         </div> -->
       </div>
-      <div class="content" style="margin-top: 20px;">
+      <div class="content">
       {{#if isLoading}}
       <div style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
         <img src="/loading.gif" width="24px" height="24px"/> 加载中...
       </div>
       {{else}}
       {{#if lists}}
+      <div class="sub_head"><p>请选择要查看的设备</p></div>
       {{#each lists}}
         <div id="{{group_id}}" class="line" style="height: 20px; text-align:left; padding-left:10px; color:#555;">{{group_name}}</div>
         <ul class="set-up comFadeIn">

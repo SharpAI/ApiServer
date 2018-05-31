@@ -4,9 +4,16 @@ var labelScore = new ReactiveVar('-/-');
 var roateScore = new ReactiveVar('-/-');
 var showRes = new ReactiveVar(true);
 var timer;
+var uuid;
+var deviceUserId;
 Template.groupInstallTest.onRendered(function(){
     var group_id = Router.current().params._id;
-    Meteor.subscribe('device_by_groupId',group_id);
+    uuid = Router.current().params.uuid;
+    Meteor.subscribe('devices-by-uuid',uuid,function(err){
+        if(err){
+            console.log(err);
+        }
+    });
     var st = Session.get('isStarting');
     if(st && st.label_score){
         labelScore.set(st.label_score);
@@ -80,6 +87,8 @@ Template.groupInstallTest.events({
             })
             //开始测试
             $('.progress-bar').addClass('time');
+            var du = Meteor.users.findOne({username:uuid});
+            deviceUserId = du._id;
             timer = Meteor.setTimeout(test_score,40*1000);
         }
         showPop.set(0);
@@ -199,15 +208,8 @@ Template.score.events({
         st.label_score = labelScore.get();
         st.roate_score = roateScore.get();
         Session.set('isStarting',st);
-        if (deviceLists && deviceLists.length > 0) {
-            if(deviceLists.length == 1 && deviceLists[0].uuid) {
-              return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?from=groupchat');
-            } else {
-              Session.set('_groupChatDeviceLists',deviceLists);
-              return $('._checkGroupDevice').fadeIn();
-            }
-        }
-        return PUB.toast('该群组下暂无设备');
+        var uuid = Router.current().params.uuid;
+        return PUB.page('/timelineAlbum/'+uuid+'?from=groupchat');
     },
     'click #goLink':function(e){
         var ref = cordova.ThemeableBrowser.open('http://workaiossqn.tiegushi.com/description.pdf', '_blank', {  
@@ -237,11 +239,18 @@ Template.score.events({
 })
 var message_queue = [];
 GroupInstallTest = function(message){
+    //users表 username(uuid) ==> message.form.id(users表的_id)  
+    var uuid = Router.current().params.uuid;
     message = JSON.parse(message);
     console.log('GroupInstallTest');
     if(message.event_type == "motion"){
         return;
     }
+    if(message.form.id != deviceUserId){
+        console.log('rmMsg',message.form.name,deviceUserId);
+        return;
+    }
+
     if(message.images && message.images.length>0){
         message_queue.push.apply(message_queue,message.images);
     } 

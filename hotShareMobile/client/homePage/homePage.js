@@ -126,7 +126,27 @@ Template.homePage.events({
     return PUB.page('/device/dashboard/' + this._id);
   },
   'click .goInstallTest':function(e){
-    return PUB.page('/groupInstallTest/'+this._id);
+    var group_id = this._id;
+    //根据group_id得到group下的设备列表
+    Meteor.call('getDeviceListByGroupId', group_id, function (err, deviceLists) {
+      if(err){
+        console.log('getDeviceListByGroupId:',err);
+        return;
+      }
+      console.log("device lists is: ", JSON.stringify(deviceLists));
+      if (deviceLists && deviceLists.length > 0) {
+        if (deviceLists.length == 1 && deviceLists[0].uuid) {
+          console.log("enter this device install test");
+          return PUB.page('/groupInstallTest/'+group_id+'/' + deviceLists[0].uuid);
+        } else {
+          Session.set('_groupChatDeviceLists', deviceLists);
+          Session.set('toPath','/groupInstallTest/'+group_id);
+          $('._checkGroupDevice').fadeIn();
+          return;
+        }
+      }
+      return PUB.toast('该群组下暂无设备');
+    });  
   },
   'click .goGroupPerson': function (e) {
     return PUB.page('/groupPerson/' + this._id);
