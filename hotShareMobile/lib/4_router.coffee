@@ -291,6 +291,7 @@ if Meteor.isClient
       this.render 'redirect'
       return
     Router.route '/groupInstallTest/:_id',()->
+      Session.set('channel','groupInstallTest/'+this.params._id);
       this.render 'groupInstallTest'
       return
     Router.route '/groupPerson/:_id', ()->

@@ -31,7 +31,7 @@
             <div class="pp-content">
                     {{{content}}}
             </div>
-            <div class="pp-foot">
+            <div class="pp-foot" style="{{showFoot}}">
                 <button id="operate" style="color: #00c4ff;">{{btn}}</button>
             </div>
         </div>
@@ -57,7 +57,7 @@
         </div>
         <div class="score-box">
             <label style="display: block">识别分数:&nbsp;&nbsp;&nbsp;{{label_score}}</label>
-            {{#if cancel}}
+            {{#if showRes}}
             {{else}}
                 {{#if testres 1}}
                 <label style="color: #66FF66;">产品配置较好，可以正常使用</label>
@@ -69,7 +69,7 @@
         </div>
         <div class="score-box">
             <label style="display: block">角度分数:&nbsp;&nbsp;&nbsp;{{roate_score}}</label>
-            {{#if cancel}}
+            {{#if showRes}}
             {{else}}
                 {{#if testres 2}}
                 <label style="color: #66FF66;">产品部署角度较好，可以正常使用</label>

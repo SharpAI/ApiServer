@@ -2,11 +2,21 @@
 var showPop = new ReactiveVar(0);
 var labelScore = new ReactiveVar('-/-');
 var roateScore = new ReactiveVar('-/-');
+var showRes = new ReactiveVar(true);
 var timer;
 Template.groupInstallTest.onRendered(function(){
     var group_id = Router.current().params._id;
     Meteor.subscribe('device_by_groupId',group_id);
-    showPop.set(1);
+    var st = Session.get('isStarting');
+    if(st && st.label_score){
+        labelScore.set(st.label_score);
+    }
+    if(st && st.roate_score){
+        roateScore.set(st.roate_score);
+    }
+    if(!st){
+        showPop.set(1);
+    }
 })
 
 Template.groupInstallTest.helpers({
@@ -16,14 +26,16 @@ Template.groupInstallTest.helpers({
         var content = '';
         var btn = '';
         var head = '';
+        var showFoot = '';
         switch(s){
             case 1:
                 content = '点击开始之前，请确保只有一人进入摄像头画面，点击开始之后，请距离1-2米正面对着摄像头20秒后离开';
                 btn = '开始';
                 break;
             case 2:
-                content = '请点击右上角查看帮助';
-                btn = '确定';
+                content = '设备未接通，请查看右上角帮助';
+                // btn = '确定';
+                showFoot = 'display:none';
                 break;
             case 3:
                 head = '请按以下步骤检查';
@@ -36,7 +48,8 @@ Template.groupInstallTest.helpers({
             isShow:isShow,
             content:content,
             btn:btn,
-            head:head
+            head:head,
+            showFoot:showFoot
         }
     },
 })
@@ -47,10 +60,12 @@ Template.groupInstallTest.events({
     'click .back':function(e){
         e.preventDefault();
         e.stopPropagation();
-        var s = Session.get('isStarting');
-        if(s && s.isTesting){
-            return PUB.toast('正在测试中，请勿离开');
-        }
+        // var s = Session.get('isStarting');
+        // if(s && s.isTesting){
+        //     return PUB.toast('正在测试中，请勿离开');
+        // }
+        Meteor.clearTimeout(timer);
+        timer = null;
         Session.set('isStarting',null);
         return PUB.back();
     },
@@ -94,6 +109,7 @@ var test_score = function(){
     }else{
         roateScore.set('0');
         showPop.set(2);
+        showRes.set(false);
     }
     if(front_len != 0){
         labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
@@ -123,6 +139,13 @@ Template.score.helpers({
     cancel:function(){
         var s = Session.get('isStarting');
         if(!s || s.isTesting){
+            return true;
+        }
+        return false;
+    },
+    showRes:function(){
+        var s = Session.get('isStarting');
+        if(!s || s.isTesting || !showRes.get()){
             return true;
         }
         return false;
@@ -159,6 +182,7 @@ Template.score.events({
     'click #restart':function(e){
         labelScore.set('-/-');
         roateScore.set('-/-');
+        showRes.set(true);
         message_queue = [];
         var st = Session.get('isStarting');
         st.isTesting = true;
@@ -171,6 +195,10 @@ Template.score.events({
     'click #goTimeLine':function(){
         var group_id = Router.current().params._id;
         var deviceLists =  Devices.find({groupId: group_id}).fetch();
+        var st = Session.get('isStarting');
+        st.label_score = labelScore.get();
+        st.roate_score = roateScore.get();
+        Session.set('isStarting',st);
         if (deviceLists && deviceLists.length > 0) {
             if(deviceLists.length == 1 && deviceLists[0].uuid) {
               return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?from=groupchat');
@@ -178,7 +206,7 @@ Template.score.events({
               Session.set('_groupChatDeviceLists',deviceLists);
               return $('._checkGroupDevice').fadeIn();
             }
-          }
+        }
         return PUB.toast('该群组下暂无设备');
     },
     'click #goLink':function(e){
