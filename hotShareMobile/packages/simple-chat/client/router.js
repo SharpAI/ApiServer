@@ -510,10 +510,6 @@ Template._simpleChatToChat.onRendered(function(){
 
     $box.scroll(function () {
       console.log("$box.scrollTop()="+$box.scrollTop()+", is_loading.get()="+is_loading.get());
-      if(!isMultipleChoice.get() && toolsBar){
-        toolsBar.hide();
-        toolsBar = null;
-      }
       if($box.scrollTop() === 0 && !is_loading.get()){
         // if(slef.data.messages.count() >= list_limit.get())
         is_loading.set(true);
