@@ -2931,11 +2931,11 @@ if Meteor.isServer
               try
                 Email.send({
                   to:email_address,
-                  from:'点圈<notify@mail.tiegushi.com>',
+                  from:'来了吗<notify@mail.tiegushi.com>',
                   subject:subject,
                   html : text,
                   envelope:{
-                    from:'点圈<notify@mail.tiegushi.com>',
+                    from:'来了吗<notify@mail.tiegushi.com>',
                     to:email_address + '<' + email_address + '>'
                   }
                 })

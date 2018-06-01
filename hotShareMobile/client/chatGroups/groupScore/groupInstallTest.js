@@ -1,7 +1,7 @@
 //0:不显示 1:开始测试 2:点击右上角 3:安装检查
 var showPop = new ReactiveVar(0);
-var labelScore = new ReactiveVar('-/-');
-var roateScore = new ReactiveVar('-/-');
+var labelScore = new ReactiveVar('---');
+var roateScore = new ReactiveVar('---');
 var showRes = new ReactiveVar(true);
 var timer;
 var uuid;
@@ -115,6 +115,7 @@ var test_score = function(){
     var front_len = frontArr.length;
     if(totalCount != 0){
         roateScore.set(Math.floor(front_len/totalCount * 100) + '');
+        showRes.set(true);
     }else{
         roateScore.set('0');
         showPop.set(2);
@@ -183,15 +184,32 @@ Template.score.helpers({
         }
         return true;
     },
+    showCancel:function(){
+        var s = Session.get('isStarting');
+        if(s && s.isTesting){
+            return true;
+        }
+        return false;
+    }
 })
 
 Template.score.onRendered(function(){
 })
 Template.score.events({
+    'click #cancel':function(){
+        Meteor.clearTimeout(timer);
+        var s = Session.get('isStarting');
+        s.isTesting = false;
+        Session.set('isStarting',s);
+        message_queue = [];
+        // $('.progress').hide();
+        showRes.set(false);
+        $('.progress-bar').removeClass('time');
+    },
     'click #restart':function(e){
-        labelScore.set('-/-');
-        roateScore.set('-/-');
-        showRes.set(true);
+        labelScore.set('---');
+        roateScore.set('---');
+        showRes.set(false);
         message_queue = [];
         var st = Session.get('isStarting');
         st.isTesting = true;

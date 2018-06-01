@@ -39,9 +39,9 @@
 </template>
 <template name="score">
     <div class="score">
-        <div class="gif-box" style="padding-top: 20px;">
+        <div class="gif-box" style="padding-top: 40px;">
             {{#if cancel}}
-            <img src="/group_test.png" width="68.8%" height="auto" />
+            <img src="/group_test.png" width="77%" height="auto" />
             {{else}}
                 {{#if isSuccess}}
                 <img src="/test_success.png" width="35.5%" height="auto" />
@@ -50,8 +50,16 @@
                 {{/if}}
             {{/if}}
         </div>
-        <div class="progress " style="width: 80%;height: 20px;margin-left: 10%;border-radius: 10px;">
-            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+        {{#if showCancel}}
+        <div class="testing">
+            <span>测试中</span>
+            <div class="dot" style="animation-delay: -0s;"></div>
+            <div class="dot" style="animation-delay: -0.3s;"></div>
+            <div class="dot" style="animation-delay: -0.6s;"></div>
+        </div>
+        {{/if}}
+        <div class="progress " style="width: 85%;height: 18px;margin-left: 7.5%;border-radius: 10px;margin-top: 20px;background: #F2F2F2">
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;background: #37a7fe">
                 <!-- <span class="sr-only">0% 完成 progress-striped active</span> -->
             </div>
         </div>
@@ -62,8 +70,10 @@
                 {{#if testres 1}}
                 <label style="color: rgb(15, 180, 15);">产品配置较好，可以正常使用</label>
                 {{else}}
+                <div>
                 <label style="color: rgb(228, 62, 62);">标注不够</label>
-                <button id="goTimeLine">去标注</button>
+                <button style="float: right;" id="goTimeLine">去标注</button>
+                </div>
                 {{/if}}
             {{/if}}
         </div>
@@ -74,13 +84,18 @@
                 {{#if testres 2}}
                 <label style="color: rgb(15, 180, 15);">产品部署角度较好，可以正常使用</label>
                 {{else}}
+                <div>
                 <label style="color: rgb(228, 62, 62);">产品部署角度不好</label>
-                <button id="goLink">查看文档</button>
+                <button style="float: right" id="goLink">查看文档</button>
+                </div>
                 {{/if}}
             {{/if}}
         </div>
         {{#if showBtn}}
         <button id="restart">重新评测</button>
+        {{/if}}
+        {{#if showCancel}}
+        <button id="cancel">点击取消</button>
         {{/if}}
     </div>
 </template>

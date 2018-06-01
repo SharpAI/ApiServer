@@ -27,7 +27,8 @@ window.SELECT_CREATE_GROUP = SELECT_CREATE_GROUP;
 
 var isCreating = new ReactiveVar(false);
 var addDeviceToGroup = function(group_id, group_name) {
-  d.groupId = group_id;
+  // d.groupId不存在的，此时赋值（改变了元数据），如果本次没有添加成功，那么下次为changeDeviceGroup
+  // d.groupId = group_id;
   d.groupName = group_name;
 
   var uuid = d.uuid;

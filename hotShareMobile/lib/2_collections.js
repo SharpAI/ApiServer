@@ -73,13 +73,13 @@ NLPTextClassName = {
 }
  */
 
-//点圈用户和平板识别出的人的关系表 
+//来了吗用户和平板识别出的人的关系表 
 WorkAIUserRelations = new Meteor.Collection('workaiUserRelations');
 
 /*
 WorkAIUserRelations = {
- app_user_id:<Integer> //点圈用户
- app_user_name:<String> //点圈用户名
+ app_user_id:<Integer> //来了吗用户
+ app_user_name:<String> //来了吗用户名
  ai_persons:[{id:}] //平板识别的人
  ai_in_time:<Date> //平板检测到这个人的进门时间
  ai_out_time:<Date> //平板检测到这个人的出门时间
@@ -96,8 +96,8 @@ WorkStatus = new Meteor.Collection('workStatus');
 ClusterWorkStatus = new Meteor.Collection('clusterWorkStatus');
 /*
 {
-    app_user_id:<Integer> //点圈用户
-    app_user_name:<String> //点圈用户名
+    app_user_id:<Integer> //来了吗用户
+    app_user_name:<String> //来了吗用户名
     group_id: <String>, // 组id
     date: <Integer>, // 20170810
     person_id: <String>, //

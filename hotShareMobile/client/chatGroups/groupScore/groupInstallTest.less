@@ -146,30 +146,57 @@
         line-height: 40px;
         padding-left: 50px;
         text-align: left;
+        font-size: 15px;
+        color: #333333;
     }
     button{
-        // width: 80px;
-        margin-left: 20px;
+        width: 80px;
         color: #f5f5f5;
         border-radius: 5px;
-        background:#37a7fe;
+        background:#607590;
         height: 40px;
         border: none;
-        font-weight: bold;
+        // font-weight: bold;
+        font-size: 16px;
     }
     label{
         font-weight: normal;
     }
-    #restart{
+    #restart,#cancel{
         margin-top: 20px;
-        width: 50%;
+        width: 64%;
+        height: 50px;
+        background: #ff453c;
+        font-size: 16px;
     }
+
     .time{
         animation: timer 40s linear 1;
+    }
+    .testing{
+        text-align: center;
+        font-size: 15px;
+        color: #333333;
+        .dot{
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #333333;
+            animation: loading 1s infinite ease-in-out;
+        }
     }
 }
 
 @keyframes timer{
     0%{width: 0%}
     100%{width: 100%}
+}
+@keyframes loading {
+    0%,100%{
+        transform: scale(0.5);
+    }
+    60%{
+        transform: scale(1);
+    }
 }
