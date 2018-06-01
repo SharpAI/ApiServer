@@ -136,25 +136,39 @@ Template.recoveryForm.events
       email = t.find('#recovery-email').value
       if email is ''
         return
+      qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
+      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
+      if !mailValueReg.test(email) and !qqValueReg.test(email)
+        PUB.toast('请输入正确的QQ号或Email')
+        return false
+      if qqValueReg.test(email)
+        email += '@qq.com'
       t.find('#sub-recovery').disabled = true
       t.find('#sub-recovery').innerText = '正在重设...'
+      subject = '用户' + email + '需要重置密码！'
+      content = "来了吗APP收到新的重置密码申请，请尽快处理!\n\n申请信息――\n\n用户账户邮箱：" + email + "\n\n\n本邮件为系统自动发送，请不要直接回复，谢谢！"
+      Meteor.call('sendEmailToAdmin', email,subject ,content)
+      PUB.toast('重置密码请求已经提交客服，请等待客服与您联系。')
+      Router.go '/loginForm'
+
+###
       Accounts.forgotPassword {email:email},(error)->
-        t.find('#sub-recovery').disabled = false
-        t.find('#sub-recovery').innerText = '重设'
-        if error
-          if error.error is 403 and error.reason is 'User not found'
-            PUB.toast '您填写的邮件地址不存在！'
-          else
-            PUB.toast '暂时无法处理您的请求，请稍后重试！'
-        else
-          #PUB.toast '请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。'
-          navigator.notification.confirm('请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。', (r)->
-            if r is 1
-              $('#recovery-email').val('');
-          , '提示信息', ['确定']);
-          Router.go '/loginForm'
-          # $('.login').css('display',"none")
-          # $('#register').css('display',"block")
-          # $('#weibo').css('display',"block")
-          # $('#login').css('display',"block")
-          # $('.recovery').css('display',"none")
+       t.find('#sub-recovery').disabled = false
+       t.find('#sub-recovery').innerText = '重设'
+       if error
+         if error.error is 403 and error.reason is 'User not found'
+           PUB.toast '您填写的邮件地址不存在！'
+         else
+           PUB.toast '暂时无法处理您的请求，请稍后重试！'
+       else
+          PUB.toast '请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。'
+         navigator.notification.confirm('请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。', (r)->
+           if r is 1
+             $('#recovery-email').val('');
+         , '提示信息', ['确定']);
+         Router.go '/loginForm'
+          $('.login').css('display',"none")
+          $('#register').css('display',"block")
+          $('#weibo').css('display',"block")
+          $('#login').css('display',"block")
+          $('.recovery').css('display',"none")###
