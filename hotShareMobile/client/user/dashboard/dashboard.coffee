@@ -128,7 +128,7 @@ if Meteor.isClient
           , ->
             console.log 'setUserInfo was Error!'
             return
-        Router.go '/authOverlay'
+        Router.go '/loginForm'
   Template.my_email.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     return
@@ -258,7 +258,7 @@ if Meteor.isClient
           , ->
             console.log 'setUserInfo was Error!'
             return
-        Router.go '/authOverlay'
+        Router.go '/loginForm'
 
   Template.my_notice.rendered=->
     $('.dashboard').css 'min-height', $(window).height()

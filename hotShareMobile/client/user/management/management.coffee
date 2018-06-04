@@ -15,7 +15,7 @@ loginFn = (id)->
     else if err is 'NOT_LOGIN'
       return navigator.notification.confirm('切换帐号时发生异常，需要重新登录您的帐号！'
         ()->
-          return Router.go '/authOverlay'
+          return Router.go '/loginForm'
         '提示', ['重新登录']
       )
     else if err is 'WAIT_TIME'

@@ -334,7 +334,7 @@ if (Meteor.isCordova) {
         if (Session.get("dealBack") == "register"){
           Router.go('/signupForm');
         } else if (Session.get("dealBack") == "anonymous"){
-          Router.go('/authOverlay');
+          Router.go('/loginForm');
           Meteor.setTimeout(function(){
             $('.agreeDeal').css('display',"block")
           },10);
