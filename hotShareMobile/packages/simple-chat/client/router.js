@@ -136,6 +136,10 @@ Template._simpleChatToChat.onRendered(function(){
      console.log(err)
    }
   }
+  if (toolsBar && toolsBar.selectedItems.length > 0) {
+    toolsBar.selectedItems = [];
+  }
+  isMultipleChoice.set(false);
   //开启已读消息模式
   if (withEnableHaveReadMsg && page_data.type === 'user') {
     var lastMsg =  Messages.findOne({'form.id': page_data.id, 'to.id': Meteor.userId(), to_type: page_data.type},{ sort: {create_time: -1}});
