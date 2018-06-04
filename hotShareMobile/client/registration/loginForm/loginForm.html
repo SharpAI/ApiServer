@@ -2,29 +2,35 @@
 {{>connectionBanner}}
 <div class="loginForm">
     <div class="signupHeader">
-        <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+        <!-- <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div> -->
         <!-- <span>{{_ "logIn"}}</span> -->
+        登录
+    </div>
+    <div class="avatar">
+        <div class="circle">
+            <img width="80%" src="/icon-2.png">
+        </div>
     </div>
     <form  class="loginBody" id="login-form">
-        <div class="box"><p class="text-box">登录</p></div>
         <div class="input-group margin-bottom-sm">
             <!--<span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>-->
-            <input type="text" id="login-username" class="form-control" placeholder={{_ "userName"}} /><br />
+            <input style="" type="text" id="login-username" class="form-control newinput" placeholder={{_ "userName"}} /><br />
         </div>
         <div class="input-group">
             <!--<span class="input-group-addon"><i class="fa fa-lock fa-fw"></i></span>-->
-            <input type="password" id="login-password" class="form-control" placeholder={{_ "passWord"}} /><br />
+            <input type="password" id="login-password" class="form-control newinput" placeholder={{_ "passWord"}} /><br />
         </div>
+        <div class="forgetPwdBtn">{{_ "forgetPwd"}}</div>
         <!--<input type="submit" value={{_ "logIn"}} id="sub-login">-->
         <button type="submit" id="sub-login" class="ripple-btn" style="color: #fff; border: none;outline: none;">{{_ "logIn"}}</button>
+        <div class="noRegister">还没有来了吗账号？<span id="toSignup" class="signup-text">立即注册</span></div>
         
-        <div class="forgetPwdBtn">{{_ "forgetPwd"}}</div>
         <!-- <div class="forgetPassword">{{_ "forgotPassword"}}</div> -->
     </form>
     <!-- <div class="company">{{_ "kmxdkj"}}</div> -->
-    <div class="bottom-img">
+    <!-- <div class="bottom-img">
         <img src="/laile.png" width="100%">
-    </div>
+    </div> -->
     <div class="customerServiceBackground"></div>
     <div class="customerService">
         <div class="customerService-head">

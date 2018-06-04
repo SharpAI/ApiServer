@@ -2,7 +2,7 @@
   //authOverlay.html
   "anonymous": "匿名使用",
   "anonymousAgree": "匿名使用表示已经同意",
-  "gstServiceSpec": "来了吗服务告知",
+  "gstServiceSpec": "《来了吗用户协议》",
   "anonymousWarn": "友情提示:匿名账户的数据在程序卸载后可能会无法继续使用，如需永久保存数据，请注册或登录使用。",
   "kownIt": "知道了",
   "funnyLogin": "很卖萌的登录中~~~",
@@ -60,10 +60,10 @@
   "noMessages": "暂无任何消息:(",
   //end
   //signupForm.html
-  "createAccount": "创建账户",
+  "createAccount": "注册",
   "signUpMeansWhat": "如果注册就意味着同意了用户协议",
-  "userName": "用户名",
-  "passWord": "密码",
+  "userName": "请输入用户名",
+  "passWord": "请输入密码",
   "emailAddress": "邮箱",
   //end
   //loginForm.html

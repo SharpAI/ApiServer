@@ -1,6 +1,6 @@
 userNameLength = signUpUserNameLength || 16
-id1 = null
-id2 = null
+# id1 = null
+# id2 = null
 Template.signupForm.onRendered ()->
   $('#signup-username').bind('propertychange input',(e)->
       names = $(e.target).val().trim()
@@ -17,16 +17,21 @@ Template.signupForm.helpers
      ''
   namesMaxLength:->
     return userNameLength
-  email:->
-   if Session.get("signUpMail")
-     Session.get("signUpMail")
-   else
-     ''
+  # email:->
+  #  if Session.get("signUpMail")
+  #    Session.get("signUpMail")
+  #  else
+  #    ''
   pwd:->
    if Session.get("signUpPwd")
      Session.get("signUpPwd")
    else
      ''
+  repwd:->
+    if Session.get('signUpRepwd')
+      Session.get('signUpRepwd')
+    else
+      ''
 Template.signupForm.events
   # 'keyup #signup-username': (e,t)->
   #   names = t.find('#signup-username').value
@@ -34,34 +39,37 @@ Template.signupForm.events
   #   html += names.length
   #   html += '/'+userNameLength
   #   $('#signup-username-help').html(html)
-  'focus input':(e,t)->
-    if id2 isnt null
-      Meteor.clearTimeout id2
-      id2 = null
-    id1 = Meteor.setTimeout ->
-            $('.company').css('display','none')
-            $('.bottom-img').css('display','none')
-          ,10
-  'blur input':(e,t)->
-    if id1 isnt null
-      Meteor.clearTimeout id1
-      id1 = null
-    id2 = Meteor.setTimeout ->
-            $('.company').css('display','block')
-            $('.bottom-img').css('display','block')
-          ,500
+  # 'focus input':(e,t)->
+  #   if id2 isnt null
+  #     Meteor.clearTimeout id2
+  #     id2 = null
+  #   id1 = Meteor.setTimeout ->
+  #           $('.company').css('display','none')
+  #           $('.bottom-img').css('display','none')
+  #         ,10
+  # 'blur input':(e,t)->
+  #   if id1 isnt null
+  #     Meteor.clearTimeout id1
+  #     id1 = null
+  #   id2 = Meteor.setTimeout ->
+  #           $('.company').css('display','block')
+  #           $('.bottom-img').css('display','block')
+  #         ,500
   'click .term_notice' :(e,t)->
     names = t.find('#signup-username').value
-    email = t.find('#signup-email').value.toLowerCase()
+    # email = t.find('#signup-email').value.toLowerCase()
     pwd = t.find('#signup-password').value
+    repwd = t.find('#signup-repassword').value
     Session.set("signUpName", names)
-    Session.set("signUpMail", email)
+    # Session.set("signUpMail", email)
+    Session.set('signUpRepwd',repwd)
     Session.set("signUpPwd", pwd)
     Router.go '/deal_page'
   'click #btn_back' :->
     $('input').blur()
     Session.set("signUpName", '')
-    Session.set("signUpMail", '')
+    # Session.set("signUpMail", '')
+    Session.set('signUpRepwd','')
     Session.set("signUpPwd", '')
     PUB.back()
     # $('.register').css('display',"none")
@@ -75,16 +83,19 @@ Template.signupForm.events
       PUB.toast '当前为离线状态,请检查网络连接'
       return
     Session.set("signUpName", '')
-    Session.set("signUpMail", '')
+    # Session.set("signUpMail", '')
     names = t.find('#signup-username').value
-    email = t.find('#signup-email').value.toLowerCase()
+    # email = t.find('#signup-email').value.toLowerCase()
     Session.set 'userName',names
     pass1 = t.find('#signup-password').value
+    pass2 = t.find('#signup-repassword').value
     myRegExp = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{2,6}/ ;
     if names is ''
       PUB.toast '请输入姓名！'
-    else if myRegExp.test(email) is false
-      PUB.toast '你的邮箱有误！'
+    # else if myRegExp.test(email) is false
+    #   PUB.toast '你的邮箱有误！'
+    else if pass1 != pass2
+      PUB.toast '两次输入密码不一致'
     else if pass1.length < 6
       PUB.toast '密码至少要6位！'
     else
@@ -92,7 +103,7 @@ Template.signupForm.events
       t.find('#sub-registered').innerText = '正在提交信息...'
       Accounts.createUser
         username:Session.get('userName')
-        email:email
+        # email:email
         password:pass1
         profile:
           fullname: Session.get('userName')
@@ -102,7 +113,7 @@ Template.signupForm.events
           if err
             console.log err
             trackEvent("signupuser","user signup failure.")
-            PUB.toast '注册失败，邮箱或姓名可能已经存在！'
+            PUB.toast '注册失败，姓名可能已经存在！'
             t.find('#sub-registered').disabled = false
             t.find('#sub-registered').innerText = '创建帐户'
           else

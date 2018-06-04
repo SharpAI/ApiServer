@@ -254,6 +254,7 @@ if Meteor.isClient
         this.render 'webHome'
         return
     Router.route '/loginForm', ()->
+      Session.set 'channel','loginForm'
       this.render 'loginForm'
       return
     Router.route '/signupForm', ()->
