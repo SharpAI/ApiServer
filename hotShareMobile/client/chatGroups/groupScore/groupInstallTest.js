@@ -71,6 +71,8 @@ Template.groupInstallTest.events({
         // if(s && s.isTesting){
         //     return PUB.toast('正在测试中，请勿离开');
         // }
+        labelScore.set('---');
+        roateScore.set('---');
         Meteor.clearTimeout(timer);
         timer = null;
         Session.set('isStarting',null);
