@@ -7,6 +7,7 @@ if(Meteor.isClient){
     var unsendMessages = [];
     var uninsertMessages = [];
     var uninsertMessages_msgKey = [];
+    var init_timer = null;
     mqtt_connection = null;
     Session.set('history_message',false);
     var noMessageTimer = null; 
@@ -426,22 +427,28 @@ if(Meteor.isClient){
       console.log("##RDBG getMqttClientID: " + client_id);
       return client_id;
     };
+    function startMQTT() {
+        if (SimpleChat.checkMsgSessionLoaded()) {
+            console.log("GroundDB all loaded!");
+            initMQTT(Meteor.userId());
+        } else {
+            console.log("Waiting for loading GroundDB...");
+            if (init_timer) {
+                clearTimeout(init_timer);
+                init_timer = null;
+            }
+            init_timer = setTimeout(function(){
+                startMQTT();
+            },500);
+        }
+    }
     mqttEventResume = function() {
       console.log('##RDBG, mqttEventResume, reestablish mqtt connection');
-      Meteor.setTimeout(function() {
+      setTimeout(function() {
         if(Meteor.userId()){
           //initMQTT(getMqttClientID());
           //initMQTT(Meteor.userId());
-
-          if (SimpleChat.checkMsgSessionLoaded()) {
-            console.log("mqttEventResume: GroundDB all loaded!");
-            initMQTT(Meteor.userId());
-          } else {
-            console.log("mqttEventResume: Waiting for loading GroundDB...");
-            setTimeout(function(){
-              mqttEventResume();
-            },500);
-          }
+          startMQTT();
         }
       }, 1000);
       /*try {
@@ -458,20 +465,7 @@ if(Meteor.isClient){
     };
     Deps.autorun(function(){
         if(Meteor.userId()){
-            function startMQTT() {
-                if (SimpleChat.checkMsgSessionLoaded()) {
-                    console.log("GroundDB all loaded!");
-                    initMQTT(Meteor.userId());
-                } else {
-                    console.log("Waiting for loading GroundDB...");
-                    setTimeout(function(){
-                        startMQTT();
-                    },500);
-                }
-            }
-            setTimeout(function(){
-                startMQTT();
-            },500);
+            startMQTT();
         } else {
             uninitMQTT();
         }
