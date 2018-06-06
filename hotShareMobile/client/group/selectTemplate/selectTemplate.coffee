@@ -35,6 +35,7 @@ if Meteor.isClient
         })
       Meteor.setTimeout(
         ()->
+          Session.set("history_view",null)
           Router.go('/simple-chat/to/group?id=' + id)
         50
       )
