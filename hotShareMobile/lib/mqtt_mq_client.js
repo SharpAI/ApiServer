@@ -431,7 +431,17 @@ if(Meteor.isClient){
       Meteor.setTimeout(function() {
         if(Meteor.userId()){
           //initMQTT(getMqttClientID());
-          initMQTT(Meteor.userId());
+          //initMQTT(Meteor.userId());
+
+          if (SimpleChat.checkMsgSessionLoaded()) {
+            console.log("mqttEventResume: GroundDB all loaded!");
+            initMQTT(Meteor.userId());
+          } else {
+            console.log("mqttEventResume: Waiting for loading GroundDB...");
+            setTimeout(function(){
+              mqttEventResume();
+            },500);
+          }
         }
       }, 1000);
       /*try {
