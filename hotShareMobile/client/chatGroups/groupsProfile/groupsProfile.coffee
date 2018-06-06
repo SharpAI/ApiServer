@@ -579,7 +579,11 @@ if Meteor.isClient
       user_id = Meteor.userId()
       groupUser = SimpleChat.GroupUsers.findOne({group_id: groupId,user_id:user_id})
       if groupUser.report_emails
-        report_emails = group.report_emails + ',' + ss
+        arr = groupUser.report_emails.split(',')
+        if _.contains(arr,ss)
+          PUB.toast '此邮箱已添加'
+          return
+        report_emails = groupUser.report_emails + ',' + ss
       else
         report_emails = ss
 
