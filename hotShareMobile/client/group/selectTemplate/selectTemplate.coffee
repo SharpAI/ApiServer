@@ -11,27 +11,28 @@ if Meteor.isClient
       Session.set('AI_Group_Name',null);
       Meteor.subscribe('get-group',id,{
           onReady:()->
-            group = SimpleChat.Groups.findOne({_id:id});
-            msgObj =  {
-              _id: new Mongo.ObjectID()._str,
-              form: {
-                id: '',
-                name: '系统',
-                icon: ''
-              },
-              to: {
-                id: group._id,
-                name: group.name,
-                icon: group.icon
-              },
-              images: [],
-              to_type: "group",
-              type: "system",
-              text: '欢迎加入'+group.name ,
-              create_time: new Date(),
-              is_read: false
-            };
-            sendMqttGroupMessage(group._id, msgObj);
+            # 欢迎消息重复
+            # group = SimpleChat.Groups.findOne({_id:id});
+            # msgObj =  {
+            #   _id: new Mongo.ObjectID()._str,
+            #   form: {
+            #     id: '',
+            #     name: '系统',
+            #     icon: ''
+            #   },
+            #   to: {
+            #     id: group._id,
+            #     name: group.name,
+            #     icon: group.icon
+            #   },
+            #   images: [],
+            #   to_type: "group",
+            #   type: "system",
+            #   text: '欢迎加入'+group.name ,
+            #   create_time: new Date(),
+            #   is_read: false
+            # };
+            # sendMqttGroupMessage(group._id, msgObj);
         })
       Meteor.setTimeout(
         ()->
