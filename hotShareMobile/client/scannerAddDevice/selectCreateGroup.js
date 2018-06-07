@@ -27,8 +27,7 @@ window.SELECT_CREATE_GROUP = SELECT_CREATE_GROUP;
 
 var isCreating = new ReactiveVar(false);
 var addDeviceToGroup = function(group_id, group_name) {
-  // d.groupId不存在的，此时赋值（改变了元数据），如果本次没有添加成功，那么下次为changeDeviceGroup
-  // d.groupId = group_id;
+  d.groupId = group_id;
   d.groupName = group_name;
 
   var uuid = d.uuid;
@@ -37,7 +36,8 @@ var addDeviceToGroup = function(group_id, group_name) {
   Meteor.subscribe('devices-by-uuid',uuid, function() {
     if ( Devices.find({uuid: uuid}).count() > 0 ) {
       PUB.hideWaitLoading()
-      return PUB.toast('该设备已被其他用户绑定');
+      // return PUB.toast('该设备已被其他用户绑定');
+      changeDeviceGroup(group_id,group_name);
     } else {
       var user = Meteor.user();
       d.userId = Meteor.userId();
