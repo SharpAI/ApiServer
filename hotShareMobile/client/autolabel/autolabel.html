@@ -1,0 +1,81 @@
+<template name="chooseLabelType">
+    <div class="chooseLabelType">
+        <div class="head">
+            <strong>标注</strong>
+            <div class="leftButton back">
+                <i class="fa fa-angle-left fa-fw"></i>
+            </div>
+        </div>
+        <div class="content" style="padding-top: 40px;">
+            <div class="box">
+                <div id="goAutolabel">
+                    <div class="circle" style="background: #37a7fe">
+                        <img src="/autolabel.png" width="50%">
+                    </div>
+                    <p>自动标注</p>
+                </div>
+        
+                <div id="goLabelstranger">
+                    <div class="circle" style="background: #BFADAC">
+                        <img src="/label_stranger.png" width="50%">
+                    </div>
+                    <p>标注陌生人</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template name="autolabel">
+    <div class="autolabel">
+        <div class="head">
+            <strong>标注</strong>
+            <div class="leftButton back">
+                <i class="fa fa-angle-left fa-fw"></i>
+            </div>
+        </div>
+        <div class="content" style="padding-top: 40px;">
+            {{#if isShow 0}}
+            <div class="pre-label">
+                <p>请输入要标注人的名称</p>
+                <div >
+                    <input class="input-box" type="text">
+                </div>
+                {{#if btnShow 0}}
+                <button id="start" class="btn-box" style="background: #37a7fe">
+                    开始自动标注
+                </button>
+                {{/if}}
+                {{#if btnShow 1}}
+                <button id="end" class="btn-box" style="background: #e0312d">
+                    结束自动标注
+                </button>
+                {{/if}}
+            </div>
+            {{/if}}
+            {{#if isShow 1}}
+            <div class="labeling">
+                <p>标注处理中</p>
+                <div class="img-box">
+                    <img class="loading" src="/labeling.png">
+                </div>
+            </div>
+            {{/if}}
+            {{#if isShow 2}}
+            <div class="label-success">
+                    <p>标注成功</p>
+                    <div class="img-box">
+                        <img src="/label_success.png">
+                    </div>
+            </div>
+            {{/if}}
+            {{#if isShow 3}}
+            <div class="label-failure">
+                    <p>标注失败</p>
+                    <div class="img-box">
+                        <img src="/label_failure.png">
+                    </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</template>

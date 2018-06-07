@@ -226,6 +226,7 @@ PERSON = {
     if (!person)
       return null;
     return {
+      _id:person._id,
       id: person.id,
       faceId: person.faceId
     };

@@ -666,6 +666,13 @@ if Meteor.isClient
     Router.route '/scannerAddDevice', ()->
       this.render 'scannerAddDevice'
       return
+    Router.route '/chooseLabelType/:uuid',()->
+      Session.set 'channel','chooseLabelType/'+this.params.uuid
+      this.render 'chooseLabelType'
+      return
+    Router.route '/autolabel/:uuid',()->
+      this.render 'autolabel'
+      return
 if Meteor.isServer
   request = Meteor.npmRequire('request')
   Fiber = Meteor.npmRequire('fibers')

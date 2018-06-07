@@ -171,10 +171,12 @@ Template.homePage.events({
       if (deviceLists && deviceLists.length > 0) {
         if (deviceLists.length == 1 && deviceLists[0].uuid) {
           console.log("enter this device timeline")
-          return PUB.page('/timelineAlbum/' + deviceLists[0].uuid + '?from=groupchat');
+          // return PUB.page('/timelineAlbum/' + deviceLists[0].uuid + '?from=groupchat');
+          return PUB.page('/chooseLabelType/' + deviceLists[0].uuid);
         } else {
           console.log("select a device")
           Session.set('_groupChatDeviceLists', deviceLists);
+          Session.set('toPath','/chooseLabelType');
           //workStatusPopPage.close();
           $('._checkGroupDevice').fadeIn();
           //workStatusPopPage.hide();
