@@ -37,7 +37,7 @@ org.apache.cordova.plugin.tts@https://github.com/PluginCordova/tts/tarball/befd8
 org.hotshare.customDialog@https://github.com/PluginCordova/customDialog/tarball/3faf6ccfbede32c85a47c91dd2e0cf257243ba30
 org.hotshare.shareExtension@https://github.com/PluginCordova/share-extension/tarball/2cde17f067b5856d8261f0e5154ca64ae2ec2a0b
 org.hotshare.userinfo@https://github.com/PluginCordova/userInfo/tarball/1f7cee2f71cefb88a272186c28f9707f8b71c97c
-org.workai.everywhere.appsetup@https://github.com/PluginCordova/sharpAiAppSetUp/tarball/ade036804e465c0dcdc9d125379016634a767f3a
+org.sharpai.everywhere.appsetup@https://github.com/lorriexingfang/sharpAiAppSetUp/tarball/35463af6441eecc61ac949d6c77c069549f74051
 org.zy.yuancheng.qq@https://github.com/PluginCordova/qq/tarball/9fccd8e93e2a75ea8bb2ad887ad84f1d32dbc52b
 phonegap-plugin-barcodescanner@https://github.com/PluginCordova/phonegap-plugin-barcodescanner/tarball/fb3714ce07d95328205569b5fee3499d62aa1d5e
 phonegap-plugin-push@1.8.2
