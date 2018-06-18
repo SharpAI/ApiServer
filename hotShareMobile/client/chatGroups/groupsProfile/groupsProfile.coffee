@@ -556,6 +556,14 @@ if Meteor.isClient
     reportEmails: ()->
       emails = []
       groupId = Session.get 'groupsId'
+
+      group = SimpleChat.Groups.findOne({_id:groupId})
+      if group.report_emails
+        old_report_emails = group.report_emails
+        old_rmails = old_report_emails.split(',')
+        for emailAddr in old_rmails
+          emails.push({ reportEmailAddr: emailAddr })
+
       groupUser = SimpleChat.GroupUsers.findOne({group_id: groupId,user_id:Meteor.userId()})
       if groupUser.report_emails
         report_emails = groupUser.report_emails
