@@ -1,8 +1,8 @@
 <template name="timelineAlbum">
 <style>
-  input,textarea { 
+  input,textarea {
     -webkit-touch-callout: default;
-    -webkit-user-select: text; 
+    -webkit-user-select: text;
     user-select: text;
   }
 </style>
@@ -50,10 +50,11 @@
     {{else}}
     {{#if lists}}
     <ul class="timeLine">
-      <div style="color: #FF9800;font-size: 16px;position: relative"> 点击头像，选择您的上/下班时间<button id="goHint" style="color:rgb(0, 119, 255)">标注助手</button></div>
+      <div style="color: #FF9800;font-size: 16px;position: relative; top: -10px; text-align: right;"><button id="goHint" style="color:rgb(0, 119, 255); display: inline-block;">标注助手</button></div>
+      <div style="color: #FF9800;font-size: 16px;position: relative"> 点击头像，选择您的上/下班时间</div>
       <!--{{#each lists}}
       {{#if isShowTime}}
-      <div class="timeLine-time"> 
+      <div class="timeLine-time">
         <span class="dot-normal dot-success"></span>
         <span class="time">{{create_time}}</span>
       </div>
@@ -77,7 +78,7 @@
         <div class="person-name">张军</div>
       </div>-->
       {{#each lists}}
-        <div class="timeLine-time"> 
+        <div class="timeLine-time">
           <span class="dot-normal dot-success"></span>
           <span class="time">{{formatDate time}}</span>
         </div>
@@ -212,7 +213,7 @@
 <!-- video preview layer-->
 <div class="videoPreviewLayer">
   <div class="videoLayer">
-    
+
   </div>
   <!--<div class="selectVideoButton">选择</div>-->
 </div>
@@ -273,7 +274,7 @@
               <p>更多标识带来更好的识别体验，</p>
               <p>我们希望您可以继续选择清晰正脸的照片进行标注。</p>
           </div>
-          
+
         </div>
       </div>
 </template>
