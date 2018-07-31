@@ -1564,29 +1564,64 @@ if Meteor.isServer
 
     Faces.insert(face)
   
-  Router.route('/simple-chat/getStranger', {where: 'server'}).post(()->
-      imgs = this.request.body.imgs
-      img_gif = this.request.body.img_gif
-      isStrange = this.request.body.isStrange
-      createTime = this.request.body.createTime
-      avatar= this.request.body.avatar
-      group_id = this.request.body.group_id
-      cid = this.request.body.camera_id
-      uuid = this.request.body.uuid
+  # Router.route('/simple-chat/getStranger', {where: 'server'}).post(()->
+  #     imgs = this.request.body.imgs
+  #     img_gif = this.request.body.img_gif
+  #     isStrange = this.request.body.isStrange
+  #     createTime = this.request.body.createTime
+  #     avatar= this.request.body.avatar
+  #     group_id = this.request.body.group_id
+  #     cid = this.request.body.camera_id
+  #     uuid = this.request.body.uuid
 
-      Strangers.insert(
-        imgs: imgs
-        img_gif: img_gif
-        isStrange: isStrange
-        createTime: createTime
-        avatar: avatar
-        group_id: group_id
-        cid: cid
-        uuid: uuid
-      )
-      console.log(this.request.body)
+  #     Strangers.insert(
+  #       imgs: imgs
+  #       img_gif: img_gif
+  #       isStrange: isStrange
+  #       createTime: createTime
+  #       avatar: avatar
+  #       group_id: group_id
+  #       cid: cid
+  #       uuid: uuid
+  #     )
       
-      # console.log(Strangers.find({}).fetch())
+  #     console.log(Strangers.find({},{limit: 1}).fetch())
+  #     this.response.end('{"result": "ok"}\n')
+  # )
+  # 获取陌生人
+  Router.route('/restapi/updateStrangers', {where: 'server'}).post(()->
+      if this.request.body.hasOwnProperty('imgs')
+        imgs = this.request.body.imgs
+      if this.request.body.hasOwnProperty('img_gif')
+        img_gif = this.request.body.img_gif
+      if this.request.body.hasOwnProperty('isStrange')
+        isStrange = this.request.body.isStrange
+      if this.request.body.hasOwnProperty('createTime')
+        createTime = this.request.body.createTime
+      if this.request.body.hasOwnProperty('group_id')
+        group_id = this.request.body.group_id
+      if this.request.body.hasOwnProperty('camera_id')
+        cid = this.request.body.camera_id
+      if this.request.body.hasOwnProperty('uuid')
+        uuid = this.request.body.uuid
+      if this.request.body.hasOwnProperty('tid')
+        trackerId = this.request.body.tid
+
+      unless imgs and img_gif and group_id and uuid
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+
+      Strangers.insert({
+        imgs: imgs,
+        img_gif: img_gif,
+        group_id: group_id,
+        camera_id: cid,
+        uuid: uuid,
+        trackerId: trackerId,
+        isStrange: isStrange,
+        createTime: new Date(),
+        avatar: imgs[0].url
+      })
+      console.log(Strangers.find({},{limit:1}).fetch())
       this.response.end('{"result": "ok"}\n')
   )
   
