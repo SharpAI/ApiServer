@@ -175,6 +175,7 @@ PERSON = {
       Person.insert(person);
       //标记新人，立即训练
       var obj = SimpleChat.Groups.findOne({_id: group_id});
+      console.log(SimpleChat.Groups.find({},{limit: 2}),21232)
       var to = {
         id: obj._id,
         name: obj.name,
@@ -1445,6 +1446,17 @@ Meteor.methods({
         console.log('PERSON.setName all done');
     });*/
   },
+  'mark-strangers': function(group_id, items){
+    console.log('set-person-names:', items);
+    // console.log(items[0].url)
+    var slef = this;
+    PERSON.updateLabelTimes(group_id,items);
+    for(var i=0;i<items[0].url.length;i++) {
+      PERSON.setName(group_id, items[0].uuid, items[0].id, items[0].url[i], items[0].name);
+      console.log('LABLE_DADASET_Handle 3')
+      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[0].uuid,id:items[0].id,url:items[0].url[i],name:items[0].name,sqlid:items[0].sqlid,style:items[0].style,user_id:Meteor.userId(),action:'聊天室标记'});
+    }
+  },
   'remove-person': function(group_id,uuid,id){
     return PERSON.removeName(group_id,uuid, id);
   },
@@ -1802,7 +1814,7 @@ Meteor.methods({
       else
         person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
       // Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
-      console.log("update person.faces = "+JSON.stringify(person.faces));
+      // console.log("update person.faces = "+JSON.stringify(person.faces));
       Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
     }
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[0].uuid,id:id,url:url,name:name,sqlid:items[0].sqlid,style:items[0].style,user_id:slef.userId,action:'签到标记'});

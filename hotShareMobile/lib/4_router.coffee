@@ -202,6 +202,9 @@ if Meteor.isClient
       console.log "TimeLine album: run into this page"
       this.render 'timelineAlbum'
       return
+    Router.route '/ishavestranger/',()->
+      this.render 'haveStranger'
+      return
     Router.route '/device/dashboard/:group_id',()->
       this.render 'deviceDashboard'
       return
@@ -1560,7 +1563,33 @@ if Meteor.isServer
     face.createdAt = new Date()
 
     Faces.insert(face)
-    
+  
+  Router.route('/simple-chat/getStranger', {where: 'server'}).post(()->
+      imgs = this.request.body.imgs
+      img_gif = this.request.body.img_gif
+      isStrange = this.request.body.isStrange
+      createTime = this.request.body.createTime
+      avatar= this.request.body.avatar
+      group_id = this.request.body.group_id
+      cid = this.request.body.camera_id
+      uuid = this.request.body.uuid
+
+      Strangers.insert(
+        imgs: imgs
+        img_gif: img_gif
+        isStrange: isStrange
+        createTime: createTime
+        avatar: avatar
+        group_id: group_id
+        cid: cid
+        uuid: uuid
+      )
+      console.log(this.request.body)
+      
+      # console.log(Strangers.find({}).fetch())
+      this.response.end('{"result": "ok"}\n')
+  )
+  
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
       img_url = this.params.query.img_url

@@ -496,6 +496,7 @@ Meteor.methods({
       if (this.userId) {
         data.operator = this.userId;
       }
+      // PERSON  在 person.js 里  server端
       return PERSON.aiCheckInOutHandle(data);
     } catch (err){
       return err;

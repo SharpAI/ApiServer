@@ -1,0 +1,43 @@
+<template name='haveStranger'>
+    <div class="noStranger-main">
+        <div class="head">
+            <strong>标注陌生人</strong>
+            <div class="leftButton back">
+                <i class="fa fa-angle-left fa-fw"></i>
+            </div>
+        </div>
+        {{#if isHaveStranger }}
+            <div class="container-stranger">
+                <div class="content_total">
+                    <ul id="stranger-contain" class="">
+                        {{#each Stranger_people}}
+                            <li class="stranges-item" data="{{_id}}">
+                                <div class="card-msg" style="background:url({{img_gif}}) no-repeat center;">
+                                    <div class="card-info">
+                                        <div class="card-avatar" style="background:url({{avatar}}) no-repeat center;"></div>
+                                        <p class='color-time'>{{createTime}}</p>
+                                    </div>
+                                </div>
+                                {{#if isMark}}
+                                <p class="sub-sure">你认识这个人么 ?</p>
+                                {{else}}
+                                <p><input id="mark_val" type="text" name="mark_val" value="koretjprj3"/></p>
+                                <p class="sub-sure"><button id="confirm-val">提交</button></p>
+                                {{/if}}
+                                <a id="accept" class="" style="margin-right:20px;"><i class="fa fa-check" style="color: #9e3a5b;"></i></a>
+                                <a id="reject" class=""><i class="fa fa-times" style="color: hsl(162, 91%, 38%);"></i></a>
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+                <!-- Related demos -->
+            </div>
+        <!-- {{else}}
+            <div class='noStranger content'>
+                <p>暂未发现新的陌生人...</p>
+                <a href="/message">进入消息页面</a>
+            </div> -->
+        {{/if}}
+    </div>
+    {{> footer}}
+</template>

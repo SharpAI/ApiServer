@@ -1144,7 +1144,7 @@ Template.timelineAlbum.events({
       var setNames = [];
       Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res){
         if (err || !res){
-          return PUB.toast('标注失败，请重试~');
+          return PUB.toast('标注失败，请重试');
         }
         
         var faceId = null;
@@ -1220,6 +1220,8 @@ Template.timelineAlbum.events({
     return $('#timeRange').mobiscroll('show');
   }
 });
+
+
 
 Template.timelineAlbum.onDestroyed(function() {
   isMultiSelect.set(false);

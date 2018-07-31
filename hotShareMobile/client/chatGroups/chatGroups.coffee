@@ -19,6 +19,8 @@ if Meteor.isClient
     #         if (target.data("visible"))
     #             target.data("visible", false);
   Template.chatGroups.helpers
+    hasNewLabelMsg:()->
+      Session.get('hasNewLabelMsg')
     syncing:()->
       Session.get('history_message')
     showBubbleTipHintTemplate:()->
@@ -31,6 +33,7 @@ if Meteor.isClient
       console.log('hasVal:', if val then true else false)
       return if val then true else false
     hasCount: (val)->
+      #Session.set('hasNewLabelMsg',true)
       return val > 0
     formatTime: (val)->
       return get_diff_time(val)
@@ -94,11 +97,20 @@ if Meteor.isClient
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
           return false
-      url = '/simple-chat/to/'+this.sessionType+'?id='+ this.toUserId
+      urlMsg = '/simple-chat/to/'+this.sessionType+'?id='+ this.toUserId
+      url = '/ishaveStranger/'
       SimpleChat.MsgSession.update({_id: this._id}, {$set: {count: 0}})
-      setTimeout ()->
+      strange = Local_data.find({}).fetch().length
+      if strange
         PUB.page(url)
-      ,animatePageTrasitionTimeout
+      else
+        setTimeout ()->
+          PUB.page(urlMsg)
+        ,animatePageTrasitionTimeout
+      Session.set("session_type", this.sessionType)
+      Session.set("toUser_id",this.toUserId)
+      
+      Session.set('hasNewLabelMsg',false)
       updateTotalReadCount()
     'click .delBtnContent': (e,t)->
       e.stopImmediatePropagation();

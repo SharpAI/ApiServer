@@ -20,12 +20,14 @@ Array.prototype.removeByIndex= function(index){
 
 Template._simpleChatToChat.onCreated(function() {
   // Blaze.render(Template.toolsBarDown, document.body);
+  page_data = this.data
 });
 
 Template._simpleChatToChat.helpers({
   getMsg: function(){
-    if (!page_data)
+    if (!page_data) {
       return [];
+    }
 
     var now = new Date();
     var res = [];
@@ -119,10 +121,11 @@ window.onresize = function(){
 };
 
 Template._simpleChatToChat.onRendered(function(){
-  console.log('message view rendered');
+
   Session.set('currentWindowHeight',$(window).height());
   // Session.set('shouldScrollToBottom',true);
   page_data = this.data;
+
   if(!page_data)
     return;
   // if(typeof(device) == "undefined")
@@ -184,7 +187,7 @@ Router.route(AppConfig.path + '/to/:type', {
         ]
       };
 
-    console.log('where:', where);
+    // console.log('where:', where);
     return {
       id: slef.params.query['id'],
       title: function(){
@@ -196,7 +199,7 @@ Router.route(AppConfig.path + '/to/:type', {
       query: Messages.find(where, {sort: {create_time: -1}}),
       type: slef.params.type,
       where: where,
-      messages: function(){
+      messages: function(){ 
         return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}});
       },
       loading: is_loading.get()
@@ -825,6 +828,7 @@ Template._simpleChatToChatItem.events({
     }
     Template._simpleChatLabelRemove.open(this);
   },
+  // 标注
   'click .yes': function(){
     if (this.type === 'url') {
       return;
@@ -2982,7 +2986,7 @@ Template._simpleChatToChatLabelName.helpers({
     var selector = {
       group_id: this.group_id
     };
-
+    
     if(label_name_text.get() && label_name_text.get() != ''){
       var filter = new RegExp(label_name_text.get(),'i');
       selector['name'] = filter;
@@ -3040,6 +3044,7 @@ Template._simpleChatToChatLabelName.events({
     label_view = null;
     // Session.set('default-label-name','');
   },
+
   'click .rightButton': function(e, t){
     if (!$('#label-input-name').val())
       return PUB.toast('请选择或输入名字~');;
@@ -3088,8 +3093,7 @@ Template._simpleChatToChatLabelRemove.events({
   },
   'click .rightButton': function(e, t){
     if (!$('#label-input-name').val())
-      return PUB.toast('请输入删除信息的原因~');;
-
+      return PUB.toast('请输入删除信息的原因~');
     t.data.callback && t.data.callback($('#label-input-name').val());
     Blaze.remove(remove_view);
     simple_chat_page_stack.pop();

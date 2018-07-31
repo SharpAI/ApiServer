@@ -177,9 +177,83 @@ UnavailableEmails = new Meteor.Collection('unavailableEmails');
   reason:'xx',
 }
  */
+Strangers = new Meteor.Collection('strangers')
+// Strangers.insert({
+//     imgs:[
+//         '/theme/theme1.jpg',
+//         '/theme/theme2.jpg',
+//         '/theme/theme3.jpg',
+//         '/theme/theme4.jpg'
+//     ],
+//     img_gif: '/theme/theme1.jpg',
+//     isStrange: true,
+//     createTime: new Date(),
+//     avatar: '/theme/theme1.jpg'
+// })
+// Strangers.insert({
+//     imgs:[
+//         '/theme/theme1.jpg',
+//         '/theme/theme2.jpg',
+//         '/theme/theme3.jpg',
+//         '/theme/theme4.jpg'
+//     ],
+//     img_gif: '/theme/theme2.jpg',
+//     isStrange: true,
+//     createTime: new Date(),
+//     avatar: '/theme/theme2.jpg'
+// })
+  //   陌生人
+Meteor.methods({
+    getStrangers: function(group_id){
+        var stranges = Strangers.find({}).fetch()
+        return stranges
+    },
+    removeStrangers: function(id) {
+        Strangers.remove({_id: id})
+    }
+})
 
 
+Local_data = new Meteor.Collection()
+
+Meteor.call("getStrangers", function(err, res){
+    res.forEach(function(data, index){
+        Local_data.insert(data)
+    })
+})
+// console.log(JSON.stringify(Local_data.find({}).fetch()))
+
+// Strangers.remove({})
+// Local_data.remove({})
+
+// console.log(JSON.stringify(Strangers.find({},{limit: 2}).fetch()))
+// console.log(JSON.stringify(Local_data.find({},{limit: 2}).fetch()))
+// var aaa = Meteor.call("getStrangers")
+// console.log(Strangers.find({}).fetch())
+// console.log(aaa)
+
+
+
+// Date.prototype.Format = function (fmt) {
+//     var o = {
+//         "M+": this.getMonth() + 1,
+//         "d+": this.getDate(),
+//         "h+": this.getHours(),
+//         "m+": this.getMinutes(),
+//         "s+": this.getSeconds(),
+//         "q+": Math.floor((this.getMonth() + 3) / 3),
+//         "S": this.getMilliseconds()
+//     };
+//     if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+//     for (var k in o)
+//     if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+//     return fmt;s
+// }
 Faces = new Meteor.Collection('faces');
+
+// Stranger = new Meteor.collection('stranger')
+
+
 
 if(Meteor.isServer){
   Devices.allow({
@@ -511,6 +585,7 @@ if(Meteor.isServer){
     ];
   });
 
+  
   Meteor.methods({
     getPeopleIdByName: function(name, uuid){
       var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});
@@ -2764,6 +2839,8 @@ if(Meteor.isServer){
         return this.ready();
     }
   });
+
+
 
 //   监控
   Meteor.publish('rpOwner', function(userId) {

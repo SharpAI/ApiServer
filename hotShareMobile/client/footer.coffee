@@ -70,7 +70,7 @@ if Meteor.isClient
       if channel is channelName
         return true
     display_footer:()->
-      show_foot_url = ['/','/message','/timeline', '/explore', '/user','/faces']
+      show_foot_url = ['/','/message','/timeline', '/explore', '/user','/faces', '/ishavestranger']
       console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
       console.log("show_foot_url", show_foot_url, location, location.pathname, Router.current().route.path())
       
@@ -146,7 +146,7 @@ if Meteor.isClient
     # ,100)
   Template.footer.events
     'click #message':(e)->
-      Session.set('hasNewLabelMsg', false)
+      #Session.set('hasNewLabelMsg', false)
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
         navigator.notification.confirm(

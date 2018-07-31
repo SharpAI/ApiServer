@@ -11,6 +11,7 @@ Template.chooseLabelType.events({
     'click #goLabelstranger':function(e){
         var uuid = Router.current().params.uuid;
         return PUB.page('/timelineAlbum/' + uuid + '?from=groupchat');
+        // return PUB.page('/ishavestranger/');
     },
     'click .back':function(e){
         btn_pro.set(0);
@@ -19,6 +20,7 @@ Template.chooseLabelType.events({
 })
 Template.autolabel.helpers({
     isShow:function(tag){
+        
         if(progress.get() == tag){
             return true;
         }
