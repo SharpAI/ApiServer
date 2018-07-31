@@ -101,6 +101,7 @@ if Meteor.isClient
       url = '/ishaveStranger/'
       SimpleChat.MsgSession.update({_id: this._id}, {$set: {count: 0}})
       strange = Local_data.find({}).fetch().length
+      Session.set("isMark",true)
       if strange
         PUB.page(url)
       else
