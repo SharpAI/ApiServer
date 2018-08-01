@@ -26,8 +26,7 @@ pipeline {
       }
       steps {
         dir(path: 'hotShareMobile') {
-          sh 'echo package sharpai'
-          sh 'echo package sharpai end'
+          sh './android_gen_apk.sh'
         }
       }
     }
@@ -48,8 +47,7 @@ pipeline {
       }
       steps {
         dir(path: 'hotShareWeb') {
-          sh 'echo package sharpai server'
-          sh 'echo package sharpai server end'
+          sh './server_package.sh'
         }
       }
     }
