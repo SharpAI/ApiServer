@@ -97,10 +97,10 @@ if Meteor.isClient
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
           return false
+      strange = Local_data.find({group_id: {$eq: this.toUserId}}).fetch().length
       urlMsg = '/simple-chat/to/'+this.sessionType+'?id='+ this.toUserId
       url = '/ishaveStranger/'
       SimpleChat.MsgSession.update({_id: this._id}, {$set: {count: 0}})
-      strange = Local_data.find({group_id: {$eq: this.toUserId}}).fetch().length
       Session.set("isMark",true)
       if strange
         PUB.page(url)
