@@ -150,7 +150,38 @@ ClusterLableDadaSet = new Meteor.Collection('cluster_label_dataset');
   ]
 }
 */
+
+
 Strangers = new Meteor.Collection('strangers')
+
+/*{
+	"_id": "hnmnvA4pn4jdZXDSe",
+	"imgs": [{
+		"faceid": "15330142402500000",
+		"url": "http://workaiossqn.tiegushi.com/fffc7fd4-9480-11e8-8abe-0242ac130006",
+		"img_type": "face",
+		"accuracy": 0,
+		"fuzziness": 92.90688987914469,
+		"sqlid": "0",
+		"style": "front"
+	}, {
+		"faceid": "15330142402500000",
+		"url": "http://workaiossqn.tiegushi.com/00744370-9481-11e8-8abe-0242ac130006",
+		"img_type": "face",
+		"accuracy": 0,
+		"fuzziness": 212.15898400936524,
+		"sqlid": "0",
+		"style": "front"
+	}],
+	"img_gif": "http://cdn.workaioss.tiegushi.com/Lorex_1_1533014240250.gif",
+	"group_id": "7e7013139ccafbbc369785d3",
+	"camera_id": "Lorex_1",
+	"uuid": "78c2c095d150",
+	"trackerId": 1533014240250,
+	"isStrange": true,
+	"createTime": ISODate("2018-07-31T05:17:25.007Z"),
+	"avatar": "http://workaiossqn.tiegushi.com/fffc7fd4-9480-11e8-8abe-0242ac130006"
+}*/
 
   //   陌生人
 Meteor.methods({
@@ -199,35 +230,7 @@ Faces = new Meteor.Collection('faces');
 
 ModelParam = new Meteor.Collection('modelParam');
 
-Strangers = new Meteor.Collection('strangers')
-/*{
-	"_id": "hnmnvA4pn4jdZXDSe",
-	"imgs": [{
-		"faceid": "15330142402500000",
-		"url": "http://workaiossqn.tiegushi.com/fffc7fd4-9480-11e8-8abe-0242ac130006",
-		"img_type": "face",
-		"accuracy": 0,
-		"fuzziness": 92.90688987914469,
-		"sqlid": "0",
-		"style": "front"
-	}, {
-		"faceid": "15330142402500000",
-		"url": "http://workaiossqn.tiegushi.com/00744370-9481-11e8-8abe-0242ac130006",
-		"img_type": "face",
-		"accuracy": 0,
-		"fuzziness": 212.15898400936524,
-		"sqlid": "0",
-		"style": "front"
-	}],
-	"img_gif": "http://cdn.workaioss.tiegushi.com/Lorex_1_1533014240250.gif",
-	"group_id": "7e7013139ccafbbc369785d3",
-	"camera_id": "Lorex_1",
-	"uuid": "78c2c095d150",
-	"trackerId": 1533014240250,
-	"isStrange": true,
-	"createTime": ISODate("2018-07-31T05:17:25.007Z"),
-	"avatar": "http://workaiossqn.tiegushi.com/fffc7fd4-9480-11e8-8abe-0242ac130006"
-}*/
+
 
 if(Meteor.isServer){
   Cameras.allow({
