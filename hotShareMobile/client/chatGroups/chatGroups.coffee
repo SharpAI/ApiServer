@@ -18,6 +18,12 @@ if Meteor.isClient
     #     else
     #         if (target.data("visible"))
     #             target.data("visible", false);
+    msgSess = SimpleChat.MsgSession.find({userId: Meteor.userId(),toUserId:{$ne: sysMsgToUserId}}, {sort: {updateAt: -1}})
+    if (msgSess)
+      msgSess.forEach (sess)->
+        if sess.sessionType is 'group' and sess.toUserId
+          Meteor.subscribe 'getStrangersByGroupId', sess.toUserId
+
   Template.chatGroups.helpers
     hasNewLabelMsg:()->
       Session.get('hasNewLabelMsg')
@@ -97,7 +103,7 @@ if Meteor.isClient
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
           return false
-      strange = Local_data.find({group_id: {$eq: this.toUserId}}).fetch().length
+      strange = Strangers.find({group_id: {$eq: this.toUserId}}).fetch().length
       urlMsg = '/simple-chat/to/'+this.sessionType+'?id='+ this.toUserId
       url = '/ishaveStranger/'
       SimpleChat.MsgSession.update({_id: this._id}, {$set: {count: 0}})
@@ -110,8 +116,8 @@ if Meteor.isClient
         setTimeout ()->
           PUB.page(urlMsg)
         ,animatePageTrasitionTimeout
-      
-      
+
+
       Session.set('hasNewLabelMsg',false)
       updateTotalReadCount()
     'click .delBtnContent': (e,t)->

@@ -38,20 +38,19 @@ Template.haveStranger.events({
         if ( tagName === "a" || tagName === "i" ) {
             if ( $(e.target).attr("id") === "reject" || $(e.target).parent().attr("id") === "reject" ) {
                 Session.set("isMark",true)
-                Local_data.remove({_id: id})
-                Meteor.call('removeStrangers', id)
-                var len = Local_data.find({group_id:{$eq: Session.get("toUser_id")}}).fetch().length
+                Strangers.remove({_id: id})
+                var len = Strangers.find({group_id:{$eq: Session.get("toUser_id")}}).fetch().length
                 $('#stranger-contain').find($li).remove()
                 if (len == 0) {
                     PUB.page(url)
                 }
             } else {
-                var curData = Local_data.find({_id: id}).fetch()[0].imgs
+                var curData = Strangers.find({_id: id}).fetch()[0].imgs
                 Session.set("isMark",false)
                 markList.set(curData)
             }
         }
-        if ( tagName === "button" ) {
+        if ( (( tagName === "a" || tagName === "i" )) && ( $(e.target).attr("id") === "accept" || $(e.target).parent().attr("id") === "accept" ) ) {
             var imgData = markList.get()
             var val = $("#mark_val").val()
             var uuid = this.uuid
@@ -60,19 +59,19 @@ Template.haveStranger.events({
             // imgData = JSON.parse(imgData)
             // var faceId = new Mongo.ObjectID()._str
             Session.set("isMark",true)
-        
+
             var call_back_handle = function(name){
                 if (!name) {
                 return;
                 }
-                
+
                 PUB.showWaitLoading('处理中');
                 var setNames = [];
                 Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res){
                 if (err || !res){
                     return PUB.toast('标注失败，请重试');
                 }
-                
+
                 var faceId = null;
                 if (res && res.faceId){
                     faceId = res.faceId;
@@ -81,7 +80,7 @@ Template.haveStranger.events({
                 }else {
                     faceId = imgData[0].faceid;
                 }
-        
+
                 imgData.forEach(function(item) {
                     // 发送消息给平板
                     var trainsetObj = {
@@ -98,21 +97,21 @@ Template.haveStranger.events({
                     };
                     console.log("==sr==. timeLine multiSelect: " + JSON.stringify(trainsetObj));
                     sendMqttMessage('/device/'+group_id, trainsetObj);
-        
+
                     setNames.push({
-                        uuid: uuid, 
+                        uuid: uuid,
                         id: faceId, //item.person_id,
-                        url: item.url, 
+                        url: item.url,
                         name: name,
                         sqlid:item.style,
                         style:item.sqlid
                     });
                 });
-        
+
                 if (setNames.length > 0){
                     Meteor.call('set-person-names', group_id, setNames);
                 }
-        
+
                 imgData.forEach(function(item) {
                     try {
                     var person_info = {
@@ -132,7 +131,7 @@ Template.haveStranger.events({
                         person_info: person_info,
                         formLabel: true
                     };
-                    
+
                     Meteor.call('ai-checkin-out',data,function(err,res){});
                     } catch(e){}
                 });
@@ -140,9 +139,9 @@ Template.haveStranger.events({
                 });
             };
             SimpleChat.show_label(group_id, this.avatar, call_back_handle);
-            Local_data.remove({_id: id})
-            Meteor.call('removeStrangers', id)
-            var len = Local_data.find({group_id:{$eq: Session.get("toUser_id")}}).fetch().length
+            Strangers.remove({_id: id})
+            //Meteor.call('removeStrangers', id)
+            var len = Strangers.find({group_id:{$eq: Session.get("toUser_id")}}).fetch().length
             $('#stranger-contain').find($li).remove()
             if (len == 0) {
                 PUB.page(url)
@@ -156,7 +155,7 @@ Template.haveStranger.helpers({
        return true;
     },
     Stranger_people: function(){
-        return Local_data.find({group_id:{$eq: Session.get("toUser_id")}})
+        return Strangers.find({group_id:{$eq: Session.get("toUser_id")}})
     },
     isMark: function() {
         return Session.get("isMark")

@@ -97,9 +97,9 @@ function onMessageArrived(message) {
 })(this, function LibraryFactory(){
 
 localforage.config({
-    driver      : localforage.IndexedDB, 
+    driver      : localforage.IndexedDB,
     name        : 'localforage',
-    storeName   : 'keyvaluepairs', 
+    storeName   : 'keyvaluepairs',
     description : 'some description'
 });
 var localStorage = localforage;
@@ -838,7 +838,7 @@ var PahoMQTT = (function (global) {
                 }
             }*/
             forEachAsynSeries(keys, 1, function(key, index, callback) {
-                console.log("Frank key="+key);
+                //console.log("Frank key="+key);
                 if ((typeof key=='string') && key.constructor==String) {
                     if (key.indexOf("Sent:"+that._localKey) === 0)
                         that.restore(value);

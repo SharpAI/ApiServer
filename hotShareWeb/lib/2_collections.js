@@ -184,24 +184,17 @@ Strangers = new Meteor.Collection('strangers')
 }*/
 
   //   陌生人
-Meteor.methods({
-    getStrangers: function(group_id){
-        var stranges = Strangers.find({}).fetch()
-        return stranges
-    },
-    removeStrangers: function(id) {
-        Strangers.remove({_id: id})
-    }
-})
-
-
-Local_data = new Meteor.Collection()
-
-Meteor.call("getStrangers", function(err, res){
-    res.forEach(function(data, index){
-        Local_data.insert(data)
-    })
-})
+if (Meteor.isServer) {
+  Meteor.methods({
+      getStrangers: function(group_id){
+          var stranges = Strangers.find({}).fetch()
+          return stranges
+      },
+      removeStrangers: function(id) {
+          Strangers.remove({_id: id})
+      }
+  })
+}
 
 Clustering = new Meteor.Collection('clustering');
 /*
@@ -298,6 +291,22 @@ if(Meteor.isServer){
       return false;
     }
   });
+
+  Strangers.allow({
+    remove: function(userId, doc) {
+        return true;
+    }
+  });
+
+  Meteor.publish('getStrangersByGroupId', function (group_id) {
+      if(!this.userId){
+          return this.ready();
+      }
+
+      var limit = 50;
+
+      return Strangers.find({group_id: group_id}, {sort: {createTime: -1}, limit: limit});
+  })
 
   Meteor.publish('getFaces', function (limit) {
       if(!this.userId){

@@ -73,7 +73,7 @@ NLPTextClassName = {
 }
  */
 
-//来了吗用户和平板识别出的人的关系表 
+//来了吗用户和平板识别出的人的关系表
 WorkAIUserRelations = new Meteor.Collection('workaiUserRelations');
 
 /*
@@ -122,7 +122,7 @@ DeviceTimeLine = new Meteor.Collection('device_timeline');
       "img_url":"",
       "app_user_id":"",// 关联过有，未关联没有
       "app_user_name":"",// 关联过有，未关联没有
-      "sqlid": "sqlid", 
+      "sqlid": "sqlid",
       "style": "style",
       "ts":""
     }],
@@ -203,24 +203,18 @@ Strangers = new Meteor.Collection('strangers')
 //     avatar: '/theme/theme2.jpg'
 // })
   //   陌生人
-Meteor.methods({
-    getStrangers: function(group_id){
-        var stranges = Strangers.find({}).fetch()
-        return stranges
-    },
-    removeStrangers: function(id) {
-        Strangers.remove({_id: id})
-    }
-})
+if (Meteor.isServer) {
+  Meteor.methods({
+      getStrangers: function(group_id){
+          var stranges = Strangers.find({}).fetch()
+          return stranges
+      },
+      removeStrangers: function(id) {
+          Strangers.remove({_id: id})
+      }
+  })
+}
 
-
-Local_data = new Meteor.Collection()
-
-Meteor.call("getStrangers", function(err, res){
-    res.forEach(function(data, index){
-        Local_data.insert(data)
-    })
-})
 // console.log(JSON.stringify(Local_data.find({}).fetch()))
 
 // Strangers.remove({})
@@ -310,6 +304,22 @@ if(Meteor.isServer){
     }
   });
 
+  Strangers.allow({
+    remove: function(userId, doc) {
+        return true;
+    }
+  });
+
+  Meteor.publish('getStrangersByGroupId', function (group_id) {
+      if(!this.userId){
+          return this.ready();
+      }
+
+      var limit = 50;
+
+      return Strangers.find({group_id: group_id}, {sort: {createTime: -1}, limit: limit});
+  })
+
   Meteor.publish('getFaces', function (limit) {
       if(!this.userId){
           return this.ready();
@@ -334,7 +344,7 @@ if(Meteor.isServer){
     var limit = limit || 30;
     return Clustering.find({group_id: group_id, faceId: faceId, marked: {$ne: true}},{limit: limit})
   });
-  
+
   // 发布 group 已经标注的person 信息
   Meteor.publish('group_person', function(group_id, limit){
     if(!this.userId || !group_id){
@@ -376,7 +386,7 @@ if(Meteor.isServer){
     var limit = limit || 50;
     return ClusterLableDadaSet.find({group_id: group_id,name:name},{limit: limit,sort:{createAt: -1}});
   });
-  
+
   Meteor.publish('people_new', function(){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
@@ -467,7 +477,7 @@ if(Meteor.isServer){
     };
     return WorkStatus.find({group_id:group_id, date: {$in: dates}});
   });
-  
+
   WorkStatus.allow({
       update: function(userId, doc, fields, modifier){
           //if(userId === doc.app_user_id){
@@ -489,14 +499,14 @@ if(Meteor.isServer){
                 Devices.find({groupId: {$in:groupIds}}),
                 SimpleChat.GroupUsers.find({user_id:this.userId})
             ];
-        } 
+        }
     }
     return this.ready();
   });
  Meteor.publish('device_by_groupId', function(groupId) {
      if (!this.userId || !groupId) {
          return this.ready();
-     } 
+     }
      return Devices.find({groupId: groupId});
  });
  Meteor.publish('group_workstatus', function(group_id, date){
@@ -541,7 +551,7 @@ if(Meteor.isServer){
 
      return DeviceTimeLine.find(selector, {sort:{hour: -1}});
  });
- 
+
  Meteor.publish('device-timeline', function(uuid,limit){
     var limit = limit || 10;
     if(!this.userId || !uuid){
@@ -585,13 +595,13 @@ if(Meteor.isServer){
     ];
   });
 
-  
+
   Meteor.methods({
     getPeopleIdByName: function(name, uuid){
       var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});
       if(!people)
         return '';
-      
+
       return {uuid: people.uuid, id: people.id};
     },
     //获取group下的设备列表
