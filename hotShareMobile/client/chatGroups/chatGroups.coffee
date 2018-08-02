@@ -102,14 +102,15 @@ if Meteor.isClient
       url = '/ishaveStranger/'
       SimpleChat.MsgSession.update({_id: this._id}, {$set: {count: 0}})
       Session.set("isMark",true)
+      Session.set("session_type", this.sessionType)
+      Session.set("toUser_id",this.toUserId)
       if strange
         PUB.page(url)
       else
         setTimeout ()->
           PUB.page(urlMsg)
         ,animatePageTrasitionTimeout
-      Session.set("session_type", this.sessionType)
-      Session.set("toUser_id",this.toUserId)
+      
       
       Session.set('hasNewLabelMsg',false)
       updateTotalReadCount()

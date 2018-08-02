@@ -24,7 +24,7 @@
                                 <!-- <p><input id="mark_val" type="text" name="mark_val" value="koretjprj3"/></p> -->
                                 <p class="sub-sure"><button id="confirm-val">我认识</button></p>
                                 {{/if}}
-                                <a id="accept" class="" style="margin-right:20px;"><i class="fa fa-check" style="color: #9e3a5b;"></i></a>
+                                <a id="accept" class="" style="margin-right:40px;"><i class="fa fa-check" style="color: #9e3a5b;"></i></a>
                                 <a id="reject" class=""><i class="fa fa-times" style="color: hsl(162, 91%, 38%);"></i></a>
                             </li>
                         {{/each}}
@@ -56,8 +56,11 @@
             if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
             return fmt;
         }
-        var date = new Date($(".color-time").html()).Format("yyyy-MM-dd hh:mm:ss")
-        $(".color-time").html(date)
+        Array.from($(".color-time")).map(function(res){
+            var date = new Date($(res).html()).Format("yyyy-MM-dd hh:mm:ss")
+            $(res).html("")
+            $(res).html(date)
+        })
     </script>
     {{> footer}}
 </template>

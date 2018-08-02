@@ -7,6 +7,21 @@ var datas = null
 // $.get('http://192.168.31.113:5000/api/parameters', function(data){
 //     datas = data
 // })
+Date.prototype.Format = function (fmt) {
+    var o = {
+        "M+": this.getMonth() + 1,
+        "d+": this.getDate(),
+        "h+": this.getHours(),
+        "m+": this.getMinutes(),
+        "s+": this.getSeconds(),
+        "q+": Math.floor((this.getMonth() + 3) / 3),
+        "S": this.getMilliseconds()
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
 
 Template.haveStranger.events({
     'click .back':function(e){
@@ -16,9 +31,7 @@ Template.haveStranger.events({
     'click .stranges-item': function(e,t){
         var sessionType = Session.get("session_type")
         var toUserId = Session.get("toUser_id")
-        // alert($(".stack__item--current").css('opacity') == "1")
         var url = '/simple-chat/to/'+sessionType+'?id='+ toUserId
-        // alert($(e.target).prop("tagName"))
         var tagName = $(e.target).prop("tagName").toLowerCase()
         var $li = $(e.currentTarget)
         var id = $li.attr("data")
@@ -27,10 +40,8 @@ Template.haveStranger.events({
                 Session.set("isMark",true)
                 Local_data.remove({_id: id})
                 Meteor.call('removeStrangers', id)
-                // alert(JSON.stringify(Local_data.find({}).fetch().length))
-                var len = Local_data.find().fetch().length
+                var len = Local_data.find({group_id:{$eq: Session.get("toUser_id")}}).fetch().length
                 $('#stranger-contain').find($li).remove()
-                // alert($li.attr('data'))
                 if (len == 0) {
                     PUB.page(url)
                 }
@@ -131,7 +142,7 @@ Template.haveStranger.events({
             SimpleChat.show_label(group_id, this.avatar, call_back_handle);
             Local_data.remove({_id: id})
             Meteor.call('removeStrangers', id)
-            var len = Local_data.find().fetch().length
+            var len = Local_data.find({group_id:{$eq: Session.get("toUser_id")}}).fetch().length
             $('#stranger-contain').find($li).remove()
             if (len == 0) {
                 PUB.page(url)
@@ -145,7 +156,7 @@ Template.haveStranger.helpers({
        return true;
     },
     Stranger_people: function(){
-        return Local_data.find({})
+        return Local_data.find({group_id:{$eq: Session.get("toUser_id")}})
     },
     isMark: function() {
         return Session.get("isMark")
