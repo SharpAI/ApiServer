@@ -103,13 +103,23 @@ if Meteor.isClient
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
           return false
-      strange = Strangers.find({group_id: {$eq: this.toUserId}}).fetch().length
+      scursor = Strangers.find({group_id: {$eq: this.toUserId}});
+      strange = scursor.fetch().length
       urlMsg = '/simple-chat/to/'+this.sessionType+'?id='+ this.toUserId
       url = '/ishaveStranger/'
       SimpleChat.MsgSession.update({_id: this._id}, {$set: {count: 0}})
       Session.set("isMark",true)
       Session.set("session_type", this.sessionType)
       Session.set("toUser_id",this.toUserId)
+
+      strangeToUserId = this.toUserId
+      scursor.observeChanges
+          removed: (id)->
+            count = Strangers.find().count()
+            console.log('##RDBG, stranger count: ' + count)
+            if count is 0 and Router.current().originalUrl is '/ishaveStranger/' and Session.get('toUser_id') is strangeToUserId
+              PUB.page(urlMsg)
+
       if strange
         PUB.page(url)
       else
