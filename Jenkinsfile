@@ -27,6 +27,7 @@ pipeline {
       steps {
         dir(path: 'hotShareMobile') {
           sh './android_gen_apk.sh'
+          sh './ios_auto_deploy.sh'
         }
       }
     }
