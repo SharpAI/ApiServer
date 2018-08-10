@@ -42,7 +42,7 @@
             <div class="time">{{formatTime updateAt}}</div>
             {{#if hasCount count}}
             <!-- {{#if hasNewLabelMsg}} -->
-            <div class="count"></div>
+            <div class="count" id="counts"></div>
             {{/if}}
             <div id="{{_id}}" class="delBtnContent" data-type="{{sessionType}}" data-touserid="{{toUserId}}">删除</div>
           </li>
@@ -83,6 +83,15 @@
     touch.live('#msg-session', 'swiperight swipeing','.swiperElem', function(ev){
       $(ev.target).parents('.swiperElem').animate({left: '0px'},100);
     });
+
+    //解决消息列表红点问题
+    var listCount = $("#counts").each(function(i,v){return i});
+    if(listCount.html() == undefined){
+      Session.set('hasNewLabelMsg',false);
+    }else{
+      Session.set('hasNewLabelMsg',true);
+    }
+
   })
   </script>
 </template>

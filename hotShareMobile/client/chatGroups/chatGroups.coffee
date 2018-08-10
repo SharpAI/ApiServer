@@ -65,13 +65,13 @@ if Meteor.isClient
     # loadError:->
     #   Session.equals('followersCollection','error')
   updateTotalReadCount = ()->
-    totalReadCount = 0
+    totalReadCount = -1
     msgSess = SimpleChat.MsgSession.find()
     msgSess.forEach((msg)->
-      if (msg.count)
+    if (msg.count)
         totalReadCount = totalReadCount + msg.count
     )
-    if (totalReadCount <= 0)
+    if (totalReadCount < 0)
       Session.set('hasNewLabelMsg', false)
   Template.chatGroups.events
     'click #joinTestChatGroups':(event)->
@@ -126,10 +126,9 @@ if Meteor.isClient
         setTimeout ()->
           PUB.page(urlMsg)
         ,animatePageTrasitionTimeout
-
-
-      Session.set('hasNewLabelMsg',false)
-      updateTotalReadCount()
+        
+      #Session.set('hasNewLabelMsg',false)
+      #updateTotalReadCount()
     'click .delBtnContent': (e,t)->
       e.stopImmediatePropagation();
       isSysDel = $(e.currentTarget).hasClass('sysDelBtn');
