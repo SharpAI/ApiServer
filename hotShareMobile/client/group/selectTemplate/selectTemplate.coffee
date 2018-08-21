@@ -9,6 +9,8 @@ if Meteor.isClient
       if err or !id
         return PUB.toast('创建公司失败，请重试~')
       Session.set('AI_Group_Name',null);
+      Session.set('touserid6', id)
+      Session.set('tousername6',group_name)
       Meteor.subscribe('get-group',id,{
           onReady:()->
             # 欢迎消息重复

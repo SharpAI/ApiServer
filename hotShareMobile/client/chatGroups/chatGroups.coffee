@@ -32,6 +32,7 @@ if Meteor.isClient
     showBubbleTipHintTemplate:()->
       Session.equals('needShowBubble','true')
     msgSession2: ()->
+      SimpleChat.MsgSession.update({toUserId:Session.get('touserid6')},{$set:{toUserName: Session.get('tousername6')}})
       return SimpleChat.MsgSession.find({userId: Meteor.userId(),toUserId:{$ne: sysMsgToUserId}}, {sort: {updateAt: -1}})
     isGroup: (msg)->
       return msg.to_type is 'group'
