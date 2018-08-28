@@ -45,7 +45,7 @@ var addDeviceToGroup = function(group_id, group_name) {
       d.userIcon = user.profile.icon;
       d.latestUpdateAt = new Date();
       d.status = 'online';
-      
+
       Devices.insert(d, function(error , result){
         PUB.hideWaitLoading();
         if(error){
@@ -58,7 +58,9 @@ var addDeviceToGroup = function(group_id, group_name) {
           sendMqttMessage('/msg/d/'+uuid, msgBody);
         });
         SELECT_CREATE_GROUP.close();
-        return PUB.toast('添加设备成功');
+        //return PUB.toast('添加设备成功');
+        $('#addDeviceResultText').html('添加设备成功');
+        $('#addDeviceResult').modal('show');
       });
     }
   });
@@ -86,7 +88,9 @@ var changeDeviceGroup = function(group_id,group_name){
       sendMqttMessage('/msg/d/'+uuid, msgBody);
     });
     SELECT_CREATE_GROUP.close();
-    return PUB.toast('群组已更改');
+    //return PUB.toast('群组已更改');
+    $('#addDeviceResultText').html('群组已更改');
+    $('#addDeviceResult').modal('show');
   })
 }
 

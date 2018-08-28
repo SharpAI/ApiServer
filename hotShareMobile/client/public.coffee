@@ -10,7 +10,7 @@ pages = ['/user', '/bell', '/search']
     'hideWaitLoading':()->
         $('.actionWaitLoading').remove()
     'Toptip': (text, options, callback)->
-        if !text 
+        if !text
             return
         if Session.equals('can_show_toptip', false)
             return
@@ -20,7 +20,7 @@ pages = ['/user', '/bell', '/search']
             timeout: 5000,
             autohide: true
         }, options)
-        
+
         $("tool_tp").remove()
 
         div = document.createElement('div')
@@ -55,7 +55,7 @@ pages = ['/user', '/bell', '/search']
               + '[a-zA-Z]{2,6})'
               + '(:[0-9]{1,4})?'
               + '((/?)|'
-              + '(/[0-9a-zA-Z_!~*\'().;?:@&=+$,%#-]+)+/?)$'; 
+              + '(/[0-9a-zA-Z_!~*\'().;?:@&=+$,%#-]+)+/?)$';
         `
         re=new RegExp(strRegex)
         if re.test(str_url)
@@ -70,13 +70,13 @@ pages = ['/user', '/bell', '/search']
 
         history = Session.get("history_view")
         view = Session.get("channel")
-        if history is undefined or history is ""
+        if history is null or history is undefined or history is ""
             history = new Array()
         #footerPages = ['/home', '/search', '/addPost', '/bell', '/user']
         footerPages = ['home', 'timeline', 'message', 'user']
         #if current view is one of footer pages, and record the position of these pages
         for page in footerPages
-            if view is page                
+            if view is page
                 Session.set 'document_body_scrollTop_'+view, $('.content').scrollTop()
                 break
         #if pageName is one of footer pages, we will clear history and need to return back to the last position
@@ -122,7 +122,7 @@ pages = ['/user', '/bell', '/search']
         console.log "pageName is :"+pageName
         if pageName is '/bell'
             Session.set('canClearUnreadMessage',true)
-        else 
+        else
             if Session.equals('canClearUnreadMessage',true)
                 Session.set('canClearUnreadMessage',false)
                 Session.set('updataFeedsWithMe',true)
@@ -206,7 +206,7 @@ pages = ['/user', '/bell', '/search']
         catch error
             if confirm(msg)
                 callback()
-                
+
 #       可以浏览图片，放大，缩小，下一张
 #        items 格式
 #        items = [
@@ -250,10 +250,10 @@ pages = ['/user', '/bell', '/search']
                   'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT,
                   'title': title,
                   'buttonLabels': menuArray,
-                  'androidEnableCancelButton' : true, 
-                  'winphoneEnableCancelButton' : true, 
+                  'androidEnableCancelButton' : true,
+                  'winphoneEnableCancelButton' : true,
                   'addCancelButtonWithLabel': '取消',
-                  'position': [20, 40] 
+                  'position': [20, 40]
               }
             else
               options = {
