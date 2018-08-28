@@ -5,7 +5,7 @@
   </div>
   <!--<strong class="top-home-btn active" style="width: 100%;">正在扫描...</strong>-->
 </div>
-  
+
 <div class="va-devices" style="position: fixed;left: 0;right: 0;height: 260px;z-index: 1;background: #002440;">
   <div class="radar_wrapper">
     <div class="bar"></div>
@@ -36,6 +36,26 @@
     {{/each}}
   </ul>
   <!-- 已发现设备列表 End -->
-  
+
 </div>
+
+<!-- Modal createGroupResult -->
+<div class="modal fade" id="addDeviceResult" role="dialog">
+  <div class="modal-dialog" style="top:30%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body" style="margin-top: 10px;">
+        <div id='addDeviceResultText' style="font-size:20px; text-align:center;"></div>
+      </div>
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal selectDevicesInOut End -->
 </template>
