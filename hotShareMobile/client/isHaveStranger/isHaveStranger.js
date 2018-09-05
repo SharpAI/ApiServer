@@ -28,6 +28,10 @@ Template.haveStranger.events({
         btn_pro.set(0);
         return PUB.back();
     },
+    'click .skip p': function(e){
+        return PUB.back()
+        //return PUB.page("/_simpleChatToChat")
+    },
     'click .stranges-item': function(e, t) {
         var sessionType = Session.get("session_type")
         var toUserId = Session.get("toUser_id")
@@ -158,7 +162,29 @@ Template.haveStranger.helpers({
         return false;
     },
     Stranger_people: function() {
-        var st = Strangers.find({ group_id: { $eq: Session.get("toUser_id")}})
+        try {
+            var face_list = Session.get("face_list")//获得设置的是正脸还是侧脸
+            var fuzziness = Session.get("fuzziness")//获得设置的清晰度
+            var str = new Object();//此对象储存筛选出来的数据
+            if(face_list && face_list.length >= 0 && fuzziness != ""){
+                //如果设置了人脸过滤阈值就按照此条件搜索
+                st = Strangers.find({ group_id: { $eq: Session.get("toUser_id")}}, {style:{$or:face_list[0]},style:{$or:face_list[1]},style:{$or:face_list[2]} })
+                for(x in st) {
+                    var fuzziness_num = Math.floor(x.fuzziness)
+                    if(fuzziness_num == fuzziness){
+                        str += st[x];//储存筛选出来的数据
+                    }
+                }
+                return str
+            }else if(face_list.length <= 0 && fuzziness == ""){
+                st = Strangers.find({ group_id: { $eq: Session.get("toUser_id")}})
+            }else{
+                st = Strangers.find({ group_id: { $eq: Session.get("toUser_id")}})
+                PUB.page("您设置的阙值未匹配到！")
+            }
+        } catch (error) {
+            st = Strangers.find({ group_id: { $eq: Session.get("toUser_id")}})
+        }
         return st
     },
     isMark: function() {

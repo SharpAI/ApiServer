@@ -1473,6 +1473,42 @@ Template._simpleChatToChat.events({
     $('.scriptsLayer').fadeIn();
     $('#showScripts').hide();
   },
+  'click .btn-primary': function(){
+    //储存左侧脸右侧脸和正脸的集合
+    var face_list　=　new Array();
+    $("input:checkbox:checked").each(function(i,v){
+      if(this.checked){
+        if($(this).val() == "正脸"){
+          face_list[i] = "front";
+        }else if($(this).val() == "左侧脸"){
+          face_list[i] = "left_side";
+        }else if($(this).val() == "右侧脸"){
+          face_list[i] = "right_side";
+        }
+      }
+    })
+    Session.set("face_list",face_list)
+    Session.set("fuzziness",$(".face_text").html())
+    $(".face_value").hide();
+  },
+  'click .fa-face': function(e) {
+    var face_list = Session.get("face_list")//获得设置的是正脸还是侧脸
+    var fuzziness = Session.get("fuzziness")//获得设置的清晰度
+    if(face_list != undefined){
+      for (let index = 0; index < face_list.length; index++) {
+        $("input:checkbox:checked").each(function(i,v){
+          if($(this).val() == face_list[index]){
+            $(this).attr('checked')
+          }
+        })
+      }
+    }
+    if(fuzziness != undefined){
+      $(".face_text").html(fuzziness)
+    }
+    $(".face_value").show()
+    return
+  },
   'click #labelNewPerson': function(e) {
     // get the device list
     var data = page_data;
