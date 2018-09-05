@@ -104,8 +104,13 @@ if Meteor.isClient
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
           return false
-      scursor = Strangers.find({group_id: {$eq: this.toUserId}});
-      strange = scursor.fetch().length
+      critiaria = { group_id: { $eq: this.toUserId} };
+      face_settings = Meteor.user().profile.face_settings;
+      if face_settings
+          critiaria.style = {$in: face_settings.face_list};
+          critiaria.fuzziness = {$gte: face_settings.fuzziness};
+      scursor = Strangers.find(critiaria);
+      strange = scursor.count()
       urlMsg = '/simple-chat/to/'+this.sessionType+'?id='+ this.toUserId
       url = '/ishaveStranger/'
       SimpleChat.MsgSession.update({_id: this._id}, {$set: {count: 0}})

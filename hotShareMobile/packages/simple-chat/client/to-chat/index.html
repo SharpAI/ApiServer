@@ -30,7 +30,85 @@
         <div class="loading"></div>
         {{/if}}
       </div>
+
       <div class="box">
+        <div class="face_value">
+          <div class="face_top">
+            人脸过滤阈值调整
+          </div>
+          <div class="face_foot">
+            <div class="face_foota">
+              <ul class="nav-pills foota_ul">
+                <li><input type="checkbox" name="check" value="正脸" {{face_checked}}>正脸</li>
+                <li><input type="checkbox" name="check" value="左侧脸" {{left_checked}}>左侧脸</li>
+                <li><input type="checkbox" name="check" value="右侧脸" {{right_checked}}>右侧脸</li>
+              </ul>
+            </div>
+            <div class="face_footb">
+              <div class="foot_value">&nbsp;&nbsp;阈值调整</div>
+              <div class="foot_count">
+                <!-- 进度条开始 -->
+                <div class="progress1">
+                  <div class="progress_bg">
+                  <div class="progress_bar"></div>
+                  </div>
+                  <div class="progress_btn"></div>
+              </div>
+                <script>
+                    var tag = false,ox = 0,left = 0,bgleft = 0;
+                    var progressW = $(".progress1").width();
+                    $('.progress_btn').mousedown(function(e) {
+                        ox = e.pageX - left;
+                        tag = true;
+                    });
+                    $(document).mouseup(function() {
+                        tag = false;
+                    });
+                    $('.progress1').mousemove(function(e) {//鼠标移动
+                        if (tag) {
+                            left = e.pageX - ox;
+                            if (left <= 0) {
+                                left = 0;
+                            }else if (left > progressW) {
+                                left = progressW;
+                            }
+                            $('.progress_btn').css('left', left);
+                            $('.progress_bar').width(left);
+                            var nums = (left/progressW).toFixed(4);
+                            $('.face_text').html(Math.floor(500 * nums));
+                        }
+                    });
+                    $('.progress_bg').click(function(e) {//鼠标点击
+                        if (!tag) {
+                            bgleft = $('.progress_bg').offset().left;
+                            left = e.pageX - bgleft;
+                            if (left <= 0) {
+                                left = 0;
+                            }else if (left > progressW) {
+                                left = progressW;
+                            }
+                            $('.progress_btn').animate({'left':left},progressW);
+                            $('.progress_bar').animate({width:left},progressW);
+                            var nums = (left/progressW).toFixed(4);
+                            $('.face_text').html(Math.floor(500 * nums));
+                        }
+                    });
+                </script>
+                <!-- 进度条结束 -->
+              </div>
+              <div class="foot_num">
+                <ul class="nav-pills">
+                  <li class="face_text">0</li>
+                  <li class="right_text" style="text-align: right;">500</li>
+                </ul>
+              </div>
+            </div>
+            <div class="face_footc" style="text-align: center;margin-top: 20%;">
+              <p style="color: #666666;font-size:110%;">阈值调整仅在此设备有效</p>
+              <button type="button" class="btn btn-primary" style="background-color:#37A7FE;font-size:150%;">确定</button>
+            </div>
+          </div>
+        </div>
         <ul class="group-list">
           {{#each getMsg}}
             {{> _simpleChatToChatItem}}
@@ -75,7 +153,7 @@
       {{> _LabelNewPersonTip}}
     {{/if}}
   </div>
-
+  
   <button id="labelNewPerson">
     <img src="/label_new_person.png" width="24" />
   </button>
@@ -129,9 +207,18 @@
         <i class="fa fa-cloud-upload fa-fw"></i>
         <p>Upload Logs</p>
       </li>
+      <li class="scriptsItem" data-script="uploadlogs">
+        <i class="fa fa-face fa-fw glyphicon glyphicon glyphicon-pencil"></i>
+        <p>Set the filter</p>
+      </li>
     </ul>
   </div>
   {{/if}}
+  <script>
+      $(function(){
+        $(".face_value").hide();
+      })
+  </script>
   <!--<script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/crypto/crypto.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/hmac/hmac.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/sha1/sha1.js"></script>

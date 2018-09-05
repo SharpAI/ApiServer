@@ -20,10 +20,37 @@ Array.prototype.removeByIndex= function(index){
 
 Template._simpleChatToChat.onCreated(function() {
   // Blaze.render(Template.toolsBarDown, document.body);
-  page_data = this.data
+  page_data = this.data;
 });
 
 Template._simpleChatToChat.helpers({
+  face_checked: function() {
+    var val = '';
+    var face_settings = Meteor.user().profile.face_settings;
+    if (face_settings) {
+      if (face_settings.face_list.includes('front'))
+        val = 'checked';
+    }
+    return val;
+  },
+  left_checked: function() {
+    var val = '';
+    var face_settings = Meteor.user().profile.face_settings;
+    if (face_settings) {
+      if (face_settings.face_list.includes('left_side'))
+        val = 'checked';
+    }
+    return val;
+  },
+  right_checked: function() {
+    var val = '';
+    var face_settings = Meteor.user().profile.face_settings;
+    if (face_settings) {
+      if (face_settings.face_list.includes('right_side'))
+        val = 'checked';
+    }
+    return val;
+  },
   getMsg: function(){
     if (!page_data) {
       return [];
@@ -1472,6 +1499,42 @@ Template._simpleChatToChat.events({
   'click #showScripts': function(e){
     $('.scriptsLayer').fadeIn();
     $('#showScripts').hide();
+  },
+  'click .btn-primary': function(){
+    //储存左侧脸右侧脸和正脸的集合
+    var face_list　=　new Array();
+    $("input:checkbox:checked").each(function(i,v){
+      if(this.checked){
+        if($(this).val() == "正脸"){
+          face_list[i] = "front";
+        }else if($(this).val() == "左侧脸"){
+          face_list[i] = "left_side";
+        }else if($(this).val() == "右侧脸"){
+          face_list[i] = "right_side";
+        }
+      }
+    })
+   
+    var fuzz_val = $(".face_text").html();
+    Meteor.users.update({_id: Meteor.userId()}, {$set: {'profile.face_settings': {'face_list': face_list, 'fuzziness': fuzz_val}}});
+    $(".face_value").hide();
+  },
+  'click .fa-face': function(e) {
+    function setArticle(num){
+      var progressW =parseInt($(".face_value").width()) - parseInt($(".face_value").width()) * 0.13;
+      var right_text = parseInt($(".right_text").html())
+      var zong = (progressW / right_text) * num
+      $('.progress_btn').animate({'left':zong},progressW);
+      $('.progress_bar').animate({width:zong},progressW);
+      $('.face_text').html(num);
+      $(".face_value").show()
+    }
+  
+    var face_settings = Meteor.user().profile.face_settings;
+    if (face_settings) {
+      setArticle(face_settings.fuzziness);
+    }
+    return
   },
   'click #labelNewPerson': function(e) {
     // get the device list
