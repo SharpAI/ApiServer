@@ -29,8 +29,10 @@ Template.haveStranger.events({
         return PUB.back();
     },
     'click .skip p': function(e){
-        return PUB.back()
-        //return PUB.page("/_simpleChatToChat")
+        var sessionType = Session.get("session_type")
+        var toUserId = Session.get("toUser_id")
+        var url = '/simple-chat/to/' + sessionType + '?id=' + toUserId
+        return PUB.page(url)
     },
     'click .stranges-item': function(e, t) {
         var sessionType = Session.get("session_type")

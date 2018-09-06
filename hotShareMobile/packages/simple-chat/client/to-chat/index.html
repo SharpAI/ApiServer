@@ -46,66 +46,29 @@
             </div>
             <div class="face_footb">
               <div class="foot_value">&nbsp;&nbsp;阈值调整</div>
-              <div class="foot_count">
+              <div class="foot_count" style="text-align: center;">
                 <!-- 进度条开始 -->
-                <div class="progress1">
+                <!-- <div class="progress1">
                   <div class="progress_bg">
                   <div class="progress_bar"></div>
                   </div>
                   <div class="progress_btn"></div>
-              </div>
-                <script>
-                    var tag = false,ox = 0,left = 0,bgleft = 0;
-                    var progressW = $(".progress1").width();
-                    $('.progress_btn').mousedown(function(e) {
-                        ox = e.pageX - left;
-                        tag = true;
-                    });
-                    $(document).mouseup(function() {
-                        tag = false;
-                    });
-                    $('.progress1').mousemove(function(e) {//鼠标移动
-                        if (tag) {
-                            left = e.pageX - ox;
-                            if (left <= 0) {
-                                left = 0;
-                            }else if (left > progressW) {
-                                left = progressW;
-                            }
-                            $('.progress_btn').css('left', left);
-                            $('.progress_bar').width(left);
-                            var nums = (left/progressW).toFixed(4);
-                            $('.face_text').html(Math.floor(500 * nums));
-                        }
-                    });
-                    $('.progress_bg').click(function(e) {//鼠标点击
-                        if (!tag) {
-                            bgleft = $('.progress_bg').offset().left;
-                            left = e.pageX - bgleft;
-                            if (left <= 0) {
-                                left = 0;
-                            }else if (left > progressW) {
-                                left = progressW;
-                            }
-                            $('.progress_btn').animate({'left':left},progressW);
-                            $('.progress_bar').animate({width:left},progressW);
-                            var nums = (left/progressW).toFixed(4);
-                            $('.face_text').html(Math.floor(500 * nums));
-                        }
-                    });
-                </script>
+                </div> -->
                 <!-- 进度条结束 -->
+                <input class="face_values" type="text" value=""  placeholder="请输入1-500的整数值" style="border: 1px solid #666666;">
+                <div class="msg-info" style="font-size: 99%"></div>
               </div>
-              <div class="foot_num">
+              <!-- <div class="foot_num">
                 <ul class="nav-pills">
                   <li class="face_text">0</li>
                   <li class="right_text" style="text-align: right;">500</li>
                 </ul>
-              </div>
+              </div> -->
             </div>
-            <div class="face_footc" style="text-align: center;margin-top: 20%;">
+            <div class="face_footc" style="text-align: center;margin-top: 14%;">
               <p style="color: #666666;font-size:110%;">阈值调整仅在此设备有效</p>
-              <button type="button" class="btn btn-primary" style="background-color:#37A7FE;font-size:150%;">确定</button>
+              <button type="button" class="btn btn-primary cancel1"  style="background-color:#37A7FE;font-size:150%;margin-right: 20%;">取消</button>
+              <button type="button" class="btn btn-primary determine1" style="background-color:#37A7FE;font-size:150%;margin-left: 2%;">确定</button>
             </div>
           </div>
         </div>
