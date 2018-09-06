@@ -89,7 +89,7 @@ var changeDeviceGroup = function(group_id,group_name){
     });
     SELECT_CREATE_GROUP.close();
     //return PUB.toast('群组已更改');
-    $('#addDeviceResultText').html('群组已更改');
+    $('#addDeviceResultText').html('设备添加成功！');
     $('#addDeviceResult').modal('show');
   })
 }
