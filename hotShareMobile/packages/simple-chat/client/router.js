@@ -13,6 +13,9 @@ var label_name_text =  new ReactiveVar('');
 var touchTimeout = null;
 var toolsBar = null;
 
+var tag = false,ox = 0,left = 0,bgleft = 0;
+var progressW = $(".progress1").width();
+
 Array.prototype.removeByIndex= function(index){
   return this.slice(0,index).concat(this.slice(index+1,this.length));
 }
@@ -20,10 +23,37 @@ Array.prototype.removeByIndex= function(index){
 
 Template._simpleChatToChat.onCreated(function() {
   // Blaze.render(Template.toolsBarDown, document.body);
-  page_data = this.data
+  page_data = this.data;
 });
 
 Template._simpleChatToChat.helpers({
+  face_checked: function() {
+    var val = '';
+    var face_settings = Meteor.user().profile.face_settings;
+    if (face_settings) {
+      if (face_settings.face_list.includes('front'))
+        val = 'checked';
+    }
+    return val;
+  },
+  left_checked: function() {
+    var val = '';
+    var face_settings = Meteor.user().profile.face_settings;
+    if (face_settings) {
+      if (face_settings.face_list.includes('left_side'))
+        val = 'checked';
+    }
+    return val;
+  },
+  right_checked: function() {
+    var val = '';
+    var face_settings = Meteor.user().profile.face_settings;
+    if (face_settings) {
+      if (face_settings.face_list.includes('right_side'))
+        val = 'checked';
+    }
+    return val;
+  },
   getMsg: function(){
     if (!page_data) {
       return [];
@@ -1473,6 +1503,63 @@ Template._simpleChatToChat.events({
     $('.scriptsLayer').fadeIn();
     $('#showScripts').hide();
   },
+  'click .cancel1': function(){
+    $(".face_value").hide();
+  },
+  'click .determine1': function(){
+    var fuzz_val =$(".face_values").val();
+    var teg = /^[0-9]{1,10}$/;
+    if(fuzz_val == ""){
+      fuzz_val = 100
+    }else if(!teg.test(fuzz_val)){
+      $(".msg-info").html("输入错误,请重新输入!").css("color","red");
+      return
+    }else if(fuzz_val > 500 || fuzz_val < 1){
+      $(".msg-info").html("请输入1-500的整数值!").css("color","red");
+      return
+    }else{
+      $(".msg-info").html();
+    }
+    //储存左侧脸右侧脸和正脸的集合
+    var face_list　=　new Array();
+    $("input:checkbox:checked").each(function(i,v){
+      if(this.checked){
+        if($(this).val() == "正脸"){
+          face_list[i] = "front";
+        }else if($(this).val() == "左侧脸"){
+          face_list[i] = "left_side";
+        }else if($(this).val() == "右侧脸"){
+          face_list[i] = "right_side";
+        }
+      }
+    })
+    Meteor.users.update({_id: Meteor.userId()}, {$set: {'profile.face_settings': {'face_list': face_list, 'fuzziness': fuzz_val}}});
+    $(".face_value").hide();
+  },
+  'click .fa-face': function(e) {
+    // function setArticle(num){
+    //   var progressW =parseInt($(".face_value").width()) - parseInt($(".face_value").width()) * 0.13;
+    //   var right_text = parseInt($(".right_text").html())
+    //   var zong = (progressW / right_text) * num
+    //   $('.progress_btn').animate({'left':zong},progressW);
+    //   $('.progress_bar').animate({width:zong},progressW);
+    //   $('.face_text').html(num);
+    //   $(".face_value").show()
+    // }
+    var face_settings = Meteor.user().profile.face_settings;
+    if (!face_settings) {
+       //setArticle(face_settings.fuzziness);
+       $(".face_values").html();
+       $(".msg-info").html();
+       $(".face_value").show()
+     }else{
+       //setArticle(100)
+      $(".face_values").val(face_settings.fuzziness);
+      $(".msg-info").html("");
+      $(".face_value").show()
+     }
+    return
+  },
   'click #labelNewPerson': function(e) {
     // get the device list
     var data = page_data;
@@ -1724,6 +1811,44 @@ Template._simpleChatToChat.events({
     //  主动点击有 x 条新消息
      setScrollToBottom();
      Session.set('newMsgCount',0);
+  },
+  'touchstart .progress1': function(event){
+    ox = event.pageX;
+    tag = true;
+  },
+  'touchmove .progress1': function(e){
+    if (tag) {
+      var progressW = $(".progress1").width();
+      left = e.pageX - ox;
+      if (left <= 0) {
+          left = 0;
+      }else if (left > progressW) {
+          left = progressW;
+      }
+      $('.progress_btn').css('left', left);
+      $('.progress_bar').width(left);
+      var nums = (left/progressW).toFixed(4);
+      $('.face_text').html(Math.floor(500 * nums));
+    }
+  },
+  'touchend .progress1': function(e){
+    tag = false;
+  },
+  'click .progress_bg':function(e){
+    if (!tag) {
+      var progressW = $(".progress1").width();
+      bgleft = $('.progress_bg').offset().left;
+      left = e.pageX - bgleft;
+      if (left <= 0) {
+          left = 0;
+      }else if (left > progressW) {
+          left = progressW;
+      }
+      $('.progress_btn').animate({'left':left},progressW);
+      $('.progress_bar').animate({width:left},progressW);
+      var nums = (left/progressW).toFixed(4);
+      $('.face_text').html(Math.floor(500 * nums));
+  }
   },
   // 'tap .msg-box':function(e){
   //   if (!isMultipleChoice.get()) {

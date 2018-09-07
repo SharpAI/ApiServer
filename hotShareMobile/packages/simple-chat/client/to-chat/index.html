@@ -30,7 +30,48 @@
         <div class="loading"></div>
         {{/if}}
       </div>
+
       <div class="box">
+        <div class="face_value">
+          <div class="face_top">
+            人脸过滤阈值调整
+          </div>
+          <div class="face_foot">
+            <div class="face_foota">
+              <ul class="nav-pills foota_ul">
+                <li><input type="checkbox" name="check" value="正脸" {{face_checked}}>正脸</li>
+                <li><input type="checkbox" name="check" value="左侧脸" {{left_checked}}>左侧脸</li>
+                <li><input type="checkbox" name="check" value="右侧脸" {{right_checked}}>右侧脸</li>
+              </ul>
+            </div>
+            <div class="face_footb">
+              <div class="foot_value">&nbsp;&nbsp;阈值调整</div>
+              <div class="foot_count" style="text-align: center;">
+                <!-- 进度条开始 -->
+                <!-- <div class="progress1">
+                  <div class="progress_bg">
+                  <div class="progress_bar"></div>
+                  </div>
+                  <div class="progress_btn"></div>
+                </div> -->
+                <!-- 进度条结束 -->
+                <input class="face_values" type="text" value=""  placeholder="请输入1-500的整数值" style="border: 1px solid #666666;">
+                <div class="msg-info" style="font-size: 99%"></div>
+              </div>
+              <!-- <div class="foot_num">
+                <ul class="nav-pills">
+                  <li class="face_text">0</li>
+                  <li class="right_text" style="text-align: right;">500</li>
+                </ul>
+              </div> -->
+            </div>
+            <div class="face_footc" style="text-align: center;margin-top: 14%;">
+              <p style="color: #666666;font-size:110%;">阈值调整仅在此设备有效</p>
+              <button type="button" class="btn btn-primary cancel1"  style="background-color:#37A7FE;font-size:150%;margin-right: 20%;">取消</button>
+              <button type="button" class="btn btn-primary determine1" style="background-color:#37A7FE;font-size:150%;margin-left: 2%;">确定</button>
+            </div>
+          </div>
+        </div>
         <ul class="group-list">
           {{#each getMsg}}
             {{> _simpleChatToChatItem}}
@@ -75,7 +116,7 @@
       {{> _LabelNewPersonTip}}
     {{/if}}
   </div>
-
+  
   <button id="labelNewPerson">
     <img src="/label_new_person.png" width="24" />
   </button>
@@ -129,9 +170,18 @@
         <i class="fa fa-cloud-upload fa-fw"></i>
         <p>Upload Logs</p>
       </li>
+      <li class="scriptsItem" data-script="setfilter">
+        <i class="fa fa-face fa-fw glyphicon glyphicon glyphicon-pencil"></i>
+        <p>Set the filter</p>
+      </li>
     </ul>
   </div>
   {{/if}}
+  <script>
+      $(function(){
+        $(".face_value").hide();
+      })
+  </script>
   <!--<script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/crypto/crypto.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/hmac/hmac.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/sha1/sha1.js"></script>
