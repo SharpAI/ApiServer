@@ -107,8 +107,7 @@ if Meteor.isClient
       critiaria = { group_id: { $eq: this.toUserId} };
       face_settings = Meteor.user().profile.face_settings;
       if face_settings
-          critiaria.style = {$in: face_settings.face_list};
-          critiaria.fuzziness = {$gte: face_settings.fuzziness};
+          critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
       scursor = Strangers.find(critiaria);
       strange = scursor.count()
       urlMsg = '/simple-chat/to/'+this.sessionType+'?id='+ this.toUserId
@@ -121,7 +120,7 @@ if Meteor.isClient
       strangeToUserId = this.toUserId
       scursor.observeChanges
           removed: (id)->
-            count = Strangers.find().count()
+            count = Strangers.find(critiaria).count()
             console.log('##RDBG, stranger count: ' + count)
             if count is 0 and Router.current().originalUrl is '/ishaveStranger/' and Session.get('toUser_id') is strangeToUserId
               PUB.page(urlMsg)
