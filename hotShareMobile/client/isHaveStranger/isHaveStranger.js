@@ -37,6 +37,11 @@ Template.haveStranger.events({
     'click .stranges-item': function(e, t) {
         var sessionType = Session.get("session_type")
         var toUserId = Session.get("toUser_id")
+        var critiaria = { group_id: { $eq: toUserId} };
+        var face_settings = Meteor.user().profile.face_settings;
+        if (face_settings) {
+            critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
+        }
         var url = '/simple-chat/to/' + sessionType + '?id=' + toUserId
         var tagName = $(e.target).prop("tagName").toLowerCase()
         var $li = $(e.currentTarget)
@@ -45,7 +50,8 @@ Template.haveStranger.events({
             if ($(e.target).attr("id") === "reject" || $(e.target).parent().attr("id") === "reject") {
                 Session.set("isMark", true)
                 Strangers.remove({ _id: id })
-                var len = Strangers.find({ group_id: { $eq: Session.get("toUser_id") } }).fetch().length
+                
+                var len = Strangers.find(critiaria).fetch().length
                 $('#stranger-contain').find($li).remove()
                 if (len == 0) {
                     PUB.page(url)
@@ -88,6 +94,10 @@ Template.haveStranger.events({
                     }
 
                     imgData.forEach(function(item) {
+                        if (face_settings) {
+                            if (!(face_settings.face_list.includes(item.style) && item.fuzziness >= face_settings.fuzziness))
+                                return;
+                        }
                         // 发送消息给平板
                         var trainsetObj = {
                             group_id: group_id,
@@ -118,6 +128,11 @@ Template.haveStranger.events({
                         Meteor.call('set-person-names', group_id, setNames);
                     }
                     imgData.forEach(function(item) {
+                        if (face_settings) {
+                            if (!(face_settings.face_list.includes(item.style) && item.fuzziness >= face_settings.fuzziness))
+                                return;
+                        }
+
                         try {
                             var person_info = {
                                 'uuid': uuid,
@@ -145,7 +160,7 @@ Template.haveStranger.events({
                     PUB.hideWaitLoading();
                     Strangers.remove({ _id: id })
                     //Meteor.call('removeStrangers', id)
-                    var len = Strangers.find({ group_id: { $eq: Session.get("toUser_id") } }).fetch().length
+                    var len = Strangers.find(critiaria).fetch().length
                     $('#stranger-contain').find($li).remove()
                     if (len == 0) {
                         PUB.page(url)
@@ -162,8 +177,7 @@ Template.haveStranger.helpers({
         var critiaria = { group_id: { $eq: Session.get("toUser_id")} };
         var face_settings = Meteor.user().profile.face_settings;
         if (face_settings) {
-            critiaria.style = {$in: face_settings.face_list};
-            critiaria.fuzziness = {$gte: face_settings.fuzziness};
+            critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
         }
         st = Strangers.find(critiaria);
         if (st.count() > 0)
@@ -175,8 +189,7 @@ Template.haveStranger.helpers({
         var critiaria = { group_id: { $eq: Session.get("toUser_id")} };
         var face_settings = Meteor.user().profile.face_settings;
         if (face_settings) {
-            critiaria.style = {$in: face_settings.face_list};
-            critiaria.fuzziness = {$gte: face_settings.fuzziness};
+            critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
         }
         st = Strangers.find(critiaria);
         return st
