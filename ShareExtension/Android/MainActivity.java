@@ -31,6 +31,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 
 import android.util.Log;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import android.net.Uri;
@@ -156,10 +157,29 @@ public class MainActivity extends CordovaActivity
     {
         super.onCreate(savedInstanceState);
 
+	List<String> permissions = new ArrayList<String>();
+
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_MEDIA);
+          permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         } else {
+        }
+
+        /*permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.RECORD_AUDIO);
+        } else {
+        }*/
+
+        permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.CAMERA);
+        } else {
+        }
+
+        if (permissions.size() > 0) {
+            String[] perms = permissions.toArray(new String[0]);
+            ActivityCompat.requestPermissions(this, perms, MY_PERMISSIONS_REQUEST_READ_MEDIA);
         }
 
         Intent intent = getIntent();

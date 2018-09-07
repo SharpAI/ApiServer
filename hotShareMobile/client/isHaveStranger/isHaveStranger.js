@@ -28,6 +28,12 @@ Template.haveStranger.events({
         btn_pro.set(0);
         return PUB.back();
     },
+    'click .skip p': function(e){
+        var sessionType = Session.get("session_type")
+        var toUserId = Session.get("toUser_id")
+        var url = '/simple-chat/to/' + sessionType + '?id=' + toUserId
+        return PUB.page(url)
+    },
     'click .stranges-item': function(e, t) {
         var sessionType = Session.get("session_type")
         var toUserId = Session.get("toUser_id")
@@ -153,12 +159,26 @@ Template.haveStranger.events({
 
 Template.haveStranger.helpers({
     isHaveStranger: function() {
-        if (Strangers.find().count() > 0)
+        var critiaria = { group_id: { $eq: Session.get("toUser_id")} };
+        var face_settings = Meteor.user().profile.face_settings;
+        if (face_settings) {
+            critiaria.style = {$in: face_settings.face_list};
+            critiaria.fuzziness = {$gte: face_settings.fuzziness};
+        }
+        st = Strangers.find(critiaria);
+        if (st.count() > 0)
             return true;
-        return false;
+        else
+            return false;
     },
     Stranger_people: function() {
-        var st = Strangers.find({ group_id: { $eq: Session.get("toUser_id")}})
+        var critiaria = { group_id: { $eq: Session.get("toUser_id")} };
+        var face_settings = Meteor.user().profile.face_settings;
+        if (face_settings) {
+            critiaria.style = {$in: face_settings.face_list};
+            critiaria.fuzziness = {$gte: face_settings.fuzziness};
+        }
+        st = Strangers.find(critiaria);
         return st
     },
     isMark: function() {
