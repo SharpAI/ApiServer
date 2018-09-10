@@ -1506,16 +1506,24 @@ Template._simpleChatToChat.events({
   'click .cancel1': function(){
     $(".face_value").hide();
   },
+  'blur .face_values': function(){//失去输入值的inout焦点
+    $('body').height($('body')[0].clientHeight);//固定body的高度
+    $(".face_value").css("top",'30%');
+  },
+  'focus .face_values': function(){//获得输入值的inout焦点
+    $('body').height($('body')[0].clientHeight);//固定body的高度
+    $(".face_value").css("top",'15%');
+  },
   'click .determine1': function(){
     var fuzz_val =$(".face_values").val();
     var teg = /^[0-9]{1,10}$/;
     if(fuzz_val == ""){
       fuzz_val = 100
     }else if(!teg.test(fuzz_val)){
-      $(".msg-info").html("输入错误,请重新输入!").css("color","red");
+      $(".msg-info").html("输入有误,请重新输入！").css("color","red");
       return
     }else if(fuzz_val > 500 || fuzz_val < 1){
-      $(".msg-info").html("请输入1-500的整数值!").css("color","red");
+      $(".msg-info").html("请输入1-500的整数值！").css("color","red");
       return
     }else{
       $(".msg-info").html();
