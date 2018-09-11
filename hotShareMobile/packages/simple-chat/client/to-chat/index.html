@@ -116,6 +116,40 @@
       {{> _LabelNewPersonTip}}
     {{/if}}
   </div>
+
+  <!-- Modal groupWizardStep1 -->
+  <div class="modal fade" id="groupWizardStep1" role="dialog">
+    <div class="modal-dialog" style="top:30%; left:17.8%; width:64%; height:43%;">
+      <div class="modal-content">
+        <div class="modal-body" style="margin-top: 10px;">
+          <p style="text-align:center; margin-top: 30px;">请进入部署评测，检查你的部署环境是否合适</p>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer" style="text-align:center;">
+          <button id="btnSkip" type="button" class="btn btn-info" style="margin-right:10px;" >跳过</button>
+          <button id="btnEnter" type="button" class="btn btn-info" style="margin-left:10px;" >进入</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal groupWizardStep1 End -->
+
+  <!-- Modal groupWizardStep2 -->
+  <div class="modal fade" id="groupWizardStep2" role="dialog">
+    <div class="modal-dialog" style="top:30%; left:17.8%; width:64%; height:43%;">
+      <div class="modal-content">
+        <div class="modal-body" style="margin-top: 10px;">
+          <p style="text-align:center; margin-top: 30px;">如果您选择跳过，会影响到识别的准确性，确认跳过吗？</p>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer" style="text-align:center;">
+          <button id="btnSkipConfirm" type="button" class="btn btn-info" style="margin-right:10px;" >确认</button>
+          <button id="btnBack" type="button" class="btn btn-info" style="margin-left:10px;">返回</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal groupWizardStep2 End -->
   
   <button id="labelNewPerson">
     <img src="/label_new_person.png" width="24" />

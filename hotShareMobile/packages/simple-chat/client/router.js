@@ -150,6 +150,31 @@ window.onresize = function(){
   }
 };
 
+var isGroupWizardFinished = function(group_id) {
+  var finished = localStorage.getItem(group_id + '_wizardfinished');
+  if (!finished)
+      return false;
+
+  return finished
+}
+
+var setGroupWizardFinished = function(group_id, finished) {
+  localStorage.setItem(group_id + '_wizardfinished', finished);
+}
+
+var popupWizardDialog = function() {
+  $('#groupWizardStep1').modal('show');
+}
+
+Template._simpleChatToChat.onRendered(function(){
+  var group_id = this.data.id;
+  Meteor.setTimeout(function() {
+    if (!isGroupWizardFinished(group_id)) {
+      popupWizardDialog();
+    }
+  }, 2000);
+});
+
 Template._simpleChatToChat.onRendered(function(){
 
   Session.set('currentWindowHeight',$(window).height());
@@ -1499,6 +1524,43 @@ Template._checkGroupDevice.events({
 
 
 Template._simpleChatToChat.events({
+  'click #btnSkip': function(event) {
+    $('#groupWizardStep1').modal('hide');
+    $('#groupWizardStep2').modal('show');
+  },
+  'click #btnEnter': function(event) {
+    var group_id = this.id;
+    setGroupWizardFinished(this.id, true);
+    $('#groupWizardStep1').modal('hide');
+    //根据group_id得到group下的设备列表
+    Meteor.call('getDeviceListByGroupId', group_id, function (err, deviceLists) {
+      if(err){
+        console.log('getDeviceListByGroupId:',err);
+        return;
+      }
+      console.log("device lists is: ", JSON.stringify(deviceLists));
+      if (deviceLists && deviceLists.length > 0) {
+        if (deviceLists.length == 1 && deviceLists[0].uuid) {
+          console.log("enter this device install test");
+          return PUB.page('/groupInstallTest/'+group_id+'/' + deviceLists[0].uuid);
+        } else {
+          Session.set('_groupChatDeviceLists', deviceLists);
+          Session.set('toPath','/groupInstallTest/'+group_id);
+          $('._checkGroupDevice').fadeIn();
+          return;
+        }
+      }
+      return PUB.toast('该群组下暂无设备');
+    }); 
+  },
+  'click #btnSkipConfirm': function(event) {
+    setGroupWizardFinished(this.id, true);
+    $('#groupWizardStep2').modal('hide');
+  },
+  'click #btnBack': function(event) {
+    $('#groupWizardStep2').modal('hide');
+    $('#groupWizardStep1').modal('show');
+  }, 
   'click #showScripts': function(e){
     $('.scriptsLayer').fadeIn();
     $('#showScripts').hide();
