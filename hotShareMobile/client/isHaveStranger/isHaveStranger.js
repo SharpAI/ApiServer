@@ -28,7 +28,7 @@ Template.haveStranger.events({
         btn_pro.set(0);
         return PUB.back();
     },
-    'click .skip p': function(e){
+    'click .skip': function(e){
         var sessionType = Session.get("session_type")
         var toUserId = Session.get("toUser_id")
         var url = '/simple-chat/to/' + sessionType + '?id=' + toUserId
