@@ -170,9 +170,11 @@ Template.homePage.events({
       console.log("device lists is: ", JSON.stringify(deviceLists));
       if (deviceLists && deviceLists.length > 0) {
         if (deviceLists.length == 1 && deviceLists[0].uuid) {
-          console.log("enter this device timeline")
+          //console.log("enter this device timeline")
           // return PUB.page('/timelineAlbum/' + deviceLists[0].uuid + '?from=groupchat');
-          return PUB.page('/chooseLabelType/' + deviceLists[0].uuid);
+          //return PUB.page('/chooseLabelType/' + deviceLists[0].uuid);
+          var uuid = Router.current().params.uuid;
+          return PUB.page('/timelineAlbum/' + uuid + '?from=groupchat');
         } else {
           console.log("select a device")
           Session.set('_groupChatDeviceLists', deviceLists);
