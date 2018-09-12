@@ -33,12 +33,31 @@
         <li role="presentation"><a id="onlyShowUnknown" role="menuitem" tabindex="-1">{{#if onlyShowUnknown}}<i class="fa fa-check fa-fw"></i>{{/if}} 未识别</a></li>
         <li role="presentation"><a id="clearFilter" role="menuitem" tabindex="-1">显示全部</a></li>
       </ul> -->
-      <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more">
+      <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more" style="height: 253px;overflow-x:hidden; overflow-y:scroll;">
         <!-- <li role="presentation" id="timeRange"><input type="radio" {{filterTimeRange}}><label>时间范围</label></li> -->
-        <li role="presentation" ><label id="onlyShowUnknown" for="1"><input id="1" type="radio" {{onlyShowUnknown}}><span>未识别</span></label></li>
-        <li role="presentation" ><label id="clearFilter" for="2"><input id="2" type="radio" {{showAll}}><span>显示全部</span></label></li>
+        <li role="presentation" >
+          <h4>识别状态</h4>
+          <label id="onlyShowUnknown" for="1"><input id="1" type="radio" {{onlyShowUnknown}}><span>未识别</span></label>
+          <label id="clearFilter" for="2"><input id="2" type="radio" {{showAll}}><span>显示全部</span></label>
+        </li>
         <li role="separator" class="divider"></li>
-        <li role="presentation"><p style="line-height:25px">提示：建议标注15张以上清晰照片。（标注照片越多，AI识别就越准确）</p></li>
+        <li role="presentation">
+          <h4>模糊度</h4>
+          <div id="fuzz-value">
+              <label id="fuzz-five"><input type="radio" name="radio" value="5" ><span>5</span></label>
+              <label id="fuzz-ten" style="margin-left: 36.1%;"><input type="radio" name="radio" value="10"><span>10</span></label>
+          </div>
+          <div id="fuzz-value">
+              <label id="fuzz-fifty"><input type="radio" name="radio" value="50"><span>50</span></label>
+              <label id="fuzz-hundred" style="margin-left: 32%;"><input type="radio" name="radio" value="100" checked><span>100</span></label>
+          </div> 
+        </li>
+        <li role="separator" class="divider"></li>
+        <li id="face-type">
+          <h4>人脸类型</h4>
+          <label id="face-front"><input type="radio" name="face" value="front"><span>正脸</span></label>
+          <label id="face-all" style="margin-left:10%;" ><input type="radio" name="face" value="显示全部" checked><span>显示全部</span></label>
+        </li>
       </ul>
     </div>
   </div>
