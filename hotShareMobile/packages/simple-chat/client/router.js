@@ -152,10 +152,10 @@ window.onresize = function(){
 
 var isGroupWizardFinished = function(group_id) {
   var finished = localStorage.getItem(group_id + '_wizardfinished');
-  if (!finished)
-      return false;
+  if (finished == undefined || finished == null || finished == 'false' || finished == false)
+    return false;
 
-  return finished
+  return true;
 }
 
 var setGroupWizardFinished = function(group_id, finished) {
@@ -2349,6 +2349,39 @@ var isInShowMsgMode = function(isAdmin, isDevMode) {
   return isAdmin && isDevMode;
 }
 
+var msgSideFaceData = {};
+var msgSideFaceAnalyze = function(group_id, msgObj) {
+  if (!group_id || !msgObj)
+    return;
+  if (!msgObj.images)
+    return;
+
+  var groupData = msgSideFaceData[group_id];
+  if (!groupData) {
+    groupData = {total: 0, side_face:0};
+  }
+
+  msgObj.images.forEach(function(img) {
+    groupData.total++;
+    if (img.style != 'front') {
+      groupData.side_face++;
+    }
+  });
+  
+  console.log('##RDBG, groupData:', group_id, ',total:', groupData.total, 'side_face:', groupData.side_face);
+
+  if (groupData.total > 100) {
+    var side_percent = groupData.side_face*1.0/groupData.total;
+    console.log('##RDBG, percent:', side_percent);
+    if (side_percent > 0.5) {
+      console.log('##RDBG, side face percent is too large, need to evaluate again');
+      localStorage.setItem(group_id + '_wizardfinished', false);
+      groupData = {total: 0, side_face:0};
+    }
+  }
+  msgSideFaceData[group_id] = groupData;
+};
+
 SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
@@ -2381,6 +2414,8 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
 
     var isAdmin = false;
     var allowUnknowMember = false;
+
+    msgSideFaceAnalyze(group_id, msgObj);
 
     var user = Meteor.user();
     var group = SimpleChat.Groups.findOne({_id: group_id});
