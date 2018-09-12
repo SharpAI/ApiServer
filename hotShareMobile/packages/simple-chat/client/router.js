@@ -1550,7 +1550,7 @@ Template._simpleChatToChat.events({
           return;
         }
       }
-      return PUB.toast('该群组下暂无设备');
+      return PUB.toast('该公司下暂无脸脸盒');
     }); 
   },
   'click #btnSkipConfirm': function(event) {
@@ -1644,7 +1644,7 @@ Template._simpleChatToChat.events({
         return $('._checkGroupDevice').fadeIn();
       }
     }
-    return PUB.toast('该群组下暂无设备');
+    return PUB.toast('该公司下暂无脸脸盒');
   },
   'click .scriptsItem': function(e){
     $('.scriptsLayer').fadeOut();

@@ -145,7 +145,7 @@ Template.homePage.events({
           return;
         }
       }
-      return PUB.toast('该群组下暂无设备');
+      return PUB.toast('该公司下暂无脸脸盒');
     });  
   },
   'click .goGroupPerson': function (e) {
@@ -186,7 +186,7 @@ Template.homePage.events({
           return;
         }
       }
-      return PUB.toast('该群组下暂无设备');
+      return PUB.toast('该公司下暂无脸脸盒');
     })
 
   },
@@ -195,11 +195,13 @@ Template.homePage.events({
     return PUB.page('/introductoryPage2');
   },
   'click #createNewChatGroups': function (event) {
-    event.stopImmediatePropagation()
-    Session.set('fromCreateNewGroups', true);
-    Session.set('notice-from','createNewChatGroups');
-    // return Router.go('/setGroupname');
-    PUB.page('/notice');
+    //跳转到这个页面取消
+    // event.stopImmediatePropagation()
+    // Session.set('fromCreateNewGroups', true);
+    // Session.set('notice-from','createNewChatGroups');
+    // // return Router.go('/setGroupname');
+    // PUB.page('/notice');
+    return Router.go('/setGroupname');
   },
   'click #scanbarcode': function (event) {
     event.stopImmediatePropagation();
