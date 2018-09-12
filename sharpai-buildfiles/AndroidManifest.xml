@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<manifest android:hardwareAccelerated="true" android:versionCode="10048" android:versionName="1.0.48" package="org.sharpai.everywhere" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest android:hardwareAccelerated="true" android:versionCode="10069" android:versionName="1.0.69" package="org.sharpai.everywhere" xmlns:android="http://schemas.android.com/apk/res/android">
     <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:resizeable="true" android:smallScreens="true" android:xlargeScreens="true" />
     <uses-permission android:name="android.permission.INTERNET" />
     <application android:hardwareAccelerated="true" android:icon="@drawable/icon" android:label="@string/app_name" android:supportsRtl="true">
@@ -49,7 +49,7 @@
         </activity>
         <activity android:exported="false" android:name="cn.jpush.android.ui.PopWinActivity" android:theme="@style/MyDialogStyle" />
         <service android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.DownloadService" />
-        <service android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.PushService">
+        <service android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.PushService" android:process=":remote">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTER" />
                 <action android:name="cn.jpush.android.intent.REPORT" />
@@ -57,7 +57,7 @@
                 <action android:name="cn.jpush.android.intent.PUSH_TIME" />
             </intent-filter>
         </service>
-        <receiver android:enabled="true" android:name="cn.jpush.android.service.PushReceiver">
+        <receiver android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.PushReceiver">
             <intent-filter android:priority="1000">
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
                 <category android:name="org.sharpai.everywhere" />
@@ -69,6 +69,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
         <service android:enabled="true" android:exported="true" android:name="cn.jpush.android.service.DaemonService">
@@ -77,22 +78,24 @@
                 <category android:name="org.sharpai.everywhere" />
             </intent-filter>
         </service>
-        <receiver android:enabled="true" android:name="cn.jpush.phonegap.MyReceiver">
-            <intent-filter android:priority="1000">
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
-                <category android:name="org.sharpai.everywhere" />
-            </intent-filter>
+        <receiver android:enabled="true" android:name="cn.jiguang.cordova.push.JPushReceiver">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTRATION" />
-                <action android:name="cn.jpush.android.intent.UNREGISTRATION" />
                 <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
-                <action android:name="cn.jpush.android.intent.ACTION_RICHPUSH_CALLBACK" />
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
                 <category android:name="org.sharpai.everywhere" />
             </intent-filter>
         </receiver>
-        <receiver android:name="cn.jpush.android.service.AlarmReceiver" />
+        <receiver android:exported="false" android:name="cn.jpush.android.service.AlarmReceiver" />
+        <provider android:authorities="org.sharpai.everywhere.DataProvider" android:exported="true" android:name="cn.jpush.android.service.DataProvider" />
+        <receiver android:name="cn.jiguang.cordova.push.JPushEventReceiver">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
+                <category android:name="org.sharpai.everywhere" />
+            </intent-filter>
+        </receiver>
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default" />
         <meta-data android:name="JPUSH_APPKEY" android:value="c84d336dc527ce926b44a815" />
         <activity android:launchMode="singleTask" android:name="com.tencent.tauth.AuthActivity" android:noHistory="true">
@@ -135,14 +138,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <permission android:name="org.sharpai.everywhere.permission.JPUSH_MESSAGE" android:protectionLevel="signature" />
     <uses-permission android:name="org.sharpai.everywhere.permission.JPUSH_MESSAGE" />
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <permission android:name="org.sharpai.everywhere.permission.JPUSH_MESSAGE" android:protectionLevel="signature" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-feature android:name="android.hardware.camera" android:required="true" />
