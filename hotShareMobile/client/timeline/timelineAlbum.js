@@ -8,6 +8,8 @@ var timeRange = new ReactiveVar([]);
 var limit = new ReactiveVar(5);
 
 var onlyShowUnknown = new ReactiveVar(false);
+var fuzziness = new ReactiveVar(100);
+var face_type = new ReactiveVar('all');
 
 var timelineLists = new ReactiveVar([]);
 var timelineIds = new ReactiveVar([]);
@@ -250,6 +252,13 @@ var setLists = function(overlay) {
             // if(person_id && img.person_id != person_id ) { // 修改某人签到信息时的处理
             //   continue;
             // }
+            //fuzziness filter
+            if (img.fuzziness < fuzziness.get())
+              continue;
+            //face type filter
+              if (face_type.get() == 'front' && img.style != 'front') {
+              continue;
+            }
             if(index < 0){
               personIds.push(person_id)
               tmpObj.images.push(img);
@@ -646,6 +655,16 @@ Template.timelineAlbum.helpers({
 });
 
 Template.timelineAlbum.events({
+  'change #fuzz-panel input[type=radio]':function(evt, t) {
+    console.log('radio clicked:', evt.currentTarget.value);
+    fuzziness.set(parseInt(evt.currentTarget.value));
+    setLists(true);
+  },
+  'change #face-type input[type=radio]':function(evt, t) {
+    console.log('radio clicked:', evt.currentTarget.value);
+    face_type.set(evt.currentTarget.value);
+    setLists(true);
+  },
   'click #goHint':function(){
     // Session.set('notice-from','timelineAlbum');
     Session.set('showHint',true);
