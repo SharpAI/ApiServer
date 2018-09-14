@@ -158,6 +158,14 @@ var isGroupWizardFinished = function(group_id) {
   return true;
 }
 
+var isChatTipFinished = function() {
+  if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){          // 1423
+    return true;                                                                                                    // 1424
+  }
+  
+  return false;
+};
+
 var setGroupWizardFinished = function(group_id, finished) {
   localStorage.setItem(group_id + '_wizardfinished', finished);
 }
@@ -169,7 +177,7 @@ var popupWizardDialog = function() {
 Template._simpleChatToChat.onRendered(function(){
   var group_id = this.data.id;
   Meteor.setTimeout(function() {
-    if (!isGroupWizardFinished(group_id)) {
+    if (isChatTipFinished() && !isGroupWizardFinished(group_id)) {
       popupWizardDialog();
     }
   }, 2000);
@@ -1542,6 +1550,7 @@ Template._simpleChatToChat.events({
       if (deviceLists && deviceLists.length > 0) {
         if (deviceLists.length == 1 && deviceLists[0].uuid) {
           console.log("enter this device install test");
+          $('.modal-backdrop').remove();
           return PUB.page('/groupInstallTest/'+group_id+'/' + deviceLists[0].uuid);
         } else {
           Session.set('_groupChatDeviceLists', deviceLists);
