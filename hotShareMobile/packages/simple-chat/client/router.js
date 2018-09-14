@@ -1564,72 +1564,7 @@ Template._simpleChatToChat.events({
   'click #showScripts': function(e){
     $('.scriptsLayer').fadeIn();
     $('#showScripts').hide();
-  },
-  'click .cancel1': function(){
-    $(".face_value").hide();
-  },
-  'blur .face_values': function(){//失去输入值的inout焦点
-    $('body').height($('body')[0].clientHeight);//固定body的高度
-    $(".face_value").css("top",'30%');
-  },
-  'focus .face_values': function(){//获得输入值的inout焦点
-    $('body').height($('body')[0].clientHeight);//固定body的高度
-    $(".face_value").css("top",'15%');
-  },
-  'click .determine1': function(){
-    var fuzz_val =$(".face_values").val();
-    var teg = /^[0-9]{1,10}$/;
-    if(fuzz_val == ""){
-      fuzz_val = 100
-    }else if(!teg.test(fuzz_val)){
-      $(".msg-info").html("输入有误,请重新输入！").css("color","red");
-      return
-    }else if(fuzz_val > 500 || fuzz_val < 1){
-      $(".msg-info").html("请输入1-500的整数值！").css("color","red");
-      return
-    }else{
-      $(".msg-info").html();
-    }
-    //储存左侧脸右侧脸和正脸的集合
-    var face_list　=　new Array();
-    $("input:checkbox:checked").each(function(i,v){
-      if(this.checked){
-        if($(this).val() == "正脸"){
-          face_list[i] = "front";
-        }else if($(this).val() == "左侧脸"){
-          face_list[i] = "left_side";
-        }else if($(this).val() == "右侧脸"){
-          face_list[i] = "right_side";
-        }
-      }
-    })
-    Meteor.users.update({_id: Meteor.userId()}, {$set: {'profile.face_settings': {'face_list': face_list, 'fuzziness': fuzz_val}}});
-    $(".face_value").hide();
-  },
-  'click .fa-face': function(e) {
-    // function setArticle(num){
-    //   var progressW =parseInt($(".face_value").width()) - parseInt($(".face_value").width()) * 0.13;
-    //   var right_text = parseInt($(".right_text").html())
-    //   var zong = (progressW / right_text) * num
-    //   $('.progress_btn').animate({'left':zong},progressW);
-    //   $('.progress_bar').animate({width:zong},progressW);
-    //   $('.face_text').html(num);
-    //   $(".face_value").show()
-    // }
-    var face_settings = Meteor.user().profile.face_settings;
-    if (!face_settings) {
-       //setArticle(face_settings.fuzziness);
-       $(".face_values").html();
-       $(".msg-info").html();
-       $(".face_value").show()
-     }else{
-       //setArticle(100)
-      $(".face_values").val(face_settings.fuzziness);
-      $(".msg-info").html("");
-      $(".face_value").show()
-     }
-    return
-  },
+  },       
   'click #labelNewPerson': function(e) {
     // get the device list
     var data = page_data;
