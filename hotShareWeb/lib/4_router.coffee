@@ -1331,7 +1331,7 @@ if Meteor.isServer
               people_config = WorkAIUserRelations.find({'group_id':userGroup.group_id}, {fields:{'person_name':1, 'hide_it':1}}).fetch()
               isShow = people_config.some((elem) => elem.person_name == person_name && !elem.hide_it)
               console.log("people_config="+JSON.stringify(people_config))
-              if isShow
+              if isShow and checkIfSendKnownUnknownPushNotification(userGroup.group_id,person_id)
                   group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
                   group_name = '公司'
                   if group && group.name
@@ -1348,7 +1348,7 @@ if Meteor.isServer
               if group && group.name
                 group_name = group.name
               console.log("group_id="+userGroup.group_id+", is_notify_stranger="+is_notify_stranger)
-              if is_notify_stranger
+              if is_notify_stranger and checkIfSendKnownUnknownPushNotification(userGroup.group_id,'0')
                 console.log("Will notify stranger")
                 sharpai_pushnotification("notify_stranger", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name}, null)
       )

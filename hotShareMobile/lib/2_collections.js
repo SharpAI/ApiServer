@@ -250,6 +250,27 @@ Faces = new Meteor.Collection('faces');
 
 
 if(Meteor.isServer){
+  KnownUnknownAlertLimit = new Mongo.Collection("alertlimit_known_unknown");
+
+  // 30分钟之内不要做重复的推送，什么是重复推送呢：
+  // 1 相同的人，同一个组里
+  // 2 陌生人，同一个组里
+  // Don't allow TTL less than 30 minutes so we don't break synchronization
+  var expiresAfterSeconds = 30*60;
+
+  KnownUnknownAlertLimit._ensureIndex({group_id: 1, uuid: 1}, { expireAfterSeconds: expiresAfterSeconds });
+  KnownUnknownAlertLimit._ensureIndex({createdAt: 1 }, { expireAfterSeconds: expiresAfterSeconds });
+
+  checkIfSendKnownUnknownPushNotification = function(groupd_id,uuid){
+    if(KnownUnknownAlertLimit.findOne({group_id: groupd_id, uuid: uuid})){
+      console.log(KnownUnknownAlertLimit.findOne({group_id: groupd_id, uuid: uuid}))
+      return false;
+    } else {
+      KnownUnknownAlertLimit.insert({group_id: groupd_id, uuid: uuid,createdAt: new Date()})
+      return true
+    }
+  }
+
   Devices.allow({
       insert: function(userId, doc){
           return userId == doc.userId;
