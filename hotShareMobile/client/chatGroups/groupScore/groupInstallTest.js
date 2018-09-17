@@ -36,7 +36,7 @@ Template.groupInstallTest.helpers({
         var showFoot = '';
         switch(s){
             case 1:
-                content = '点击开始之前，请确保只有一人进入摄像头画面，点击开始之后，请距离1-2米正面对着摄像头20秒后离开';
+                content = '请在点击开始后，按照摄像头部署方向以正常速度来回走过，检查你的摄像头安装角度和识别率';
                 btn = '开始';
                 break;
             case 2:
