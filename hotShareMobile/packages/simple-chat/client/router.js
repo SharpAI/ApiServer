@@ -158,6 +158,14 @@ var isGroupWizardFinished = function(group_id) {
   return true;
 }
 
+var isGroupNoDeviceWizardFinished = function(group_id) {
+  var finished = localStorage.getItem(group_id + '_nodevicewizardfinished');
+  if (finished == undefined || finished == null || finished == 'false' || finished == false)
+    return false;
+
+  return true;
+}
+
 var isChatTipFinished = function() {
   if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){          // 1423
     return true;                                                                                                    // 1424
@@ -170,17 +178,32 @@ var setGroupWizardFinished = function(group_id, finished) {
   localStorage.setItem(group_id + '_wizardfinished', finished);
 }
 
-var popupWizardDialog = function() {
+var setGroupNoDeviceWizardFinished = function(group_id, finished) {
+  localStorage.setItem(group_id + '_nodevicewizardfinished', finished);
+}
+
+var popupWizardDialog = function(group_id) {
   $('#groupWizardStep1').modal('show');
+}
+
+var popupNoDeviceWizardDialog = function(group_id) {
+  $('#groupNoDevice').modal('show');
 }
 
 Template._simpleChatToChat.onRendered(function(){
   var group_id = this.data.id;
-  Meteor.setTimeout(function() {
-    if (isChatTipFinished() && !isGroupWizardFinished(group_id)) {
-      popupWizardDialog();
+  Meteor.subscribe('device_by_groupId', group_id, function() {
+    var devs = Devices.find({groupId: group_id});
+    if (isChatTipFinished()) {
+      if (devs && devs.count() > 0 && !isGroupWizardFinished(group_id)) {
+        popupWizardDialog(group_id);
+      }
+      else if (devs && devs.count() == 0 && !isGroupNoDeviceWizardFinished(group_id)) {
+        popupNoDeviceWizardDialog(group_id);
+      }
     }
-  }, 2000);
+
+  });
 });
 
 Template._simpleChatToChat.onRendered(function(){
@@ -1532,9 +1555,22 @@ Template._checkGroupDevice.events({
 
 
 Template._simpleChatToChat.events({
+  'click #btnCancel': function(event) {
+    setGroupNoDeviceWizardFinished(this.id, true);
+    $('#groupNoDevice').modal('hide');
+  },
+  'click #btnEnterHome': function(event) {
+    $('#groupNoDevice').on('hidden.bs.modal', function() {
+      PUB.page('/');
+    });
+    setGroupNoDeviceWizardFinished(this.id, true);
+    $('#groupNoDevice').modal('hide');
+  },
   'click #btnSkip': function(event) {
+    $('#groupWizardStep1').on('hidden.bs.modal', function() {
+      $('#groupWizardStep2').modal('show');
+    });
     $('#groupWizardStep1').modal('hide');
-    $('#groupWizardStep2').modal('show');
   },
   'click #btnEnter': function(event) {
     var group_id = this.id;
