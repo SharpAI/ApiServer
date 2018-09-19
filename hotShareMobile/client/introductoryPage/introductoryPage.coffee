@@ -70,8 +70,8 @@ if Meteor.isClient
       #Router.go('/group/add');
       Session.set('fromCreateNewGroups',true);
       Session.set('notice-from','createNewChatGroups');
-      #Router.go('/setGroupname');
-      PUB.page '/notice'
+      Router.go('/setGroupname');
+      #PUB.page '/notice'
     'click #joinTestGroup':(event)->
       # Session.set('needShowBubble','false');
       # window.localStorage.setItem("isSecondUse",'true');
