@@ -27,6 +27,7 @@ for(var i=7;i>-2;i--){
    })
  }
  dateList.set(_dateList);
+ curTime.set(dateList.get()[7]);
 var parseDate = function(currentDay){
   //var today = new Date(Session.get('today'));
   var year = currentDay.getFullYear();
