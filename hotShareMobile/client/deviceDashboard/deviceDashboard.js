@@ -14,7 +14,7 @@ var dateList = new ReactiveVar([]);
 var curTime = new ReactiveVar(null);
  //前7天加入dateList
 var _dateList = [];
-for(var i=7;i>-1;i--){
+for(var i=7;i>-2;i--){
    var t = moment().subtract(i, 'day');
    var weekStr = t.format('ddd');
    var d = t.format('MM/DD');
@@ -100,7 +100,7 @@ Template.deviceDashboard.onRendered(function () {
   curTime.set(dateList.get()[7]);
   $('#'+curTime.get().id).addClass('selected');
   var _today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+  var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,
       0, 0, 0, 0);
   date.set(_date); //UTC日期
   today.set(_today);
@@ -108,7 +108,7 @@ Template.deviceDashboard.onRendered(function () {
   theCurrentDay.set(_date); // UTC日期
 
   Meteor.subscribe('device_by_groupId', group_id);
-  
+
   Meteor.subscribe('get-group', group_id,{
     onReady: function(){
       var _group = SimpleChat.Groups.findOne({_id: group_id});
@@ -139,7 +139,7 @@ Template.deviceDashboard.onRendered(function () {
       console.log(err);
     }
   });
-  
+
 });
 
 Template.deviceDashboard.helpers({
@@ -170,7 +170,7 @@ Template.deviceDashboard.helpers({
   checkInLists: function() {
     // var now = new Date();
     // var _today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    // var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+    // var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,
     //     0, 0, 0, 0);
 
     var group_id = Router.current().params.group_id;
@@ -198,7 +198,7 @@ Template.deviceDashboard.helpers({
   unCkeckLists: function() {
     // var now = new Date();
     // var _today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    // var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+    // var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,
     //     0, 0, 0, 0);
 
     var group_id = Router.current().params.group_id;
@@ -238,7 +238,7 @@ Template.deviceDashboard.helpers({
     if(!ts || ts == null || ts == 0){
       return '-/-';
     }
-    
+
     // var time = new Date(ts);
     // return time.shortTime(time_offset.get());
     return moment(ts).utcOffset(time_offset.get()).format('ahh:mm');
@@ -285,7 +285,7 @@ Template.deviceDashboard.events({
     e.stopImmediatePropagation();
     var currentDay = theCurrentDay.get() - 24 * 60 * 60 * 1000;
     theCurrentDay.set(currentDay);
-    
+
     var displayDay = theDisplayDay.get() - 24 * 60 * 60 * 1000;
     theDisplayDay.set(displayDay);
     var group_id = Router.current().params.group_id;
@@ -302,14 +302,14 @@ Template.deviceDashPoppage.helpers({
   data: function() {
     var obj = popObj.get();
     var url = obj.in_image?obj.in_image:obj.out_image;
-    
+
     var diff = 0;
     var out_time = obj.out_time;
     if (!obj.out_time) {
       var now_time = Date.now();
       out_time = now_time;
     }
-    
+
     if (obj.in_time && out_time){
       diff = out_time - obj.in_time;
     }
@@ -319,7 +319,7 @@ Template.deviceDashPoppage.helpers({
     } else if(diff < 0) {
       diff = 0;
     }
-    
+
     var min = diff / 1000 / 60 ;
     var in_company_tlen = Math.floor(min/60)+' h '+Math.floor(min%60) + ' min';
     if(min < 60){
@@ -350,7 +350,7 @@ Template.deviceDashPoppage.events({
     e.stopImmediatePropagation();
       // PUB.confirm('是否要移除该成员当前签到信息？请确认！', function() {
       //   var obj = popObj.get();
-      //   var personId = obj.person_id[0].id; 
+      //   var personId = obj.person_id[0].id;
 
     //   Meteor.call('resetMemberWorkStatus',e.currentTarget.id, personId, function(error, result) {
     //     if (error) {
@@ -427,7 +427,7 @@ Template.deviceDashPoppage.events({
     e.stopImmediatePropagation();
     var obj = popObj.get();
     var group_id = obj.group_id;
-    var personId = obj.person_id[0].id; 
+    var personId = obj.person_id[0].id;
     var url;
     var uuid;
     var ts = obj.in_time;
@@ -524,6 +524,6 @@ Template.deviceDashPoppage.events({
         })
       });
     }
-  
+
   }
 });
