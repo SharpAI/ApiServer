@@ -138,7 +138,7 @@ pages = ['/user', '/bell', '/search']
         catch error
           console.log error
         history = Session.get("history_view")
-        unless history is undefined or history is ""
+        unless history is null or history is undefined or history is ""
             for tmpPage in history
                 console.log "Frank.PUB: back, tmpPage = "+JSON.stringify(tmpPage)
             if history.length > 0
