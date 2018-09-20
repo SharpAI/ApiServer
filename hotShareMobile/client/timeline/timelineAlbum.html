@@ -50,13 +50,13 @@
           <div id="fuzz-value">
               <label id="fuzz-fifty"><input type="radio" name="radio" value="50"><span>50</span></label>
               <label id="fuzz-hundred" style="margin-left: 32%;"><input type="radio" name="radio" value="100" checked><span>100</span></label>
-          </div> 
+          </div>
         </li>
         <li role="separator" class="divider"></li>
         <li id="face-type">
           <h4>人脸类型</h4>
-          <label id="face-front"><input type="radio" name="face" value="front"><span>正脸</span></label>
-          <label id="face-all" style="margin-left:10%;" ><input type="radio" name="face" value="all" checked><span>显示全部</span></label>
+          <label id="face-front"><input type="radio" name="face" value="front" {{frontOnlyChecked}}><span>正脸</span></label>
+          <label id="face-all" style="margin-left:10%;" ><input type="radio" name="face" value="all" {{sideAllChecked}}><span>显示全部</span></label>
         </li>
       </ul>
     </div>
