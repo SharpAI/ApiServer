@@ -83,7 +83,7 @@ Template._simpleChatToChat.helpers({
         if(!doc.images || doc.images.length == 0){
           return;
         }
-      }  
+      }
       if (toolsBar && toolsBar.selectedItems.length > 0) {
         for (var i = 0, len = toolsBar.selectedItems.length; i < len; i++) {
           if (toolsBar.selectedItems[i]._id === doc._id) {
@@ -170,7 +170,7 @@ var isChatTipFinished = function() {
   if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){          // 1423
     return true;                                                                                                    // 1424
   }
-  
+
   return false;
 };
 
@@ -285,7 +285,7 @@ Router.route(AppConfig.path + '/to/:type', {
       query: Messages.find(where, {sort: {create_time: -1}}),
       type: slef.params.type,
       where: where,
-      messages: function(){ 
+      messages: function(){
         return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}});
       },
       loading: is_loading.get()
@@ -929,7 +929,7 @@ Template._simpleChatToChatItem.events({
       var setNames = [];
       for (var i=0;i<msgObj.images.length;i++){
         //if (msgObj.images[i].label) {
-          
+
           var faceId = null;
           if (res && res.faceId){
             faceId = res.faceId
@@ -1127,7 +1127,7 @@ Template._simpleChatToChatItem.events({
   //     dataItem.checked = true;
   //     toolsBar.addItem(dataItem);
   //   }, 1000);
-    
+
   // },
   // 'touchend .msg-content': function(event) {
   //   Meteor.clearTimeout(touchTimeout);
@@ -1596,7 +1596,7 @@ Template._simpleChatToChat.events({
         }
       }
       return PUB.toast('该公司下暂无脸脸盒');
-    }); 
+    });
   },
   'click #btnSkipConfirm': function(event) {
     setGroupWizardFinished(this.id, true);
@@ -1605,11 +1605,11 @@ Template._simpleChatToChat.events({
   'click #btnBack': function(event) {
     $('#groupWizardStep2').modal('hide');
     $('#groupWizardStep1').modal('show');
-  }, 
+  },
   'click #showScripts': function(e){
     $('.scriptsLayer').fadeIn();
     $('#showScripts').hide();
-  },       
+  },
   'click #labelNewPerson': function(e) {
     // get the device list
     var data = page_data;
@@ -1707,7 +1707,7 @@ Template._simpleChatToChat.events({
       if (groupUser &&  groupUser.isGroupAdmin ) {
         isAdmin = true;
       }
-      
+
       // 接收消息方是否是群创建者
       if (group && group.creator && group.creator.id && group.creator.id == Meteor.userId() ) {
         isAdmin = true;
@@ -1734,8 +1734,8 @@ Template._simpleChatToChat.events({
           setScrollToBottom();
         }, 0);
       }
-      
-      
+
+
       return false;
     }catch(ex){console.log(ex); return false;}
   },
@@ -2118,7 +2118,7 @@ Template._simpleChatToChatItem.helpers({
   },
   // hide Label Buttons, only show where use is group admin
   hideLabelBtn: function(group_id){
-    return true; // 02/11,2018 also hide when user is admin 
+    return true; // 02/11,2018 also hide when user is admin
     console.log('==sr==. group_id..='+group_id)
     if(!window.hideLableButtonWithNormalGroupUser){
       return false;
@@ -2126,7 +2126,7 @@ Template._simpleChatToChatItem.helpers({
 
     // user is Group Admin ?
     var isGroupAdmin = false;
-    
+
     // 是否是超级管理员
     var user = Meteor.user();
     if ( user && user.profile && user.profile.userType == 'admin' ) {
@@ -2347,7 +2347,7 @@ var msgSideFaceAnalyze = function(group_id, msgObj) {
       groupData.side_face++;
     }
   });
-  
+
   console.log('##RDBG, groupData:', group_id, ',total:', groupData.total, 'side_face:', groupData.side_face);
 
   if (groupData.total > 100) {
@@ -2366,11 +2366,11 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
-      //localforage.removeItem(msgKey); 
+      //localforage.removeItem(msgKey);
       mqttCallback && mqttCallback();
     }
   }
-  
+
   var msgObj = JSON.parse(msg);
 
   //Messages表尚未初始化
@@ -2423,7 +2423,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
         }
       }
     }
-    // 如果是等待标记（即：未识别）的消息,不予显示 手动上传的图片 wait_label = true 
+    // 如果是等待标记（即：未识别）的消息,不予显示 手动上传的图片 wait_label = true
     if (msgObj.wait_lable) {
       rmMsgKey(msgKey, '#2030');
       return;
@@ -2433,7 +2433,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
     if (groupUser &&  groupUser.isGroupAdmin ) {
       isAdmin = true;
     }
-    
+
     // 接收消息方是否是群创建者
     if (group && group.creator && group.creator.id && group.creator.id == Meteor.userId() ) {
       isAdmin = true;
@@ -2479,7 +2479,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
       rmMsgKey(msgKey, '#2075');
       return;
     }
-    
+
     var where = {
       to_type: msgObj.to_type,
       'to.id': msgObj.to.id,
@@ -2496,8 +2496,8 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
       return;
     }*/
   }
-  
-  
+
+
   if (msgObj.to_type === 'user' && msgObj.to.id == Meteor.userId()) {
     if (msgObj.type === 'haveReadMsg') {
       Messages.find({'form.id':Meteor.userId(),'to.id':msgObj.form.id,is_read:false}).forEach(function(item){
@@ -2538,7 +2538,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
           alert(msgObj.text);
         }
       }
-      
+
       rmMsgKey(msgKey, '#2136');
       return;
     }
@@ -2584,7 +2584,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
     return Messages.insert(msgObj, function(err, _id){
       if (err)
         return console.log('insert msg error:', err);
-      
+
       if (msgObj && msgObj._id == _id && _id != null){
         console.log('msgObj._id:'+ msgObj._id)
         rmMsgKey(msgKey, '#2179');
@@ -2592,7 +2592,7 @@ SimpleChat.onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
     });
   }
 
-  
+
   setImmediateWrap(function() {
     onMqttMessage(topic, msg, msgKey, mqttCallback);
   });
@@ -2640,11 +2640,11 @@ var onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
-      //localforage.removeItem(msgKey); 
+      //localforage.removeItem(msgKey);
       mqttCallback && mqttCallback();
     }
   }
-  
+
   //console.log('>>>>>>>>>>>>> onMqttMessage has been called :'+msg);
   var insertMsg = function(msgObj, type){
     if(msgObj.admin_remove){
@@ -2656,7 +2656,7 @@ var onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
     Messages.insert(msgObj, function(err, _id){
       if (err)
         return console.log('insert msg error:', err);
-      
+
       if (msgObj && msgObj._id == _id && _id != null){
         console.log('msgObj._id:'+ msgObj._id)
         rmMsgKey(msgKey, '#2250');
@@ -2665,7 +2665,7 @@ var onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
   };
 
   var removeErrorImage = function(msgObj,type) {
-    // 从当前消息中 移除 
+    // 从当前消息中 移除
     var msg = Messages.findOne({'to.id': msgObj.to.id, 'images.id': msgObj.id});
     if (msg && msg.images) {
       var images = msg.images;
@@ -2783,7 +2783,7 @@ var onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
         /**
          * people_uuid: 设备uuid ， 只对同一个设备 的图片 合并
          * people_id: faceId ,
-         * tid: 轨迹id 
+         * tid: 轨迹id
          * */
         //最近十条记录
         var targetArray = Messages.find({to_type: msgObj.to_type,'to.id': msgObj.to.id,create_time: {$lte: msgObj.create_time},people_uuid:msgObj.people_uuid}, {limit: 10, sort: {create_time: -1}}).fetch();
@@ -2946,7 +2946,7 @@ var onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
       if (err || num <= 0)
         insertMsg(msgObj, 'update 失败');
     });
-    
+
     rmMsgKey(msgKey, '#2491');
     return;
   }
@@ -2957,7 +2957,7 @@ var onMqttMessage = function(topic, msg, msgKey, mqttCallback) {
     if (err || num <= 0)
       insertMsg(msgObj, 'update 失败');
   });
-  
+
   rmMsgKey(msgKey, '#2502');
 };
 
@@ -2965,7 +2965,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
   var rmMsgKey = function(msgKey, log){
     console.log('remove msg key ', log, msgKey);
     if (msgKey){
-      localforage.removeItem(msgKey); 
+      localforage.removeItem(msgKey);
     }
   }
   if (!topic.startsWith('/msg/l/')){
@@ -3066,8 +3066,8 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     // }, 100);
     rmMsgKey(msgKey, '#2608');
   });
-  
-  
+
+
 };
 
 // SimpleChat.onMqttMessage('/msg/g/b82cc56c599e4c143442c6d0', JSON.stringify({
@@ -3121,7 +3121,7 @@ Template._simpleChatToChatLabelName.onRendered(function(){
   var $box = this.$(".simple-chat-to-chat-label-name");
 
   document.addEventListener('scroll', function(event){
-    if(event.target.classList.toString().indexOf('simple-chat-to-chat-label-name') > -1) {
+    if(event.target.classList && event.target.classList.toString().indexOf('simple-chat-to-chat-label-name') > -1) {
       if ($(event.target).scrollTop() + event.target.offsetHeight >= event.target.scrollHeight){
         label_limit.set(label_limit.get()+20);
         var group_id = Blaze.getData($('.simple-chat-to-chat-label-name')[0]).group_id;
@@ -3135,7 +3135,7 @@ Template._simpleChatToChatLabelName.onRendered(function(){
       }
     }
   },true);
-  
+
   // $box.scroll(function(){
   //   if ($box.scrollTop() + $box[0].offsetHeight >= $box[0].scrollHeight){
   //     label_limit.set(label_limit.get()+20);
@@ -3196,7 +3196,7 @@ Template._simpleChatToChatLabelName.helpers({
     var selector = {
       group_id: this.group_id
     };
-    
+
     if(label_name_text.get() && label_name_text.get() != ''){
       var filter = new RegExp(label_name_text.get(),'i');
       selector['name'] = filter;
@@ -3217,8 +3217,8 @@ Template._simpleChatToChatLabelName.helpers({
             var val1 = obj1[prop];
             var val2 = obj2[prop];
             // 移除首尾空格
-            val1 = val1.replace(/(^\s*)|(\s*$)/g, ""); 
-            val2 = val2.replace(/(^\s*)|(\s*$)/g, ""); 
+            val1 = val1.replace(/(^\s*)|(\s*$)/g, "");
+            val2 = val2.replace(/(^\s*)|(\s*$)/g, "");
             // 统一英文字符为大写
             val1 = val1.toLocaleUpperCase();
             val2 = val2.toLocaleUpperCase();
@@ -3228,8 +3228,8 @@ Template._simpleChatToChatLabelName.helpers({
                 return 1;
             } else {
                 return 0;
-            }            
-        } 
+            }
+        }
     }
     arrEnglish = arrEnglish.sort(compare("name"));
     arrPinyin = arrPinyin.sort(compare("pinyin"));
@@ -3447,5 +3447,5 @@ $(function() {
     dataItem.checked = true;
     toolsBar.addItem(dataItem);
   });
-  
+
 });
