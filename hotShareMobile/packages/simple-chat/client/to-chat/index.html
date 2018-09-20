@@ -73,7 +73,7 @@
     </div>
 
     {{> _checkGroupDevice}}
-    
+
     {{#if needShowTips}}
       {{> _TipHintTemplate}}
     {{/if}}
@@ -87,7 +87,7 @@
     <div class="modal-dialog" style="top:30%; left:17.8%; width:64%; height:43%;">
       <div class="modal-content">
         <div class="modal-body" style="margin-top: 10px;">
-          <p style="text-align:center; margin-top: 30px;">由于检测到的侧脸过多，请进入部署评测，检查你的部署环境是否合适</p>
+          <p style="text-align:center; margin-top: 30px;">初次使用，建议使用“部署评测”评估当前部署情况。累计运行一段时间之后，系统也会根据运行情况建议重新运行“部署评测”。</p>
         </div>
         <!-- Modal footer -->
         <div class="modal-footer" style="text-align:center;">
@@ -132,7 +132,7 @@
     </div>
   </div>
   <!-- Modal groupNoDevice End -->
-  
+
   <button id="labelNewPerson">
     <img src="/label_new_person.png" width="24" />
   </button>
@@ -211,7 +211,7 @@
   {{else}}
     <!--{{#if showUnknowMember to.id}}-->
     <li id="{{_id}}" class="{{multipleChoiceClass}} data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
-      
+
       <div class="icon-wrap">
         {{#if isMultipleChoice}}
           {{#if is_ta form.id}}
@@ -219,7 +219,7 @@
               <input name="msg-multiple-choice" type="checkbox" checked="{{checked}}">
               <div class="custom-checkbox-innerIcon"></div>
             </lable>
-          {{/if}}  
+          {{/if}}
         {{/if}}
         <div class="icon">
           {{> _simpleChatToChatItemIcon2}}
@@ -230,7 +230,7 @@
               <input name="msg-multiple-choice" type="checkbox" checked="{{checked}}">
               <div class="custom-checkbox-innerIcon"></div>
             </lable>
-          {{/if}}  
+          {{/if}}
         {{/if}}
         </div>
       <div class="name">{{form.name}}</div>
@@ -256,7 +256,7 @@
               {{/if}} -->
             {{/if}}
             {{#if people_id}}
-            <!--标记消息 start-->  
+            <!--标记消息 start-->
               {{#if label_complete}}
                 {{#if is_error images}}
                   <div class="imgs-1-box">
