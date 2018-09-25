@@ -2,7 +2,7 @@
 
 cd ~/build-sharpai/android/project
 
-PROJ_DIR=$HOME/workspace/hotShare
+PROJ_DIR=$HOME/workspace/sharpai
 cp $PROJ_DIR/ShareExtension/Android/MainActivity.java ./src/org/sharpai/everywhere/
 cp $PROJ_DIR/sharpai-buildfiles/AndroidManifest.xml ./
 # change the version number
