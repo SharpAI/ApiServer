@@ -41,3 +41,4 @@
 @MQTT_TIME_DIFF = 0
 @withAccuracyFuzzinesssInTimeLine = true
 @hideLableButtonWithNormalGroupUser = true # 群： 普通成员不显示 标记 相关按钮
+@withFollowFeature = true
