@@ -381,9 +381,10 @@ if (Meteor.isClient) {
   Session.set("DocumentTitle",'故事贴');
   Deps.autorun(function(){
     if(Meteor.userId()){
-      Meteor.subscribe("topics");
+      //Meteor.subscribe("topics");
       //Meteor.subscribe("topicposts");
       Meteor.subscribe('get-workai-user-relation',Meteor.userId());
+      Meteor.subscribe('getPushFollow')
       // getHotPostsData();
     }
     document.title = Session.get("DocumentTitle");

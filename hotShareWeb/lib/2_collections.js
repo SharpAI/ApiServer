@@ -224,9 +224,14 @@ Faces = new Meteor.Collection('faces');
 ModelParam = new Meteor.Collection('modelParam');
 
 
-
+NotificationFollowList = new Meteor.Collection('notification_follow_list');
+/*
+  _id : Meteor User ID
+  followed_to_user_id : 1
+  ...
+*/
 if(Meteor.isServer){
-	
+
   KnownUnknownAlertLimit = new Mongo.Collection("alertlimit_known_unknown");
 
   // 30分钟之内不要做重复的推送，什么是重复推送呢：
@@ -319,7 +324,21 @@ if(Meteor.isServer){
         return true;
     }
   });
+  NotificationFollowList.allow({
+    update: function(userId, doc, fields, modifier){
+      return userId === doc._id
+    },
+    insert: function(userId,doc){
+      return userId === doc._id;
+    }
+  });
+  Meteor.publish('getPushFollow', function () {
+      if(!this.userId){
+          return this.ready();
+      }
 
+      return NotificationFollowList.find({_id: this.userId});
+  })
   Meteor.publish('getStrangersByGroupId', function (group_id) {
       if(!this.userId){
           return this.ready();

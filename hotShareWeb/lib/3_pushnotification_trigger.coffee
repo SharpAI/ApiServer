@@ -148,7 +148,7 @@ if Meteor.isServer
             # push send logs
             removeTime = new Date((new Date()).getTime() - 1000*60*60*48) # 48 hour
             expireTime = new Date((new Date()).getTime() - 1000*60*10) # 10 minute
-            
+
             PushSendLogs.remove({createAt: {$lt: removeTime}})
             if(PushSendLogs.find({
               type: toUserToken.type
@@ -160,7 +160,7 @@ if Meteor.isServer
               createAt: {$gte: expireTime}
             }).count() > 0)
               return
-              
+
             pushReq = {
               toUserId: toUserId
               type: toUserToken.type
@@ -193,7 +193,7 @@ if Meteor.isServer
             tidyDoc.title = doc.title
         if doc.postId
             tidyDoc.postId = doc.postId
-        if doc.content 
+        if doc.content
             tidyDoc.content = doc.content
         if doc.userName
             tidyDoc.userName = doc.userName
@@ -208,9 +208,9 @@ if Meteor.isServer
             eventType:type,
             doc:tidyDoc,
             userId:userId,
-            content:content, 
-            extras:extras, 
-            toUserId:toUserId, 
+            content:content,
+            extras:extras,
+            toUserId:toUserId,
             pushToken:pushToken,
             waitReadCount:waitReadCount
         }
@@ -321,7 +321,7 @@ if Meteor.isServer
       if userId is null or userId is undefined
          return;
       toUserId = userId
-    
+
     toUserToken = Meteor.users.findOne({_id: toUserId})
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
@@ -332,7 +332,7 @@ if Meteor.isServer
         # push send logs
         removeTime = new Date((new Date()).getTime() - 1000*60*60*48) # 48 hour
         expireTime = new Date((new Date()).getTime() - 1000*60*10) # 10 minute
-        
+
         PushSendLogs.remove({createAt: {$lt: removeTime}})
         if(PushSendLogs.find({
           type: toUserToken.type
@@ -344,7 +344,7 @@ if Meteor.isServer
           createAt: {$gte: expireTime}
         }).count() > 0)
           return
-          
+
         pushReq = {
           toUserId: toUserId
           type: toUserToken.type
@@ -354,7 +354,7 @@ if Meteor.isServer
           createAt: new Date()
         }
         PushSendLogs.insert pushReq
-    
+
       pushToken = {type: toUserToken.type, token: toUserToken.token}
       #console.log "toUserToken.type:"+toUserToken.type+";toUserToken.token:"+toUserToken.token
       try
@@ -424,34 +424,39 @@ if Meteor.isServer
         console.log("allUsersCursor.count()="+allUsersCursor.count())
         if allUsersCursor.count() > 0
             allUsersCursor.forEach((oneUser)->
-                toUserToken = Meteor.users.findOne({_id: oneUser.user_id})
-                #console.log("toUserToken="+JSON.stringify(toUserToken))
-                unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
-                  pushToken = {type: toUserToken.type, token: toUserToken.token}
-                  #console.log "toUserToken.type:"+toUserToken.type+";toUserToken.token:"+toUserToken.token
-                  if pushToken.type is 'JPush'
-                    token = pushToken.token
-                    console.log 'JPUSH to ' + pushToken.token
-                    client.push().setPlatform 'ios', 'android'
-                      .setAudience JPush.registration_id(token)
-                      .setNotification 'SharpAI',JPush.ios(content,null,null,null,extras),JPush.android(content, null, 1,extras)
-                      #.setMessage(commentText)
-                      .setOptions null, 60
-                      .send (err, res)->
-                        if err
-                          console.log 'err: ' + err.message +", "+pushToken.token
-                        else
-                          console.log 'Sendno: ' + res.sendno
-                          console.log 'Msg_id: ' + res.msg_id + ', '+pushToken.token
-                  else if pushToken.type is 'iOS'
-                    console.log 'Server PN to iOS '+pushToken.token
-                    token = pushToken.token
-                    if token is "2e8da18650ffb952823a6690c6257a877d5b6338932b77fbe7031435e4404a60"
-                        return
-                    pushServer.sendIOS 'me', token , '', content
-                  else if pushToken.type is 'GCM'
-                    console.log 'Server PN to GCM '
-                    token = pushToken.token
-                    pushServer.sendAndroid 'me', token , '',content, 1
+                needPushToThisUser = true
+                pushList = NotificationFollowList.findOne({_id:oneUser.user_id})
+                if pushList and pushList.hasOwnProperty(userId) is false
+                  needPushToThisUser = false
+                if needPushToThisUser is true
+                  toUserToken = Meteor.users.findOne({_id: oneUser.user_id})
+                  #console.log("toUserToken="+JSON.stringify(toUserToken))
+                  unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
+                    pushToken = {type: toUserToken.type, token: toUserToken.token}
+                    #console.log "toUserToken.type:"+toUserToken.type+";toUserToken.token:"+toUserToken.token
+                    if pushToken.type is 'JPush'
+                      token = pushToken.token
+                      console.log 'JPUSH to ' + pushToken.token
+                      client.push().setPlatform 'ios', 'android'
+                        .setAudience JPush.registration_id(token)
+                        .setNotification 'SharpAI',JPush.ios(content,null,null,null,extras),JPush.android(content, null, 1,extras)
+                        #.setMessage(commentText)
+                        .setOptions null, 60
+                        .send (err, res)->
+                          if err
+                            console.log 'err: ' + err.message +", "+pushToken.token
+                          else
+                            console.log 'Sendno: ' + res.sendno
+                            console.log 'Msg_id: ' + res.msg_id + ', '+pushToken.token
+                    else if pushToken.type is 'iOS'
+                      console.log 'Server PN to iOS '+pushToken.token
+                      token = pushToken.token
+                      if token is "2e8da18650ffb952823a6690c6257a877d5b6338932b77fbe7031435e4404a60"
+                          return
+                      pushServer.sendIOS 'me', token , '', content
+                    else if pushToken.type is 'GCM'
+                      console.log 'Server PN to GCM '
+                      token = pushToken.token
+                      pushServer.sendAndroid 'me', token , '',content, 1
             )
     ).run()
