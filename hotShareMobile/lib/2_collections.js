@@ -203,6 +203,9 @@ Strangers = new Meteor.Collection('strangers')
 //     avatar: '/theme/theme2.jpg'
 // })
   //   陌生人
+
+
+NotificationFollowList = new Meteor.Collection('notification_follow_list');
 if (Meteor.isServer) {
   Meteor.methods({
       getStrangers: function(group_id){
@@ -324,13 +327,27 @@ if(Meteor.isServer){
       return false;
     }
   });
-
+  NotificationFollowList.allow({
+    update: function(userId, doc, fields, modifier){
+      return userId === doc._id
+    },
+    insert: function(userId,doc){
+      return userId === doc._id;
+    }
+  });
   Strangers.allow({
     remove: function(userId, doc) {
         return true;
     }
   });
 
+  Meteor.publish('getPushFollow', function () {
+      if(!this.userId){
+          return this.ready();
+      }
+
+      return NotificationFollowList.find({_id: this.userId});
+  })
   Meteor.publish('getStrangersByGroupId', function (group_id) {
       if(!this.userId){
           return this.ready();

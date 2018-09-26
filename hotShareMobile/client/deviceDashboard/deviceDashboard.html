@@ -72,6 +72,15 @@
     <div class="dd-header">
       <div class="icon"><img src="{{data.url}}" /></div>
       <h2 class="name">{{data.name}}</h2>
+      {{#if showFollowButton}}
+        <h2 class="follow" data-userid="{{data._id}}" data-following={{isFollowing}}>
+        {{#if isFollowing}}
+          取消关注
+        {{else}}
+          关注
+        {{/if}}
+        </h2>
+      {{/if}}
       <span class="close" id="closeDDPop"><i class="fa fa-close"></i></span>
     </div>
     <div class="dd-content">

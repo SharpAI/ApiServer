@@ -300,6 +300,17 @@ Template.deviceDashboard.events({
 });
 
 Template.deviceDashPoppage.helpers({
+  showFollowButton: function (){
+    return withFollowFeature;
+  },
+  isFollowing: function(){
+    if(Meteor.userId() && popObj && popObj.get()._id ){
+      var followDoc = NotificationFollowList.findOne({_id: Meteor.userId()})
+      return followDoc && followDoc.hasOwnProperty(popObj.get()._id)
+    } else {
+      return false;
+    }
+  },
   data: function() {
     var obj = popObj.get();
     var url = obj.in_image?obj.in_image:obj.out_image;
@@ -344,6 +355,35 @@ Template.deviceDashPoppage.helpers({
 });
 
 Template.deviceDashPoppage.events({
+  'click .follow': function(e){
+    //var id = popObj.get()._id;
+    //NotificationFollowList.update({user_id:Meteor.userId()},{ $set: {id: 1} },{upsert:true,multi,false})
+    var isFollowing = e.target.dataset.following
+    var userId = e.target.dataset.userid
+
+    if(userId && Meteor.userId()){
+      var hasFollowingList = NotificationFollowList.findOne({_id:Meteor.userId()})
+      if(hasFollowingList){
+        var field = {}
+        field[userId] = 1
+        if(isFollowing){
+          NotificationFollowList.update({_id:Meteor.userId()},{ $unset: field })
+        } else {
+          NotificationFollowList.update({_id:Meteor.userId()},{ $set: field })
+        }
+      } else {
+        if(isFollowing){
+        } else {
+          var doc = {
+            _id:Meteor.userId()
+          }
+          doc[userId] = 1
+          NotificationFollowList.insert(doc)
+        }
+      }
+    }
+    e.stopImmediatePropagation();
+  },
   'click .deviceDashPoppage, click #closeDDPop': function (e) {
     return $('.deviceDashPoppage').fadeOut();
   },
