@@ -15,7 +15,7 @@ sed -i.bak "s/1.0.75/$VER/g" sharpai/sharpai-Info.plist
 
 fastlane gym --export_method ad-hoc
 TIMESTAMP=`date "+%Y%m%d%H%M%S"`
-DESTFILE="$HOME/sharpai-$VER-$TIMESTAMP.ipa"
+DESTFILE="$HOME/.jenkins/userContent/sharpai/sharpai-$VER-$TIMESTAMP.ipa"
 cp ./sharpai.ipa $DESTFILE
 
 fastlane beta

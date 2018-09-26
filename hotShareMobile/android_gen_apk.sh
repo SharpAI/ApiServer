@@ -19,7 +19,7 @@ ANDROID_HOME=~/Library/Android/sdk gradle wrapper
 ANDROID_HOME=~/Library/Android/sdk/ ./gradlew assembleRelease -Pandroid.injected.signing.store.file=$PROJ_DIR/hotShareMobile/keystore -Pandroid.injected.signing.store.password=actiontec -Pandroid.injected.signing.key.alias="wifi whiteboard" -Pandroid.injected.signing.key.password=actiontec
 
 TIMESTAMP=`date "+%Y%m%d%H%M%S"`
-DESTFILE="$HOME/sharpai-$VER-$TIMESTAMP.apk"
+DESTFILE="$HOME/.jenkins/userContent/sharpai/sharpai-$VER-$TIMESTAMP.apk"
 cp ./build/outputs/apk/project-release.apk $DESTFILE
 
 cd -
