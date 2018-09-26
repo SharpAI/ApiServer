@@ -19,6 +19,6 @@ platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
     build_app(scheme: "sharpai")
-    upload_to_testflight
+    upload_to_testflight(skip_submission: true)
   end
 end
