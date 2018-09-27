@@ -73,7 +73,7 @@
       <div class="icon"><img src="{{data.url}}" /></div>
       <h2 class="name">{{data.name}}</h2>
       {{#if showFollowButton}}
-        <h2 class="follow" data-userid="{{data._id}}" data-following={{isFollowing}}>
+        <h2 class="follow" data-userid="{{data.person_id}}" data-following={{isFollowing}}>
         {{#if isFollowing}}
           取消关注
         {{else}}
