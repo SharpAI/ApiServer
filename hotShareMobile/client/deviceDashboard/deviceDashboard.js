@@ -304,9 +304,9 @@ Template.deviceDashPoppage.helpers({
     return withFollowFeature;
   },
   isFollowing: function(){
-    if(Meteor.userId() && popObj && popObj.get()._id ){
+    if(Meteor.userId() && popObj && popObj.get() && popObj.get().person_id[0].id ){
       var followDoc = NotificationFollowList.findOne({_id: Meteor.userId()})
-      return followDoc && followDoc.hasOwnProperty(popObj.get()._id)
+      return followDoc && followDoc.hasOwnProperty(popObj.get().person_id[0].id)
     } else {
       return false;
     }
@@ -340,10 +340,12 @@ Template.deviceDashPoppage.helpers({
     if(diff == 0){
       in_company_tlen = '0 min';
     }
+    var person_id = obj.person_id[0].id;
 
     return {
       _id: obj._id,
       url: url,
+      person_id: person_id,
       name: obj.person_name,
       in_company_tlen: in_company_tlen,
       // in_time: obj.in_time? (new Date(obj.in_time)).shortTime(time_offset.get()): null,
