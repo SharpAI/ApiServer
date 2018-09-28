@@ -1,5 +1,5 @@
 $ ./build_bundle.sh
-$ docker build -t lambdazhang/raidcdn:TimeAlbumEmail-0425 .
+$ docker build -t lambdazhang/raidcdn:TimeAlbumEmail-0927 .
 
 $ docker run --name TimeAlbumEmail \
   -e VIRTUAL_HOST=timealbumemail.tiegushi.com \
@@ -7,4 +7,4 @@ $ docker run --name TimeAlbumEmail \
   -e ROOT_URL=http://timealbumemail.tiegushi.com \
   -e MONGO_URL=mongodb://workAIAdmin:weo23biHUI@aidb.tiegushi.com:27017/workai?replicaSet=workaioplog\&readPreference=primaryPreferred\&connectTimeoutMS=30000\&socketTimeoutMS=30000\&poolSize=20 \
   --log-opt max-size=500m \
-  -d lambdazhang/raidcdn:TimeAlbumEmail-0425
+  -d lambdazhang/raidcdn:TimeAlbumEmail-0927
