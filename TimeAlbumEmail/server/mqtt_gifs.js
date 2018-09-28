@@ -1,5 +1,3 @@
-Devices = new Meteor.Collection('devices');
-
 send_motion_mqtt_msg = function(url, uuid, text, group,show_type) {
   console.log("url:", url)
   console.log('show_type:',show_type);
@@ -13,7 +11,7 @@ send_motion_mqtt_msg = function(url, uuid, text, group,show_type) {
   if (!user) {
     return;
   }
-  
+
   return sendMqttMessage('/msg/g/' + group._id, {
       _id: new Mongo.ObjectID()._str,
       form: {

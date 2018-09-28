@@ -11,7 +11,7 @@ function fastEmailMessge(timeItem, group) {
     var EmailCompanyName = group.name
     var EmailPersonName = ''
     var MQTTPersonName = ''
-    
+
     to = group.report_emails
     people_config = WorkAIUserRelations.find({'group_id':CurrentGroupId}).fetch()
 
@@ -39,7 +39,7 @@ function fastEmailMessge(timeItem, group) {
     }else {
         person_valid_lists.push("unknown")
     }
-    
+
     // person_valid_lists.push('Bobby') //debug
     // person_valid_lists.push('unknown') //debug
     // person_valid_lists.push('activity') //debug
@@ -48,7 +48,7 @@ function fastEmailMessge(timeItem, group) {
 
     if (to){
         timeItem.personLists = []
-        
+
         if (timeItem["faceId"] && timeItem["faceId"] != 'unknown' && timeItem["faceId"] != 'activity'){
             var faceId = timeItem["faceId"].split(",");
             for (i in faceId){
@@ -98,16 +98,16 @@ function fastEmailMessge(timeItem, group) {
             MQTTPersonName = '有人活动'
           }
         }
-        
+
         email_title = EmailCompanyName + ' AI发现' + EmailPersonName
         var mqtt_title = 'AI发现' + MQTTPersonName
         console.log("SETTING:", group.settings, pushOn, emailOn, needSend)
-        
+
         if(needSend && pushOn){
             console.log("send MQTT ...", mqtt_title)
             send_motion_mqtt_msg(timeItem["img_url"],timeItem["uuid"],mqtt_title, group)
         }
-        
+
         timeItem["email_title"] = email_title
         if(needSend && emailOn){
             DEBUG_ON && console.log("Send Email ...", email_title)
@@ -120,7 +120,7 @@ function fastEmailMessge(timeItem, group) {
             DEBUG_ON && console.log(group._id, group.report_emails);
 
             var from = 'DeepEye<notify@email.tiegushi.com>';
-            
+
             //to= 'hzhu@actiontec.com' //debug
 
             Email.send({
@@ -138,7 +138,10 @@ function fastEmailMessge(timeItem, group) {
 Router.route( "timelines/add", function() {
     var query   = this.request.query,
         fields  = {};
-
+    var uuid = query.uuid;
+    var doc = Devices.findOne({uuid:uuid});
+    var group_id = doc.groupId;
+    query.group_id = group_id;
     console.log("query", query)
     if (query.group_id == null){
         this.response.setHeader( 'access-control-allow-origin', '*' );
@@ -243,7 +246,7 @@ function sendEmailMessageByGroupUser(timeItem,group_user){
         }
 
         if(needSend && emailOn){
-            return group_user.report_emails 
+            return group_user.report_emails
         }
     // }
 }
@@ -289,8 +292,8 @@ function sendMessage(timeItem,group){
                             show_type = show_type+','+p._id;
                         }else{
                             show_type = p._id
-                        }         
-                    }    
+                        }
+                    }
                 }else {
                     MQTTPersonName = '有陌生人活动'
                     show_type = 'unknown'
