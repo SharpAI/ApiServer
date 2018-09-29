@@ -105,7 +105,7 @@ if Meteor.isClient
       return
     Router.route '/notice',()->
       this.render 'notice'
-      return 
+      return
     Router.route '/message',()->
       this.render 'chatGroups'
       Session.set 'channel','message'
@@ -303,13 +303,13 @@ if Meteor.isClient
       return
     Router.route '/groupDevices/:_id', ()->
       this.render 'groupDevices'
-      return 
+      return
     Router.route '/dayTasks/:_id', ()->
       this.render 'dayTasks'
       return
     Router.route '/bindGroupUser', ()->
       this.render 'bindGroupUser'
-      return 
+      return
     Router.route '/bindUserPopup/:_id',()->
       this.render 'bindUserPopup'
       return
@@ -702,7 +702,7 @@ if Meteor.isServer
   # 获取对应时区的时间
   getLocalTimeByOffset = (i)->
     if typeof i isnt 'number'
-      return 
+      return
     d = new Date()
     len = d.getTime()
     offset = d.getTimezoneOffset() * 60000
@@ -995,16 +995,16 @@ if Meteor.isServer
       if (time_offset == undefined)
         if (d.getTimezoneOffset() == 420)
             time_offset = -7
-        else 
+        else
             time_offset = 8
       # 取得 UTC time
       utc = d.getTime() + (d.getTimezoneOffset() * 60000);
       local_now = new Date(utc + (3600000*time_offset))
-      today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+      today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(),
       local_now.getHours(), local_now.getMinutes());
 
       return today_now;
-    
+
     self = time;
     now = new Date();
     result = '';
@@ -1099,7 +1099,7 @@ if Meteor.isServer
 
     sendMqttMessage('/msg/u/'+ relation.app_user_id, {
         _id: new Mongo.ObjectID()._str
-        # form: { 
+        # form: {
         #   id: "fTnmgpdDN4hF9re8F",
         #   name: "workAI",
         #   icon: "http://data.tiegushi.com/fTnmgpdDN4hF9re8F_1493176458747.jpg"
@@ -1226,7 +1226,7 @@ if Meteor.isServer
           person_id: id,
           person_name: name,
           img_url: url,
-          sqlid: sqlid, 
+          sqlid: sqlid,
           style: style,
           accuracy: Accuracy, # 准确度(分数)
           fuzziness: Fuzziness, # 模糊度
@@ -1288,7 +1288,7 @@ if Meteor.isServer
             # UserCheckoutEndLog.remove({userId: relation.app_user_id})
             # UserCheckoutEndLog.insert(checkout_msg)
             # sendUserCheckoutEvent(uuid, relation.app_user_id)
-            # return 
+            # return
             # 到下班时间后，不终止后续处理
             group_outtime = '18:00'
             time_offset = 8
@@ -1307,7 +1307,7 @@ if Meteor.isServer
             out_time_minutes = out_time_H * 60 + out_time_M
 
             # 到下班时间后，不自动 checkout(这里先取消， 目前：统一采用自动checkout的方式，但保留手动checkout)
-            # if (out_time_minutes < group_out_minutes)   
+            # if (out_time_minutes < group_out_minutes)
             #   return
 
           send_greeting_msg(msg_data);
@@ -1340,14 +1340,14 @@ if Meteor.isServer
     minutes = minutes.getMinutes()
     console.log("minutes="+minutes)
 
-    # Step 1. 修正考勤记录, WorkAIUserRelations或workStatus 
+    # Step 1. 修正考勤记录, WorkAIUserRelations或workStatus
     fixWorkStatus = (work_status,in_out)->
       today = new Date(create_time.getTime())
       today.setHours(0,0,0,0)
 
       console.log('hour='+hour+', today='+today+', uuid='+uuid)
       timeline = DeviceTimeLine.findOne({hour:{$lte: hour, $gt: today},uuid: uuid},{sort: {hour: -1}});
-      if timeline and timeline.perMin # 通过历史记录中的 数据 fix WorkStatus 
+      if timeline and timeline.perMin # 通过历史记录中的 数据 fix WorkStatus
         time = null
         imgUrl = null
 
@@ -1365,9 +1365,9 @@ if Meteor.isServer
             in_image: imgUrl,
             in_status: 'normal'
           }
-          if !work_status.out_time 
+          if !work_status.out_time
             setObj.status = 'in'
-          else if time < work_status.out_time 
+          else if time < work_status.out_time
             setObj.status = 'out'
           else if time >= work_status.out_time
             setObj.status = 'in'
@@ -1378,12 +1378,12 @@ if Meteor.isServer
             out_image: imgUrl,
             out_status: 'normal'
           }
-          if !work_status.in_time 
+          if !work_status.in_time
             setObj.status = 'out'
             setObj.out_status = 'warning'
-          else if time <= work_status.in_time 
+          else if time <= work_status.in_time
             setObj.status = 'in'
-          else if time > work_status.in_time 
+          else if time > work_status.in_time
             setObj.status = 'out'
 
       else
@@ -1403,7 +1403,7 @@ if Meteor.isServer
             out_image: null,
             out_status: 'unknown'
           }
-          if !work_status.in_time 
+          if !work_status.in_time
             setObj.status = 'out'
 
       WorkStatus.update({_id: work_status._id},$set: setObj)
@@ -1420,7 +1420,7 @@ if Meteor.isServer
       #fixWorkStatus(work_status_out,'out')
     # 删除考勤
     WorkStatus.remove({$or:[{in_image: url},{out_image: url}]});
-    # Step 2. 从设备时间轴中移除 
+    # Step 2. 从设备时间轴中移除
     selector = {
       hour: hour,
       uuid: uuid
@@ -1480,7 +1480,7 @@ if Meteor.isServer
         name: group.name,
         icon: group.icon
       }
-      
+
       device_user = Meteor.users.findOne({username: uuid})
       form = {}
       if device_user
@@ -1489,16 +1489,16 @@ if Meteor.isServer
           name: if (device_user.profile and device_user.profile.fullname) then device_user.profile.fullname else device_user.username,
           icon: device_user.profile.icon
         }
-      
+
       msg = {
         _id: new Mongo.ObjectID()._str,
         form: form,
         to: to,
         to_type: 'group',
         type: 'remove_error_img',
-        id: id, 
-        url: url, 
-        uuid: uuid, 
+        id: id,
+        url: url,
+        uuid: uuid,
         img_type: img_type,
         img_ts: img_ts,
         current_ts: current_ts,
@@ -1550,7 +1550,7 @@ if Meteor.isServer
   #     '0',
   #     'front',
   #     1506588441021,
-  #     1506588441021, 
+  #     1506588441021,
   #     ''
   #   )
 
@@ -1558,12 +1558,12 @@ if Meteor.isServer
   # 对data 进行处理, data 必须是数组
   insertFaces = (face)->
     device = Devices.findOne({uuid: face.uuid})
-    if device and device.name 
+    if device and device.name
       face.device_name = device.name
     face.createdAt = new Date()
 
     Faces.insert(face)
-  
+
   # Router.route('/simple-chat/getStranger', {where: 'server'}).post(()->
   #     imgs = this.request.body.imgs
   #     img_gif = this.request.body.img_gif
@@ -1584,7 +1584,7 @@ if Meteor.isServer
   #       cid: cid
   #       uuid: uuid
   #     )
-      
+
   #     console.log(Strangers.find({},{limit: 1}).fetch())
   #     this.response.end('{"result": "ok"}\n')
   # )
@@ -1624,7 +1624,7 @@ if Meteor.isServer
       console.log(Strangers.find({},{limit:1}).fetch())
       this.response.end('{"result": "ok"}\n')
   )
-  
+
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
       img_url = this.params.query.img_url
@@ -1692,7 +1692,7 @@ if Meteor.isServer
     ).post(()->
       person_id = ''
       persons = []
-      person_name = null 
+      person_name = null
       active_time = null
       if this.request.body.hasOwnProperty('person_id')
         person_id = this.request.body.person_id
@@ -1742,7 +1742,7 @@ if Meteor.isServer
                 person_id: person.id,
                 person_name: person.name,
                 img_url: person.img_url,
-                sqlid: person.sqlid, 
+                sqlid: person.sqlid,
                 style: person.style,
                 accuracy: person.accuracy, # 准确度(分数)
                 fuzziness: person.fuzziness#, # 模糊度
@@ -1763,7 +1763,7 @@ if Meteor.isServer
                     group_name = group.name
                   console.log("group_id="+userGroup.group_id)
                   console.log("Will notify one known people")
-                  sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null)
+                  sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null, person_id)
           else
               group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
               group_name = '公司'
@@ -1775,7 +1775,7 @@ if Meteor.isServer
               console.log("group_id="+userGroup.group_id+", is_notify_stranger="+is_notify_stranger)
               if is_notify_stranger and checkIfSendKnownUnknownPushNotification(userGroup.group_id,'0')
                 console.log("Will notify stranger")
-                sharpai_pushnotification("notify_stranger", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name}, null)
+                sharpai_pushnotification("notify_stranger", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name}, null, person_id)
       )
       this.response.end('{"result": "ok"}\n')
     )
@@ -1804,7 +1804,7 @@ if Meteor.isServer
         console.log("restapi/workai_multiple_people: userGroups is null")
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
 
-      
+
       for person in persons
         console.log("person="+JSON.stringify(person))
         unless active_time
@@ -2579,7 +2579,7 @@ if Meteor.isServer
               "hide_it"     : if fields.hide_it then fields.hide_it else  false
             }
             #console.log('>>> new a WorkStatus ' + JSON.stringify(newWorkStatus))
-            
+
             WorkStatus.insert(newWorkStatus)
       )
 
@@ -2618,7 +2618,7 @@ if Meteor.isServer
       this.response.end(JSON.stringify({result: 'ok'}))
     )
 
- 
+
   # params = {
   #   uuid: 设备UUID,
   #   person_id: id,
@@ -2835,9 +2835,9 @@ if Meteor.isServer
         #取得 UTC time
         utc = d.getTime() + (d.getTimezoneOffset() * 60000);
         local_now = new Date(utc + (3600000*time_offset))
-        today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+        today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(),
         local_now.getHours(), local_now.getMinutes());
-      
+
         return today_now;
 
     #计算out_time
@@ -2984,7 +2984,7 @@ if Meteor.isServer
       subject = group.name + ' 每日出勤报告'+y_date_title
     else
       return
-    
+
       #console.log 'html:'+ JSON.stringify(text)
     SimpleChat.GroupUsers.find({group_id:group_id}).forEach(
       (fields)->
@@ -3042,8 +3042,8 @@ if Meteor.isServer
 
     this.response.end(JSON.stringify({result: 'ok'}))
   )
-  
-  # Faces API 
+
+  # Faces API
   # [{
   #   'id': id,
   #   'uuid': uuid,

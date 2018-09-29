@@ -388,7 +388,7 @@ if Meteor.isServer
       catch err
         console.log("Exception in pushnotification: err="+err);
 
-  @sharpai_pushnotification = (type, doc, userId)->
+  @sharpai_pushnotification = (type, doc, userId, seenPersonID)->
     group_notify = false
     console.log "sharpai_pushnotification: type:"+type
     if type is "notify_stranger"
@@ -426,7 +426,7 @@ if Meteor.isServer
             allUsersCursor.forEach((oneUser)->
                 needPushToThisUser = true
                 pushList = NotificationFollowList.findOne({_id:oneUser.user_id})
-                if pushList and pushList.hasOwnProperty(userId) is false
+                if pushList and pushList.hasOwnProperty(seenPersonID) is false
                   needPushToThisUser = false
                 if needPushToThisUser is true
                   toUserToken = Meteor.users.findOne({_id: oneUser.user_id})
