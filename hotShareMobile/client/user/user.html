@@ -25,7 +25,7 @@
       </div>
         <span class="userName">{{myProfileName}}</span>
     </div>
-    
+
     <ul class="set-up comFadeIn" style="margin-top: 10px;margin-bottom: 10px;border: none;">
       <li class="name bindGroupUser">
           <label style="position: relative;margin-top: 0px;">群组成员绑定</label>
@@ -35,8 +35,16 @@
           <label style="position: relative;margin-top: 0px;">收藏</label>
           <div class="help-info" style="font-size: 12px;color: #555;">查看收藏的消息</div>
       </li>
+
+      <li class="name enable-follow-notify-only">
+          <label style="position: relative;margin-top: 0px;">只通知关注用户</label>
+          <div class="right-btn" style="background: #fff;">
+            <input id="report_id" class="switch" style="margin-right:5px;outline:none;" type="checkbox" data-checked={{followedOnly}} {{followedOnly}}>
+          </div>
+          <div class="help-info" style="font-size: 12px;color: #555;">只有出现您关注的用户才发推送消息（陌生人仍然通知您）</div>
+      </li>
     </ul>
-    
+
     {{#if group}}
     <div class="userCheckinBox">
       <div class="header">
@@ -88,7 +96,7 @@
           {{/if}}
         </div>
         <div style="position: relative; margin-top: 32px;">
-          <i class="fa fa-circle " style="color: #f1b725;font-size: 15px;padding: 10px 0;margin: auto;position: absolute;"></i>    
+          <i class="fa fa-circle " style="color: #f1b725;font-size: 15px;padding: 10px 0;margin: auto;position: absolute;"></i>
           {{#if hasOutTime group.out_time}}
           <div  style="display: inline-block;margin-left: 30px;">
             <div style="color: #868686;font-size: 12px;">下班时间:18:00</div>
@@ -114,7 +122,7 @@
         {{else}}
           添加今日简述...
         {{/if}}
-      </div> 
+      </div>
     </div>
     {{/if}}
     <!--{{#if hasTwoMoreGroup}}
@@ -295,7 +303,7 @@
                             <span class="right">
                               {{_ "browse"}}{{getBrowseCount browse}}{{_ "times"}}
                             </span>
-                        </div> 
+                        </div>
                     {{else}}
                             <div id="{{_id}}" class="mainImage" style="font-size:15px;width: 100%;float: left;margin-right: 2%; height: 56px; overflow: hidden;">
                                 <dl style='background: grey;padding: 5px; margin-top: 6px;min-height: 50px;margin-bottom: 1px;'>

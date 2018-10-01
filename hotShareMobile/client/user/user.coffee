@@ -2,7 +2,7 @@
 if Meteor.isClient
   now = new Date();
   today = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0, 0);
-  
+
   userGroupIndex = new ReactiveVar(0)
 
   Meteor.startup ()->
@@ -36,7 +36,7 @@ if Meteor.isClient
             console.log('Issue on getMyProfileData')
           )
         ,100
-        
+
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
         Session.set('postsWithLimitCollection','loading')
@@ -72,6 +72,15 @@ if Meteor.isClient
   )
 
   Template.user.helpers
+    followedOnly: () ->
+      if Meteor.userId()
+        followDoc = NotificationFollowList.findOne({_id: Meteor.userId()})
+        if followDoc && followDoc['followedOnly']
+          Session.set('push_followed_only',true)
+          return 'checked'
+
+      Session.set('push_followed_only',false)
+      return ''
     getShortTime: (ts,group_id)->
       time_offset = 8
       group = SimpleChat.Groups.findOne({_id: group_id})
@@ -165,7 +174,6 @@ if Meteor.isClient
         return mySavedDrafts
       else
         Session.get('persistentMySavedDrafts')
-        
       return mySavedDrafts
     gtValue: (value1, value2)->
       return value1 > value2
@@ -245,7 +253,7 @@ if Meteor.isClient
       if in_time and in_time > 0
         return true
       return false
-    inTime:(in_time,group_id)-> 
+    inTime:(in_time,group_id)->
       time_offset = 8
       intime = in_time
       # if (!in_time)
@@ -329,7 +337,15 @@ if Meteor.isClient
     groupList:()->
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()}, {limit:2, sort: {create_time: -1}}).fetch()
   Template.user.events
-    # bind group user 
+    # bind group user
+    'click input':(e) ->
+      isChecked = false
+      if Session.equals('push_followed_only',true)
+        isChecked = true
+      if isChecked
+        NotificationFollowList.update({_id:Meteor.userId()},{ $unset: {followedOnly:1}})
+      else
+        NotificationFollowList.update({_id:Meteor.userId()},{ $set: {followedOnly:1}})
     'click .bindGroupUser':(e)->
       PUB.page('/bindGroupUser')
     'click .collect':(e)->
@@ -338,7 +354,7 @@ if Meteor.isClient
     'click .editDayTasks': (e)->
       group_id = $(e.currentTarget).data('groupid')
       PUB.page('/dayTasks/'+group_id)
-    # change to next Group 
+    # change to next Group
     'click #changeToNextGroup': (e)->
       index = userGroupIndex.get()
       index += 1
@@ -470,11 +486,11 @@ if Meteor.isClient
     'click .checkOutTime, click .reCheckOutTime':(e)->
       group_id = $(e.currentTarget).data('groupid')
       Session.set('wantModify',true)
-      if (group_id) 
+      if (group_id)
         modifyStatusFun(group_id,'out')
         return
       workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date:today});
-      if (workstatus && workstatus.group_id) 
+      if (workstatus && workstatus.group_id)
         modifyStatusFun(workstatus.group_id,'out')
       else
         Session.set('fromUserInfomation',true);
@@ -615,4 +631,3 @@ if Meteor.isClient
         Session.set("showBigImage",false)
       else
         Session.set("showBigImage",true)
-
