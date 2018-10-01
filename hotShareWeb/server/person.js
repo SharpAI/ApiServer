@@ -236,7 +236,7 @@ PERSON = {
     var persons = null;
     var result = {};
     if(group_id && names) {
-      persons = Person.find({name: {$in: names}, group_id: group_id}, {sort: {createAt: 1}, limit: limit}).fetch()
+      persons = Person.find({group_id: group_id, name: {$in: names}}, {sort: {createAt: 1}, limit: limit}).fetch()
     }
 
     if (persons.length <= 0){
@@ -554,7 +554,7 @@ PERSON = {
       return
     }
 
-    var time_offset = 8; //US is -7, China is +8 
+    var time_offset = 8; //US is -7, China is +8
 
     var group_intime = '09:00'; //默认上班时间9点
     var group_outtime = '18:00'; //默认下班时间18点
@@ -578,12 +578,12 @@ PERSON = {
 
       return local_now;
     }
-    
+
     var now = DateTimezone(time_offset);
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,
       0, 0, 0, 0);
-    
+
     var group_intime_ary = group_intime.split(":");
     group_intime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),group_intime_ary[0],group_intime_ary[1]).getTime();
     //console.log('group_intime:'+group_intime);
@@ -603,7 +603,7 @@ PERSON = {
     var outtime = 0;
     outtime = (relation.checkout_time > relation.ai_out_time) ? relation.checkout_time : relation.ai_out_time;
     outtime = (outtime > 0) ? ((PERSON.checkIsToday(outtime,relation.group_id)) ? outtime : 0 ): 0;
-    
+
     //最新一次进门的时间
     var lastest_in_time = (relation.checkin_time > relation.ai_lastest_in_time) ? relation.checkin_time : relation.ai_lastest_in_time;
 
@@ -618,7 +618,7 @@ PERSON = {
     }
 
     // 如果存在 checkin_time , 那么 in_time 以 checkin_time
-    if(relation.checkin_time && relation.checkin_time !== 0) { 
+    if(relation.checkin_time && relation.checkin_time !== 0) {
       intime = relation.checkin_time;
     }
 
@@ -634,7 +634,7 @@ PERSON = {
     //   out_time = out_time_date.getHours()+':'+out_time_date.getMinutes();
 
     // }
-    
+
     // intime = (intime > today_utc)?intime:0
     intime = PERSON.checkIsToday(intime,relation.group_id)?intime:0;
     outtime = (outtime >= intime)?outtime: 0;
@@ -694,7 +694,7 @@ PERSON = {
     //var date = Date.now();
     //var mod = 24*60*60*1000;
     //today2 = date - (date % mod);
-    
+
 
     var setObj = {
         "status"      : now_status,
@@ -746,7 +746,7 @@ PERSON = {
     }
     else {
       if (outtime > workstatus.out_time){
-        
+
         var deviceUser = Meteor.users.findOne({username: relation.out_uuid});
 
         if (deviceUser) {
@@ -768,14 +768,14 @@ PERSON = {
             create_time: new Date(),
             is_read: false,
           };
-          
+
           if(relation.app_user_id){
             console.log(msgObj)
             // sendMqttUserMessage(relation.app_user_id,msgObj);
           }
         }
       }
-      
+
       if (!workstatus.app_user_id && relation.app_user_id) {
         setObj.app_user_id = relation.app_user_id;
       }
@@ -799,7 +799,7 @@ PERSON = {
     if(!(workStatusObj && (workStatusObj.checkin_time || workStatusObj.checkout_time) && workStatusObj.group_id))
       return;
 
-    var time_offset = 8; //US is -7, China is +8 
+    var time_offset = 8; //US is -7, China is +8
     var group_intime = '09:00'; //默认上班时间9点
     var group_outtime = '18:00'; //默认下班时间18点
 
@@ -822,10 +822,10 @@ PERSON = {
 
       return local_now;
     }
-    
+
     var now = DateTimezone(time_offset);
     var day = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    var day_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+    var day_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,
       0, 0, 0, 0);
     console.log('day_utc:'+day_utc);
 
@@ -1508,13 +1508,13 @@ Meteor.methods({
   'renamePerson': function(_id, name) {
     var person = Person.findOne({_id: _id});
     console.log('==sr==. person is '+JSON.stringify(person))
-    
+
     if(person && person.name) {
-      // update person 
+      // update person
       Person.update({_id: _id},{$set:{name: name}});
 
       if(person.name) {
-        // update personNames 
+        // update personNames
         PersonNames.update({group_id:person.group_id, name:person.name},{$set:{name: name}}, function(err,res){
           console.log('==sr==. err is '+ err);
           console.log('==sr==. res is ' + res)
@@ -1574,7 +1574,7 @@ Meteor.methods({
          }
       });
   },
-    
+
   // 群相册里的批量标注
   'upLabels': function(groupId, data, waitLabels, type){
     this.unblock();
@@ -1682,7 +1682,7 @@ Meteor.methods({
     var relation = WorkAIUserRelations.findOne({_id:relation_id});
     var workstatus = null;
 
-    var time_offset = 8; //US is -7, China is +8 
+    var time_offset = 8; //US is -7, China is +8
 
     var group = SimpleChat.Groups.findOne({_id: relation.group_id});
     if (group && group.offsetTimeZone) {
@@ -1696,10 +1696,10 @@ Meteor.methods({
 
       return local_now;
     }
-    
+
     var now = DateTimezone(time_offset);
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,
       0, 0, 0, 0);
 
     if (relation.app_user_id) {
@@ -1720,7 +1720,7 @@ Meteor.methods({
     }
   },
   'resetMemberWorkStatus': function(_id,person_id) {
-    // Step 1. reset workStatus 
+    // Step 1. reset workStatus
     WorkStatus.update({_id: _id},{
       $set:{
         status: 'out',
@@ -1762,10 +1762,10 @@ Meteor.methods({
     if(person){
       face_id = person.faceId;
     }else{
-      face_id = new Mongo.ObjectID()._str; 
+      face_id = new Mongo.ObjectID()._str;
     }
     if (!personName)
-      PersonNames.insert({group_id: group_id, url: url, id: face_id, name: name, createAt: new Date(), updateAt: new Date()}); 
+      PersonNames.insert({group_id: group_id, url: url, id: face_id, name: name, createAt: new Date(), updateAt: new Date()});
     if(person){
       WorkStatus.update({_id:id},{$set:{person_name:name,'person_id':[{id:person._id}]}});
     }else{
@@ -1827,7 +1827,7 @@ Meteor.methods({
       }
       return 'guest'+c;
     }
-    
+
   // 'cleanLeftRelationAndStatusDate': function(){
   //   // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
   //   cleanLeftRelationAndStatusDate();
