@@ -19,7 +19,6 @@ Template.searchMyPosts.helpers({
         Session.set("noSearchResult", false);
       }
     }
-    
     return postsSearchData;
   }
 });

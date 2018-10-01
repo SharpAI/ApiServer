@@ -1338,7 +1338,10 @@ if Meteor.isServer
                     group_name = group.name
                   console.log("group_id="+userGroup.group_id)
                   console.log("Will notify one known people")
-                  sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null, person_id)
+
+                  ai_person = Person.findOne({group_id:userGroup.group_id ,'faces.id': person_id});
+                  ai_person_id = if ai_person then ai_person._id else null
+                  sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null, ai_person_id)
           else
               group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
               group_name = '公司'
@@ -1350,7 +1353,7 @@ if Meteor.isServer
               console.log("group_id="+userGroup.group_id+", is_notify_stranger="+is_notify_stranger)
               if is_notify_stranger and checkIfSendKnownUnknownPushNotification(userGroup.group_id,'0')
                 console.log("Will notify stranger")
-                sharpai_pushnotification("notify_stranger", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name}, null, person_id)
+                sharpai_pushnotification("notify_stranger", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name}, null, null)
       )
       this.response.end('{"result": "ok"}\n')
     )
