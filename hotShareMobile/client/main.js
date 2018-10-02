@@ -116,11 +116,12 @@ if (Meteor.isCordova) {
     function onDeviceReady() {
         // 按钮事件
         // console.log('<------- onDeviceReady ----->');
-        //checkShareExtension();
+        checkShareExtension();
         // getHotPostsData();
         navigator.splashscreen.hide();
         document.addEventListener("backbutton", eventBackButton, false); // 返回键
-        //document.addEventListener("resume", eventResume, false);
+        document.addEventListener("pause", eventPause, false);//挂起
+        document.addEventListener("resume", eventResume, false);
 
         checkNewVersion2();
 
@@ -242,7 +243,22 @@ if (Meteor.isCordova) {
             console.log('Refresh Main Data Source when resume');
             if (Meteor.isCordova) {
                 window.refreshMainDataSource();
+                checkShareUrl();
+                checkShareExtension();
                 window.checkNotificationServicesEnabled();
+                if(Meteor.user().profile.waitReadCount > 0){
+                  Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+                }
+
+                if(device.platform === 'Android'){
+                  window.plugins.shareExtension.getShareData(function(data) {
+                    console.log("##RDBG getShareData: " + JSON.stringify(data));
+                      if(data){
+                         editFromShare(data);
+                      }
+                  }, function() {});
+                  window.plugins.shareExtension.emptyData(function(result) {}, function(err) {});
+                }
             }
         }
         //mqttEventResume();
@@ -262,6 +278,16 @@ if (Meteor.isCordova) {
           console.log('mqtt reconnect Error=',error);
         }
     }
+    function eventPause(){
+      if(withAutoSavedOnPaused) {
+          if (location.pathname === '/add') {
+              Template.addPost.__helpers.get('saveDraft')()
+          }
+      }
+      //mqttEventPause();
+      lastPauseDate = new Date();
+    }
+
     function eventBackButton(){
       // 显示tips时
       if(Tips.isShow())
@@ -275,13 +301,36 @@ if (Meteor.isCordova) {
         return;
       }
 
+      // 编辑post时回退
+        if(withAutoSavedOnPaused) {
+            if (location.pathname === '/add') {
+                Template.addPost.__helpers.get('saveDraft')()
+            }
+        }
+
         if ($('#swipebox-overlay').length > 0) {
             $.swipebox.close();
             return;
         }
 
+      // 阅读私信时返回
+      if(Session.equals('inPersonalLetterView',true)) {
+        Session.set('inPersonalLetterView',false);
+        $('body').css('overflow-y','auto');
+        $('.personalLetterContent,.bellAlertBackground').fadeOut(300);
+        return;
+      }
       var currentRoute = Router.current().route.getName();
-      if (currentRoute == 'deal_page'){
+      if (currentRoute == 'myPosts'){
+        if (isHotPostsChanged()) {
+          PUB.confirm("您改变了热门帖子, 要保存吗?", function(){
+            console.log('##RDBG confirm callback');
+            saveHotPosts()
+          });
+        }
+        PUB.back();
+      }
+      else if (currentRoute == 'deal_page'){
         if (Session.get("dealBack") == "register"){
           Router.go('/signupForm');
         } else if (Session.get("dealBack") == "anonymous"){
@@ -329,7 +378,7 @@ if (Meteor.isCordova) {
 }
 
 if (Meteor.isClient) {
-  Session.set("DocumentTitle",'来了吗');
+  Session.set("DocumentTitle",'故事贴');
   Deps.autorun(function(){
     if(Meteor.userId()){
       //Meteor.subscribe("topics");
