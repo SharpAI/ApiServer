@@ -1,0 +1,22 @@
+body {
+  text-align: center;
+  margin-top: 150px;
+}
+
+h3 {
+  font-family: "Arial";
+  font-weight: 400;
+  margin-bottom: 40px;
+}
+
+.totalTrafficTooltip{
+  text-align: left;
+  font-size: 12px;
+}
+
+.totalTrafficTooltip h4{
+  margin: 5px;
+}
+.totalTrafficTooltip p{
+  margin: 0 5px; font-size: 12px;
+}

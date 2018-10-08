@@ -1,0 +1,314 @@
+<template name="boxMonitorsAlive">
+    <div class="chart-container canvas-holder half">
+      <div class="col-md-12">
+        {{#if isAliveBoxMonitorTab}}
+        <h3 class="pull-left">Alive Clients in 5 Minutes: {{totalClient}}</h3>
+        {{else}}
+        <h3  class="pull-left">Inactive Clients: {{totalInactiveClient}}</h3>
+        {{/if}}
+        <div class="btn-group pull-right">
+          <button type="button" id="alive" class="box-monitor-status btn btn-default btn-primary">Alive</button>
+          <button type="button" id="inactive" class="box-monitor-status btn btn-default">Inactive</button>
+        </div>
+      </div>
+      <div class="table-responsive" style="background-color:white; width: 100%;">
+        <table class="table table-hover table-condensed table-striped" id="boxMonitorTable">
+          {{#if isAliveBoxMonitorTab}}
+          <thead>
+            <tr>
+              <th>ViewChart</th>
+              <th>Box Config</th>
+              <th>Client ID</th>
+              <th>Mac Address</th>
+              <th>Comment</th>
+              <th>Public IP</th>
+              <th>Address</th>
+              <th>Version</th>
+              <th>Heart Beats</th>
+              <th>Seeding</th>
+              <th>Total</th>
+              <th>CPU Load</th>
+              <th>Memory</th>
+              <th>CDN   Download Speed</th>
+              <th>RAID  Download Speed</th>
+              <th>CDN   Downloaded</th>
+              <th>RAID  Downloaded</th>
+              <th>Upload  Speed</th>
+              <th>Uploaded</th>
+              <th>Disk Free Size</th>
+              <th>Disk Total Size</th>
+              <th>Connect ID</th>
+              <th>Box Config</th>
+              <th>ViewChart</th>
+            </tr>
+          </thead>
+          <tbody>
+        {{#each peersInfo}}
+          <tr id="{{id}}">
+            <td><button  id="{{clientID}}"  type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td>
+            <td>
+              <button  id="{{clientID}}"  type="button" class="btn btn-xs box-config" data-toggle="modal" data-target="#boxConfigModal">
+                {{#if isBoxConfiging clientID}}
+                 Configing...
+                 {{else}}
+                 Config
+                 {{/if}}
+              </button>
+            </td>
+            <td>{{clientID}}</td>
+            <td>{{clientMAC}}</td>
+            <td class="editable-text-trigger">
+              {{> editableText collection="peer" field="comment" wysiwyg=true acceptEmpty=true substitute='<i class="fa fa-pencil"></i>' class="post-body" inputClass="post-body-wysiwyg"}}
+            </td>
+            <td>{{externalIp}}</td>
+            <td>{{getAddressFromIP externalIp}}</td>
+            <td>{{global_info.version}}</td>
+            <td>{{global_info.heart_beats}}</td>
+            <td>{{global_info.seeding}}</td>
+            <td>{{global_info.total}}</td>
+            {{#if global_info.cpu}}
+              <td>{{ceil global_info.cpu}}%</td>
+            {{else}}
+              <td></td>
+            {{/if}}
+            {{#if global_info.memory}}
+                <td>{{bytesToSize global_info.memory}}</td>
+            {{else}}
+              <td></td>
+            {{/if}}
+            <td>{{bytesToSizePerSeconds global_info.cdn_speed}}</td>
+            <td>{{bytesToSizePerSeconds global_info.p2p_speed}}</td>
+            <td>{{bytesToSize global_info.cdn_downloaded}}</td>
+            <td>{{bytesToSize global_info.p2p_downloaded}}</td>
+            <td>{{bytesToSizePerSeconds global_info.upload_speed}}</td>
+            <td>{{bytesToSize global_info.uploaded}}</td>
+            <td>{{bytesToSize disk_info.free}}</td>
+            <td>{{bytesToSize disk_info.total}}</td>
+            <td>{{connectID}}</td>
+            <td>
+            <button  id="{{clientID}}"  type="button" class="btn btn-xs box-config" data-toggle="modal" data-target="#boxConfigModal">
+                {{#if isBoxConfiging clientID}}
+                 Configing..
+                 {{else}}
+                 Config
+                 {{/if}}
+              </button>
+            </td>
+            <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td>
+          </tr>
+        {{/each}}
+      </tbody>
+      {{else}}
+<thead>
+            <tr>
+                <th>ViewChart</th>
+               <th>Client ID</th>
+                <th>Comment</th>
+                <th>Public IP</th>
+                <th>Address</th>
+                <th>Version</th>
+                <th>Last Seen</th>
+                <th>Heart Beats</th>
+                <th>Seeding</th>
+                <th>Total</th>
+                <th>CPU Load</th>
+                <th>Memory</th>
+                <th>CDN   Download Speed</th>
+                <th>RAID  Download Speed</th>
+                <th>CDN   Downloaded</th>
+                <th>RAID  Downloaded</th>
+                <th>Upload  Speed</th>
+                <th>Uploaded</th>
+                <th>Disk Free Size</th>
+                <th>Disk Total Size</th>
+                <th>Connect ID</th>
+                <th>ViewChart</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each inactivePeersInfo}}
+                <tr id="{{id}}">
+                  <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td>
+                    <td>{{clientID}}</td>
+                    <td class="editable-text-trigger">
+                      {{> editableText collection="peer" field="comment" wysiwyg=true acceptEmpty=true substitute='<i class="fa fa-pencil"></i>' class="post-body" inputClass="post-body-wysiwyg"}}
+                    </td>
+                    <td>{{externalIp}}</td>
+                    <td>{{getAddressFromIP externalIp}}</td>
+                    <td>{{global_info.version}}</td>
+                    <td>{{timeDiff}}</td>
+                    <td>{{global_info.heart_beats}}</td>
+                    <td>{{global_info.seeding}}</td>
+                    <td>{{global_info.total}}</td>
+                    {{#if global_info.cpu}}
+                        <td>{{ceil global_info.cpu}}%</td>
+                    {{else}}
+                        <td></td>
+                    {{/if}}
+                    {{#if global_info.memory}}
+                        <td>{{bytesToSize global_info.memory}}</td>
+                    {{else}}
+                        <td></td>
+                    {{/if}}
+                    <td>{{bytesToSizePerSeconds global_info.cdn_speed}}</td>
+                    <td>{{bytesToSizePerSeconds global_info.p2p_speed}}</td>
+                    <td>{{bytesToSize global_info.cdn_downloaded}}</td>
+                    <td>{{bytesToSize global_info.p2p_downloaded}}</td>
+                    <td>{{bytesToSizePerSeconds global_info.upload_speed}}</td>
+                    <td>{{bytesToSize global_info.uploaded}}</td>
+                    <td>{{bytesToSize disk_info.free}}</td>
+                    <td>{{bytesToSize disk_info.total}}</td>
+                    <td>{{connectID}}</td>
+                    <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td>
+          
+                </tr>
+            {{/each}}
+            </tbody>
+      {{/if}}
+    </table>
+      </div>
+      <nav>
+        <ul class="pager">
+          <li id="prev"><a href="#">Previous</a></li>
+          <li><a href="#">{{currPage}}</a></li>
+          <li id="next"><a href="#">Next</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- box config modal-->
+    <div class="modal fade" id="boxConfigModal" tabindex="-1" role="dialog" aira-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span></button>
+            <h3 class="modal-title" id="myModalLabel">Box Config</h3>
+            <h5 class="modal-title">{{currBoxNameing}}</h5>
+          </div>
+          {{#if notAllowConfigBox}}
+          <div class="modal-body">
+            <form class="form-horizontal" role="form">
+              <fieldset disabled>
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-4 control-label">Enable RAIDCDN </label>
+                <div class="col-sm-6 text-left">
+                  {{#if isboxConfigOEnable}}
+                    <label class="radio-inline">
+                      <input type="radio" name="boxEnable"  value="true" checked> Enable
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="boxEnable" value="false" > Disable
+                    </label>
+                    {{else}}
+                    <label class="radio-inline">
+                      <input type="radio" name="boxEnable"  value="true" > Enable
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="boxEnable" value="false" checked> Disable
+                    </label>
+                    {{/if}}
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-4 control-label">Upload Limit</label>
+                <div class="col-sm-6 text-left">
+                  <select class="form-control" id="upload-speed">
+                    <option value="-1" selected>不限速</option>
+                    {{{CurrUpConfig}}}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-4 control-label">Download Limit</label>
+                <div class="col-sm-6 text-left">
+                  <select class="form-control" id="upload-speed">
+                    <option value="-1" selected>不限速</option>
+                    {{{CurrDownConfig}}}
+                  </select>
+                </div>
+              </div>
+              </fieldset>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" disabled="disabled">Configing...</button>
+          </div>
+          {{else}}
+          <div class="modal-body">
+            <form class="form-horizontal" id="boxConfigFrom" role="form">
+            <fieldset>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-4 control-label">Enable RAIDCDN</label>
+                  <div class="col-sm-6 text-left">
+                    {{#if isboxConfigOEnable}}
+                    <label class="radio-inline">
+                      <input type="radio" name="boxEnable"  value="true" checked> Enable
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="boxEnable" value="false" > Disable
+                    </label>
+                    {{else}}
+                    <label class="radio-inline">
+                      <input type="radio" name="boxEnable"  value="true" > Enable
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="boxEnable" value="false" checked> Disable
+                    </label>
+                    {{/if}}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-4 control-label">Upload Limit</label>
+                  <div class="col-sm-6">
+                    <select class="form-control" id="upload-speed">
+                      <option value="-1" selected>不限速</option>
+                      {{{CurrUpConfig}}}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-4 control-label">Download Limit</label>
+                  <div class="col-sm-6">
+                    <select class="form-control" id="download-speed">
+                      <option value="-1" selected>不限速</option>
+                      {{{CurrDownConfig}}}
+                    </select>
+                  </div>
+                </div>
+                </fieldset>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" id="saveBoxConfig" class="btn btn-primary">Save Changes</button>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+</template>
+
+
+
+<template name="boxMonitorTraffic">
+  <style>
+      .chart-container{margin-top: 40px; background-color: white !important;border-radius:8px;}
+    </style>
+    <div class="canvas-holder half">
+      <div class="col-md-12">
+        <h4 class="pull-left">Box Traffic: {{boxInfo}}</h4>
+        <div class="btn-group pull-right">
+          <button type="button" id="h" class="box-traffic-time btn btn-default btn-primary">Realtime</button>
+          <button type="button" id="d" class="box-traffic-time btn btn-default">24 Hours</button>
+          <button type="button" id="m" class="box-traffic-time btn btn-default">30 Days</button>
+        </div>
+      </div>
+      <div class="col-md-12 chart-container">
+        <div id="box-traffic3" style="width:600px; height:400px; background-color:white; boder-radius:8px;" class="col-md-12 box-traffic-chart"></div>
+        <div id="box-traffic2" style="width:600px; height:400px; background-color:white; boder-radius:8px;" class="col-md-12 box-traffic-chart"></div>
+        <div id="box-traffic" style="width:600px; height:400px; background-color:white; boder-radius:8px;" class="col-md-12 box-traffic-chart"></div>
+      </div>
+    </div>
+</template>

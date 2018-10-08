@@ -1,0 +1,11 @@
+<template name="home">
+    {{#if isLogging}}
+        {{>logging}}
+    {{else}}
+        {{#if gosignup}}
+            {{> signup}}
+        {{else}}
+            {{> login}}
+        {{/if}}
+    {{/if}}
+</template>
