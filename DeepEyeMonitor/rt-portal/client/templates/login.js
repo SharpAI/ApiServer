@@ -19,7 +19,7 @@ if (Meteor.isClient) {
 			if(error) {
 				toastr.info('Your username and password is mismatch');
 			}else {
-				Router.go('/dashboard/overview');
+				Router.go('/dashboard/box-monitors-alive');
 			}
 		});
     },
@@ -40,5 +40,5 @@ if (Meteor.isClient) {
 			$(".login-page").removeClass("ng-enter-active");
 		}, 600);
 	};
-  
+
 }
