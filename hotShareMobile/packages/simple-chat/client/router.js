@@ -1759,6 +1759,7 @@ Template._simpleChatToChat.events({
     try{
       var data = page_data;
       var text = $('.input-text').val();
+      text = text.trim();
       var to = null;
       var is_nlp_classify_group = false;
 
