@@ -8,7 +8,7 @@ Meteor.startup(function () {
     }
     var mqtt_broker = process.env.MQ_URL || 'mqtt://rpcserver.raidcdn.com';
     // var mqtt_broker = process.env.MQ_URL || 'ws://shatarpcserver.raidcdn.com:80';
-    
+
     var sina_iplookup_server = 'http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=json&ip=';
     function update_traffic(json){
 
@@ -237,7 +237,7 @@ Meteor.startup(function () {
                     json.boxCfgServer.updatedAt = json.updateBy;
                 } else {
                     if(peerData.boxCfgServer.updatedAt && (json.updateBy.getTime() - peerData.boxCfgServer.updatedAt.getTime()) > timeDiff){
-                        // box config timeout = 10minutes 
+                        // box config timeout = 10minutes
                         peerData.boxCfgServer.status = 'done';
                         json.boxCfgServer.updatedAt = json.updateBy;
                     } else {
@@ -268,14 +268,14 @@ Meteor.startup(function () {
                         }
                         // console.log("ipAddress==="+ipAddress);
                         peerCollection.update({clientID:json.clientID},{$set:{location:ipAddress}});
-                        
+
                     } else {
                         console.log('statusCode='+res.statusCode+',err='+err)
                     }
                 });
             }
             peerCollection.update({clientID:json.clientID},{$set:json},{upsert:true});
-        } 
+        }
         if(topic == 'RemoteCMDResp'){
             console.log('Got RemoteCMDResp '+message);
             var resp = JSON.parse(message);
