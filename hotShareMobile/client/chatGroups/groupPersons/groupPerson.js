@@ -84,8 +84,11 @@ Template.groupPerson.onRendered(function(){
   });
 
   // disable img longpress default events
-  $(document).on('touchstart','img', function(e){
-    e.stopPropagation();
-    e.preventDefault();
-  });
+  //this blocks android's image click event, disable it on android
+  if (device.platform != 'Android') {
+    $(document).on('touchstart','img', function(e){
+      e.stopPropagation();
+      e.preventDefault();
+    }); 
+  }
 });
