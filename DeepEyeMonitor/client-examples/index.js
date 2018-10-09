@@ -53,13 +53,15 @@ function connectToMeteorServer(device_id){
       return;
     }
     if (wasReconnect) {
-      console.log('Reestablishment of a connection.');
-      connectedToServer = true
+      console.log('Reestablishment of a connection. The status is hard to keep,just restart');
+
+      process.exit(10)
+      /*connectedToServer = true
       login_with_device_id(device_id,function(error,userInfo){
         if(error){
           console.log(error)
         }
-      })
+      })*/
     } else {
       console.log('new connection to meteor server')
       connectedToServer = true
