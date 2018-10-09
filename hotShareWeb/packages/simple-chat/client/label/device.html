@@ -1,11 +1,15 @@
 <template name="_simpleChatLabelDevice">
-  <div class="groupsProfile" style="position: absolute; z-index: 99999999; left: 0; top: 0; right: 0; bottom: 0;">
+  <div class="groupsProfile" style="position: absolute; z-index: 999990; left: 0; top: 0; right: 0; bottom: 0;">
     <div class="groupInformation" style="height: 100%;">
         <div class="head">
           <div id="groupsProfilePageback" class="leftButton">
             <i class="fa fa-angle-left fa-fw"></i>
           </div>
-          <strong>标注照片({{index}}/{{length}})</strong>
+          <!-- <strong>标注照片({{index}}/{{length}})</strong> -->
+          <strong>标注照片</strong>
+          <div id="imgRemoveLabelSelectAll" style="position: absolute; right: 60px; top: 3px; display:inline-block;" class="selectall">
+            {{#if isSelectedAll}}全不选{{else}}全选{{/if}}
+          </div>
           <div id="groupsProfilePageback" class="rightButton save">保存</div>
         </div>
         <div class="content" style="height: 100%; padding-bottom: 48px;">
@@ -13,8 +17,14 @@
             <div class="groupUsers"  style="height: 100%;">
               <div class="contentList"  style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;">
                 <div style="padding: 15px; padding-bottom: 5px;padding: 15px;padding-bottom: 5px;position: relative;">
-                  <div class="select" style="width: 60px;height: 30px;line-height: 30px;position: absolute;right: 15px;top: 15px;color: #757575;text-align: center;"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
-                  <input id="device-input-name" type="text" placeholder="为这组照片 (id: {{id}}) 取个名字~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" value="{{name}}" />
+                  {{#if input_name_direct}}
+                  <input id="device-input-name" type="text" placeholder="为这组照片取个名字~" style="font-size:16px; height: 40px;line-height: 40px;padding: 0px 10px;width: 100%; border: 1px solid #515151; margin-bottom: 10px;" value="{{name}}" />
+                  {{else}}
+                  <div class="select" style="width: 60px;height: 40px;line-height: 40px;position: absolute;right: 15px;top: 15px;color: #515151;text-align: center;"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+                  <!-- <input id="device-input-name" type="text" placeholder="为这组照片 (id: {{id}}) 取个名字~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" value="{{name}}" /> -->
+                  <input id="device-input-name" type="text" placeholder="为这组照片取个名字~" style="font-size:16px; height: 40px;line-height: 40px;padding: 0px 10px;width: 100%; border: 1px solid #515151; margin-bottom: 10px;" value="{{name}}" />
+                  {{/if}}
+                  <p style="font-size:12px;">Tips: 如果照片中的人已经被标记过， 可点击输入框右侧箭头，从已标记人列表中选择。</p>
                 </div>
                 <ul style="padding: 0;">
                   {{#each images}}

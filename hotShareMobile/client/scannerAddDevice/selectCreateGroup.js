@@ -95,7 +95,7 @@ var changeDeviceGroup = function(group_id,group_name){
 }
 
 Template.selectCreateGroup.onRendered(function () {
-  Meteor.subscribe('get-my-group');
+  Meteor.subscribe('get-my-group',Meteor.userId());
 });
 
 Template.selectCreateGroup.helpers({

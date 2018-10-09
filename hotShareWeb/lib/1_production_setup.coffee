@@ -20,7 +20,7 @@
 @withPostTitleMaxLength = 90      #byte
 @withPostSubTitleMaxLength = 60   #byte
 @signUpUserNameLength = 16
-@withShowGroupsUserMaxCount = 29
+@withShowGroupsUserMaxCount = 10
 @withEnableHomeAI = false
 @withDefaultAccuracy = 0.85 #默认最低识别准确度
 

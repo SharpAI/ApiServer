@@ -12,21 +12,22 @@ Template.groupUserHide.onRendered(function(){
   $(document).on('scroll', function(){
     var diff = $('.userHideLists').height() - $('html,body').scrollTop() - $('body').height() + 40;
     if(diff < 0){
-      console.log('loading', diff)
-      var limit = Session.get('groupUserHideLimit');
-      limit = limit + 20;
-      Session.set('groupUserHideLoaded','loading');
-      Meteor.subscribe('group-user-relations',group_id,limit,function(){
-        Session.set('groupUserHideLoaded','loaded');
-        var count = WorkAIUserRelations.find({'group_id':group_id}).count();
-        if(Session.get('groupUserHideLoadedCount') < count){
-          Session.set('groupUserHideLoadedCount',count);
-          Session.set('groupUserHideLimit',limit);
-        }
-      });
+      if(!Session.equals('groupUserHideLoaded','loaded')){
+        console.log('loading', diff)
+        var limit = Session.get('groupUserHideLimit');
+        limit = limit + 20;
+        Session.set('groupUserHideLoaded','loading');
+        Meteor.subscribe('group-user-relations',group_id,limit,function(){
+          Session.set('groupUserHideLoaded','loaded');
+          var count = WorkAIUserRelations.find({'group_id':group_id}).count();
+          if(Session.get('groupUserHideLoadedCount') < count){
+            Session.set('groupUserHideLoadedCount',count);
+            Session.set('groupUserHideLimit',limit);
+          }
+        });
+      }
     }
   });
-
 });
 
 Template.groupUserHide.helpers({

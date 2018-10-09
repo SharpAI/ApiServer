@@ -17,11 +17,14 @@ Template._simpleChatLabelLabel.open = function(msgObj){
   images.set(imgs);
 
   view = Blaze.render(Template._simpleChatLabelLabel, document.body);
+  simple_chat_page_stack.push(view);
 };
 
 Template._simpleChatLabelLabel.close = function(){
-  if (view)
+  if (view) {
     Blaze.remove(view);
+    simple_chat_page_stack.pop();
+  }
   view = null;
 };
 
@@ -38,12 +41,19 @@ Template._simpleChatLabelLabel.events({
   'click .leftButton': function(){
     Template._simpleChatLabelLabel.close();
   },
+   'click #imgRemoveLabelSelectAll': function(e, t){
+    var imgs = images.get();
+    for(var i=0;i<imgs.length;i++){
+      imgs[i].selected = true;
+    }
+    images.set(imgs);
+  },
   'click .rightButton.remove': function(e, t){
     var msgObj = message.get();
     var updateObj = {};
     var imgs = images.get();
     var removes = [];
-
+    
     // set remove img
     for (var i=0;i<imgs.length;i++){
       for(var ii=0;ii<msgObj.images.length;ii++){
@@ -56,7 +66,7 @@ Template._simpleChatLabelLabel.events({
             }
           }
           if (isPush)
-            removes.push({uudi: msgObj.people_uuid, id: msgObj.images[ii].id});
+            removes.push({uuid: msgObj.people_uuid, id: msgObj.images[ii].id, img_url: imgs[i].url});
           msgObj.images[ii].error = true;
           break;
         }
@@ -76,16 +86,76 @@ Template._simpleChatLabelLabel.events({
 
     // remove
     if (removes.length > 0)
-      Meteor.call('remove-persons', removes)
+      Meteor.call('remove-persons1',msgObj.to.id,removes)
+
+    var relabelImages = [];
+    var newImageId = new Mongo.ObjectID()._str;
 
     for (var i=0;i<updateObj.images.length;i++){
-      if (updateObj.images[i].error)
-        var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, drop: true, img_type: updateObj.images[i].img_type};
+      if (updateObj.images[i].error) {
+        var trainsetObj = {
+          group_id: msgObj.to.id,
+          type: 'trainset',
+          url: updateObj.images[i].url,
+          device_id: msgObj.people_uuid,
+          face_id: msgObj.people_id ? msgObj.people_id : updateObj.images[i].id,
+          drop: true,
+          img_type: updateObj.images[i].img_type,
+          raw_face_id: updateObj.images[i].id,
+          style:updateObj.images[i].style,
+          sqlid: updateObj.images[i].sqlid ? updateObj.images[i].sqlid : 0
+        };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
         // sendMqttMessage('trainset', {url: updateObj.images[i].url, person_id: '', device_id: updateObj.images[i].id, drop: true});
+        var image = updateObj.images[i];
+        var relabelObj = {
+          _id: new Mongo.ObjectID()._str,
+          id: newImageId,
+          people_his_id:image.people_his_id,
+          url: image.url,
+          label: null,
+          img_type: image.img_type,
+          // accuracy: image.accuracy,
+          // fuzziness: image.fuzziness
+          style:image.style,
+          sqlid: image.sqlid ? image.sqlid : 0
+        };
+        relabelImages.push(relabelObj);
+
+      }
     }
 
+    //生成重新可标记的数据
+    function sendReLabelMsg(){
+      if (relabelImages.length == 0) {
+        return;
+      }
+      var id = new Mongo.ObjectID()._str;
+
+      Messages.insert({
+        _id: id,
+        form:{
+            id: Meteor.userId(),
+            name: AppConfig.get_user_name(Meteor.user()),
+            icon: AppConfig.get_user_icon(Meteor.user())
+        },
+        to: msgObj.to,
+        to_type: msgObj.to_type,
+        type: 'text',
+        images:relabelImages,
+        create_time: new Date(),
+        people_uuid:msgObj.people_uuid,
+        people_id: msgObj.people_id,
+        people_his_id:msgObj.people_his_id,
+        wait_lable:true,
+        is_read: false//,
+        //send_status: 'sending'
+      }, function(err, id){
+        console.log('insert id:', id);
+        //$('.box').scrollTop($('.box ul').height());
+      });
+    }
     // update collection
     Messages.update({_id: msgObj._id}, {$set: updateObj}, function(){
       var user = Meteor.user();
@@ -99,11 +169,15 @@ Template._simpleChatLabelLabel.events({
         },
         createAt: new Date()
       });
+      sendReLabelMsg();
       PUB.toast('操作成功~');
     });
     Template._simpleChatLabelLabel.close();
     Meteor.setTimeout(function(){
       var $box = $('.box');
+      if ($('.oneself_box').length > 0) {
+         $box = $('.oneself_box');
+      }
       $box.scrollTop($box.scrollTop()+10);
       $box.trigger("scroll");
     }, 500);

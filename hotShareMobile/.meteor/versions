@@ -39,6 +39,8 @@ email@1.1.17_1
 fastclick@1.0.12
 feiwu:simple-chat@0.1.0
 fortawesome:fontawesome@4.6.3
+gadicohen:robots-txt@0.0.10
+gadicohen:sitemaps@0.0.26
 geojson-utils@1.0.9
 ground:db@2.0.0
 hot-code-push@1.0.4

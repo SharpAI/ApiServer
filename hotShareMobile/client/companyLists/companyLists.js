@@ -7,7 +7,7 @@ var limit = new ReactiveVar(3);
 window.companyCharts = {};
 Template.companyLists.onRendered(function () {
   window.companyCharts = {};
-  Meteor.subscribe('get-my-group', Meteor.userId());
+  //Meteor.subscribe('get-my-group', Meteor.userId());
 
   var now = new Date();
   var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();

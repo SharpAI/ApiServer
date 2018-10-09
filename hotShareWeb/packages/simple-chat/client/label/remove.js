@@ -19,11 +19,23 @@ Template._simpleChatLabelRemove.open = function(msgObj){
   images.set(imgs);
 
   view = Blaze.render(Template._simpleChatLabelRemove, document.body);
+  simple_chat_page_stack.push(view);
 };
 
+Template._simpleChatLabelRemove.onRendered(function(){
+  this.$("#remove-input-name").bind("input propertychange",function (e) {
+        var length = $(e.currentTarget).val().length;
+        if (length === 0) {
+          $(e.currentTarget).attr('placeholder','请选择或输入删除的原因~');
+        }
+    });
+});
+
 Template._simpleChatLabelRemove.close = function(){
-  if (view)
+  if (view) {
     Blaze.remove(view);
+    simple_chat_page_stack.pop();
+  }
   view = null;
 };
 
@@ -37,6 +49,14 @@ Template._simpleChatLabelRemove.events({
   'click .leftButton': function(){
     Template._simpleChatLabelRemove.close();
   },
+  'click #imgRemoveSelectAll': function(e, t){
+    var imgs = images.get();
+    for(var i=0;i<imgs.length;i++){
+      imgs[i].selected = true;
+    }
+    images.set(imgs);
+  },
+  // 聊天室，对照片进行删除
   'click .rightButton.remove': function(e, t){
     if (!t.$('#remove-input-name').val())
       return PUB.toast('请输入或选择删除的原因~');
@@ -55,6 +75,7 @@ Template._simpleChatLabelRemove.events({
       return PUB.toast('请选择需要删除的图片~');
     }
 
+    isRemoving = true;
     // set remove img
     for (var i=0;i<imgs.length;i++){
       for(var ii=0;ii<msgObj.images.length;ii++){
@@ -67,7 +88,7 @@ Template._simpleChatLabelRemove.events({
             }
           }
           if (isPush)
-            removes.push({uudi: msgObj.people_uuid, id: msgObj.images[ii].id});
+            removes.push({uuid: msgObj.people_uuid, id: msgObj.images[ii].id, img_url: msgObj.images[ii].url});
           msgObj.images[ii].remove = true;
           break;
         }
@@ -90,15 +111,26 @@ Template._simpleChatLabelRemove.events({
     updateObj.images = msgObj.images;
     updateObj.text = msgObj.text;
     // updateObj.create_time = new Date();
+    console.log('will remove ', JSON.stringify(removes))
 
     if (removes.length > 0)
-      Meteor.call('remove-persons', removes)
+      Meteor.call('remove-persons1',msgObj.to.id,removes)
 
     for (var i=0;i<updateObj.images.length;i++){
-      if (updateObj.images[i].remove)
-        var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, drop: true, img_type: updateObj.images[i].img_type};
+      if (updateObj.images[i].remove){
+        var trainsetObj = {
+          group_id: msgObj.to.id,
+          type: 'trainset',
+          url: updateObj.images[i].url,
+          drop: true,
+          img_type: updateObj.images[i].img_type,
+          style:updateObj.images[i].style,
+          sqlid:updateObj.images[i].sqlid,
+          rm_reson:t.$('#remove-input-name').val()
+        };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+      }
     }
 
     // update collection
@@ -114,29 +146,47 @@ Template._simpleChatLabelRemove.events({
         to: msgObj.to,
         to_type: "group",
         type: "text",
-        text: '删除了 '+removes.length+' 张照片',
+        text: '删除了 '+selectedCount+' 张照片',
         create_time: new Date(),
         is_read: false
       };
       Messages.insert(msg);
-      sendMqttGroupLabelMessage(msgObj.to.id, {
-        _id: new Mongo.ObjectID()._str,
-        msgId: msgObj._id,
-        user: {
-          id: user._id,
-          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
-        },
-        createAt: new Date()
-      });
+      if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
+        sendMqttGroupLabelMessage(msgObj.to.id, {
+          _id: new Mongo.ObjectID()._str,
+          msgId: msgObj._id,
+          user: {
+            id: user._id,
+            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+          },
+          is_admin_relay: true,
+          admin_remove: true,
+          createAt: new Date()
+        });
+      } else {
+        sendMqttGroupLabelMessage(msgObj.to.id, {
+          _id: new Mongo.ObjectID()._str,
+          msgId: msgObj._id,
+          user: {
+            id: user._id,
+            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+          },
+          createAt: new Date()
+        });
+      }
       sendMqttGroupMessage(msg.to.id, msg);
     });
     Template._simpleChatLabelRemove.close();
-    Meteor.setTimeout(function(){
-      var $box = $('.box');
-      $box.scrollTop($box.scrollTop()+10);
-      $box.trigger("scroll");
-    }, 500);
+    // Meteor.setTimeout(function(){
+    //   var $box = $('.box');
+    //   if ($('.oneself_box').length > 0) {
+    //      $box = $('.oneself_box');
+    //   }
+    //   $box.scrollTop($box.scrollTop()+10);
+    //   $box.trigger("scroll");
+    // }, 500);
   },
   'click li': function(){
     var imgs = images.get();
@@ -153,6 +203,7 @@ Template._simpleChatLabelRemove.events({
       if (!text)
         return;
       t.$('#remove-input-name').val(text);
+      t.$('#remove-input-name').attr('placeholder','');
     });
   }
 });
