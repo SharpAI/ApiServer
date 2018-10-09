@@ -1174,7 +1174,32 @@ if Meteor.isServer
     else
       this.response.end('{"result": "ok", "reason": "params must be an Array"}\n')
   )
+  Router.route('/restapi/clean_device', {where: 'server'}).get(()->
+    uuid = this.params.query.uuid
+    device = Devices.findOne({"uuid" : uuid})
+    ret_str = ''
+    if device and device.groupId
+      user = {'_id': device._id, 'username': device.name, 'profile': {'icon': '/device_icon_192.png'}}
+      Devices.remove({"uuid" : uuid})
+      #userGroup = SimpleChat.GroupUsers.findOne({group_id: device.groupId})
+      #if userGroup and userGroup.group_id
+      #  ret_str += 'userGroup [' + userGroup.group_id +'] in SimpleChat.GroupUsers deleted \n'
 
+      ret_str += 'Device['+uuid+'] in Devices deleted \n'
+      #this.response.end(userGroup)
+      #this.response.end('{"result": "ok","uuid":"'+uuid+'"}\n')
+
+    user = Meteor.users.findOne({username: uuid})
+    if user
+      Meteor.users.remove({username: uuid})
+      ret_str += 'Device['+uuid+'] in Meteor.users deleted \n'
+    if ret_str is ''
+      return this.response.end('nothing to delete')
+    this.response.end(ret_str)
+      #userGroup = SimpleChat.GroupUsers.findOne({user_id: user._id, group_id: group_id})
+      #unless userGroup or userGroup.group_id
+      #  return this.response.end('{"result": "failed", "cause": "group not found"}\n')
+  )
   ###
   payload = {'groupid': groupid, 'uuid': uuid，'fuzziness_from':fuzziness_from, 'fuzziness_to':fuzziness_to,
    'blury_threshold': blury_threshold, 'score_threshold_main': score_threshold_main, 'score_threshold_2nd': score_threshold_2nd}
