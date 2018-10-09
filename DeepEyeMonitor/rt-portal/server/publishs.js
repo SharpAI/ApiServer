@@ -7,6 +7,9 @@ Meteor.startup(function () {
 				this.ready();
 			}
 		});
+		Meteor.publish('commands', function (client_id){
+			return Commands.find({client_id:client_id,done : false},{limit: 5,sort:{createdAt:1}});
+		});
 		Meteor.publish('peerInfo', function peerInfoPublication() {
 			var serverDate = new Date()
 			serverDate.setMinutes(serverDate.getMinutes() - 5);
@@ -71,14 +74,21 @@ Meteor.startup(function () {
 			if(session_id && session_id.length > 0) {
 				selector['user_info.session_id'] = session_id;
 			}
-			
+
 			return RaidInfoLogs.find(selector,{limit: limit,sort:{createdAt:-1}});
 		})
 	}
 });
-
+Commands.allow({
+  insert:function(){
+    return true;
+  },
+  update: function(){
+    return true;
+  }
+})
 Meteor.users.allow({
-	update: function (userId, doc) { 
+	update: function (userId, doc) {
 		return doc._id === userId;
 	}
 });

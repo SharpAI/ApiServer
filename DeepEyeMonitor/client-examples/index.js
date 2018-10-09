@@ -36,6 +36,7 @@ function login_with_device_id(device_id, callback){
         // We are now logged in, with userInfo.token as our session auth token.
         token = userInfo.token;
         console.log('login ok:'+token)
+        sub_command_list(device_id)
       }
 
       callback && callback(error,userInfo)
@@ -69,6 +70,48 @@ function connectToMeteorServer(device_id){
       })
     }
   })
+}
+
+function processing_command(id){
+  console.log('command is: '+ddpClient.collections.commands[id])
+  setTimeout(function(){
+    console.log('command done')
+    ddpClient.call('cmd_done',[id,'result'])
+  },1000)
+}
+
+function sub_command_list(client_id){
+      /*
+     * Observe a collection.
+     */
+    var observer = ddpClient.observe("commands");
+    observer.added = function(id) {
+      console.log("[ADDED] to " + observer.name + ":  " + id);
+      console.log(ddpClient.collections.commands);
+      processing_command(id)
+    };
+    observer.changed = function(id, oldFields, clearedFields, newFields) {
+      console.log("[CHANGED] in " + observer.name + ":  " + id);
+      console.log("[CHANGED] old field values: ", oldFields);
+      console.log("[CHANGED] cleared fields: ", clearedFields);
+      console.log("[CHANGED] new fields: ", newFields);
+    };
+    observer.removed = function(id, oldValue) {
+      console.log("[REMOVED] in " + observer.name + ":  " + id);
+      console.log("[REMOVED] previous value: ", oldValue);
+    };
+
+    /*
+     * Subscribe to a Meteor Collection
+     */
+    ddpClient.subscribe(
+      'commands',                  // name of Meteor Publish function to subscribe to
+      [client_id],                       // any parameters used by the Publish function
+      function () {             // callback when the subscription is complete
+        console.log('commands complete:');
+        console.log(ddpClient.collections.commands);
+      }
+    );
 }
 var my_client_id = 'my_device_id'
 connectToMeteorServer(my_client_id)
