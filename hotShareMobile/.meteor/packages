@@ -69,3 +69,7 @@ video-analysis@1.0.0
 momentjs:moment
 marxo:localforage
 gadicohen:sitemaps@0.0.24
+jparker:crypto-md5
+jparker:crypto-sha256
+jparker:crypto-hmac
+vsivsi:job-collection
