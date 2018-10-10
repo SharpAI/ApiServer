@@ -10,12 +10,15 @@ Meteor.startup(function () {
       DEBUG_ON && console.log('onLogin:')
       if(info && info.user && info.user.profile && info.user.profile.device){
         console.log('Device: '+info.user.username+' --> login')
+
+        cancel_offline_notification(info.user.username);
         info.connection.onClose(function(){
           console.log('Device: '+info.user.username+' --> disconnected')
           Meteor.users.update(
             {username:info.user.username},
             {$unset:{"services.resume.loginTokens":[]}
           })
+          create_offline_notification(info.user.username,{})
         })
       }
     })
