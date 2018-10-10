@@ -92,6 +92,7 @@ mobile-experience@1.0.4
 mobile-status-bar@1.0.12
 modules@0.7.6_1
 modules-runtime@0.7.6_1
+momentjs:moment@2.22.2
 mongo@1.1.12_1
 mongo-id@1.0.5
 nicolaslopezj:excel-export@1.0.0
