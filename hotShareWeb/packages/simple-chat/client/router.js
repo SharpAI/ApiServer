@@ -194,6 +194,9 @@ Template._simpleChatToChat.onRendered(function(){
   var group_id = this.data.id;
   Meteor.subscribe('device_by_groupId', group_id, function() {
     var devs = Devices.find({groupId: group_id});
+    devs.forEach(function(dev) {
+      Meteor.subscribe('devices-by-uuid', dev.uuid);
+    });
     if (isChatTipFinished()) {
       if (devs && devs.count() > 0 && !isGroupWizardFinished(group_id)) {
         popupWizardDialog(group_id);
@@ -1986,6 +1989,20 @@ Template._simpleChatToChatItem.onRendered(function(){
 });
 
 Template._simpleChatToChatItem.helpers({
+  getDispName: function() {
+    var name = this.form.name;
+    var from_id = this.form.id;
+    var devs = Devices.find({groupId: this.to.id});
+    if (devs) {
+      devs.forEach(function(dev) {
+        var devUser = Meteor.users.findOne({username: dev.uuid});
+        if (devUser) {
+          name = dev.name;
+        }
+      });
+    }
+    return name;
+  },
   isMultipleChoice: function() {
     return isMultipleChoice.get();
   },
