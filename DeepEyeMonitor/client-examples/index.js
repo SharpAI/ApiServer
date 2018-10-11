@@ -37,6 +37,7 @@ function login_with_device_id(device_id, callback){
         token = userInfo.token;
         console.log('login ok:'+token)
         sub_command_list(device_id)
+        sub_device_info(device_id)
       }
 
       callback && callback(error,userInfo)
@@ -115,7 +116,52 @@ function sub_command_list(client_id){
       }
     );
 }
-var my_client_id ='my_device_id';
+function handle_group_id(group_id){
+  console.log('yes, my group id is ['+ group_id +'] for now')
+}
+function sub_device_info(client_id){
+      /*
+       * Observe a collection.
+       */
+      var observer = ddpClient.observe("devices");
+      observer.added = function(id) {
+        console.log("[ADDED] to " + observer.name + ":  " + id);
+        console.log(ddpClient.collections.devices);
+        if(ddpClient.collections.devices[id]){
+          var doc = ddpClient.collections.devices[id];
+          if(doc && doc['groupId']){
+              handle_group_id(doc['groupId'])
+          }
+        }
+      };
+      observer.changed = function(id, oldFields, clearedFields, newFields) {
+        console.log("[CHANGED] in " + observer.name + ":  " + id);
+        console.log("[CHANGED] old field values: ", oldFields);
+        console.log("[CHANGED] cleared fields: ", clearedFields);
+        console.log("[CHANGED] new fields: ", newFields);
+        if(newFields['groupId']){
+          handle_group_id(newFields['groupId'])
+        }
+      };
+      observer.removed = function(id, oldValue) {
+        console.log("[REMOVED] in " + observer.name + ":  " + id);
+        console.log("[REMOVED] previous value: ", oldValue);
+      };
+
+      /*
+       * Subscribe to a Meteor Collection
+       */
+      ddpClient.subscribe(
+        'devices-by-uuid',                  // name of Meteor Publish function to subscribe to
+        [client_id],                       // any parameters used by the Publish function
+        function () {             // callback when the subscription is complete
+          console.log('commands complete:');
+          console.log(ddpClient.collections.devices);
+        }
+      );
+}
+//var my_client_id ='78c2c095d333';// 'my_device_id'
+var my_client_id ='f681ffe35abf';// 'my_device_id'
 connectToMeteorServer(my_client_id)
 setInterval(function(){
   ddpClient.call('report',[{clientID :my_client_id,test:true}])
