@@ -5,8 +5,8 @@ var CryptoJS = require("crypto-js");
 
 var ddpClient = new DDPClient({
   // All properties optional, defaults shown
-  host : "localhost",
-  port : 3000,
+  host : "workaihost.tiegushi.com",
+  port : 80,
   ssl  : false,
   maintainCollections : true,
   ddpVersion : '1'
@@ -115,7 +115,7 @@ function sub_command_list(client_id){
       }
     );
 }
-var my_client_id = 'my_device_id'
+var my_client_id ='my_device_id';
 connectToMeteorServer(my_client_id)
 setInterval(function(){
   ddpClient.call('report',[{clientID :my_client_id,test:true}])

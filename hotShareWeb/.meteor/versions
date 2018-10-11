@@ -61,6 +61,10 @@ iron:location@1.0.11
 iron:middleware-stack@1.1.0
 iron:router@1.0.13
 iron:url@1.0.11
+jparker:crypto-core@0.1.0
+jparker:crypto-hmac@0.1.0
+jparker:crypto-md5@0.1.1
+jparker:crypto-sha256@0.1.1
 jquery@1.11.9
 launch-screen@1.0.12
 less@2.7.5_1
@@ -95,6 +99,7 @@ modules-runtime@0.7.6_1
 momentjs:moment@2.22.2
 mongo@1.1.12_1
 mongo-id@1.0.5
+mrt:later@1.6.1
 nicolaslopezj:excel-export@1.0.0
 npm-bcrypt@0.9.1_1
 npm-container@1.2.0
@@ -154,6 +159,7 @@ velocity:meteor-stubs@1.1.1
 velocity:reports@1.0.0
 velocity:shim@0.1.0
 video-analysis@1.0.0
+vsivsi:job-collection@1.4.0
 webapp@1.3.11_1
 webapp-hashing@1.0.9
 xolvio:backdoor@0.2.0
