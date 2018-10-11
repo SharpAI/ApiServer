@@ -408,6 +408,20 @@ if Meteor.isServer
         type: "notify_known_people"
       }
       toUserId = userId
+    else if type is "device_offline"
+      group_notify = true
+      group_name = if doc.group_name then doc.group_name else "公司"
+      content = group_name+'：您的设备('+userId+')已经离线，请检查'
+      extras = {
+        type: "device_offline"
+      }
+    else if type is "device_online"
+      group_notify = true
+      group_name = if doc.group_name then doc.group_name else "公司"
+      content = group_name+'：您的设备('+userId+')已经上线'
+      extras = {
+        type: "device_online"
+      }
     else
       content = 'SharpAI欢迎您！'
       extras = {
