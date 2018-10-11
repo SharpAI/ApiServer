@@ -12,8 +12,10 @@ if (Meteor.isServer) {
         if(user){
           userGroups = SimpleChat.GroupUsers.findOne({user_id: user._id})
           device = Devices.findOne({"uuid" : uuid})
-          //sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null, ai_person_id)
-          sharpai_pushnotification("device_offline",userGroups,uuid)
+          if(userGroups && device){
+            //sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null, ai_person_id)
+            sharpai_pushnotification("device_offline",userGroups,uuid)
+          }
         }
         //group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
         job.done();
