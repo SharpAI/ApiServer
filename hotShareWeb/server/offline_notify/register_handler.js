@@ -9,7 +9,10 @@ Meteor.startup(function () {
         //user = Meteor.users.findOne({username: uuid)
         userGroups = SimpleChat.GroupUsers.findOne({user_id: info.user._id})
         console.log(userGroups)
-        sharpai_pushnotification("device_online",userGroups,info.user.username)
+        if(userGroups){
+          sharpai_pushnotification("device_online",userGroups,info.user.username)
+        }
+        Devices.update({uuid: info.user.username},{$set:{online:true}})
         cancel_offline_notification(info.user.username);
         info.connection.onClose(function(){
           console.log('Device: '+info.user.username+' --> disconnected')
@@ -17,6 +20,8 @@ Meteor.startup(function () {
             {username:info.user.username},
             {$unset:{"services.resume.loginTokens":[]}
           })
+
+          Devices.update({uuid: info.user.username},{$set:{online:false}})
           create_offline_notification(info.user.username,{})
         })
       }
