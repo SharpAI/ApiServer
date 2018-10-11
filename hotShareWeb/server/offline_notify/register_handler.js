@@ -31,7 +31,7 @@ Meteor.startup(function () {
     Accounts.validateLoginAttempt(function(options) {
 
       if(options.user && options.user.token){
-        if( LockedUsers.find({token: object.user.token}).count() > 0 ) {
+        if( LockedUsers.find({token: options.user.token}).count() > 0 ) {
           throw new Meteor.Error(403, "设备被禁用")
         }
       }
