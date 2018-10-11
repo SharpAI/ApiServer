@@ -6,7 +6,9 @@ Meteor.startup(function () {
       DEBUG_ON && console.log('onLogin:')
       if(info && info.user && info.user.profile && info.user.profile.device){
         console.log('Device: '+info.user.username+' --> login')
-
+        sharpai_pushnotification("device_offline",userGroups,uuid)
+        //user = Meteor.users.findOne({username: uuid)
+        userGroups = SimpleChat.GroupUsers.find({user_id: info.user._id})
         cancel_offline_notification(info.user.username);
         info.connection.onClose(function(){
           console.log('Device: '+info.user.username+' --> disconnected')
@@ -34,18 +36,24 @@ Meteor.startup(function () {
       var real_pwd = CryptoJS.HmacSHA256(username, "sharp_ai98&#").toString()
       var real_pwd_digest = CryptoJS.SHA256(real_pwd).toString()
       if(real_pwd_digest === password){
-        DEBUG_ON && console.log('need create user')
-        var result = Accounts.createUser({
-          username:username,
-          password:{
-            digest: real_pwd_digest,
-            algorithm: 'sha-256'
-          },
-          profile:{
-            device: true
-          }
-        })
-        DEBUG_ON && console.log(result)
+        var userInfo = Meteor.users.findOne({username:username});
+        if(userInfo){
+          Accounts.setPassword(userInfo._id,real_pwd);
+        } else {
+          DEBUG_ON && console.log('need create user')
+          var result = Accounts.createUser({
+            username:username,
+            password:{
+              digest: real_pwd_digest,
+              algorithm: 'sha-256'
+            },
+            profile:{
+              device: true
+            }
+          })
+          console.log(result)
+          DEBUG_ON && console.log(result)
+        }
       }
       return true;
     })
