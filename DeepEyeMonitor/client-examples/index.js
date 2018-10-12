@@ -186,7 +186,7 @@ setInterval(function(){
   status.total_tasks = 0;
   status.face_detected = 0;
   status.face_recognized = 0;
-},60*1000)
+},6*1000)
 
 ws.onmessage = function (event) {
     var result = JSON.parse(event.data)
