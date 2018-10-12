@@ -5,8 +5,10 @@ var CryptoJS = require("crypto-js");
 
 var ddpClient = new DDPClient({
   // All properties optional, defaults shown
-  host : "workaihost.tiegushi.com",
-  port : 80,
+  //host : "workaihost.tiegushi.com",
+  //port : 80,
+  host : "localhost",
+  port : 9000,
   ssl  : false,
   maintainCollections : true,
   ddpVersion : '1'
@@ -163,6 +165,47 @@ function sub_device_info(client_id){
 //var my_client_id ='78c2c095d333';// 'my_device_id'
 var my_client_id ='f681ffe35abf';// 'my_device_id'
 connectToMeteorServer(my_client_id)
+
+
+var ws = new WebSocket('ws://192.168.0.5:5555/api/task/events/task-succeeded/');
+var connected_to_camera = false;
+var camera_monitor_timeout = null;
+var status = {
+    total_tasks:0,
+    face_detected:0,
+    face_recognized:0
+}
+
 setInterval(function(){
-  ddpClient.call('report',[{clientID :my_client_id,test:true}])
-},6*1000)
+  ddpClient.call('report',[{
+      clientID :my_client_id,
+      total_tasks: status.total_tasks,
+      face_detected:status.detected,
+      face_recognized:status.recognized }])
+
+  status.total_tasks = 0;
+  status.face_detected = 0;
+  status.face_recognized = 0;
+},60*1000)
+
+ws.onmessage = function (event) {
+    var result = JSON.parse(event.data)
+    status.total_tasks++;
+    if(result.hostname == "celery@detect"){
+       var detect_result = JSON.parse(result.result.replace(/\'/g,""))
+       if(detect_result.detected == true){
+         status.face_detected++;
+         console.log('face detected')
+       }
+    }
+    if(result.hostname == "celery@embedding"){
+       console.log('extract embedding')
+       var extract_result = JSON.parse(result.result.replace(/\'/g,""))
+       if(extract_result.result.recognized){
+          status.face_recognized++;
+          console.log('face recognized')
+       }else{
+          console.log('face not recognized')
+       }
+    }
+}
