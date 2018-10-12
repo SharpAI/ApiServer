@@ -12,6 +12,9 @@ Template.timeline.helpers({
     }
     return true;
   },
+  deviceSupportOnlineOffline: function(online){
+    return typeof online ==='boolean'
+  },
   lists: function(){
     var lists = [];
     SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach(function(item){

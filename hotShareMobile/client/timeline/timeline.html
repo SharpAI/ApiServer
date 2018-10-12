@@ -20,6 +20,13 @@
         {{#each devices}}
           {{#if uuid}}
           <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
+              {{#if deviceSupportOnlineOffline online}}
+                {{#if online }}
+                  <div class="led-green"></div>
+                {{else}}
+                  <div class="led-red"></div>
+                {{/if}}
+              {{/if}}
               <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
               {{#if name}}
               <label style="margin-left:48px;">{{name}}</label>
