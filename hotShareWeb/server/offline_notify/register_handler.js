@@ -21,7 +21,10 @@ Meteor.startup(function () {
             {$unset:{"services.resume.loginTokens":[]}
           })
 
-          Devices.update({uuid: info.user.username},{$set:{online:false}})
+          Devices.update({uuid: info.user.username},{$set:{
+            online:false,
+            camera_run:false
+          }})
           create_offline_notification(info.user.username,{})
         })
       }
