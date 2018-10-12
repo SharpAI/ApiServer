@@ -760,10 +760,12 @@ if Meteor.isServer
       user = {'_id': device._id, 'username': device.name, 'profile': {'icon': '/device_icon_192.png'}}
       ret_str += 'Device['+uuid+'] in Devices deleted \n'
 
-      #SimpleChat.GroupUsers.remove({group_id:group_id,user_id:user._id});
-      groups = SimpleChat.GroupUsers.find({group_id:group_id,user_name:uuid}).fetch();
-      console.log(groups)
-      ret_str += groups.toString()
+      if device.groupId
+        group_id = device.groupId
+        #SimpleChat.GroupUsers.remove({group_id:group_id,user_id:user._id});
+        groups = SimpleChat.GroupUsers.find({group_id:group_id,user_name:uuid}).fetch();
+        console.log(groups)
+        ret_str += groups.toString()
     user = Meteor.users.findOne({username: uuid})
     if user
       users = Meteor.users.find({username: uuid}).fetch()
