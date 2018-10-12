@@ -19,20 +19,43 @@
         <ul class="set-up comFadeIn">
         {{#each devices}}
           {{#if uuid}}
-          <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
-              {{#if deviceSupportOnlineOffline online}}
-                {{#if online }}
-                  <div class="led-green"></div>
-                {{else}}
-                  <div class="led-red"></div>
-                {{/if}}
-              {{/if}}
-              <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
+          <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0;">
               {{#if name}}
-              <label style="margin-left:48px;">{{name}}</label>
+                <label style="margin-left:8px;">
+                {{name}}
+                </label>
               {{else}}
-              <label style="margin-left:48px;">未知设备</label>
+                <label style="margin-left:8px;">未知设备</label>
+                <iframe style="border: 0px;" src="/camera12.svg" width="30" height="30"></iframe>
               {{/if}}
+              <!-- 显示状态图标 -->
+              <span style="display:inline-block; position: relative;left: 12rem;top: 0.5rem;">
+                {{#if deviceSupportOnlineOffline online}}
+                  {{#if online}}
+                    <span style="display: inline-block;margin-left: 1.2rem;">
+                      <iframe style="border: 0px;" src="/face_box_online.svg" width="24" height="17"></iframe>
+                    </span> 
+                  {{else}}
+                    <span style="display: inline-block;margin-left: 1.2rem;">
+                      <iframe style="border: 0px;" src="/face_box_offline.svg" width="24" height="17"></iframe>
+                    </span>
+                  {{/if}}
+                  {{#if camera_run}}
+                    <span style="display: inline-block;margin-left: 1.2rem;">
+                      <iframe style="border: 0px;" src="/camera_online.svg" width="24" height="21"></iframe>
+                    </span>
+                  {{else}}
+                    <span style="display: inline-block;margin-left: 1.2rem;">
+                      <iframe style="border: 0px;" src="/camera_offline.svg" width="24" height="21"></iframe>
+                    </span>
+                  {{/if}}
+                {{else}}
+                  <span style="display: inline-block;margin-left: 1.2rem;">
+                    <iframe style="border: 0px;" src="/what_offline.svg" width="25" height="25"></iframe>
+                  </span>
+                {{/if}}
+                
+              </span>
               <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
           </li>
           {{/if}}
