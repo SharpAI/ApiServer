@@ -12,18 +12,25 @@ Template.groupInstallTest.onRendered(function(){
     Meteor.subscribe('devices-by-uuid',uuid,function(err){
         if(err){
             console.log(err);
+            return;
+        }
+
+        var st = Session.get('isStarting');
+        if(st && st.label_score){
+            labelScore.set(st.label_score);
+        }
+        if(st && st.roate_score){
+            roateScore.set(st.roate_score);
+        }
+        var dev = Devices.findOne({uuid: uuid});
+        if (!(dev.online && dev.camera_run)) {
+            showPop.set(4);
+        }
+        else if(!st){
+            showPop.set(1);
         }
     });
-    var st = Session.get('isStarting');
-    if(st && st.label_score){
-        labelScore.set(st.label_score);
-    }
-    if(st && st.roate_score){
-        roateScore.set(st.roate_score);
-    }
-    if(!st){
-        showPop.set(1);
-    }
+    
 })
 
 Template.groupInstallTest.helpers({
@@ -34,6 +41,10 @@ Template.groupInstallTest.helpers({
         var btn = '';
         var head = '';
         var showFoot = '';
+        var showClose = '';
+        var deviceImg = '/device_offline.png';
+        var cameraImg = '/camera_offline.png';
+        var dev = Devices.findOne({uuid: Router.current().params.uuid});
         switch(s){
             case 1:
                 content = '请在点击开始后，按照摄像头部署方向以正常速度来回走过，检查你的摄像头安装角度和识别率';
@@ -49,6 +60,18 @@ Template.groupInstallTest.helpers({
                 content = '<p>1.按照摄像头说明安装好</p><p>2.盒子启动-能正常扫到盒子</p><p>3.摄像头配置-调整摄像头参数及shinobi导入</p>';
                 btn = "确定";
                 break;
+            case 4:
+                head = '设备状态';
+                if (dev.online)
+                    deviceImg = '/device_online.png';
+                if (dev.camera_run)
+                    cameraImg = '/camera_online.png';
+                content = '<div><div style="margin: 10px 20px;">脸脸盒：<img src="' + deviceImg
+                 + '"></div><div style="margin: 10px 20px;">摄像头：<img src="' + cameraImg
+                 + '"></div><p style="margin: 10px 20px; color: red; text-align: center;">您的设备未接通，请检查设备连接后再次进行部署评测</p></div>';
+                btn = "放弃";
+                showClose = 'display: none;';
+                break;
 
         }
         return {
@@ -56,7 +79,8 @@ Template.groupInstallTest.helpers({
             content:content,
             btn:btn,
             head:head,
-            showFoot:showFoot
+            showFoot:showFoot,
+            showClose:showClose
         }
     },
 })
@@ -81,6 +105,17 @@ Template.groupInstallTest.events({
     'click #operate':function(e){
         e.stopPropagation();
         var t = showPop.get();
+        if (t == 4) {
+            showPop.set(0);
+            setTimeout(function() {
+                labelScore.set('---');
+                roateScore.set('---');
+                Meteor.clearTimeout(timer);
+                timer = null;
+                Session.set('isStarting',null);
+                return PUB.back();
+            }, 50);
+        }
         if(t == 1){
             var group_id = Router.current().params._id;
             Session.set('isStarting',{
