@@ -751,20 +751,44 @@ if Meteor.isServer
     else
       this.response.end('{"result": "ok", "reason": "params must be an Array"}\n')
   )
+  Router.route('/restapi/list_device', {where: 'server'}).get(()->
+    uuid = this.params.query.uuid
+    console.log(groups)
+    device = Devices.findOne({"uuid" : uuid})
+    ret_str = ''
+    if device
+      user = {'_id': device._id, 'username': device.name, 'profile': {'icon': '/device_icon_192.png'}}
+      ret_str += 'Device['+uuid+'] in Devices deleted \n'
+
+      #SimpleChat.GroupUsers.remove({group_id:group_id,user_id:user._id});
+      groups = SimpleChat.GroupUsers.find({group_id:group_id,user_name:uuid}).fetch();
+      console.log(groups)
+      ret_str += groups.toString()
+    user = Meteor.users.findOne({username: uuid})
+    if user
+      users = Meteor.users.find({username: uuid}).fetch()
+      console.log(users)
+      ret_str += users.toString()
+    if ret_str is ''
+      return this.response.end('nothing in db')
+    this.response.end(ret_str)
+      #userGroup = SimpleChat.GroupUsers.findOne({user_id: user._id, group_id: group_id})
+      #unless userGroup or userGroup.group_id
+      #  return this.response.end('{"result": "failed", "cause": "group not found"}\n')
+  )
   Router.route('/restapi/clean_device', {where: 'server'}).get(()->
     uuid = this.params.query.uuid
     device = Devices.findOne({"uuid" : uuid})
     ret_str = ''
-    if device and device.groupId
-      user = {'_id': device._id, 'username': device.name, 'profile': {'icon': '/device_icon_192.png'}}
-      Devices.remove({"uuid" : uuid})
+    if device
+      Devices.remove({uuid : uuid})
       Devices.remove({_id:device._id});
       ret_str += 'Device['+uuid+'] in Devices deleted \n'
-
-      userGroup = SimpleChat.GroupUsers.findOne({group_id: device.groupId})
-      if userGroup and userGroup.group_id
-        SimpleChat.GroupUsers.remove({group_id:userGroup.group_id,user_id:user._id});
-        ret_str += 'userGroup [' + userGroup.group_id +'] in SimpleChat.GroupUsers deleted \n'
+      if device.groupId
+        group_id = device.groupId
+        #SimpleChat.GroupUsers.remove({group_id:group_id,user_id:user._id});
+        SimpleChat.GroupUsers.remove({group_id:group_id,user_name:uuid});
+        ret_str += 'Device in userGroup in SimpleChat.GroupUsers deleted \n'
     user = Meteor.users.findOne({username: uuid})
     if user
       Meteor.users.remove({username: uuid})
