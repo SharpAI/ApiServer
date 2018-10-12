@@ -1068,7 +1068,7 @@ if Meteor.isServer
       userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'},is_device:true})
       user = Meteor.users.findOne({_id: userId})
     else
-      Meteor.users.update({_id:user._id},{$set:{'profile.fullname':device.name}});
+      Meteor.users.update({_id:user._id},{$set:{'profile.fullname':device.name, 'profile.icon':'/device_icon_192.png', is_device:true }});
 
     group = SimpleChat.Groups.findOne({_id: group_id})
 
