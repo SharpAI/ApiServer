@@ -43,7 +43,7 @@ Template.scannerAddDevice.events({
    * add device
    * 1. select or create a group
    * 2. add device to group
-   */ 
+   */
   'click .scanListItem': function(e) {
     var self = this;
     console.log("self = "+JSON.stringify(self));
@@ -51,7 +51,7 @@ Template.scannerAddDevice.events({
       var lists = scanLists.get();
       var ids = scanIds.get();
 
-      var uuid = (self.txtRecord && self.txtRecord.uuid) ? self.txtRecord.uuid:''; 
+      var uuid = (self.txtRecord && self.txtRecord.uuid) ? self.txtRecord.uuid:'';
       var index = ids.indexOf(uuid);
       if(index > -1){
         ids.splice(index,1);
@@ -86,7 +86,7 @@ Template.scannerAddDevice.onRendered(function() {
       Meteor.call('upsetDeepVideoDevices', result);
 
       if( action == 'added' ) {
-        console.log('service added', JSON.stringify(service)); 
+        console.log('service added', JSON.stringify(service));
         if(index < 0 && service && service.name && service.ipv4Addresses && service.ipv4Addresses.length > 0){
           // check is device in db
           console.log("service.ipv4Addresses="+service.ipv4Addresses);

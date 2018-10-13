@@ -160,6 +160,10 @@ Template.selectCreateGroup.events({
         user_icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
         create_time: new Date()
       });
+      if(d.get_group_only){
+        cb && cb(id, name)
+        return
+      }
       if(d.groupId) { // 如果有group_id, 设备更换新的群组
         return changeDeviceGroup(id, name);
       }
@@ -167,6 +171,10 @@ Template.selectCreateGroup.events({
     });
   },
   'click .selectGroup': function (e) {
+    if(d.get_group_only){
+      cb && cb(this.group_id,this.group_name)
+      return
+    }
     if(d.groupId) { // 如果有group_id, 设备更换新的群组
         return changeDeviceGroup(this.group_id,this.group_name);
       }
