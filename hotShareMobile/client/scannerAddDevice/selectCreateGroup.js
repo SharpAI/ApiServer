@@ -60,8 +60,8 @@ var addDeviceToGroup = function(group_id, group_name) {
 
         Meteor.call('join-group',uuid, group_id, uuid, "in",function(err,result){
           console.log('meteor call result:',result)
-          var msgBody = {_id: new Mongo.ObjectID()._str, group_id: group_id, uuid: uuid, type: 'text', text: 'groupchanged'};
-          sendMqttMessage('/msg/d/'+uuid, msgBody);
+          //var msgBody = {_id: new Mongo.ObjectID()._str, group_id: group_id, uuid: uuid, type: 'text', text: 'groupchanged'};
+          //sendMqttMessage('/msg/d/'+uuid, msgBody);
         });
         SELECT_CREATE_GROUP.close();
         //return PUB.toast('添加设备成功');
@@ -92,8 +92,8 @@ var changeDeviceGroup = function(group_id,group_name){
 
     Meteor.call('join-group',uuid, group_id, uuid, "in",function(err,result){
       console.log('meteor call result:',result)
-      var msgBody = {_id: new Mongo.ObjectID()._str, group_id:group_id , uuid: uuid, type: 'text', text: 'groupchanged'};
-      sendMqttMessage('/msg/d/'+uuid, msgBody);
+      //var msgBody = {_id: new Mongo.ObjectID()._str, group_id:group_id , uuid: uuid, type: 'text', text: 'groupchanged'};
+      //sendMqttMessage('/msg/d/'+uuid, msgBody);
     });
     //$.post("http://workaihost.tiegushi.com/restapi/workai-join-group", {uuid: uuid, group_id: group_id, name: uuid, in_out: "in"}, function(data) {
     //  var msgBody = {_id: new Mongo.ObjectID()._str, uuid: uuid, type: 'text', text: 'groupchanged'};
