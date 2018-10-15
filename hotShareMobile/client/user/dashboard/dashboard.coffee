@@ -110,16 +110,6 @@ if Meteor.isClient
         Session.set("searchContent","")
         PostsSearch.cleanHistory()
         Session.setPersistent('persistentLoginStatus',false)
-        Session.setPersistent('persistentFeedsForMe',null)
-        Session.setPersistent('persistentMyFollowedPosts',null)
-        Session.setPersistent('myFollowedByCount',0)
-        Session.setPersistent('mySavedDraftsCount',0)
-        Session.setPersistent('myPostsCount',0)
-        Session.setPersistent('myFollowToCount',0)
-        Session.setPersistent('persistentProfileIcon',null)
-        Session.setPersistent('persistentProfileName',null)
-        Session.setPersistent('persistentMySavedDrafts',null)
-        Session.setPersistent('persistentMyOwnPosts',null)
         #console.log msg
         Meteor.call('updatePushToken' ,{type: thisUser.type, token: thisUser.token,userId:''});
         window.plugins.userinfo.setUserInfo '', ->
@@ -128,7 +118,7 @@ if Meteor.isClient
           , ->
             console.log 'setUserInfo was Error!'
             return
-        Router.go '/loginForm'
+      Router.go '/loginForm'
   Template.my_email.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     return
