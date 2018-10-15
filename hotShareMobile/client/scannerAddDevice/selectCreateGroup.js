@@ -53,13 +53,19 @@ var addDeviceToGroup = function(group_id, group_name) {
           return PUB.toast('添加设备失败~');
         }
         cb && cb();
-        $.post("http://workaihost.tiegushi.com/restapi/workai-join-group", {uuid: uuid, group_id: group_id, name: uuid, in_out: "in"}, function(data) {
+        //$.post("http://workaihost.tiegushi.com/restapi/workai-join-group", {uuid: uuid, group_id: group_id, name: uuid, in_out: "in"}, function(data) {
+        //  var msgBody = {_id: new Mongo.ObjectID()._str, uuid: uuid, type: 'text', text: 'groupchanged'};
+        //  sendMqttMessage('/msg/d/'+uuid, msgBody);
+        //});
+
+        Meteor.call('join-group',uuid, group_id, uuid, "in",function(err,result){
+          console.log('meteor call result:',result)
           var msgBody = {_id: new Mongo.ObjectID()._str, uuid: uuid, type: 'text', text: 'groupchanged'};
           sendMqttMessage('/msg/d/'+uuid, msgBody);
         });
         SELECT_CREATE_GROUP.close();
         //return PUB.toast('添加设备成功');
-        $('#addDeviceResultText').html('添加设备成功');
+        $('#addDeviceResultText').html('添加设备成功,请重启动设备');
         $('#addDeviceResult').modal('show');
       });
     }
@@ -83,13 +89,19 @@ var changeDeviceGroup = function(group_id,group_name){
       return PUB.toast('请重试~');
     }
     cb && cb();
-    $.post("http://workaihost.tiegushi.com/restapi/workai-join-group", {uuid: uuid, group_id: group_id, name: uuid, in_out: "in"}, function(data) {
+
+    Meteor.call('join-group',uuid, group_id, uuid, "in",function(err,result){
+      console.log('meteor call result:',result)
       var msgBody = {_id: new Mongo.ObjectID()._str, uuid: uuid, type: 'text', text: 'groupchanged'};
       sendMqttMessage('/msg/d/'+uuid, msgBody);
     });
+    //$.post("http://workaihost.tiegushi.com/restapi/workai-join-group", {uuid: uuid, group_id: group_id, name: uuid, in_out: "in"}, function(data) {
+    //  var msgBody = {_id: new Mongo.ObjectID()._str, uuid: uuid, type: 'text', text: 'groupchanged'};
+    //  sendMqttMessage('/msg/d/'+uuid, msgBody);
+    //});
     SELECT_CREATE_GROUP.close();
     //return PUB.toast('群组已更改');
-    $('#addDeviceResultText').html('设备添加成功！');
+    $('#addDeviceResultText').html('添加设备成功,请重启动设备');
     $('#addDeviceResult').modal('show');
   })
 }

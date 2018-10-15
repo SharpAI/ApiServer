@@ -123,7 +123,7 @@ if (Meteor.isCordova) {
         document.addEventListener("pause", eventPause, false);//挂起
         document.addEventListener("resume", eventResume, false);
 
-        checkNewVersion2();
+        //checkNewVersion2();
 
         TAPi18n.precacheBundle = true;
         // if(isUSVersion){
@@ -238,7 +238,7 @@ if (Meteor.isCordova) {
         }
         if (Meteor.status().connected !== true)
           Meteor.reconnect();
-        checkNewVersion2();
+        //checkNewVersion2();
         if (Meteor.user()) {
             console.log('Refresh Main Data Source when resume');
             if (Meteor.isCordova) {
