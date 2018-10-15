@@ -533,10 +533,11 @@ Template.boxMonitorsAlive.helpers({
       return Session.get('boxMonitorPage');
     },
     isBoxConfiging: function(clientID){
-      if(this.boxCfgServer){
-        return this.boxCfgServer.status == 'waiting';
-      } else{
+      var res = peerCollection.findOne({clientID: clientID});
+      if(res.boxCfgServer.status == 'waiting'){
         return false;
+      } else{
+        return true;
       }
     },
     notAllowConfigBox: function(){
@@ -631,8 +632,8 @@ Template.boxMonitorsAlive.events({
   },
   'click #saveBoxConfig': function(e,t){
     var enable = $("input[name=boxEnable]:checked").val();
-    var download_limit = $("#download-speed").find("option:selected").val();
-    var upload_limit = $("#upload-speed").find("option:selected").val();
+    // var download_limit = $("#download-speed").find("option:selected").val();
+    // var upload_limit = $("#upload-speed").find("option:selected").val();
     if(enable === 'true'){
       enable = true;
     } else {
@@ -641,10 +642,16 @@ Template.boxMonitorsAlive.events({
     Meteor.call('setBoxConfig',{
       clientID: Session.get('monitorBoxId'),
       isEnable: enable,
-      upload_limit: upload_limit,
-      download_limit: download_limit,
+      // upload_limit: upload_limit,
+      // download_limit: download_limit,
       status: 'waiting'
     });
     $("#boxConfigModal").modal('hide');
   }
+  // ,
+  // 'click .update-config, click .check-out': function (e) {
+  //   var doc = peerCollection.findOne({clientID: e.currentTarget.id}) || inactiveClientCollection.findOne({clientID: e.currentTarget.id});
+  //   // Session.set('monitorBoxComment', doc.comment);
+  //   // Session.set('currentConfigBoxInfo',doc.boxCfgServer);
+  // }
 });

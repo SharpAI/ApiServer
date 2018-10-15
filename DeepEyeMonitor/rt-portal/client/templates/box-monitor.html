@@ -30,12 +30,13 @@
             <!-- <th>Disk Free Size</th> -->
             <!-- <th>Disk Total Size</th> -->
             <!-- <th>Connect ID</th> -->
-            <th>Box Config</th>
-            <th>ViewChart</th>
+            <!-- <th>Box Config</th>
+            <th>ViewChart</th> -->
             <!-- <th>remote connection</th> -->
             <th>total tasks</th>
             <th>face detected</th>
             <th>face recognized</th>
+            <th>update config</th>
           </tr>
         </thead>
         <tbody>
@@ -45,9 +46,9 @@
           <td>
             <button  id="{{clientID}}"  type="button" class="btn btn-xs box-config" data-toggle="modal" data-target="#boxConfigModal">
               {{#if isBoxConfiging clientID}}
-               Configing...
+               done
                {{else}}
-               Config
+               Configing...
                {{/if}}
             </button>
           </td>
@@ -73,7 +74,7 @@
           <td>{{bytesToSize disk_info.free}}</td>
           <td>{{bytesToSize disk_info.total}}</td>
           <td>{{connectID}}</td> -->
-          <td>
+          <!-- <td>
           <button  id="{{clientID}}"  type="button" class="btn btn-xs box-config" data-toggle="modal" data-target="#boxConfigModal">
               {{#if isBoxConfiging clientID}}
                Configing..
@@ -82,11 +83,12 @@
                {{/if}}
             </button>
           </td>
-          <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td>
+          <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td> -->
           <!-- <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td> -->
           <td>{{total_tasks}}</td>
           <td>{{face_detected}}</td>
           <td>{{face_recognized}}</td>
+          <td></td>
         </tr>
       {{/each}}
     </tbody>
@@ -167,12 +169,12 @@
           <h3 class="modal-title" id="myModalLabel">Box Config</h3>
           <h5 class="modal-title">{{currBoxNameing}}</h5>
         </div>
-        {{#if notAllowConfigBox}}
-        <div class="modal-body">
+        <!-- {{#if notAllowConfigBox}} -->
+        <!-- <div class="modal-body">
           <form class="form-horizontal" role="form">
             <fieldset disabled>
             <div class="form-group">
-              <label for="inputEmail3" class="col-sm-4 control-label">Enable RAIDCDN </label>
+              <label for="inputEmail3" class="col-sm-4 control-label">自动更新Docker</label>
               <div class="col-sm-6 text-left">
                 {{#if isboxConfigOEnable}}
                   <label class="radio-inline">
@@ -216,31 +218,31 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" disabled="disabled">Configing...</button>
         </div>
-        {{else}}
+        {{else}} -->
         <div class="modal-body">
           <form class="form-horizontal" id="boxConfigFrom" role="form">
           <fieldset>
               <div class="form-group">
-                <label for="inputEmail3" class="col-sm-4 control-label">Enable RAIDCDN</label>
+                <label for="inputEmail3" class="col-sm-4 control-label">自动更新Docker</label>
                 <div class="col-sm-6 text-left">
-                  {{#if isboxConfigOEnable}}
+                  <!-- {{#if isboxConfigOEnable}}
                   <label class="radio-inline">
                     <input type="radio" name="boxEnable"  value="true" checked> Enable
                   </label>
                   <label class="radio-inline">
                     <input type="radio" name="boxEnable" value="false" > Disable
                   </label>
-                  {{else}}
+                  {{else}} -->
                   <label class="radio-inline">
                     <input type="radio" name="boxEnable"  value="true" > Enable
                   </label>
                   <label class="radio-inline">
                     <input type="radio" name="boxEnable" value="false" checked> Disable
                   </label>
-                  {{/if}}
+                  <!-- {{/if}} -->
                 </div>
               </div>
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="inputEmail3" class="col-sm-4 control-label">Upload Limit</label>
                 <div class="col-sm-6">
                   <select class="form-control" id="upload-speed">
@@ -257,7 +259,7 @@
                     {{{CurrDownConfig}}}
                   </select>
                 </div>
-              </div>
+              </div> -->
               </fieldset>
             </form>
           </div>
@@ -265,7 +267,7 @@
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             <button type="button" id="saveBoxConfig" class="btn btn-primary">Save Changes</button>
           </div>
-        {{/if}}
+        <!-- {{/if}} -->
       </div>
     </div>
   </div>

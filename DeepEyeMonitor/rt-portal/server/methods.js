@@ -704,6 +704,9 @@ Meteor.methods({
   setBoxConfig: function(json){
     var doc = peerCollection.findOne({clientID: json.clientID});
     var docId = ""
+    var date = new Date();
+    console.log(json);
+    
     if(doc){
       var docId = doc._id;
     }
@@ -712,13 +715,20 @@ Meteor.methods({
     },{
       $set: {
         'boxCfgServer.isEnable': json.isEnable,
-        'boxCfgServer.upload_limit': json.upload_limit,
-        'boxCfgServer.download_limit':json.download_limit,
+        // 'boxCfgServer.upload_limit': json.upload_limit,
+        // 'boxCfgServer.download_limit':json.download_limit,
         'boxCfgServer.status': 'waiting',
         'boxCfgServer.updatedAt': new Date()
       }
     });
-    return pusblishBoxSyncConfig(json);
+    Commands.insert({
+      client_id: json.clientID,
+      command: 'config',
+      updateBy: date,
+      done: false,
+      config: json
+    });
+    // return pusblishBoxSyncConfig(json);
   }
 
 });
