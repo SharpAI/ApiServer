@@ -32,11 +32,11 @@ window.QRCodeAddDevice = function() {
           }
           console.log("self = "+JSON.stringify(self));
           return window.SELECT_CREATE_GROUP.show(self, function(group_id, group_name) {
-            var msgBody = {_id: new Mongo.ObjectID()._str, uuid: result.text, type: 'text', text: 'groupchanged'};
-            sendMqttMessage('/msg/d/'+result.text, msgBody);
+            var msgBody = {_id: new Mongo.ObjectID()._str,group_id:group_id, uuid: result.text, type: 'text', text: 'groupchanged'};
             Meteor.call('join-group',result.text,group_id,result.text,"in",function(err,result){
               console.log('meteor call result:',result)
-              PUB.toast('您的设备已经切换到：'+group_name+'\n请重启动设备')
+              PUB.toast('您的设备已经切换到：'+group_name)
+              sendMqttMessage('/msg/d/'+result.text, msgBody);
             });
             //$.post("http://workaihost.tiegushi.com/restapi/workai-join-group", {uuid: result.text, group_id: group_id, name: result.text, in_out: "in"}, function(data) {
             //  var msgBody = {_id: new Mongo.ObjectID()._str, uuid: result.text, type: 'text', text: 'groupchanged'};
