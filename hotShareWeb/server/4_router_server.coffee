@@ -1142,6 +1142,12 @@ if Meteor.isServer
         return console.log('register devices to AI-system succ');
     console.log('user:', user)
     console.log('device:', device)
+  Meteor.methods {
+    "join-group":(uuid,group_id,name,in_out)->
+      console.log("uuid = "+uuid+" group id= "+group_id+" name= "+name+" inout = "+in_out)
+      device_join_group(uuid,group_id,name,in_out)
+      return "ok"
+  }
 
   Router.route('/restapi/workai-join-group', {where: 'server'}).get(()->
       uuid = this.params.query.uuid
