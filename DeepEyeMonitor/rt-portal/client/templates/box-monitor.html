@@ -16,33 +16,27 @@
         {{#if isAliveBoxMonitorTab}}
         <thead>
           <tr>
-            <th>ViewChart</th>
+            <!-- <th>ViewChart</th> -->
             <th>Box Config</th>
             <th>Client ID</th>
-            <!-- <th>Mac Address</th> -->
             <th>Comment</th>
-            <!-- <th>Public IP</th> -->
-            <!-- <th>Address</th> -->
-            <!-- <th>Version</th> -->
-            <!-- <th>Heart Beats</th> -->
-            <!-- <th>CPU Load</th> -->
-            <!-- <th>Memory</th> -->
-            <!-- <th>Disk Free Size</th> -->
-            <!-- <th>Disk Total Size</th> -->
-            <!-- <th>Connect ID</th> -->
-            <!-- <th>Box Config</th>
-            <th>ViewChart</th> -->
-            <!-- <th>remote connection</th> -->
+            <th>CPU使用</th>
+            <th>内存剩余</th>
+            <th>内存总数</th>
+            <th>内存使用</th>
+            <th>CPU温度</th>
+            <th>GPU温度</th>
+            <th>版本</th>
+            <th>自动更新</th>
             <th>total tasks</th>
             <th>face detected</th>
             <th>face recognized</th>
-            <th>update config</th>
           </tr>
         </thead>
         <tbody>
       {{#each peersInfo}}
         <tr id="{{id}}" style="text-align: left;">
-          <td><button  id="{{clientID}}"  type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td>
+          <!-- <td><button  id="{{clientID}}"  type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td> -->
           <td>
             <button  id="{{clientID}}"  type="button" class="btn btn-xs box-config" data-toggle="modal" data-target="#boxConfigModal">
               {{#if isBoxConfiging clientID}}
@@ -53,42 +47,56 @@
             </button>
           </td>
           <td>{{clientID}}</td>
-          <!-- <td>{{clientMAC}}</td> -->
           <td class="editable-text-trigger">
             {{> editableText collection="peer" field="comment" wysiwyg=true acceptEmpty=true substitute='<i class="fa fa-pencil"></i>' class="post-body" inputClass="post-body-wysiwyg"}}
           </td>
-          <!-- <td>{{externalIp}}</td>
-          <td>{{getAddressFromIP externalIp}}</td>
-          <td>{{global_info.version}}</td>
-          <td>{{global_info.heart_beats}}</td>
-          {{#if global_info.cpu}}
-            <td>{{ceil global_info.cpu}}%</td>
+          {{#if os}}
+          <td>{{ osInfoPercent os.cpu }}</td>
+          <td>{{ bytesToSize os.mem.free }}</td>
+          <td>{{ bytesToSize os.mem.total }}</td>
+          <td>{{ osInfoPercent os.mem.usage }}</td>
+          <td>{{ osInfoBlank os.temp.cpu }}</td>
+          <td>{{ osInfoBlank os.temp.gpu }}</td>
           {{else}}
-            <td></td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
           {{/if}}
-          {{#if global_info.memory}}
-              <td>{{bytesToSize global_info.memory}}</td>
+          {{#if version}}
+          <td>{{version.v1}}_{{version.v2}}</td>
           {{else}}
-            <td></td>
+          <td>-</td>
           {{/if}}
-          <td>{{bytesToSize disk_info.free}}</td>
-          <td>{{bytesToSize disk_info.total}}</td>
-          <td>{{connectID}}</td> -->
-          <!-- <td>
-          <button  id="{{clientID}}"  type="button" class="btn btn-xs box-config" data-toggle="modal" data-target="#boxConfigModal">
-              {{#if isBoxConfiging clientID}}
-               Configing..
-               {{else}}
-               Config
-               {{/if}}
-            </button>
+
+          {{#if cfg}}
+          <td>{{ cfgInfo cfg.autoupdate }}</td>
+          {{else}}
+          <td>-</td>
+          {{/if}}
+          <td>
+            {{#if total_tasks}}
+            {{total_tasks}}
+            {{else}}
+            0
+            {{/if}}
           </td>
-          <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td> -->
-          <!-- <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td> -->
-          <td>{{total_tasks}}</td>
-          <td>{{face_detected}}</td>
-          <td>{{face_recognized}}</td>
-          <td></td>
+          <td>
+            {{#if face_detected}}
+            {{total_tasks}}
+            {{else}}
+            0
+            {{/if}}
+          </td>
+          <td>
+            {{#if face_recognized}}
+            {{total_tasks}}
+            {{else}}
+            0
+            {{/if}}
+          </td>
         </tr>
       {{/each}}
     </tbody>
@@ -169,56 +177,6 @@
           <h3 class="modal-title" id="myModalLabel">Box Config</h3>
           <h5 class="modal-title">{{currBoxNameing}}</h5>
         </div>
-        <!-- {{#if notAllowConfigBox}} -->
-        <!-- <div class="modal-body">
-          <form class="form-horizontal" role="form">
-            <fieldset disabled>
-            <div class="form-group">
-              <label for="inputEmail3" class="col-sm-4 control-label">自动更新Docker</label>
-              <div class="col-sm-6 text-left">
-                {{#if isboxConfigOEnable}}
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable"  value="true" checked> Enable
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable" value="false" > Disable
-                  </label>
-                  {{else}}
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable"  value="true" > Enable
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable" value="false" checked> Disable
-                  </label>
-                  {{/if}}
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="inputEmail3" class="col-sm-4 control-label">Upload Limit</label>
-              <div class="col-sm-6 text-left">
-                <select class="form-control" id="upload-speed">
-                  <option value="-1" selected>不限速</option>
-                  {{{CurrUpConfig}}}
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="inputEmail3" class="col-sm-4 control-label">Download Limit</label>
-              <div class="col-sm-6 text-left">
-                <select class="form-control" id="upload-speed">
-                  <option value="-1" selected>不限速</option>
-                  {{{CurrDownConfig}}}
-                </select>
-              </div>
-            </div>
-            </fieldset>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" disabled="disabled">Configing...</button>
-        </div>
-        {{else}} -->
         <div class="modal-body">
           <form class="form-horizontal" id="boxConfigFrom" role="form">
           <fieldset>
@@ -242,24 +200,6 @@
                   <!-- {{/if}} -->
                 </div>
               </div>
-              <!-- <div class="form-group">
-                <label for="inputEmail3" class="col-sm-4 control-label">Upload Limit</label>
-                <div class="col-sm-6">
-                  <select class="form-control" id="upload-speed">
-                    <option value="-1" selected>不限速</option>
-                    {{{CurrUpConfig}}}
-                  </select>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-4 control-label">Download Limit</label>
-                <div class="col-sm-6">
-                  <select class="form-control" id="download-speed">
-                    <option value="-1" selected>不限速</option>
-                    {{{CurrDownConfig}}}
-                  </select>
-                </div>
-              </div> -->
               </fieldset>
             </form>
           </div>

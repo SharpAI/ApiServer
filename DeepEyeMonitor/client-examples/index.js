@@ -1,20 +1,33 @@
+var fs = require('fs');
+var os = require('os');
 var DDPClient = require("ddp");
 WebSocket = require('ws');
 var login = require('ddp-login');
 var CryptoJS = require("crypto-js");
-var os = require("os");
-var fs = require("fs");
+var flowerws = process.env.FLOWER_WS || 'ws://flower:5555/api/task/events/task-succeeded/';
 
 var ddpClient = new DDPClient({
   // All properties optional, defaults shown
-  //host : "workaihost.tiegushi.com",
-  //port : 80,
-  host : "localhost",
-  port : 9000,
+  host : process.env.HOST_ADDRESS || "192.168.0.7",
+  port : process.env.HOST_PORT || 3000,
   ssl  : false,
   maintainCollections : true,
   ddpVersion : '1'
 });
+
+var DEVICE_UUID_FILE = process.env.UUID_FILE || '/dev/ro_serialno'
+var DEVICE_GROUP_ID = process.env.GROUP_ID || '/data/usr/com.deep.workai/cache/groupid.txt'
+var VERSION_FILE = process.env.VERSION_FILE || '../version'
+var AUTO_UPDATE_FILE = process.env.AUTO_UPDATE_FILE || '../workaipython/wtconf/enableWT'
+
+function get_device_uuid(cb){
+  fs.readFile(DEVICE_UUID_FILE, function (err,data) {
+    if (err) {
+      return cb && cb('no_uuid')
+    }
+    return cb && cb(data.toString().replace(/(\r\n\t|\n|\r\t)/gm,""))
+  });
+}
 
 var connectedToServer = false;
 function login_with_device_id(device_id, callback){
@@ -79,49 +92,74 @@ function connectToMeteorServer(device_id){
   })
 }
 
-function processing_command(id){
-  console.log('command is: '+ddpClient.collections.commands[id])
-  setTimeout(function(){
+function processing_command_config(config, cb) {
+    if(!config)
+        return cb && cb("invalied args");
+
+    var autoUpdate = config.autoUpdate;
+    var update_enabled = fs.existsSync(AUTO_UPDATE_FILE);
+    /*going to enable update*/
+    if(autoUpdate == true) {
+        fs.writeFile(AUTO_UPDATE_FILE, "enable", function(err) {
+            if(err) {
+                return cb && cb("fs.writeFile failed");
+            }
+            else {
+                return cb && cb ();
+            }
+        });
+    }
+    /*going to disable update*/
+    else {
+        if(!update_enabled) {
+            return cb && cb ();
+        }
+        fs.unlink(AUTO_UPDATE_FILE, function(err){
+            if(err){
+                return cb && cb(err)
+            }
+            else {
+                return cb && cb ();
+            }
+        })
+    }
+}
+
+function processing_command_done(id, client_id) {
     console.log('command done')
-    ddpClient.call('cmd_done',[id,'result'])
-  },1000)
+    ddpClient.call('cmd_done',[id, {"client_id": client_id, "command_id": id}])
 }
 
-function sub_command_list(client_id){
-      /*
-     * Observe a collection.
-     */
-    var observer = ddpClient.observe("commands");
-    observer.added = function(id) {
-      console.log("[ADDED] to " + observer.name + ":  " + id);
-      console.log(ddpClient.collections.commands);
-      processing_command(id)
-    };
-    observer.changed = function(id, oldFields, clearedFields, newFields) {
-      console.log("[CHANGED] in " + observer.name + ":  " + id);
-      console.log("[CHANGED] old field values: ", oldFields);
-      console.log("[CHANGED] cleared fields: ", clearedFields);
-      console.log("[CHANGED] new fields: ", newFields);
-    };
-    observer.removed = function(id, oldValue) {
-      console.log("[REMOVED] in " + observer.name + ":  " + id);
-      console.log("[REMOVED] previous value: ", oldValue);
-    };
+function processing_command(id){
+  var command_contex = ddpClient.collections.commands[id];
+  var clientid = command_contex.client_id;
+  var cmd = command_contex.command;
 
-    /*
-     * Subscribe to a Meteor Collection
-     */
-    ddpClient.subscribe(
-      'commands',                  // name of Meteor Publish function to subscribe to
-      [client_id],                       // any parameters used by the Publish function
-      function () {             // callback when the subscription is complete
-        console.log('commands complete:');
-        console.log(ddpClient.collections.commands);
+  if(cmd && cmd == "config") {
+      console.log("sync config to local")
+      if(command_contex.config) {
+          processing_command_config(command_contex.config, function(err) {
+              processing_command_done(id, clientid);
+          })
       }
-    );
+      else {
+          processing_command_done(id, clientid);
+      }
+  } else {
+      processing_command_done(id, clientid);
+  }
 }
+
 function handle_group_id(group_id){
   console.log('yes, my group id is ['+ group_id +'] for now')
+
+  fs.writeFile(DEVICE_GROUP_ID, group_id, function(err) {
+      if(err) {
+          return console.log(err);
+      }
+
+      console.log("The file was saved!");
+  });
 }
 function sub_device_info(client_id){
       /*
@@ -164,19 +202,38 @@ function sub_device_info(client_id){
         }
       );
 }
-//var my_client_id ='78c2c095d333';// 'my_device_id'
-var my_client_id ='f681ffe35abf';// 'my_device_id'
-connectToMeteorServer(my_client_id)
+function sub_command_list(client_id){
+      /*
+     * Observe a collection.
+     */
+    var observer = ddpClient.observe("commands");
+    observer.added = function(id) {
+      console.log("[ADDED] to " + observer.name + ":  " + id);
+      console.log(ddpClient.collections.commands);
+      processing_command(id)
+    };
+    observer.changed = function(id, oldFields, clearedFields, newFields) {
+      console.log("[CHANGED] in " + observer.name + ":  " + id);
+      console.log("[CHANGED] old field values: ", oldFields);
+      console.log("[CHANGED] cleared fields: ", clearedFields);
+      console.log("[CHANGED] new fields: ", newFields);
+    };
+    observer.removed = function(id, oldValue) {
+      console.log("[REMOVED] in " + observer.name + ":  " + id);
+      console.log("[REMOVED] previous value: ", oldValue);
+    };
 
-
-var ws = new WebSocket('ws://192.168.0.5:5555/api/task/events/task-succeeded/');
-var connected_to_camera = false;
-var camera_monitor_timeout = null;
-var status = {
-    total_tasks:0,
-    face_detected:0,
-    face_recognized:0,
-    os: {}
+    /*
+     * Subscribe to a Meteor Collection
+     */
+    ddpClient.subscribe(
+      'commands',                  // name of Meteor Publish function to subscribe to
+      [client_id],                       // any parameters used by the Publish function
+      function () {             // callback when the subscription is complete
+        console.log('commands complete:');
+        console.log(ddpClient.collections.commands);
+      }
+    );
 }
 
 function cpu_mem_uptime_temp(cb) {
@@ -232,41 +289,89 @@ function cpu_mem_uptime_temp(cb) {
     return cb && cb({'cpu': cpu_average, 'mem': mem, 'uptime': uptime, 'temp': temp})
 }
 
-setInterval(function(){
-  cpu_mem_uptime_temp(function(os_info) {
-      status.os = os_info;
-  })
-
-  ddpClient.call('report',[{
-      clientID :my_client_id,
-      total_tasks: status.total_tasks,
-      face_detected: status.face_detected,
-      face_recognized: status.face_recognized,
-      os: status.os }])
-
-  status.total_tasks = 0;
-  status.face_detected = 0;
-  status.face_recognized = 0;
-},6*1000)
-
-ws.onmessage = function (event) {
-    var result = JSON.parse(event.data)
-    status.total_tasks++;
-    if(result.hostname == "celery@detect"){
-       var detect_result = JSON.parse(result.result.replace(/\'/g,""))
-       if(detect_result.detected == true){
-         status.face_detected++;
-         console.log('face detected')
-       }
+function get_curent_version(cb) {
+    var all_version = {'v1': 'unknown', 'v2': 'unknown'};
+    var exists = fs.existsSync(VERSION_FILE);
+    if(exists) {
+        var version_val = fs.readFileSync(VERSION_FILE, 'utf8').replace(/[\r\n]/g,"");
+        if(version_val.length > 0) {
+            all_version.v1 = version_val;
+        }
     }
-    if(result.hostname == "celery@embedding"){
-       console.log('extract embedding')
-       var extract_result = JSON.parse(result.result.replace(/\'/g,""))
-       if(extract_result.result.recognized){
-          status.face_recognized++;
-          console.log('face recognized')
-       }else{
-          console.log('face not recognized')
-       }
-    }
+    /*TODO: get v2 from docker*/
+    return cb && cb(all_version);
 }
+
+function get_curent_config(cb) {
+    var all_config = {'autoupdate': false};
+    var exists = fs.existsSync(AUTO_UPDATE_FILE);
+    if(exists) {
+        all_config.autoupdate = true;
+    }
+    /*TODO: get v2 from docker*/
+    return cb && cb(all_config);
+}
+
+get_device_uuid(function(uuid){
+  var my_client_id = uuid
+  connectToMeteorServer(my_client_id)
+
+  var ws = new WebSocket(flowerws);
+  var connected_to_camera = false;
+  var camera_monitor_timeout = null;
+  var status = {
+      total_tasks:0,
+      face_detected:0,
+      face_recognized:0,
+      os: {},
+      version: {},
+      cfg: {}
+  }
+
+  setInterval(function(){
+    cpu_mem_uptime_temp(function(os_info) {
+        status.os = os_info;
+    })
+    get_curent_version(function(version_info) {
+       status.version = version_info;
+    })
+    get_curent_config(function(cfg) {
+       status.cfg = cfg;
+    })
+
+    ddpClient.call('report',[{
+        clientID :my_client_id,
+        total_tasks:     status.total_tasks,
+        face_detected:   status.face_detected,
+        face_recognized: status.face_recognized,
+        os:              status.os,
+        version:         status.version,
+        cfg:             status.cfg }])
+
+    status.total_tasks = 0;
+    status.face_detected = 0;
+    status.face_recognized = 0;
+  },60*1000)
+
+  ws.onmessage = function (event) {
+      var result = JSON.parse(event.data)
+      status.total_tasks++;
+      if(result.hostname == "celery@detect"){
+         var detect_result = JSON.parse(result.result.replace(/\'/g,""))
+         if(detect_result.detected == true){
+           status.face_detected++;
+           console.log('face detected')
+         }
+      }
+      if(result.hostname == "celery@embedding"){
+         console.log('extract embedding')
+         var extract_result = JSON.parse(result.result.replace(/\'/g,""))
+         if(extract_result.result.recognized){
+            status.face_recognized++;
+            console.log('face recognized')
+         }else{
+            console.log('face not recognized')
+         }
+      }
+  }
+})
