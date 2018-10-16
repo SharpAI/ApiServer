@@ -109,13 +109,6 @@ if Meteor.isClient
 #      Meteor.users.update({_id: thisUser._id}, {$set: {type: '', token: ''}})
       Meteor.logout (msg)->
         Session.setPersistent('persistentLoginStatus',false)
-        #console.log msg
-        window.plugins.userinfo.setUserInfo '', ->
-             console.log 'setUserInfo was succeed!'
-             return
-          , ->
-            console.log 'setUserInfo was Error!'
-            return
       Router.go '/loginForm'
   Template.my_email.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
