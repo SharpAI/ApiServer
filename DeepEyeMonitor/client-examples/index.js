@@ -173,10 +173,68 @@ var camera_monitor_timeout = null;
 var status = {
     total_tasks:0,
     face_detected:0,
-    face_recognized:0
+    face_recognized:0,
+    os: {}
+}
+
+function cpu_mem_uptime_temp(cb) {
+    var cpu_average = 0;
+    var mem = {'free': -1, 'total':-1, 'usage': 0};
+    var uptime = os.uptime();
+    var temp = {'cpu': -1, 'gpu': -1};
+
+    /*CPU*/
+    var cpus = os.cpus();
+    for(var i=0;i<cpus.length;i++) {
+        var cpu = cpus[i];
+        var usage = 0;
+        if (cpu && cpu.times) {
+          var total = 1;
+          var idle = 0;
+          total = cpu.times.user + cpu.times. user+ cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq;
+          idle = cpu.times.idle;
+          usage = (1 - (idle/total)).toFixed(2);
+        }
+        cpu_average += Number(usage);
+    }
+    cpu_average = (cpu_average/cpus.length).toFixed(2);
+
+    /*MEM*/
+    mem.free = os.freemem();
+    mem.total = os.totalmem();
+    if(mem.total > 0 ) {
+        mem.usage = (1 - (mem.free/mem.total)).toFixed(2);
+    }
+
+    /*TEMP*/
+    for(var i=0;i<4;i++) {
+        var dir = "/sys/class/thermal/thermal_zone" + i + '/';
+        var type_file = dir + 'type';
+        var temp_file = dir + 'temp';
+        var exists = fs.existsSync(dir);
+        if(!exists)
+            continue;
+
+        var typename = fs.readFileSync(type_file, 'utf8').replace(/[\r\n]/g,"");
+        var temp_val = fs.readFileSync(temp_file, 'utf8').replace(/[\r\n]/g,"");
+        if(typename.length < 1 && temp_val.length < 1)
+            continue;
+
+        if(typename.startsWith("soc-thermal")) {
+            temp.cpu = temp_val;
+        } else if(typename.startsWith("gpu-thermal")) {
+            temp.gpu = temp_val;
+        }
+    }
+
+    return cb && cb({'cpu': cpu_average, 'mem': mem, 'uptime': uptime, 'temp': temp})
 }
 
 setInterval(function(){
+  cpu_mem_uptime_temp(function(os_info) {
+      status.os = os_info;
+  })
+
   ddpClient.call('report',[{
       clientID :my_client_id,
       total_tasks: status.total_tasks,
