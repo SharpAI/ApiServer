@@ -1,0 +1,94 @@
+
+.deviceItem{
+
+
+    .delBtnContent{
+        height: 60px;
+        line-height: 60px;
+        width: 100px;
+        text-align: center;
+        position: absolute;
+        right: -100px;
+        background: #f44336;
+        color: #fff;
+        border-bottom: 1px solid #ccc;
+        box-sizing: border-box;
+        top: 0px;
+    }
+    .edit{
+        /* height: 30px; */
+        /* line-height: 30px; */
+        color:red;
+        padding-left: 10px;
+        padding-right: 10px
+    }
+    .name{
+        margin-left: 10px;
+    }
+
+    .switch:checked{
+        border-color: #04be02;
+        background-color: #04be02;
+    }
+    .automatic_update{
+        font-size: 80%;
+        background-color: #FFFFFF;
+        border-radius: 5%;
+        color: #39a9fd;
+        border: 1px #39a9fd solid;
+        float: right;
+        position: relative;
+        top: 0.9rem;
+    }
+    .value-fa{
+        display: inline-block;
+        text-align: right;
+        height: 20px;
+        line-height: 20xp;
+        font-size: 16px;
+        color: #888888;
+        float: right;
+        position: relative;
+        top: 1.4rem;
+        right: 1.5rem;
+    }
+    .switch{
+        position: relative;
+        width: 52px;
+        height: 23px;
+        border: 1px solid #dfdfdf;
+        outline: 0;
+        border-radius: 16px;
+        box-sizing: border-box;
+        background-color: #dfdfdf;
+        transition: background-color 0.1s, border 0.1s;
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .switch:checked:before{transform: scale(0);}
+    .switch:before {
+        content: " ";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50px;
+        height: 20px;
+        border-radius: 10px;
+        background-color: #fdfdfd;
+        transition: transform 0.35s cubic-bezier(0.45, 1, 0.4, 1);
+    }
+    .switch:checked:after{transform: translateX(20px);}
+    .switch:after {
+        content: " ";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 30px;
+        height: 20px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        transition: transform 0.35s cubic-bezier(0.4, 0.4, 0.25, 1.35);
+    }
+
+  }

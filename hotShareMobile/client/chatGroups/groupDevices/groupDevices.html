@@ -1,94 +1,4 @@
 <template name="groupDevices">
-<style>
-    .delBtnContent{
-        height: 60px;
-        line-height: 60px;
-        width: 100px;
-        text-align: center;
-        position: absolute;
-        right: -100px;
-        background: #f44336;
-        color: #fff;
-        border-bottom: 1px solid #ccc;
-        box-sizing: border-box;
-        top: 0px;
-    }
-    .edit{
-        /* height: 30px; */
-        /* line-height: 30px; */
-        color:red;
-        padding-left: 10px;
-        padding-right: 10px
-    }
-    .name{
-        margin-left: 10px;
-    }
-
-    .switch:checked{
-        border-color: #04be02;
-        background-color: #04be02;
-    }
-    .automatic_update{
-        font-size: 80%;
-        background-color: #FFFFFF;
-        border-radius: 5%;
-        color: #39a9fd;
-        border: 1px #39a9fd solid;
-        float: right;
-        position: relative;
-        top: 0.9rem;
-    }
-    .value-fa{
-        display: inline-block;
-        text-align: right;
-        height: 20px;
-        line-height: 20xp;
-        font-size: 16px;
-        color: #888888;
-        float: right;
-        position: relative;
-        top: 1.4rem;
-        right: 1.5rem;
-    }
-    .switch{
-        position: relative;
-        width: 52px;
-        height: 23px;
-        border: 1px solid #dfdfdf;
-        outline: 0;
-        border-radius: 16px;
-        box-sizing: border-box;
-        background-color: #dfdfdf;
-        transition: background-color 0.1s, border 0.1s;
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    .switch:checked:before{transform: scale(0);}
-    .switch:before {
-        content: " ";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 50px;
-        height: 20px;
-        border-radius: 10px;
-        background-color: #fdfdfd;
-        transition: transform 0.35s cubic-bezier(0.45, 1, 0.4, 1);
-    }
-    .switch:checked:after{transform: translateX(20px);}
-    .switch:after {
-        content: " ";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 30px;
-        height: 20px;
-        border-radius: 10px;
-        background-color: #ffffff;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-        transition: transform 0.35s cubic-bezier(0.4, 0.4, 0.25, 1.35);
-    }
-</style>
   <div class="head">
     <div class="leftButton back">
         <i class="fa fa-angle-left fa-fw"></i>
@@ -98,7 +8,7 @@
   <div class="content" style="min-height:%;padding-top: 40px;overflow:hidden">
     <!-- <div class="line" style="height: 20px; text-align:left; padding-left:10px; color:#555;"></div> -->
     <ul id="deviceList" class="set-up comFadeIn">
-        <li style="padding-left: 0px;color: #54adf3;"><b>升级状态</b></li>  
+        <li style="padding-left: 0px;color: #54adf3;"><b>升级状态</b></li>
     {{#each lists}}
       {{#if uuid}}
       <li id="" class="deviceItem swiperElem" style="height:60px;padding:10px 0;position:relative">
@@ -121,12 +31,12 @@
             {{/if}}
           <!-- {{/if}} -->
           <!-- </span> -->
-        
+
           <!-- <div id="{{uuid}}" class="value goTimelime" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div> -->
           <div id="{{_id}}" class="delBtnContent" data-uuid="{{uuid}}">删除</div>
           <!-- <button class="automatic_update">自动更新</button> -->
           <div class="value-fa">
-                <input id="switch_update" class="switch" style="margin-top:-6px; outline:none;" type="checkbox">
+                <input id="switch_update" class="switch" style="margin-top:-6px; outline:none;" type="checkbox" {{isChecked autoUpdate}}>
            </div>
         </div>
       </li>
@@ -135,187 +45,49 @@
   </ul>
   </div>
   <script>
-    $(function () {
-        touch.on('body', 'swipeup swipedown', function (ev) {
-            console.log("swipe: ", ev.type);
-            $('.swiperElem').animate({ left: '0px' }, 100);
-        });
-        touch.live('#deviceList', 'swipeup swipedown', '.swiperElem', function (ev) {
-            $('.swiperElem').animate({ left: '0px' }, 100);
-        });
-        touch.live('#deviceList', 'swipeleft swipeing', '.swiperElem', function (ev) {
-            $('.swiperElem').animate({ left: '0px' }, 100);
-            var x = ev.x;
-            if (x < -40) {
-                x = -100;
-            } else {
-                x = 0;
-            }
-            .edit{
-                /* height: 30px; */
-                /* line-height: 30px; */
-                color:red;
-                padding-left: 10px;
-                padding-right: 10px
-            }
-            .name{
-                margin-left: 10px;
-            }
-        
-            .switch:checked{
-                border-color: #04be02;
-                background-color: #04be02;
-            }
-            .automatic_update{
-                font-size: 80%;
-                background-color: #FFFFFF;
-                border-radius: 5%;
-                color: #39a9fd;
-                border: 1px #39a9fd solid;
-                float: right;
-                position: relative;
-                top: 0.9rem;
-            }
-            .value-fa{
-                display: inline-block;
-                text-align: right;
-                height: 20px;
-                line-height: 20xp;
-                font-size: 16px;
-                color: #888888;
-                float: right;
-                position: relative;
-                top: 1.4rem;
-                right: 1.5rem;
-            }
-            .switch{
-                position: relative;
-                width: 52px;
-                height: 23px;
-                border: 1px solid #dfdfdf;
-                outline: 0;
-                border-radius: 16px;
-                box-sizing: border-box;
-                background-color: #dfdfdf;
-                transition: background-color 0.1s, border 0.1s;
-                -webkit-appearance: none;
-                margin: 0;
-            }
-            .switch:checked:before{transform: scale(0);}
-            .switch:before {
-                content: " ";
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 50px;
-                height: 20px;
-                border-radius: 10px;
-                background-color: #fdfdfd;
-                transition: transform 0.35s cubic-bezier(0.45, 1, 0.4, 1);
-            }
-            .switch:checked:after{transform: translateX(20px);}
-            .switch:after {
-                content: " ";
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 30px;
-                height: 20px;
-                border-radius: 10px;
-                background-color: #ffffff;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-                transition: transform 0.35s cubic-bezier(0.4, 0.4, 0.25, 1.35);
-            }
-        </style>
-          <div class="head">
-            <div class="leftButton back">
-                <i class="fa fa-angle-left fa-fw"></i>
-            </div>
-            <strong>设备列表</strong>
+      $(function () {
+          touch.on('body', 'swipeup swipedown', function (ev) {
+              console.log("swipe: ", ev.type);
+              $('.swiperElem').animate({ left: '0px' }, 100);
+          });
+          touch.live('#deviceList', 'swipeup swipedown', '.swiperElem', function (ev) {
+              $('.swiperElem').animate({ left: '0px' }, 100);
+          });
+          touch.live('#deviceList', 'swipeleft swipeing', '.swiperElem', function (ev) {
+              $('.swiperElem').animate({ left: '0px' }, 100);
+              var x = ev.x;
+              if (x < -40) {
+                  x = -100;
+              } else {
+                  x = 0;
+              }
+              console.log($(ev.target))
+              $(ev.target).parents('.swiperElem').animate({ left: x + 'px' }, 100);
+          });
+          touch.live('#deviceList', 'swiperight swipeing', '.swiperElem', function (ev) {
+              $(ev.target).parents('.swiperElem').animate({ left: '0px' }, 100);
+          });
+        })
+    </script>
+</template>
+
+<template name="setDevicename">
+  <div class="setGroupname comFadeIn">
+      <div class="head" style="position: fixed;">
+          <div class="title" style="position:relative;">
+              <div class="left-btn">取消</div>
+              <span class="Contacts">设备名</span>
+              <div class="right-btn">保存</div>
           </div>
-          <div class="content" style="min-height:%;padding-top: 40px;overflow:hidden">
-            <!-- <div class="line" style="height: 20px; text-align:left; padding-left:10px; color:#555;"></div> -->
-            <ul id="deviceList" class="set-up comFadeIn">
-                <li style="padding-left: 0px;color: #54adf3;"><b>升级状态</b></li>  
-            {{#each lists}}
-              {{#if uuid}}
-              <li id="" class="deviceItem swiperElem" style="height:60px;padding:10px 0;position:relative">
-                <div>
-                  <!-- <span class="goEdit"> -->
-                  <img class="usericon" src="/device.png" width="40" height="40" style="border-radius:4px;">
-                  <!-- {{#if isEditing uuid}} -->
-                    <!-- {{#if name}}
-                    <input class="edit" value="{{name}}">
-                    {{else}}
-                    <input class="edit" value="未知设备">
-                    {{/if}} -->
-                  <!-- {{else}} -->
-                    {{#if name}}
-                    <span class="name" style="{{isShow uuid 1}}">{{name}}</span>
-                    <input class="edit" id="{{getId uuid}}" style="{{isShow uuid 2}}" value="{{name}}">
-                    {{else}}
-                    <span class="name" style="{{isShow uuid 1}}">未知设备</span>
-                    <input class="edit" id="{{getId uuid}}" style="{{isShow uuid 2}}" value="未知设备">
-                    {{/if}}
-                  <!-- {{/if}} -->
-                  <!-- </span> -->
-                
-                  <!-- <div id="{{uuid}}" class="value goTimelime" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div> -->
-                  <div id="{{_id}}" class="delBtnContent" data-uuid="{{uuid}}">删除</div>
-                  <!-- <button class="automatic_update">自动更新</button> -->
-                  <div class="value-fa">
-                        <input id="switchRejectUnknowMember" class="switch" style="margin-top:-6px; outline:none;" type="checkbox">
-                   </div>
-                </div>
-              </li>
-              {{/if}}
-            {{/each}}
-          </ul>
+      </div>
+  </div>
+  <ul class="set-up comFadeIn" style="position: fixed; top:60px; left:0; right:0;">
+      <li>
+          <div class="input">
+              <form class="setGroupname-form">
+                  <input class="text" type="text" id="text" placeholder="请输入设备名" value="{{name}}" style="color: black;" />
+              </form>
           </div>
-          <script>
-            $(function () {
-                touch.on('body', 'swipeup swipedown', function (ev) {
-                    console.log("swipe: ", ev.type);
-                    $('.swiperElem').animate({ left: '0px' }, 100);
-                });
-                touch.live('#deviceList', 'swipeup swipedown', '.swiperElem', function (ev) {
-                    $('.swiperElem').animate({ left: '0px' }, 100);
-                });
-                touch.live('#deviceList', 'swipeleft swipeing', '.swiperElem', function (ev) {
-                    $('.swiperElem').animate({ left: '0px' }, 100);
-                    var x = ev.x;
-                    if (x < -40) {
-                        x = -100;
-                    } else {
-                        x = 0;
-                    }
-                    console.log($(ev.target))
-                    $(ev.target).parents('.swiperElem').animate({ left: x + 'px' }, 100);
-                });
-                touch.live('#deviceList', 'swiperight swipeing', '.swiperElem', function (ev) {
-                    $(ev.target).parents('.swiperElem').animate({ left: '0px' }, 100);
-                });
-            })
-        </script>
-        </template>
-        
-        <template name="setDevicename">
-          <div class="setGroupname comFadeIn">
-              <div class="head" style="position: fixed;">
-                  <div class="title" style="position:relative;">
-                      <div class="left-btn">取消</div>
-                      <span class="Contacts">设备名</span>
-                      <div class="right-btn">保存</div>
-                  </div>
-              </div>
-          </div>
-          <ul class="set-up comFadeIn" style="position: fixed; top:60px; left:0; right:0;">
-              <li>
-                  <div class="input">
-                      <form class="setGroupname-form">
-                          <input class="text" type="text" id="text" placeholder="请输入设备名" value="{{name}}" style="color: black;" />
-                      </form>
-                  </div>
-              </li>
-          </ul>
-        </template>
+      </li>
+  </ul>
+</template>
