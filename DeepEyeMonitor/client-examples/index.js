@@ -2,6 +2,8 @@ var DDPClient = require("ddp");
 WebSocket = require('ws');
 var login = require('ddp-login');
 var CryptoJS = require("crypto-js");
+var os = require("os");
+var fs = require("fs");
 
 var ddpClient = new DDPClient({
   // All properties optional, defaults shown
@@ -238,8 +240,9 @@ setInterval(function(){
   ddpClient.call('report',[{
       clientID :my_client_id,
       total_tasks: status.total_tasks,
-      face_detected:status.detected,
-      face_recognized:status.recognized }])
+      face_detected: status.face_detected,
+      face_recognized: status.face_recognized,
+      os: status.os }])
 
   status.total_tasks = 0;
   status.face_detected = 0;
