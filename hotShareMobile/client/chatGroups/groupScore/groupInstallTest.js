@@ -159,7 +159,12 @@ var test_score = function(){
         showRes.set(false);
     }
     if(front_len != 0){
-        labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
+        if(labelArr.length >= front_len){
+            labelScore.set(100 + '');
+        }else{
+            labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
+        }
+        
     }else{
         labelScore.set('0');
     }
