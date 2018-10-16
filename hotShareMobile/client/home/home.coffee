@@ -41,10 +41,10 @@ if Meteor.isClient
         latestRelease = data.latest_release_android
       window.localStorage.setItem('stableVersion',stableVersion)
       window.localStorage.setItem('latestVersion',latestVersion)
-      if currentVersion < stableVersion
+      if window.compareVersions(currentVersion,stableVersion)
         # 强制升级
         window.updateAPPVersion(data.stable_title,stableRelease, data.stable_styles,false)
-      else if currentVersion < latestVersion
+      else if window.compareVersions(currentVersion, latestVersion) < 0
         updateTipTimes = window.localStorage.getItem('stable_update_tip_times')
         if !updateTipTimes
           window.localStorage.setItem('stable_update_tip_times',1)
@@ -63,10 +63,10 @@ if Meteor.isClient
     # else
     #   latestVersion = version_of_build
     latestVersion =  window.localStorage.getItem("latestVersion")
-    _latestVersion = toNum(latestVersion) 
+    _latestVersion = toNum(latestVersion)
     _version_of_build = toNum(version_of_build)
     # _localLatestVersion = toNum(window.localStorage.getItem("latestVersion"))
-    
+
     # if _latestVersion > _version_of_build and _latestVersion > _localLatestVersion
     if _latestVersion > _version_of_build
       # window.localStorage.setItem("latestVersion", latestVersion)
@@ -99,10 +99,10 @@ if Meteor.isClient
       if localStorage.getItem('hideDailyReporterTip') is 'true'
         return false
       else
-        return true 
+        return true
     showScanTipHintTemplate:()->
       !localStorage.getItem('scantipFlag')
-      
+
   Template.home.events
     # 'click .top-series-btn': (event)->
     #    Router.go '/seriesList'

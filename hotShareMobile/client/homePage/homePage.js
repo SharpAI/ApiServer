@@ -14,7 +14,7 @@ Template.homePage.onRendered(function () {
     }
   });
 
-  homePageMethods.createMoveAnimate(this);  
+  homePageMethods.createMoveAnimate(this);
 });
 
 var homePageMethods = {
@@ -43,7 +43,7 @@ var homePageMethods = {
             oldTop = $node.offset().top,
             newTop = 0,
             $inBetween = $next.nextUntil($node);
-        
+
         if ($inBetween.length === 0) {
           $inBetween = $node.nextUntil($next);
         }
@@ -146,7 +146,7 @@ Template.homePage.events({
         }
       }
       return PUB.toast('该公司下暂无脸脸盒');
-    });  
+    });
   },
   'click .goGroupPerson': function (e) {
     return PUB.page('/groupPerson/' + this._id);
@@ -203,6 +203,10 @@ Template.homePage.events({
     //PUB.page('/notice');
     return Router.go('/setGroupname');
   },
+  'click #qrcodeadddevice': function (event) {
+    //event.stopImmediatePropagation();
+    return QRCodeAddDevice();
+  },
   'click #scanbarcode': function (event) {
     event.stopImmediatePropagation();
     return ScanBarcodeByBarcodeScanner();
@@ -243,7 +247,7 @@ Template.notice.onCreated(function(){
 Template.notice.helpers({
   src:function(){
     var t = Template.instance();
-    
+
     return t.curSrc.get();
   }
 })

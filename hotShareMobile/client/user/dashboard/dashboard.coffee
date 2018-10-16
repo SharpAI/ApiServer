@@ -105,30 +105,11 @@ if Meteor.isClient
     'click .logout':(e)->
       e.target.innerText="正在退出登录..."
       thisUser = Meteor.user()
+      Meteor.call('updatePushToken' ,{type: thisUser.type, token: thisUser.token,userId:''});
 #      Meteor.users.update({_id: thisUser._id}, {$set: {type: '', token: ''}})
       Meteor.logout (msg)->
-        Session.set("searchContent","")
-        PostsSearch.cleanHistory()
         Session.setPersistent('persistentLoginStatus',false)
-        Session.setPersistent('persistentFeedsForMe',null)
-        Session.setPersistent('persistentMyFollowedPosts',null)
-        Session.setPersistent('myFollowedByCount',0)
-        Session.setPersistent('mySavedDraftsCount',0)
-        Session.setPersistent('myPostsCount',0)
-        Session.setPersistent('myFollowToCount',0)
-        Session.setPersistent('persistentProfileIcon',null)
-        Session.setPersistent('persistentProfileName',null)
-        Session.setPersistent('persistentMySavedDrafts',null)
-        Session.setPersistent('persistentMyOwnPosts',null)
-        #console.log msg
-        Meteor.call('updatePushToken' ,{type: thisUser.type, token: thisUser.token,userId:''});
-        window.plugins.userinfo.setUserInfo '', ->
-             console.log 'setUserInfo was succeed!'
-             return
-          , ->
-            console.log 'setUserInfo was Error!'
-            return
-        Router.go '/loginForm'
+      Router.go '/loginForm'
   Template.my_email.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     return
