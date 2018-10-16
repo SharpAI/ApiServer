@@ -592,6 +592,27 @@ Template.boxMonitorsAlive.helpers({
         }
       }
       return configOption;
+    },
+    osInfoPercent: function (res) {
+      if (res == false) {
+        return '0%';
+      } else {
+        return res * 100 + '%';
+      }
+    },
+    osInfoBlank: function (res){
+      if(res == false) {
+        return '0';
+      } else {
+        return (res/1000).toFixed(2) + '℃';
+      }
+    },
+    cfgInfo: function (res) {
+      if (res == false) {
+        return "否";
+      } else {
+        return "是";
+      }
     }
   });
 Template.boxMonitorsAlive.rendered = function(){
