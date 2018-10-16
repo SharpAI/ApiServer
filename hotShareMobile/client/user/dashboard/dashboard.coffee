@@ -105,13 +105,11 @@ if Meteor.isClient
     'click .logout':(e)->
       e.target.innerText="正在退出登录..."
       thisUser = Meteor.user()
+      Meteor.call('updatePushToken' ,{type: thisUser.type, token: thisUser.token,userId:''});
 #      Meteor.users.update({_id: thisUser._id}, {$set: {type: '', token: ''}})
       Meteor.logout (msg)->
-        Session.set("searchContent","")
-        PostsSearch.cleanHistory()
         Session.setPersistent('persistentLoginStatus',false)
         #console.log msg
-        Meteor.call('updatePushToken' ,{type: thisUser.type, token: thisUser.token,userId:''});
         window.plugins.userinfo.setUserInfo '', ->
              console.log 'setUserInfo was succeed!'
              return
