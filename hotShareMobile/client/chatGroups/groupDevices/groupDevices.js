@@ -4,6 +4,20 @@ Template.groupDevices.onRendered(function () {
 });
 
 Template.groupDevices.helpers({
+  currentFWVer: function(firmwareVersion){
+    if(firmwareVersion){
+      return firmwareVersion
+    } else {
+      return '未知'
+    }
+  },
+  isChecked: function(autoUpdate){
+    if(autoUpdate){
+      return 'checked'
+    } else {
+      return ''
+    }
+  },
   lists: function() {
     var group_id = Router.current().params._id;
     return Devices.find({groupId: group_id}).fetch();
@@ -30,6 +44,15 @@ Template.groupDevices.helpers({
 
 
 Template.groupDevices.events({
+  'click #switch_update': function(e,t){
+    console.log('switch update')
+    if(this.autoUpdate){
+        Devices.update({_id:this._id},{$set:{autoUpdate:false}})
+    } else {
+      Devices.update({_id:this._id},{$set:{autoUpdate:true}})
+    }
+    return;
+  },
   'click .name':function(e){
     var self = this;
     Session.set('isEditing',this.uuid);
@@ -59,7 +82,7 @@ Template.groupDevices.events({
     //         PUB.toast('修改失败，请重试');
     //         td.html(self.name);
     //       }
-    //     }) 
+    //     })
     //   }
     //   td.html(nextxt);
     // }); //表单失去焦点文本框变成文本
@@ -78,7 +101,7 @@ Template.groupDevices.events({
       }else{
         Session.set('isEditing',null);
       }
-    }) 
+    })
   },
   'click .delBtnContent':function(e){
     var uuid = $(e.currentTarget).data('uuid');
@@ -137,6 +160,6 @@ Template.setDevicename.events({
       }else{
         return PUB.back();
       }
-    }) 
+    })
   }
 })
