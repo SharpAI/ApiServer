@@ -177,56 +177,6 @@
           <h3 class="modal-title" id="myModalLabel">Box Config</h3>
           <h5 class="modal-title">{{currBoxNameing}}</h5>
         </div>
-        <!-- {{#if notAllowConfigBox}} -->
-        <!-- <div class="modal-body">
-          <form class="form-horizontal" role="form">
-            <fieldset disabled>
-            <div class="form-group">
-              <label for="inputEmail3" class="col-sm-4 control-label">自动更新Docker</label>
-              <div class="col-sm-6 text-left">
-                {{#if isboxConfigOEnable}}
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable"  value="true" checked> Enable
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable" value="false" > Disable
-                  </label>
-                  {{else}}
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable"  value="true" > Enable
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable" value="false" checked> Disable
-                  </label>
-                  {{/if}}
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="inputEmail3" class="col-sm-4 control-label">Upload Limit</label>
-              <div class="col-sm-6 text-left">
-                <select class="form-control" id="upload-speed">
-                  <option value="-1" selected>不限速</option>
-                  {{{CurrUpConfig}}}
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="inputEmail3" class="col-sm-4 control-label">Download Limit</label>
-              <div class="col-sm-6 text-left">
-                <select class="form-control" id="upload-speed">
-                  <option value="-1" selected>不限速</option>
-                  {{{CurrDownConfig}}}
-                </select>
-              </div>
-            </div>
-            </fieldset>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" disabled="disabled">Configing...</button>
-        </div>
-        {{else}} -->
         <div class="modal-body">
           <form class="form-horizontal" id="boxConfigFrom" role="form">
           <fieldset>
@@ -250,24 +200,6 @@
                   <!-- {{/if}} -->
                 </div>
               </div>
-              <!-- <div class="form-group">
-                <label for="inputEmail3" class="col-sm-4 control-label">Upload Limit</label>
-                <div class="col-sm-6">
-                  <select class="form-control" id="upload-speed">
-                    <option value="-1" selected>不限速</option>
-                    {{{CurrUpConfig}}}
-                  </select>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="inputEmail3" class="col-sm-4 control-label">Download Limit</label>
-                <div class="col-sm-6">
-                  <select class="form-control" id="download-speed">
-                    <option value="-1" selected>不限速</option>
-                    {{{CurrDownConfig}}}
-                  </select>
-                </div>
-              </div> -->
               </fieldset>
             </form>
           </div>

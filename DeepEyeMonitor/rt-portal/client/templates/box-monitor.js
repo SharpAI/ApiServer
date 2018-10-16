@@ -534,9 +534,9 @@ Template.boxMonitorsAlive.helpers({
     },
     isBoxConfiging: function(clientID){
       var res = peerCollection.findOne({clientID: clientID});
-      if(res.boxCfgServer.status == 'waiting'){
+      if (res && res.boxCfgServer && res.boxCfgServer.status && res.boxCfgServer.status == 'waiting') {
         return false;
-      } else{
+      }else {
         return true;
       }
     },
@@ -597,7 +597,7 @@ Template.boxMonitorsAlive.helpers({
       if (res == false) {
         return '0%';
       } else {
-        return res * 100 + '%';
+        return (res * 100).toFixed(1) + '%';
       }
     },
     osInfoBlank: function (res){
@@ -662,7 +662,7 @@ Template.boxMonitorsAlive.events({
     }
     Meteor.call('setBoxConfig',{
       clientID: Session.get('monitorBoxId'),
-      isEnable: enable,
+      autoUpdate: enable,
       // upload_limit: upload_limit,
       // download_limit: download_limit,
       status: 'waiting'

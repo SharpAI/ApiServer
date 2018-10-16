@@ -714,10 +714,10 @@ Meteor.methods({
       _id: docId
     },{
       $set: {
-        'boxCfgServer.isEnable': json.isEnable,
+        'boxCfgServer.autoUpdate': json.autoUpdate,
         // 'boxCfgServer.upload_limit': json.upload_limit,
         // 'boxCfgServer.download_limit':json.download_limit,
-        'boxCfgServer.status': 'waiting',
+        //'boxCfgServer.status': 'waiting',
         'boxCfgServer.updatedAt': new Date()
       }
     });
