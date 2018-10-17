@@ -56,8 +56,10 @@ Template.groupInstallTest.helpers({
                 showFoot = 'display:none';
                 break;
             case 3:
-                head = '请按以下步骤检查';
-                content = '<p>1.按照摄像头说明安装好</p><p>2.盒子启动-能正常扫到盒子</p><p>3.摄像头配置-调整摄像头参数及shinobi导入</p>';
+                head = '评测帮助';
+                content = '<p class="title_failure">失败原因</p><p class="failure_info">1.“网络堵塞”可能导致部署评测失败。（“网络堵塞”并不会影响“来了吗”的其它功能。）</p><p class="failure_info">2. 如果想得到准确的部署评测分数，您可以根据以下操作来进行调整：' +
+                            '</p><p class="perform_perform">操作</p><p class="perform_order">1. 先在镜头前行走1-2次后，再点击开始<small class="url_review url_fa">部署评测</small></p><p class="perform_order">2. 在首页<small class="url_time url_fa">时间轴</small>里观察行人照片”出现的时间</p><p class="perform_order">&lt;=10秒，网络正常；</p>'+
+                            '<p class="perform_order">=&gt30秒，网络拥挤；</p><p class="perform_order">=&gt;60秒，网络堵塞；</p>'
                 btn = "确定";
                 break;
             case 4:
@@ -85,6 +87,14 @@ Template.groupInstallTest.helpers({
     },
 })
 Template.groupInstallTest.events({
+    'click .url_review':function(e){
+        showPop.set(1); 
+    },
+    'click .url_time':function(){
+        if (Session.get("myHotPostsChanged"))
+            Session.set("myHotPostsChanged", false)
+        PUB.page('/timeline')
+    },
     'click .check':function(e){
         showPop.set(3);
     },
