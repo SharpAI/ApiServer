@@ -27,7 +27,6 @@ if(Meteor.isServer){
     if(!uuid){
         return this.ready();
     }
-    console.log(">>>> uuid " + uuid)
     return [
         Devices.find({uuid:uuid})
         // Meteor.users.find({username: uuid})
