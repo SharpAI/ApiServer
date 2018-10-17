@@ -613,6 +613,15 @@ Template.boxMonitorsAlive.helpers({
       } else {
         return "是";
       }
+    },
+    isChecked: function(){
+      var uuid = Session.get('monitorBoxId');
+      var res = Devices.findOne({uuid: uuid});
+      if(res && res.autoUpdate){
+        return 'checked'
+      } else {
+        return ''
+      }
     }
   });
 Template.boxMonitorsAlive.rendered = function(){
@@ -650,6 +659,8 @@ Template.boxMonitorsAlive.events({
     var doc = peerCollection.findOne({clientID: e.currentTarget.id}) || inactiveClientCollection.findOne({clientID: e.currentTarget.id});
     Session.set('monitorBoxComment', doc.comment);
     Session.set('currentConfigBoxInfo',doc.boxCfgServer);
+    Meteor.subscribe('devices-by-uuid', e.currentTarget.id, function() {
+  });
   },
   'click #saveBoxConfig': function(e,t){
     var enable = $("input[name=boxEnable]:checked").val();
@@ -660,14 +671,23 @@ Template.boxMonitorsAlive.events({
     } else {
       enable = false;
     }
-    Meteor.call('setBoxConfig',{
-      clientID: Session.get('monitorBoxId'),
-      autoUpdate: enable,
-      // upload_limit: upload_limit,
-      // download_limit: download_limit,
-      status: 'waiting'
-    });
+    // Meteor.call('setBoxConfig',{
+    //   clientID: Session.get('monitorBoxId'),
+    //   autoUpdate: enable,
+    //   // upload_limit: upload_limit,
+    //   // download_limit: download_limit,
+    //   status: 'waiting'
+    // });
     $("#boxConfigModal").modal('hide');
+  },
+  'click #switch_update': function(e,t){
+    var res = Devices.findOne({uuid: Session.get('monitorBoxId')})
+    if(res && res.autoUpdate){
+        Devices.update({_id:res._id},{$set:{autoUpdate:false}})
+    } else {
+      Devices.update({_id:res._id},{$set:{autoUpdate:true}})
+    }
+    return;
   }
   // ,
   // 'click .update-config, click .check-out': function (e) {
