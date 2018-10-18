@@ -85,14 +85,14 @@
           </td>
           <td>
             {{#if face_detected}}
-            {{total_tasks}}
+            {{face_detected}}
             {{else}}
             0
             {{/if}}
           </td>
           <td>
             {{#if face_recognized}}
-            {{total_tasks}}
+            {{face_recognized}}
             {{else}}
             0
             {{/if}}
@@ -191,12 +191,16 @@
                     <input type="radio" name="boxEnable" value="false" > Disable
                   </label>
                   {{else}} -->
-                  <label class="radio-inline">
+                  <!-- <label class="radio-inline">
                     <input type="radio" name="boxEnable"  value="true" > Enable
                   </label>
                   <label class="radio-inline">
                     <input type="radio" name="boxEnable" value="false" checked> Disable
-                  </label>
+                  </label> -->
+                  <div class="value-fa">
+                    
+                    <input id="switch_update" class="switch" type="checkbox" {{isChecked}}>
+                  </div>
                   <!-- {{/if}} -->
                 </div>
               </div>
