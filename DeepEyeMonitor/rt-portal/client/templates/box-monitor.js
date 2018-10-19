@@ -44,7 +44,7 @@ GetDataBoxMonitor = function() {
       tooltip:{
         trigger: 'axis',
         formatter: function(params) {
-
+          
           var cdn_speed = bytesToSize(params[0].data);
           var p2p_speed = bytesToSize(params[1].data);
           var upload_speed = bytesToSize(params[2].data);
@@ -150,7 +150,7 @@ GetDataBoxMonitor = function() {
       tooltip:{
         trigger: 'axis',
         formatter: function(params) {
-
+          
           var cdn_speed = bytesToSize(params[0].data) + '/s';
           var p2p_speed = bytesToSize(params[1].data) + '/s';
           var spanStyle = " display:inline-block;height: 10px;width:10px; border-radius:5px; margin-right:5px;";
@@ -223,7 +223,7 @@ GetDataBoxMonitor = function() {
       symbolList: ['circle'],
       tooltip:{
         trigger: 'axis',
-        formatter: function(params) {
+        formatter: function(params) {      
           var download_speed = bytesToSize(params[0].data) + '/s';
           var upload_speed = bytesToSize(params[1].data) + '/s';
           var spanStyle = " display:inline-block;height: 10px;width:10px; border-radius:5px; margin-right:5px;";
@@ -360,7 +360,7 @@ GetDataBoxMonitor = function() {
           totalcdn += item.cdn_downloaded;
           totalraid += item.p2p_downloaded;
         });
-
+        
       }
       options.series[3].data.push({name:'CDN',value: totalcdn});
       options.series[3].data.push({name: 'RAID', value: totalraid});
@@ -434,13 +434,6 @@ Template.boxMonitorsAlive.events({
 });
 
 Template.boxMonitorsAlive.helpers({
-    stringify: function(json){
-      if(json){
-        return JSON.stringify(json)
-      } else {
-        return 'unknown'
-      }
-    },
     calcDiffTime:function(updatedBy){
       var now = new moment(new Date())
       var then = new Date(updatedBy)
