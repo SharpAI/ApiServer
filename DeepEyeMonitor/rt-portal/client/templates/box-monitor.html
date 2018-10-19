@@ -181,29 +181,20 @@
         </div>
         <div class="modal-body">
           <form class="form-horizontal" id="boxConfigFrom" role="form">
-          <fieldset>
+            <fieldset>
               <div class="form-group">
                 <label for="inputEmail3" class="col-sm-4 control-label">自动更新Docker</label>
                 <div class="col-sm-6 text-left">
-                  <!-- {{#if isboxConfigOEnable}}
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable"  value="true" checked> Enable
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable" value="false" > Disable
-                  </label>
-                  {{else}} -->
-                  <!-- <label class="radio-inline">
-                    <input type="radio" name="boxEnable"  value="true" > Enable
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable" value="false" checked> Disable
-                  </label> -->
                   <div class="value-fa">
-                    
                     <input id="switch_update" class="switch" type="checkbox" {{isChecked}}>
                   </div>
                   <!-- {{/if}} -->
+                </div>
+                <label for="inputEmail3" class="col-sm-4 control-label">重启Monitor</label>
+                <div class="col-sm-6 text-left">
+                  <div class="value-fa">
+                    <button type="button" class="btn btn-default restarMonitor" data-id="{{clientID}}">重启</button>
+                  </div>
                 </div>
               </div>
               </fieldset>
@@ -211,12 +202,6 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            {{#if isBoxConfiging clientID}}
-            <button type="button" id="saveBoxConfig" class="btn btn-primary">Save Changes</button>
-            {{else}}
-            <button type="button" class="btn btn-primary" disabled="disabled">Configing...</button>
-            {{/if}}
-            
           </div>
         <!-- {{/if}} -->
       </div>
