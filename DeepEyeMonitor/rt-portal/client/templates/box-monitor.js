@@ -720,13 +720,8 @@ Template.boxMonitorsAlive.events({
     Session.set("monitorBoxId",cid);
   },
   'click .restarMonitor': function (e) {
-    var cid = $(e.currentTarget).data('id');
-    console.log(">>> restartBoxMonitor " + cid);
-    Commands.insert({
-      client_id: cid,
-      command: 'restartmonit',
-      done: false
-    });
+    var cid = Session.get('monitorBoxId');
+    Meteor.call('restartMonitorClient', cid);
   }
   // ,
   // 'click .update-config, click .check-out': function (e) {

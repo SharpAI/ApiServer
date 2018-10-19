@@ -1,4 +1,4 @@
-//Meteor.methods({
+Meteor.methods({
 //  getChartData: function(token) {
 //    this.unblock();
 //    var hourMillis = 1000 * 60 * 60;
@@ -731,7 +731,18 @@
 //    // return pusblishBoxSyncConfig(json);
 //  }
 //
-//});
+
+    restartMonitorClient: function(clientID){
+        if(!clientID)
+            return;
+
+        Commands.insert({
+          client_id: clientID,
+          command: 'restartmonit',
+          done: false
+        });
+    }
+});
 //
 //
 //function fillIntoResults (results, doc, hour) {
