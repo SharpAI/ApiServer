@@ -607,12 +607,47 @@ Template.boxMonitorsAlive.helpers({
         return (res/1000).toFixed(2) + '℃';
       }
     },
+    osInfoTime: function (res) {
+      if (res == false) {
+        return '0';
+      } else {
+        var min = Math.floor(res % 3600);
+        return Math.floor(res/3600) + "h" + Math.floor(min / 60) + "m";
+      }
+    },
     cfgInfo: function (res) {
       if (res == false) {
         return "否";
       } else {
         return "是";
       }
+    },
+    isChecked: function(){
+      var uuid = Session.get('monitorBoxId');
+      var res = Devices.findOne({uuid: uuid});
+      if(res && res.autoUpdate){
+        return 'checked'
+      } else {
+        return ''
+      }
+    },
+    verInfo: function () {
+      var cid = Session.get('monitorBoxId');
+      var res = peerCollection.findOne({clientID: cid});
+      var str = '';
+      if (res && res.version && res.version.v2 && res.version.v2 != 'unknown') {
+        for (const key in res.version.v2) {
+          if (res.version.v2.hasOwnProperty(key)) {
+            str += '<tr>'
+                + '<td style="text-align:right;">' + key + '：</td>'
+                + '<td style="text-align:left;">' + res.version.v2[key] + '</td>'
+                + '</td>'
+          }
+        }
+      } else {
+        str = 'unknown'
+      }
+      return str;
     }
   });
 Template.boxMonitorsAlive.rendered = function(){
@@ -650,6 +685,8 @@ Template.boxMonitorsAlive.events({
     var doc = peerCollection.findOne({clientID: e.currentTarget.id}) || inactiveClientCollection.findOne({clientID: e.currentTarget.id});
     Session.set('monitorBoxComment', doc.comment);
     Session.set('currentConfigBoxInfo',doc.boxCfgServer);
+    Meteor.subscribe('devices-by-uuid', e.currentTarget.id, function() {
+  });
   },
   'click #saveBoxConfig': function(e,t){
     var enable = $("input[name=boxEnable]:checked").val();
@@ -660,14 +697,31 @@ Template.boxMonitorsAlive.events({
     } else {
       enable = false;
     }
-    Meteor.call('setBoxConfig',{
-      clientID: Session.get('monitorBoxId'),
-      autoUpdate: enable,
-      // upload_limit: upload_limit,
-      // download_limit: download_limit,
-      status: 'waiting'
-    });
+    // Meteor.call('setBoxConfig',{
+    //   clientID: Session.get('monitorBoxId'),
+    //   autoUpdate: enable,
+    //   // upload_limit: upload_limit,
+    //   // download_limit: download_limit,
+    //   status: 'waiting'
+    // });
     $("#boxConfigModal").modal('hide');
+  },
+  'click #switch_update': function(e,t){
+    var res = Devices.findOne({uuid: Session.get('monitorBoxId')})
+    if(res && res.autoUpdate){
+        Devices.update({_id:res._id},{$set:{autoUpdate:false}})
+    } else {
+      Devices.update({_id:res._id},{$set:{autoUpdate:true}})
+    }
+    return;
+  },
+  'click .box-ver': function(e) {
+    var cid = $(e.currentTarget).data('id');
+    Session.set("monitorBoxId",cid);
+  },
+  'click .restarMonitor': function (e) {
+    var cid = Session.get('monitorBoxId');
+    Meteor.call('restartMonitorClient', cid);
   }
   // ,
   // 'click .update-config, click .check-out': function (e) {

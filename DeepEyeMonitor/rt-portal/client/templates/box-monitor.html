@@ -26,11 +26,12 @@
             <th>内存使用</th>
             <th>CPU温度</th>
             <th>GPU温度</th>
+            <th>启动时间</th>
             <th>版本</th>
             <th>自动更新</th>
             <th>total tasks</th>
-            <th>face detected</th>
-            <th>face recognized</th>
+            <th>detected</th>
+            <th>recognized</th>
           </tr>
         </thead>
         <tbody>
@@ -57,7 +58,9 @@
           <td>{{ osInfoPercent os.mem.usage }}</td>
           <td>{{ osInfoBlank os.temp.cpu }}</td>
           <td>{{ osInfoBlank os.temp.gpu }}</td>
+          <td>{{ osInfoTime os.uptime }}</td>
           {{else}}
+          <td>-</td>
           <td>-</td>
           <td>-</td>
           <td>-</td>
@@ -66,7 +69,12 @@
           <td>-</td>
           {{/if}}
           {{#if version}}
-          <td>{{version.v1}}_{{version.v2}}</td>
+          {{#if version.v1}}
+          <td>
+              <button data-id="{{clientID}}"  type="button" class="btn btn-xs box-ver" data-toggle="modal" data-target="#boxVerModal">{{version.v1}}</button></td>
+          {{else}}
+          <td>-</td>
+          {{/if}}
           {{else}}
           <td>-</td>
           {{/if}}
@@ -85,14 +93,14 @@
           </td>
           <td>
             {{#if face_detected}}
-            {{total_tasks}}
+            {{face_detected}}
             {{else}}
             0
             {{/if}}
           </td>
           <td>
             {{#if face_recognized}}
-            {{total_tasks}}
+            {{face_recognized}}
             {{else}}
             0
             {{/if}}
@@ -103,55 +111,29 @@
     {{else}}
 <thead>
           <tr>
-              <th>ViewChart</th>
               <th>Client ID</th>
               <th>Comment</th>
-              <!-- <th>Public IP</th>
-              <th>Address</th>
-              <th>Version</th>
-              <th>Last Seen</th>
-              <th>Heart Beats</th>
-              <th>CPU Load</th>
-              <th>Memory</th>
-              <th>Disk Free Size</th>
-              <th>Disk Total Size</th>
-              <th>Connect ID</th> -->
-              <th>ViewChart</th>
+              <th>启动时间</th>
               <th>total tasks</th>
-              <th>face detected</th>
-              <th>face recognized</th>
+              <th>detected</th>
+              <th>recognized</th>
           </tr>
           </thead>
           <tbody>
           {{#each inactivePeersInfo}}
-              <tr id="{{id}}">
-                <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td>
-                  <td>{{clientID}}</td>
-                  <td class="editable-text-trigger">
-                    {{> editableText collection="peer" field="comment" wysiwyg=true acceptEmpty=true substitute='<i class="fa fa-pencil"></i>' class="post-body" inputClass="post-body-wysiwyg"}}
-                  </td>
-                  <!-- <td>{{externalIp}}</td>
-                  <td>{{getAddressFromIP externalIp}}</td>
-                  <td>{{global_info.version}}</td>
-                  <td>{{timeDiff}}</td>
-                  <td>{{global_info.heart_beats}}</td>
-                  {{#if global_info.cpu}}
-                      <td>{{ceil global_info.cpu}}%</td>
-                  {{else}}
-                      <td></td>
-                  {{/if}}
-                  {{#if global_info.memory}}
-                      <td>{{bytesToSize global_info.memory}}</td>
-                  {{else}}
-                      <td></td>
-                  {{/if}}
-                  <td>{{bytesToSize disk_info.free}}</td>
-                  <td>{{bytesToSize disk_info.total}}</td>
-                  <td>{{connectID}}</td> -->
-                  <td><button id="{{clientID}}" type="button" class="btn btn-xs check-out" data-toggle="modal" data-target=".bs-example-modal-lg">View</button></td>
-                  <td>{{total_tasks}}</td>
-                  <td>{{face_detected}}</td>
-                  <td>{{face_recognized}}</td>
+              <tr id="{{id}}" style="text-align: left;">
+                <td>{{clientID}}</td>
+                <td class="editable-text-trigger">
+                  {{> editableText collection="peer" field="comment" wysiwyg=true acceptEmpty=true substitute='<i class="fa fa-pencil"></i>' class="post-body" inputClass="post-body-wysiwyg"}}
+                </td>
+                {{#if os}}
+                <td>{{ osInfoTime os.uptime }}</td>
+                {{else}}
+                <td>-</td>
+                {{/if}}
+                <td>{{total_tasks}}</td>
+                <td>{{face_detected}}</td>
+                <td>{{face_recognized}}</td>
               </tr>
           {{/each}}
           </tbody>
@@ -166,6 +148,26 @@
       </ul>
     </nav>
   </div>
+  <!-- box version modal -->
+  <div class="modal fade" id="boxVerModal" tabindex="-1" role="dialog" ira-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true">&times;</span>
+              <span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table table-hover table-condensed table-striped">
+                  {{{verInfo}}}
+              </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
 
   <!-- box config modal-->
   <div class="modal fade" id="boxConfigModal" tabindex="-1" role="dialog" aira-labelledby="myModalLabel" aria-hidden="true">
@@ -179,25 +181,20 @@
         </div>
         <div class="modal-body">
           <form class="form-horizontal" id="boxConfigFrom" role="form">
-          <fieldset>
+            <fieldset>
               <div class="form-group">
                 <label for="inputEmail3" class="col-sm-4 control-label">自动更新Docker</label>
                 <div class="col-sm-6 text-left">
-                  <!-- {{#if isboxConfigOEnable}}
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable"  value="true" checked> Enable
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable" value="false" > Disable
-                  </label>
-                  {{else}} -->
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable"  value="true" > Enable
-                  </label>
-                  <label class="radio-inline">
-                    <input type="radio" name="boxEnable" value="false" checked> Disable
-                  </label>
+                  <div class="value-fa">
+                    <input id="switch_update" class="switch" type="checkbox" {{isChecked}}>
+                  </div>
                   <!-- {{/if}} -->
+                </div>
+                <label for="inputEmail3" class="col-sm-4 control-label">重启Monitor</label>
+                <div class="col-sm-6 text-left">
+                  <div class="value-fa">
+                    <button type="button" class="btn btn-default restarMonitor" data-id="{{clientID}}">重启</button>
+                  </div>
                 </div>
               </div>
               </fieldset>
@@ -205,12 +202,6 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            {{#if isBoxConfiging clientID}}
-            <button type="button" id="saveBoxConfig" class="btn btn-primary">Save Changes</button>
-            {{else}}
-            <button type="button" class="btn btn-primary" disabled="disabled">Configing...</button>
-            {{/if}}
-            
           </div>
         <!-- {{/if}} -->
       </div>

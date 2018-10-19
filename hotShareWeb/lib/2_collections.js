@@ -571,6 +571,9 @@ if(Meteor.isServer){
          Meteor.users.find({username: uuid})
      ];
  });
+ Meteor.publish('commands', function (client_id){
+     return Commands.find({client_id:client_id,done : false},{limit: 5,sort:{createdAt:1}});
+ });
 
  Meteor.publish('group-device-timeline', function(group_id,timeRange){
      if(!this.userId || !group_id || !timeRange) {
