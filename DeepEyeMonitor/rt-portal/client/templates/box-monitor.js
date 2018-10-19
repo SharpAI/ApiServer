@@ -607,6 +607,13 @@ Template.boxMonitorsAlive.helpers({
         return (res/1000).toFixed(2) + '℃';
       }
     },
+    osInfoTime: function (res) {
+      if (res == false) {
+        return '0';
+      } else {
+        return res + '秒';
+      }
+    },
     cfgInfo: function (res) {
       if (res == false) {
         return "否";
