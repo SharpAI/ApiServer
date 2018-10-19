@@ -611,7 +611,8 @@ Template.boxMonitorsAlive.helpers({
       if (res == false) {
         return '0';
       } else {
-        return res + '秒';
+        var min = Math.floor(res % 3600);
+        return Math.floor(res/3600) + "h" + Math.floor(min / 60) + "m";
       }
     },
     cfgInfo: function (res) {
@@ -629,6 +630,24 @@ Template.boxMonitorsAlive.helpers({
       } else {
         return ''
       }
+    },
+    verInfo: function () {
+      var cid = Session.get('monitorBoxId');
+      var res = peerCollection.findOne({clientID: cid});
+      var str = '';
+      if (res && res.version && res.version.v2 && res.version.v2 != 'unknown') {
+        for (const key in res.version.v2) {
+          if (res.version.v2.hasOwnProperty(key)) {
+            str += '<tr>'
+                + '<td style="text-align:right;">' + key + '：</td>'
+                + '<td style="text-align:left;">' + res.version.v2[key] + '</td>'
+                + '</td>'
+          }
+        }
+      } else {
+        str = 'unknown'
+      }
+      return str;
     }
   });
 Template.boxMonitorsAlive.rendered = function(){
@@ -695,7 +714,11 @@ Template.boxMonitorsAlive.events({
       Devices.update({_id:res._id},{$set:{autoUpdate:true}})
     }
     return;
-  }
+  },
+  'click .box-ver': function(e) {
+    var cid = $(e.currentTarget).data('id');
+    Session.set("monitorBoxId",cid);
+  },
   // ,
   // 'click .update-config, click .check-out': function (e) {
   //   var doc = peerCollection.findOne({clientID: e.currentTarget.id}) || inactiveClientCollection.findOne({clientID: e.currentTarget.id});
