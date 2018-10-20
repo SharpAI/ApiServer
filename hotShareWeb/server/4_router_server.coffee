@@ -1145,7 +1145,7 @@ if Meteor.isServer
   Meteor.methods {
     "join-group":(uuid,group_id,name,in_out)->
       console.log("uuid = "+uuid+" group id= "+group_id+" name= "+name+" inout = "+in_out)
-      device_join_group(uuid,group_id,name,'in_out')
+      device_join_group(uuid,group_id,name,'inout')
       sendMqttMessage('/msg/d/'+uuid, {text:'groupchanged'});
       return "ok"
   }
@@ -1160,7 +1160,7 @@ if Meteor.isServer
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
-      device_join_group(uuid,group_id,name,'in_out')
+      device_join_group(uuid,group_id,name,'inout')
 
       sendMqttMessage('/msg/d/'+uuid, {text:'groupchanged'});
       this.response.end('{"result": "ok"}\n')
