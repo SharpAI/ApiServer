@@ -5,6 +5,8 @@ var logsTimeRange = new ReactiveVar([]);
 var sessionId = new ReactiveVar('');
 
 Template.settings.rendered = function(){
+  Meteor.subscribe('version-isnew', function() {
+  });
 	Meteor.subscribe("userData", Meteor.userId(), function(){
 		var cdnSetting = Meteor.user();
 		if(cdnSetting.cdnSettings){
@@ -99,7 +101,53 @@ Template.settings.helpers({
 			recursive_collapser: true
 		};
 		return options;
-	}
+  },
+  verInfoNow: function () {
+    var res = BoxVersion.findOne({isNew: true});
+    var str = '';
+    if (res) {
+      for (const key in res) {
+        if (res.hasOwnProperty(key) && key != 'isNew' && key != '_id' && key != 'createTime') {
+          str += '<tr class="version-item">'
+              + '<td style="text-align:right; width: 150px;">' + key + '：</td>'
+              + '<td style="text-align:left; width: 100px">' + res[key] + '</td>'
+              + '</td>'
+        }
+      }
+    } else {
+      str = 'unknown'
+    }
+    return str;
+  },
+  verInfoSet: function () {
+    var res = [
+      'redis',
+      'broker',
+      'shinobi',
+      'workai_flower',
+      'face_detector',
+      'workaipython',
+      'watchtowe'
+    ];
+    return res;
+  },
+  verInfoConfirm: function () {
+    var res = Session.get('versionFormInfo');
+    var str = '';
+    if (res) {
+      for (const key in res) {
+        if (res.hasOwnProperty(key) && key != 'isNew') {
+          str += '<tr>'
+              + '<td style="text-align:right; width:50%;">' + key + '：</td>'
+              + '<td style="text-align:left; width:40%;">' + res[key] + '</td>'
+              + '</td>'
+        }
+      }
+    } else {
+      str = ''
+    }
+    return str;
+  }
 })
 Template.settings.events({
 	'click #raid-box': function(e,t){
@@ -167,5 +215,29 @@ Template.settings.events({
 	'change #sessionId': function(e){
 		var session_id = $('#sessionId').val();
 		sessionId.set(session_id);
-	}
+  },
+  'click #verModalConfirm': function () {
+    var formDOM = $('#boxVersionForm input');
+    var resObj = {};
+    for (var i = 0; i < formDOM.length; i++){
+      if (formDOM[i].type.toLowerCase() == 'text') {
+        resObj[formDOM[i].id] = formDOM[i].value;
+      }
+    }
+    Session.set('versionFormInfo',resObj);
+  },
+  'click #versionSet': function () {
+    var oldRes = BoxVersion.find({isNew: true}).fetch();
+    if (oldRes) {
+      for (var i = 0; i < oldRes.length; i++) {
+        BoxVersion.update({_id: oldRes[i]._id},{$set:{isNew: false}});
+      }
+    } else {
+      return;
+    }
+    var newRes = Session.get('versionFormInfo');
+    newRes.isNew = true;
+    newRes.createTime = new Date().getTime();
+    Meteor.call('setVersionMonitorClient', newRes);
+  }
 });
