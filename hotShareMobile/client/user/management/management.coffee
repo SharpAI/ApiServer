@@ -5,7 +5,7 @@ loginFn = (id)->
   Meteor.loginWithUserId id, false, (err)->
     # 切换帐号时清空PostSearch history
     Session.set("searchContent","")
-    PostsSearch.cleanHistory()
+    #PostsSearch.cleanHistory()
     if err is 'RESET_LOGIN'
       return navigator.notification.confirm('切换帐号失败~'
         (index)->
