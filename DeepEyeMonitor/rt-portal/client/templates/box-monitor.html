@@ -2,13 +2,13 @@
   <div class="chart-container canvas-holder half">
     <div class="col-md-12">
       {{#if isAliveBoxMonitorTab}}
-      <h3 class="pull-left">Alive Clients in 5 Minutes: {{totalClient}}</h3>
+      <h3 class="pull-left">5分钟内在线设备数: {{totalClient}}</h3>
       {{else}}
-      <h3  class="pull-left">Inactive Clients: {{totalInactiveClient}}</h3>
+      <h3  class="pull-left">离线设备数: {{totalInactiveClient}}</h3>
       {{/if}}
       <div class="btn-group pull-right">
-        <button type="button" id="alive" class="box-monitor-status btn btn-default btn-primary">Alive</button>
-        <button type="button" id="inactive" class="box-monitor-status btn btn-default">Inactive</button>
+        <button type="button" id="alive" class="box-monitor-status btn btn-default btn-primary">在线设备</button>
+        <button type="button" id="inactive" class="box-monitor-status btn btn-default">离线设备</button>
       </div>
     </div>
     <div class="table-responsive" style="background-color:white; width: 100%;">
@@ -17,9 +17,9 @@
         <thead>
           <tr>
             <!-- <th>ViewChart</th> -->
-            <th>Box Config</th>
-            <th>Client ID</th>
-            <th>Comment</th>
+            <th>设置</th>
+            <th>设备ID</th>
+            <th>设备描述</th>
             <th>CPU使用</th>
             <th>内存剩余</th>
             <th>内存总数</th>
@@ -142,9 +142,9 @@
     </div>
     <nav>
       <ul class="pager">
-        <li id="prev"><a href="#">Previous</a></li>
+        <li id="prev"><a href="#">上一页</a></li>
         <li><a href="#">{{currPage}}</a></li>
-        <li id="next"><a href="#">Next</a></li>
+        <li id="next"><a href="#">下一页</a></li>
       </ul>
     </nav>
   </div>
@@ -162,7 +162,7 @@
               </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
               </div>
           </div>
       </div>
@@ -201,7 +201,7 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
           </div>
         <!-- {{/if}} -->
       </div>

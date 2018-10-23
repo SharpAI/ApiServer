@@ -489,12 +489,12 @@ Template.boxMonitorsAlive.helpers({
       return Session.get('counter');
     },
     peersInfo: function(){
-      var limit = 10;
+      var limit = 20;
       var page = Session.get('boxMonitorPage');
       return peerCollection.find({},{limit:limit, skip:(page-1)*limit});
     },
     inactivePeersInfo: function(){
-      var limit = 10;
+      var limit = 20;
       var page = Session.get('boxMonitorPage');
       return inactiveClientCollection.find({},{limit:limit, skip:(page-1)*limit});
     },
@@ -634,14 +634,26 @@ Template.boxMonitorsAlive.helpers({
     verInfo: function () {
       var cid = Session.get('monitorBoxId');
       var res = peerCollection.findOne({clientID: cid});
+      var verRes = BoxVersion.findOne({isNew: true});
       var str = '';
       if (res && res.version && res.version.v2 && res.version.v2 != 'unknown') {
         for (const key in res.version.v2) {
           if (res.version.v2.hasOwnProperty(key)) {
-            str += '<tr>'
+            if (verRes[key] && verRes[key] == res.version.v2[key]) {
+              str += '<tr>'
                 + '<td style="text-align:right;">' + key + '：</td>'
                 + '<td style="text-align:left;">' + res.version.v2[key] + '</td>'
                 + '</td>'
+            } else {
+              str += '<tr>'
+                + '<td style="text-align:right;">' + key + '：</td>'
+                + '<td style="text-align:left;color:red;">' + res.version.v2[key] + '</td>'
+                + '</td>'
+            }
+            // str += '<tr>'
+            //     + '<td style="text-align:right;">' + key + '：</td>'
+            //     + '<td style="text-align:left;">' + res.version.v2[key] + '</td>'
+            //     + '</td>'
           }
         }
       } else {
@@ -653,6 +665,8 @@ Template.boxMonitorsAlive.helpers({
 Template.boxMonitorsAlive.rendered = function(){
   Session.set('currBoxMonitorTab', 'alive');
   Session.set('boxMonitorPage',1);
+  Meteor.subscribe('version-isnew', function() {
+  });
 }
 Template.boxMonitorsAlive.events({
   'click .box-monitor-status': function(e){
