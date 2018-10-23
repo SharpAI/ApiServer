@@ -38,7 +38,7 @@ Template.haveStranger.events({
         var sessionType = Session.get("session_type")
         var toUserId = Session.get("toUser_id")
         var critiaria = { group_id: { $eq: toUserId} };
-        var face_settings = Meteor.user().profile.face_settings;
+        var face_settings = {"face_list" : ["front"], "fuzziness" : "100"};
         if (face_settings) {
             critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
         }
@@ -175,7 +175,7 @@ Template.haveStranger.events({
 Template.haveStranger.helpers({
     isHaveStranger: function() {
         var critiaria = { group_id: { $eq: Session.get("toUser_id")} };
-        var face_settings = Meteor.user().profile.face_settings;
+        var face_settings = {"face_list" : ["front"], "fuzziness" : "100"};
         if (face_settings) {
             critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
         }
@@ -187,7 +187,7 @@ Template.haveStranger.helpers({
     },
     Stranger_people: function() {
         var critiaria = { group_id: { $eq: Session.get("toUser_id")} };
-        var face_settings = Meteor.user().profile.face_settings;
+        var face_settings = {"face_list" : ["front"], "fuzziness" : "100"};
         if (face_settings) {
             critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
         }
