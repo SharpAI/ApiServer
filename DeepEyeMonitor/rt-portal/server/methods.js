@@ -741,6 +741,12 @@ Meteor.methods({
           command: 'restartmonit',
           done: false
         });
+    },
+    setVersionMonitorClient: function (res){
+      if (!res) {
+        return;
+      }
+      BoxVersion.insert(res);
     }
 });
 //
