@@ -3,7 +3,7 @@ var btn_pro = new ReactiveVar(0);
 var markList = new ReactiveVar([]);
 Session.set("isMark", true)
 
-var datas = null
+// var datas = null
 // $.get('http://192.168.31.113:5000/api/parameters', function(data){
 //     datas = data
 // })
