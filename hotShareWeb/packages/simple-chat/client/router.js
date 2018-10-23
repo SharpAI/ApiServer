@@ -600,7 +600,8 @@ Template._simpleChatToChat.onRendered(function(){
 
       is_loading.set(false);
     });
-
+    // 用户发图
+    setScrollToBottom();
     $box.scroll(function () {
       console.log("$box.scrollTop()="+$box.scrollTop()+", is_loading.get()="+is_loading.get());
       if($box.scrollTop() === 0 && !is_loading.get()){
@@ -615,6 +616,11 @@ Template._simpleChatToChat.onRendered(function(){
       }
       if($box.scrollTop() === 0){
         $box.scrollTop(2);
+      }
+      if($box.height() + $box[0].scrollTop >= $box[0].scrollHeight){
+        Session.set('atBottom',true);
+      }else{
+        Session.set('atBottom',false);
       }
     });
 
@@ -668,17 +674,13 @@ Template._simpleChatToChat.onRendered(function(){
         });
       }, 2000);
     }
-
-    Meteor.setTimeout(function(){
-      // 用户发图
-      setScrollToBottom();
-    }, 600);
   }, 200);
 });
 
 Template._simpleChatToChat.onDestroyed(function(){
   page_data = null;
   Session.set('newMsgCount',0);
+  Meteor.clearInterval(setScrollToBottomInterval);
   if(Meteor.isCordova && (typeof(device) !== 'undefined') && device.platform === 'iOS'){
     try{
      Keyboard.shrinkView(false);
@@ -1383,14 +1385,13 @@ var selectMediaFromAblumWithSize = function(max_number,width, height,callback) {
         });
 };
 
-var setScrollToBottomTimeout = null;
+
 var setScrollToBottom = function(){
-  if (setScrollToBottomTimeout)
-    Meteor.clearTimeout(setScrollToBottomTimeout);
+  var $box = $('.box');
+  var $box_ul = $('.box ul');
+  var $scrollHeight = $box_ul.height();
   setScrollToBottomTimeout = Meteor.setTimeout(function(){
     console.log('try set scrollTop to end');
-    var $box = $('.box');
-    var $box_ul = $('.box ul');
     if ($('.oneself_box').length > 0) {
        $box = $('.oneself_box');
        $box_ul = $('.oneself_box ul');
@@ -1400,6 +1401,14 @@ var setScrollToBottom = function(){
     //   return;
     // }
     $box.scrollTop($box_ul.height());
+    setScrollToBottomInterval = Meteor.setInterval(function(){
+      if($box.height() + $box[0].scrollTop >= $box[0].scrollHeight){
+        Session.set('atBottom',true);
+      }
+      if(Session.get('atBottom') == true){
+        $box.scrollTop($box_ul.height());
+      }
+    },400);
   }, 200);
 };
 
