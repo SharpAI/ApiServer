@@ -35,33 +35,76 @@
     background: #23241f;
     color: #f8f8f2;
   }
+  .version-item {
+    display: block;
+    height: 35px;
+  }
+  .table-version {
+    margin: 0 auto;
+    width: 80%;
+  }
+  .input-ver {
+    margin: 0;
+    height: 20px;
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-size: 14px;
+    border-bottom: 1px dotted #ccc;
+  }
+  .label-ver { 
+    text-align: right;
+    width: 40%;
+  }
+  .ver-float-left {
+    display: block;
+    float: left;
+    font-size: 14px;
+    line-height: 35px;
+    width: 400px;
+  }
+  .ver-displayInlineBlock {
+    display: inline-block;
+  }
   </style>
 	<div key="settings" class="ui-view main">
 	  <div class="ng-scope"> 
 	    <!--<a href="javascript:void(0);" id="save" class="pull-right btn btn-primary btn-outline btn-rounded">Save</a>-->
-	    <h2>Settings</h2>
+	    <h2>版本设置</h2>
 	    <div class="jumbotron">
-            <div class="chart-container canvas-holder half">
-                <div class="ui toggle checkbox"  style="display:block; text-align:left; font-size:16px;">
-                  <input id="raid-box" type="checkbox" name="public">
-                  <label>Disable RAID BOX/Browser</label>
-                </div><br/>
-                <div class="ui toggle checkbox" style="display:block;  text-align:left; font-size:16px;">
-                  <input id="raid-cdn" type="checkbox" name="public">
-                  <label>Disable RAID CDN</label>
-                </div><br/>
-                <div class="ui toggle checkbox"  style="display:block;  text-align:left; font-size:16px;">
-                  <input id="orignal-cdn" type="checkbox" name="public">
-                  <label>Disable Original CDN</label>
-                </div><br/>
+            
+            <div class="chart-container canvas-holder half ver-float-left">
+              <h4>当前版本</h4>
+              <table class="table table-hover table-condensed table-striped table-version">
+                {{{verInfoNow}}}
+              </table>
+            </div>
+            <div class="chart-container canvas-holder half ver-displayInlineBlock">
+              <h4>版本更新</h4>
+              <form class="form-horizontal" id="boxVersionForm" role="form">
+                <fieldset>
+                  {{#each verInfoSet}}
+                  <div class="chart-container version-item">
+                      <label for="inputEmail3" class="col-sm-4 control-label label-ver">{{this}}</label>
+                      <div class="col-sm-6 text-left">
+                        <div class="value-fa">
+                          <input id="{{this}}" class="input-ver" type="text" >
+                        </div>
+                      </div>
+                  </div>
+                  {{/each}}
+                  <input type="reset" class="btn btn-default" value="重置">
+                  <input type="button" class="btn btn-default" id="verModalConfirm" value="确认" data-toggle="modal" data-target="#versionConfigModal">
+                </fieldset>
+              </form>
             </div>
             <div class=col-xs-12>
-                <h4  align="right">Note: You need refresh video page after setup.</h4>
+                <h4 align="right">提示: 设置完毕后请刷新页面。</h4>
             </div>
 	    </div>
-      {{#if withPlayLogs}}
+      <!-- {{#if withPlayLogs}} -->
       <!-- LOGS -->
-      <h2 id="logs-header" style="text-align: left; cursor: pointer;height: 40px;">
+      <!-- <h2 id="logs-header" style="text-align: left; cursor: pointer;height: 40px;">
         {{#if showLogs}}
         <i class="fa fa-caret-down" aria-hidden="true"></i>
         {{else}}
@@ -117,7 +160,31 @@
 <div style="height: 50px;"></div>
 {{/if}}      
       </div>
-      {{/if}}
+      {{/if}} -->
 	  </div>
-	</div>
+  </div>
+  
+<!-- box version modal-->
+<div class="modal fade" id="versionConfigModal" tabindex="-1" role="dialog" aira-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true">&times;</span>
+          <span class="sr-only">Close</span></button>
+          <h3 class="modal-title" id="myModalLabel">更改确认</h3>
+        </div>
+        <div class="modal-body">
+            <h5>确认更新版本为如下信息？</h5>
+            <table class="table table-hover table-condensed table-striped">
+                {{{verInfoConfirm}}}
+              </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" id="versionSet" class="btn btn-default" data-dismiss="modal">确认</button>
+          </div>
+        <!-- {{/if}} -->
+      </div>
+    </div>
+  </div>
 </template>
