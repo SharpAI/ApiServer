@@ -220,7 +220,7 @@ if Meteor.isClient
     'click #save-user-info-btn' :->
       Meteor.logout (msg)->
         Session.set("searchContent","")
-        PostsSearch.cleanHistory()
+        #PostsSearch.cleanHistory()
         Session.setPersistent('persistentLoginStatus',false)
         Session.setPersistent('persistentFeedsForMe',null)
         Session.setPersistent('persistentMyFollowedPosts',null)
