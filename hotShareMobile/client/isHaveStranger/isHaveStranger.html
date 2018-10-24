@@ -38,7 +38,7 @@
 
         {{/if}}
     </div>
-    <!-- <script>
+    <script>
         Date.prototype.Format = function (fmt) {
             var o = {
                 "M+": this.getMonth() + 1,
@@ -57,8 +57,8 @@
         Array.from($(".color-time")).map(function(res){
             var date = new Date($(res).html()).Format("yyyy-MM-dd hh:mm:ss")
             $(res).html("")
-            $(res).html(date)
+            $(res).html(date+" （中国标准时间）")
         })
-    </script> -->
+    </script>
     {{> footer}}
 </template>
