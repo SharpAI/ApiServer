@@ -18,16 +18,5 @@
       <div style="margin-top: 20px;"><img src="/scantip/scanhint2.png" style="width: 60px;margin-right: 50%;"/></div>
     </div>
   </div>
-  <script>
-    function hideScanTipLayer(){
-      $('body').removeClass('scantip-html-body');
-      $('.scantip-layer').remove();
-      localStorage.setItem('scantipFlag',true);
-    }
-    $('.scantip-layer').on('click touchstart',function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      hideScanTipLayer();
-    });
-  </script>
+  {{/with}}
 </template>
