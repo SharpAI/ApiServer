@@ -1,3 +1,5 @@
+@showScanTipHint = new ReactiveVar(false)
+
 #space 2
 if Meteor.isClient
   toNum = (a) ->
@@ -121,7 +123,7 @@ if Meteor.isClient
       else
         return true
     showScanTipHintTemplate:()->
-      !localStorage.getItem('scantipFlag')
+      showScanTipHint.get()
 
   Template.home.events
     # 'click .top-series-btn': (event)->
