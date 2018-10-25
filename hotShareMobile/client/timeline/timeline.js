@@ -1,11 +1,19 @@
+deviceStatusVar = new ReactiveVar(false);
+
 Template.timeline.onRendered(function () {
   Meteor.subscribe('group_devices',function(){
     Session.set('groupDevicesLoading',false);
-  })
+  });
+  if (!localStorage.getItem('devicetipFlag')) {
+    deviceStatusVar.set(true);
+  }
 });
 
 
 Template.timeline.helpers({
+  showDeviceStatusTip: function(devs) {
+    return deviceStatusVar.get() && devs && devs.length > 0;
+  },
   isLoading:function(){
     if (Session.get('groupDevicesLoading') === false) {
       return false;

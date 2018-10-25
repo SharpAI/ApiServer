@@ -86,6 +86,26 @@ if Meteor.isClient
       cordova.InAppBrowser.open('https://itunes.apple.com/app/gu-shi-tie/id957024953', '_system')
     else
       cordova.InAppBrowser.open('http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere', '_system')
+  
+  Template.home.onRendered ()->
+    if !localStorage.getItem('scantipFlag')
+      maskDescription.set({
+        maskEllipse: false,
+        x: '31%',
+        y: '100%',
+        width: '50',
+        height: '50',
+        trsx: 0,
+        trsy: -50,
+        scantipContainerStyle: "position: absolute; bottom: 0px; width: 100%; height: 100px;",
+        iconClass: 'fa fa-3x fa-hand-o-down',
+        iconStyle: 'display: block; position: relative; bottom: 8px; left: 31%;',
+        spanStyle: 'display: block; font-size: 18px; position: relative; bottom: 90px; left: 10%;',
+        spanContent: '点击时间轴查看设备在线状态'
+      });
+      currentTip = 'timeLineTab';
+      showScanTipHint.set(true)
+
   Template.home.helpers
     wasLogon:()->
       Session.get('persistentLoginStatus')
