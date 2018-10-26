@@ -1,3 +1,5 @@
+@showScanTipHint = new ReactiveVar(false)
+
 #space 2
 if Meteor.isClient
   toNum = (a) ->
@@ -86,6 +88,26 @@ if Meteor.isClient
       cordova.InAppBrowser.open('https://itunes.apple.com/app/gu-shi-tie/id957024953', '_system')
     else
       cordova.InAppBrowser.open('http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere', '_system')
+  
+  Template.home.onRendered ()->
+    if !localStorage.getItem('scantipFlag')
+      maskDescription.set({
+        maskEllipse: false,
+        x: '31%',
+        y: '100%',
+        width: '50',
+        height: '50',
+        trsx: 0,
+        trsy: -50,
+        scantipContainerStyle: "position: absolute; bottom: 0px; width: 100%; height: 150px;",
+        iconClass: 'fa fa-3x fa-hand-o-down',
+        iconStyle: 'display: block; position: absolute; bottom: 60px; left: 31%;',
+        spanStyle: 'display: block; font-size: 18px; position: absolute; bottom: 110px; left: 20%;',
+        spanContent: '点击时间轴查看设备在线状态'
+      });
+      currentTip = 'timeLineTab';
+      showScanTipHint.set(true)
+
   Template.home.helpers
     wasLogon:()->
       Session.get('persistentLoginStatus')
@@ -101,7 +123,7 @@ if Meteor.isClient
       else
         return true
     showScanTipHintTemplate:()->
-      !localStorage.getItem('scantipFlag')
+      showScanTipHint.get()
 
   Template.home.events
     # 'click .top-series-btn': (event)->

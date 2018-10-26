@@ -1,5 +1,8 @@
 <template name="timeline">
   <div class="timeline">
+    {{#if showDeviceStatusTip lists}}
+      {{> deviceStatusTip}}
+    {{/if}}
       <div class="head">
         <strong class="top-home-btn active">时间轴</strong>
         <!-- <div class="leftButton back">

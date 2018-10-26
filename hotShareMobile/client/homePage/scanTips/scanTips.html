@@ -1,4 +1,5 @@
 <template name="scanTipHintTemplate">
+  {{#with maskDesc}}
   <div class="scantip-layer">
     <svg style="width: 100%;height: 100%;" viewBox="0,0,100%,100%">
       <defs>
@@ -7,27 +8,19 @@
         </filter>
         <mask id="scantipMask">
           <rect x="0" y="0" width="100%" height="100%" style="stroke:none;fill: #ffffff;opacity: 0.8;"></rect>
-          <ellipse cx="10%" cy="100%" rx="40" ry="25" fill="#000" transform="translate(0,-25)" filter="url(#scantipFilter)"></ellipse>
+          {{#if maskEllipse}}
+          <ellipse cx={{cx}} cy={{cy}} rx={{rx}} ry={{ry}} fill="#000" transform="translate({{trsx}},{{trsy}})" filter="url(#scantipFilter)"></ellipse>
+          {{else}}
+          <rect x={{x}} y={{y}} width={{width}} height={{height}} fill="#000" transform="translate({{trsx}},{{trsy}})" filter="url(#scantipFilter)"></rect>
+          {{/if}} 
         </mask>
       </defs>
       <rect x="0" y="0" width="100%" height="100%" style="stroke: none;fill: #000; mask: url(#scantipMask);"></rect>
     </svg>
-    <div class="scantip-container">
-      <div> <img src="/scantip/scanhint1.png" width="180px"/></div>
-      <button id="confirmScanTipHintTip" onclick="hideScanTipLayer();"></button>
-      <div style="margin-top: 20px;"><img src="/scantip/scanhint2.png" style="width: 60px;margin-right: 50%;"/></div>
+  <div class="scantip-container" style={{scantipContainerStyle}}>
+      <i class={{iconClass}} style={{iconStyle}}></i>
+      <span style={{spanStyle}}>{{spanContent}}</span>
     </div>
   </div>
-  <script>
-    function hideScanTipLayer(){
-      $('body').removeClass('scantip-html-body');
-      $('.scantip-layer').remove();
-      localStorage.setItem('scantipFlag',true);
-    }
-    $('.scantip-layer').on('click touchstart',function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      hideScanTipLayer();
-    });
-  </script>
+  {{/with}}
 </template>
