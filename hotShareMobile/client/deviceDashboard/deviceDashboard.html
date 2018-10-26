@@ -79,6 +79,8 @@
   $(function(){
     $("#slideDate ul li").click(function(){
       $(this).find(".week_whet").css("border-bottom","1px solid #39A8FE")
+      $(this).css("color","#39A8FE")
+      $(this).siblings().css("color","#333333")
       $(this).siblings().find(".week_whet").css("border-bottom","1px solid #ffffff")
     })
   })
