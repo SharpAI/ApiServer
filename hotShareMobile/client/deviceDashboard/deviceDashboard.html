@@ -1,13 +1,20 @@
 <template name="deviceDashboard">
 <div class="deviceDashboard">
-  <div class="head">
-    {{#if isOut}}
-    <strong style="width: 100%;">{{groupName}}(未签到)</strong>
+  <div class="head" style="text-align: inherit;">
+    <strong style="width: 100%;margin-left: 2.5rem;">{{groupName}}</strong>
+    <div style="display: inline-block;width: 100%;height: 40px;position: absolute;left: 0px;">
+      <div style="width: 10.5rem;height: 40px;margin: auto;font-size: 14px">
+        <div class="SignNo Sign-fa"><span>未签到</span></div>
+        <div class="SignYes Sign-fa"><span>已签到</span></div>
+      </div>   
+    </div>
+    <!-- {{#if isOut}}
+      <strong style="width: 100%;">{{groupName}}(未签到)</strong>
     {{else}}
-    <strong style="width: 100%;">{{groupName}}(已签到)</strong>
-    {{/if}}
+      <strong style="width: 100%;">{{groupName}}(已签到)</strong>
+    {{/if}} -->
     <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
-    <div class="rightButton" style="padding-top:0;"><i class="fa fa-exchange fa-fw" style="font-size:20px;"></i></div>
+    <div class="rightButton" id="goHint" style="padding-top:0;"><i class="fa fa-fw" style="font-size:14px;width: 86px;">识别错了？</i></div>
   </div>
   <div class="date-head" style="display:none">
       <p class="time">{{day_title}}</p>
@@ -23,18 +30,22 @@
   <div class="swiper-container date-head" id="slideDate" style="padding:0px;background-color:#4682B4;">
     <ul class="swiper-wrapper">
     {{#each dateList}}
-      <li id="{{id}}" class="swiper-slide" style="flex-direction:column">
+      <li id="{{id}}" class="swiper-slide" style="flex-direction:column;padding-top: 4px;">
         <div>{{date}}</div>
-        <div>{{week}}</div>
+        <div class="week_whet" style="padding-bottom: 3px;width: 44px;">{{week}}</div>
         <!-- <div>10/20</div> -->
       </li>
     {{/each}}
     </ul>
   </div>
   {{#if zeroLists}}
-  <div style="font-size:16px;text-align:center;padding:50px;"><a style="color:rgb(0, 119, 255);" id="zeroLists">暂无考勤记录</a></div>
+  <div style="font-size:16px;text-align:center;padding:50px;">
+    <a style="color:rgb(0, 119, 255);" id="zeroLists">暂无考勤记录</a>
+  </div>
   {{else}}
-  <div style="font-size:16px;text-align:right;padding-right:10px;"><a style="color:rgb(0, 119, 255);" id="goHint">识别错了？</a></div>
+  <!-- <div style="font-size:16px;text-align:right;padding-right:10px;">
+    <a style="color:rgb(0, 119, 255);" id="goHint">识别错了？</a>
+  </div> -->
   {{#if isLoading}}
     <div class="loading"><img src="/loading.gif"/><p>加载中</p></div>
   {{else}}
@@ -64,6 +75,14 @@
 {{#if showHint}}
 {{>notice}}
 {{/if}}
+<script>
+  $(function(){
+    $("#slideDate ul li").click(function(){
+      $(this).find(".week_whet").css("border-bottom","1px solid #39A8FE")
+      $(this).siblings().find(".week_whet").css("border-bottom","1px solid #ffffff")
+    })
+  })
+</script>
 </template>
 
 <template name="deviceDashPoppage">
@@ -99,3 +118,4 @@
   </div>
 </div>
 </template>
+

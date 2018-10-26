@@ -95,11 +95,13 @@ Template.deviceDashboard.onRendered(function () {
       $('#'+curTime.get().id).removeClass('selected');
       curTime.set(_curTime);
       $('#'+_curTime.id).addClass('selected');
+      $('#'+_curTime.id).find(".week_whet").addClass('back_bottom');
     }
   });
   swiper.slideTo(7,0,false);
   curTime.set(dateList.get()[7]);
   $('#'+curTime.get().id).addClass('selected');
+  $('#'+curTime.get().id).find(".week_whet").addClass('back_bottom');
   var _today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   var _date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,
       0, 0, 0, 0);
@@ -254,12 +256,22 @@ Template.deviceDashboard.events({
   'click .leftButton': function(){
     return PUB.back();
   },
-  'click .rightButton': function(){
-    if(isOut.get()){
-      isOut.set(false);
-    } else {
-      isOut.set(true);
-    }
+  // 'click .rightButton': function(){
+  //   if(isOut.get()){
+  //     isOut.set(false);
+  //   } else {
+  //     isOut.set(true);
+  //   }
+  // },
+  'click .SignNo': function(){
+    isOut.set(true);
+    $(".SignNo").css({"color":"#39A8FE","background":"#ffffff"})
+    $(".SignYes").css({"color":"#ffffff","background":"#148CE9"})
+  },
+  'click .SignYes':function(){
+    isOut.set(false);
+    $(".SignNo").css({"color":"#ffffff","background":"#148CE9"})
+    $(".SignYes").css({"color":"#39A8FE","background":"#ffffff"})
   },
   'click .popItem': function(e) {
     popObj.set(this);

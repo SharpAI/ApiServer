@@ -240,9 +240,10 @@ Template.notice.onCreated(function(){
       this.curSrc.set('/moshengren.png');
     }else if(type == 'deviceDashboard'){
       this.curSrc.set('/hint.png');
-    }else if(type == 'createNewChatGroups'){
-      this.curSrc.set('/createGroup3.png');
     }
+    // else if(type == 'createNewChatGroups'){
+    //   this.curSrc.set('/createGroup3.png');
+    // }
 })
 Template.notice.helpers({
   src:function(){
@@ -260,11 +261,12 @@ Template.notice.events({
     if(type == 'timelineAlbum'){
       return;
     }else if(type == 'deviceDashboard'){
-      if(t.curSrc.get()=='/hint.png'){
-        t.curSrc.set('/createGroup2.png');
-      }else{
-        Session.set('showHint',false);
-      }
+      // if(t.curSrc.get()=='/hint.png'){
+      //   //t.curSrc.set('/createGroup2.png');
+      // }else{
+      //   Session.set('showHint',false);
+      // }
+      Session.set('showHint',false);
     }else if(type == 'createNewChatGroups'){
       return Router.go('/setGroupname');
     }
