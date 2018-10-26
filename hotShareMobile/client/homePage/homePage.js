@@ -121,6 +121,28 @@ Template.homePage.helpers({
 });
 
 Template.homePage.events({
+  'shown.bs.dropdown .dropdown': function(e) {
+    if (!localStorage.getItem('createCompanyFlag')) {
+      maskDescription.set({
+        maskEllipse: false,
+        x: '100%',
+        y: '0%',
+        width: '140',
+        height: '40',
+        trsx: -160,
+        trsy: 50,
+        scantipContainerStyle: "position: absolute; top: 50px; width: 100%; height: 150px;",
+        iconClass: 'fa fa-3x fa-hand-o-up',
+        iconStyle: 'display: block; position: absolute; top: 50px; right: 80px;',
+        spanStyle: 'display: block; font-size: 18px; position: absolute; top: 5px; right: 180px;',
+        spanContent: '点击此处创建公司'
+      });
+      currentTip = 'createCompanyMenu';
+      showScanTipHint.set(true);
+    }
+  },
+  'hidden.bs.dropdown .dropdown': function(e) {
+  },
   'click .viewWorkStatus': function (e) {
     Session.set('deviceDashboardTitle', this.name);
     return PUB.page('/device/dashboard/' + this._id);
