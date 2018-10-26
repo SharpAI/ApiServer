@@ -36,10 +36,10 @@ function hideScanTipLayer(){
       height: '50',
       trsx: 0,
       trsy: -50,
-      scantipContainerStyle: "position: absolute; bottom: 0px; width: 100%; height: 100px;",
+      scantipContainerStyle: "position: absolute; bottom: 0px; width: 100%; height: 150px;",
       iconClass: 'fa fa-3x fa-hand-o-down',
-      iconStyle: 'display: block; position: relative; bottom: 8px; left: 59%;',
-      spanStyle: 'display: block; font-size: 18px; position: relative; bottom: 90px; left: 40%;',
+      iconStyle: 'display: block; position: absolute; bottom: 60px; left: 59%;',
+      spanStyle: 'display: block; font-size: 18px; white-space: nowrap; position: absolute; bottom: 110px; left: 59%; transform: translateX(-50%);',
       spanContent: '点击消息查看识别动态'
     });
     currentTip = 'messageTab';
@@ -54,10 +54,10 @@ function hideScanTipLayer(){
       ry: '20',
       trsx: -25,
       trsy: 20,
-      scantipContainerStyle: "position: absolute; top: 10px; right: 50px;",
+      scantipContainerStyle: "position: absolute; top: 0px; width: 100%; height: 150px;",
       iconClass: 'fa fa-3x fa-hand-o-right',
-      iconStyle: 'display: block;',
-      spanStyle: 'display: block; position: relative; left: -10px;',
+      iconStyle: 'display: block; position: absolute; right: 60px; top: 5px;',
+      spanStyle: 'display: block; font-size: 18px; text-align: right; position: absolute; top: 10px; right: 120px;',
       spanContent: '点击加号'
     });
     currentTip = 'plusMark';
@@ -75,10 +75,10 @@ function hideScanTipLayer(){
       height: '40',
       trsx: -190,
       trsy: 225,
-      scantipContainerStyle: "position: absolute; top: 180px; right: 50px;",
+      scantipContainerStyle: "position: absolute; top: 225px; width: 100%; height: 150px;",
       iconClass: 'fa fa-3x fa-hand-o-up',
-      iconStyle: 'display: block; position: relative; top: 100px; right: -130px;',
-      spanStyle: 'display: block; font-size: 18px; position: relative; top: 60px; right: 100px;',
+      iconStyle: 'display: block; position: absolute; top: 50px; right: 100px;',
+      spanStyle: 'display: block; font-size: 18px; position: absolute; top: 5px; right: 200px;',
       spanContent: '点击此处扫码添加脸脸盒'
     });
     currentTip = 'scanFaceBox';
