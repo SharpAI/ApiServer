@@ -1,18 +1,26 @@
 package com.pedro.vlc;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
+import android.widget.Toast;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
+
 
 /**
  * Created by pedro on 25/06/17.
@@ -37,6 +45,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
     this.surfaceView = surfaceView;
     vlcInstance = new LibVLC(context, new VlcOptions().getDefaultOptions());
     options.add(":fullscreen");
+    Log.d("VlcVideoLibrary", "VlcVideoLibrary1");
   }
 
   public VlcVideoLibrary(Context context, VlcListener vlcListener, TextureView textureView) {
@@ -44,6 +53,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
     this.textureView = textureView;
     vlcInstance = new LibVLC(context, new VlcOptions().getDefaultOptions());
     options.add(":fullscreen");
+      Log.d("VlcVideoLibrary", "VlcVideoLibrary2");
   }
 
   public VlcVideoLibrary(Context context, VlcListener vlcListener, SurfaceTexture surfaceTexture) {
@@ -51,6 +61,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
     this.surfaceTexture = surfaceTexture;
     vlcInstance = new LibVLC(context, new VlcOptions().getDefaultOptions());
     options.add(":fullscreen");
+      Log.d("VlcVideoLibrary", "VlcVideoLibrary3");
   }
 
   public VlcVideoLibrary(Context context, VlcListener vlcListener, Surface surface) {
@@ -59,6 +70,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
     surfaceHolder = null;
     vlcInstance = new LibVLC(context, new VlcOptions().getDefaultOptions());
     options.add(":fullscreen");
+      Log.d("VlcVideoLibrary", "VlcVideoLibrary4");
   }
 
   public VlcVideoLibrary(Context context, VlcListener vlcListener, Surface surface,
@@ -68,6 +80,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
     this.surfaceHolder = surfaceHolder;
     vlcInstance = new LibVLC(context, new VlcOptions().getDefaultOptions());
     options.add(":fullscreen");
+      Log.d("VlcVideoLibrary", "VlcVideoLibrary5");
   }
 
   public VlcVideoLibrary(Context context, VlcListener vlcListener, Surface surface, int width,
@@ -79,6 +92,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
     surfaceHolder = null;
     vlcInstance = new LibVLC(context, new VlcOptions().getDefaultOptions());
     options.add(":fullscreen");
+      Log.d("VlcVideoLibrary", "VlcVideoLibrary6");
   }
 
   public VlcVideoLibrary(Context context, VlcListener vlcListener, Surface surface,
@@ -90,6 +104,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
     this.height = height;
     vlcInstance = new LibVLC(context, new VlcOptions().getDefaultOptions());
     options.add(":fullscreen");
+      Log.d("VlcVideoLibrary", "VlcVideoLibrary7");
   }
 
   /**
@@ -150,6 +165,10 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
       vlcOut.setVideoView(textureView);
       width = textureView.getWidth();
       height = textureView.getHeight();
+
+        Log.d("width", "width = " + width);
+        Log.d("height", "height = " + height);
+
     } else if (surfaceTexture != null) {
       vlcOut.setVideoSurface(surfaceTexture);
     } else if (surface != null) {
@@ -173,7 +192,11 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
         vlcListener.onError();
         break;
       case MediaPlayer.Event.Buffering:
-        vlcListener.onBuffering(event);
+
+        break;
+      case MediaPlayer.Event.TimeChanged:
+          vlcListener.onTimeUpdate(event);
+        Log.d("TimeChanged", "TimeChanged = " + player.getTime());
         break;
       default:
         break;

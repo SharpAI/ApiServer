@@ -10,5 +10,5 @@ public interface VlcListener {
 
   void onError();
 
-  void onBuffering(MediaPlayer.Event event);//event.getBuffering(),Hide if 100, else Show
+  void onTimeUpdate(MediaPlayer.Event event);
 }

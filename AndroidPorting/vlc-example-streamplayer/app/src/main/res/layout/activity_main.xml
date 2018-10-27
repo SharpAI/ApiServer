@@ -35,4 +35,12 @@
       android:layout_margin="20dp"
       />
 
+  <TextureView
+      android:id="@+id/textureView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_above="@+id/b_start_stop"
+      android:layout_alignParentStart="true"
+      android:layout_marginBottom="-20dp" />
+
 </RelativeLayout>
