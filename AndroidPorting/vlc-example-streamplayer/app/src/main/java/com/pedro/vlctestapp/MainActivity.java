@@ -57,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
   @Override
   public void onClick(View view) {
     if (!vlcVideoLibrary.isPlaying()) {
-      vlcVideoLibrary.play(etEndpoint.getText().toString());
+      //vlcVideoLibrary.play(etEndpoint.getText().toString());
+      vlcVideoLibrary.play("rtsp://admin:abc123@10.20.10.96:554/cam/realmonitor?channel=1&subtype=0");
       bStartStop.setText(getString(R.string.stop_player));
     } else {
       vlcVideoLibrary.stop();
