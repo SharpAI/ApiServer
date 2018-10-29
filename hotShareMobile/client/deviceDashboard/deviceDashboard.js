@@ -491,11 +491,11 @@ Template.deviceDashPoppage.events({
     if(obj.in_image&&obj.in_time){
       url = obj.in_image;
       checkin_time = obj.in_time;
-      uuid = Devices.findOne({groupId:group_id,in_out:'in'}).uuid;
+      uuid = Devices.findOne({groupId:group_id,in_out:{$in: ['in', 'inout']}}).uuid;
     }else{
       url = obj.out_image;
       checkout_time = obj.out_time;
-      uuid = Devices.findOne({groupId:group_id,in_out:'out'}).uuid;
+      uuid = Devices.findOne({groupId:group_id,in_out:{$in: ['out', 'inout']}}).uuid;
     }
     Meteor.call('get-guest-name',group_id,function(err,guest){
       Session.set('default-label-name',guest);
