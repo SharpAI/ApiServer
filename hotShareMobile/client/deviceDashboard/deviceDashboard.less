@@ -189,24 +189,23 @@
   margin: 0px;
   border-radius: 10px;
   .selected{
-    // border: 1px solid #4682B4;
-    border-top:10px solid #F0FFFF;
-    background:#37a7fe !important;
-    border-top-left-radius:5px;
-    border-top-right-radius: 5px;
     margin-left: -1px;
     z-index: 1;
+    color: #39A8FE;
+  }
+  .back_bottom{
+    border-bottom: 1px solid #39A8FE;
   }
 }
 #slideDate >ul>li{
-  color: white;
+  color: #333333;
   width: 100px;
   height: 60px;
-  // border-right: 1px solid #ececec;
-  background-color:#4682B4;
   font-size: 14px !important;
   position: relative;
+  border-bottom: 1px solid #CCCCCC;
 }
+
 #slideDate >ul>li:not(.selected):not(:last-child):after{
   content: "";
   position: absolute;
@@ -215,4 +214,25 @@
   height: 30px;
   background: #F0FFFF;
   right: 0px;
+}
+
+
+.Sign-fa{
+  display: inline-block;
+  width: 5rem;
+  height: 25px;
+  text-align: center;
+  line-height: 25px;
+  background-color: #148CE9;
+  color: #ffffff;
+  border-radius: 2px;
+}
+.SignNo{
+  margin-right: -3px;
+  display: inline-block
+}
+.SignYes{
+  margin-left: 0px;
+  background-color: #ffffff;
+  color: #39A8FE;  
 }

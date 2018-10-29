@@ -121,6 +121,28 @@ Template.homePage.helpers({
 });
 
 Template.homePage.events({
+  'shown.bs.dropdown .dropdown': function(e) {
+    if (!localStorage.getItem('createCompanyFlag')) {
+      maskDescription.set({
+        maskEllipse: false,
+        x: '100%',
+        y: '0%',
+        width: '140',
+        height: '40',
+        trsx: -160,
+        trsy: 50,
+        scantipContainerStyle: "position: absolute; top: 50px; width: 100%; height: 150px;",
+        iconClass: 'fa fa-3x fa-hand-o-up',
+        iconStyle: 'display: block; position: absolute; top: 50px; right: 80px;',
+        spanStyle: 'display: block; font-size: 18px; position: absolute; top: 5px; right: 180px;',
+        spanContent: '点击此处创建公司'
+      });
+      currentTip = 'createCompanyMenu';
+      showScanTipHint.set(true);
+    }
+  },
+  'hidden.bs.dropdown .dropdown': function(e) {
+  },
   'click .viewWorkStatus': function (e) {
     Session.set('deviceDashboardTitle', this.name);
     return PUB.page('/device/dashboard/' + this._id);
@@ -239,10 +261,11 @@ Template.notice.onCreated(function(){
     if(type == 'timelineAlbum'){
       this.curSrc.set('/moshengren.png');
     }else if(type == 'deviceDashboard'){
-      this.curSrc.set('/hint.png');
-    }else if(type == 'createNewChatGroups'){
-      this.curSrc.set('/createGroup3.png');
+      this.curSrc.set('/hint.jpg');
     }
+    // else if(type == 'createNewChatGroups'){
+    //   this.curSrc.set('/createGroup3.png');
+    // }
 })
 Template.notice.helpers({
   src:function(){
@@ -260,11 +283,12 @@ Template.notice.events({
     if(type == 'timelineAlbum'){
       return;
     }else if(type == 'deviceDashboard'){
-      if(t.curSrc.get()=='/hint.png'){
-        t.curSrc.set('/createGroup2.png');
-      }else{
-        Session.set('showHint',false);
-      }
+      // if(t.curSrc.get()=='/hint.jpg'){
+      //   //t.curSrc.set('/createGroup2.jpg');
+      // }else{
+      //   Session.set('showHint',false);
+      // }
+      Session.set('showHint',false);
     }else if(type == 'createNewChatGroups'){
       return Router.go('/setGroupname');
     }
@@ -278,8 +302,8 @@ Template.notice.events({
       return;
     }
     if(type == 'deviceDashboard'){
-      if(t.curSrc.get()=='/createGroup2.png'){
-        t.curSrc.set('/hint.png');
+      if(t.curSrc.get()=='/createGroup2.jpg'){
+        t.curSrc.set('/hint.jpg');
       }else{
         Session.set('showHint',false);
       }

@@ -101,10 +101,10 @@ public abstract class RtpStream {
         StreamPacks tmpStreampack = new StreamPacks();
         if(buffer.length == 0) return;
         int rtpVersion = (buffer[0]&0xFF)>>6;
-        if(rtpVersion != 2) {
-            Log.e(tag,"This is not a rtp packet.="+rtpVersion);
-            return;
-        }
+        //if(rtpVersion != 2) {
+        //    Log.e(tag,"This is not a rtp packet.="+rtpVersion);
+        //    return;
+        //}
         tmpStreampack.mark = (buffer[1] & 0xFF & 0x80) >> 7 == 1;
         tmpStreampack.pt = buffer[1] & 0x7F;
         tmpStreampack.sequenceNumber = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);

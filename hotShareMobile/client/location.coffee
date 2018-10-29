@@ -16,6 +16,7 @@ updateFromThirdPartWebsite = ()->
         Meteor.users.update Meteor.userId(),{$set:{'profile.location':address}}
         console.log 'Set address to ' + address
 window.updateMyOwnLocationAddress = ()->
+  return updateFromThirdPartWebsite()
   console.log('Update location now')
   url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js"
   $.getScript url, (data, textStatus, jqxhr)->

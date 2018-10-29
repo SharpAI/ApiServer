@@ -29,6 +29,8 @@
             <span class="name" style="{{isShow uuid 1}}">未知设备</span>
             <input class="edit" id="{{getId uuid}}" style="{{isShow uuid 2}}" value="未知设备">
             {{/if}}
+
+            <img class="usericon" style="{{isLatest uuid}}" src="/islatest.png">
           <!-- {{/if}} -->
           <!-- </span> -->
 
@@ -37,7 +39,7 @@
           <!-- <button class="automatic_update">自动更新</button> -->
           <div class="value-fa">
                 <input id="switch_update" class="switch" type="checkbox" {{isChecked autoUpdate}}>
-           </div>
+          </div>
         </div>
       </li>
       {{/if}}

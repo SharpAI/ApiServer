@@ -99,10 +99,10 @@ if Meteor.isClient
         height: '50',
         trsx: 0,
         trsy: -50,
-        scantipContainerStyle: "position: absolute; bottom: 0px; width: 100%; height: 100px;",
+        scantipContainerStyle: "position: absolute; bottom: 0px; width: 100%; height: 150px;",
         iconClass: 'fa fa-3x fa-hand-o-down',
-        iconStyle: 'display: block; position: relative; bottom: 8px; left: 31%;',
-        spanStyle: 'display: block; font-size: 18px; position: relative; bottom: 90px; left: 10%;',
+        iconStyle: 'display: block; position: absolute; bottom: 60px; left: 31%;',
+        spanStyle: 'display: block; font-size: 18px; position: absolute; bottom: 110px; left: 20%;',
         spanContent: '点击时间轴查看设备在线状态'
       });
       currentTip = 'timeLineTab';
