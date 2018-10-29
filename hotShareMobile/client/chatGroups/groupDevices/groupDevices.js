@@ -39,6 +39,13 @@ Template.groupDevices.helpers({
   },
   getId:function(uuid){
     return "input_"+uuid;
+  },
+  isLatest: function(uuid){
+    var curDevice = Devices.findOne({uuid:uuid});
+    if(!curDevice.islatest && curDevice.islatest == null && curDevice.islatest == undefined){
+        return 'display:none';
+    }
+    return 'width:25px;height:25px';
   }
 });
 
