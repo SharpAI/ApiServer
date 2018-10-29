@@ -261,7 +261,7 @@ Template.notice.onCreated(function(){
     if(type == 'timelineAlbum'){
       this.curSrc.set('/moshengren.png');
     }else if(type == 'deviceDashboard'){
-      this.curSrc.set('/hint.png');
+      this.curSrc.set('/hint.jpg');
     }
     // else if(type == 'createNewChatGroups'){
     //   this.curSrc.set('/createGroup3.png');
@@ -283,8 +283,8 @@ Template.notice.events({
     if(type == 'timelineAlbum'){
       return;
     }else if(type == 'deviceDashboard'){
-      // if(t.curSrc.get()=='/hint.png'){
-      //   //t.curSrc.set('/createGroup2.png');
+      // if(t.curSrc.get()=='/hint.jpg'){
+      //   //t.curSrc.set('/createGroup2.jpg');
       // }else{
       //   Session.set('showHint',false);
       // }
@@ -302,8 +302,8 @@ Template.notice.events({
       return;
     }
     if(type == 'deviceDashboard'){
-      if(t.curSrc.get()=='/createGroup2.png'){
-        t.curSrc.set('/hint.png');
+      if(t.curSrc.get()=='/createGroup2.jpg'){
+        t.curSrc.set('/hint.jpg');
       }else{
         Session.set('showHint',false);
       }
