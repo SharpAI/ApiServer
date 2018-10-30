@@ -45,7 +45,7 @@ Template.groupDevices.helpers({
     if(!curDevice.islatest && curDevice.islatest == null && curDevice.islatest == undefined){
         return 'display:none';
     }
-    return 'width:25px;height:25px';
+    return '';
   }
 });
 
