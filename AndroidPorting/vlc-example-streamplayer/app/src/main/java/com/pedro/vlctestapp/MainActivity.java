@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
                     URL url;
                     HttpURLConnection urlConnection = null;
                     try {
-                        url = new URL("http://192.168.103.7:"+3000+"/api/post?url="+msg.obj);
+                        url = new URL("http://localhost:"+3000+"/api/post?url="+msg.obj);
 
                         urlConnection = (HttpURLConnection) url
                                 .openConnection();
