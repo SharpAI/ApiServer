@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -86,8 +87,9 @@ final class TermuxInstaller {
                     final URL zipUrl = determineZipUrl();
                     String archName = determineTermuxArchName();
                     final String bootstrapFileName =  "bootstrap-" + archName + ".zip";
+                    InputStream inputStream = activity.getAssets().open(bootstrapFileName);
 
-                    try (ZipInputStream zipInput = new ZipInputStream(zipUrl.openStream())) {
+                    try (ZipInputStream zipInput = new ZipInputStream(inputStream)) {
                         ZipEntry zipEntry;
                         while ((zipEntry = zipInput.getNextEntry()) != null) {
                             if (zipEntry.getName().equals("SYMLINKS.txt")) {
@@ -133,7 +135,7 @@ final class TermuxInstaller {
                     }
 
 
-                    final String INSTALL_PREFIX_PATH = TermuxService.FILES_PATH;
+                    /*final String INSTALL_PREFIX_PATH = TermuxService.FILES_PATH;
                     File userZipFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "usr.zip");
 
                     try (ZipInputStream zipInput = new ZipInputStream(new FileInputStream(userZipFile))) {
@@ -157,7 +159,7 @@ final class TermuxInstaller {
                                 }
                             }
                         }
-                    }
+                    }*/
 
                     activity.runOnUiThread(whenDone);
                 } catch (final Exception e) {

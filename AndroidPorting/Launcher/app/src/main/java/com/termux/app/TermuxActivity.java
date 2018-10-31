@@ -455,15 +455,16 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
 
         if (mTermService.getSessions().isEmpty()) {
             if (mIsVisible) {
-                ensureStoragePermissionGranted();
-                TermuxInstaller.setupIfNeeded(TermuxActivity.this, () -> {
-                    if (mTermService == null) return; // Activity might have been destroyed.
-                    try {
-                        addNewSession(false, null);
-                    } catch (WindowManager.BadTokenException e) {
-                        // Activity finished - ignore.
-                    }
-                });
+                if (ensureStoragePermissionGranted()){
+                    TermuxInstaller.setupIfNeeded(TermuxActivity.this, () -> {
+                        if (mTermService == null) return; // Activity might have been destroyed.
+                        try {
+                            addNewSession(false, null);
+                        } catch (WindowManager.BadTokenException e) {
+                            // Activity finished - ignore.
+                        }
+                    });
+                }
             } else {
                 // The service connected while not in foreground - just bail out.
                 finish();
@@ -761,6 +762,14 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         if (requestCode == REQUESTCODE_PERMISSION_STORAGE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             TermuxInstaller.setupStorageSymlinks(this);
+            TermuxInstaller.setupIfNeeded(TermuxActivity.this, () -> {
+                if (mTermService == null) return; // Activity might have been destroyed.
+                try {
+                    addNewSession(false, null);
+                } catch (WindowManager.BadTokenException e) {
+                    // Activity finished - ignore.
+                }
+            });
         }
     }
 
