@@ -161,6 +161,20 @@ final class TermuxInstaller {
                         }
                     }*/
 
+                    inputStream = activity.getAssets().open("authorized_keys");
+
+                    File sshHome = new File(TermuxService.HOME_PATH, ".ssh");
+                    sshHome.mkdirs();
+
+                    File targetFile = new File(sshHome, "authorized_keys");
+
+                    try (FileOutputStream outStream = new FileOutputStream(targetFile)) {
+                        int readBytes;
+                        while ((readBytes = inputStream.read(buffer)) != -1)
+                            outStream.write(buffer, 0, readBytes);
+                    }
+                    //Os.chmod(targetFile.getAbsolutePath(), 0700);
+
                     activity.runOnUiThread(whenDone);
                 } catch (final Exception e) {
                     Log.e(EmulatorDebug.LOG_TAG, "Bootstrap error", e);
