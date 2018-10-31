@@ -9,7 +9,8 @@
       android:id="@+id/surfaceView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      />
+      android:layout_alignParentStart="true"
+      android:layout_alignParentTop="true" />
 
   <EditText
       android:id="@+id/et_endpoint"
@@ -38,9 +39,12 @@
   <TextureView
       android:id="@+id/textureView"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:layout_above="@+id/b_start_stop"
+      android:layout_alignTop="@+id/surfaceView"
       android:layout_alignParentStart="true"
-      android:layout_marginBottom="-20dp" />
+      android:layout_marginStart="0dp"
+      android:layout_marginTop="197dp"
+      android:layout_marginBottom="114dp" />
 
 </RelativeLayout>

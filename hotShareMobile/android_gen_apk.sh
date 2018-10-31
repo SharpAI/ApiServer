@@ -7,7 +7,7 @@ cp $PROJ_DIR/ShareExtension/Android/MainActivity.java ./src/org/sharpai/everywhe
 cp $PROJ_DIR/sharpai-buildfiles/AndroidManifest.xml ./
 # change the version number
 VER=`grep version_of_build $PROJ_DIR/hotShareMobile/lib/6_version.js | cut -d"'" -f 2`
-VERCODE='101'`echo $VER | cut -d'.' -f 3`
+VERCODE='200'`echo $VER | cut -d'.' -f 3`
 sed -i.bak "s/android:versionName=\"1.0.69\"/android:versionName=\"$VER\"/g" AndroidManifest.xml
 sed -i.bak "s/android:versionCode=\"10069\"/android:versionCode=\"$VERCODE\"/g" AndroidManifest.xml
 

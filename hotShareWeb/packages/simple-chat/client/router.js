@@ -1456,14 +1456,16 @@ Template._simpleChatToChat.helpers({
     return false;
   },
   needShowTips:function(){
-    var res = Session.get('simple_chat_need_show_tips');
-    return res == true;
+    return false;
+    /*var res = Session.get('simple_chat_need_show_tips');
+    return res == true;*/
   },
   showLNPTips: function() {
-    if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
+    return false;
+    /*if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
       return false;
     }
-    return true;
+    return true;*/
   },
   inDevMode:function(){
     return isInDevMode();

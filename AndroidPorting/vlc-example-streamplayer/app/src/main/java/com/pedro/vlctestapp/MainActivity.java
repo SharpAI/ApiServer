@@ -23,6 +23,9 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.videolan.libvlc.MediaPlayer;
 
 import com.example.screenshot.screenshot;
@@ -52,13 +55,33 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case START_POST_MSG:
+
+                    if (!vlcVideoLibrary.isPlaying()) {
+                        return true;
+                    }
+
                     Log.d("handleMessage", "file = " + msg.obj);
+
+                    TextureView textureView = (TextureView) findViewById(R.id.textureView);
+                    Bitmap bitmap = textureView.getBitmap();
+                    String filename = "";
+
+                    try {
+                        File file = screenshot.getInstance()
+                                .saveScreenshotToPicturesFolder(MainActivity.this, bitmap, "my_screenshot");
+
+                        filename = file.getAbsolutePath();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
 
                     boolean ret = false;
                     URL url;
                     HttpURLConnection urlConnection = null;
                     try {
-                        url = new URL("http://192.168.103.7:"+3000+"/api/post?url="+msg.obj);
+                        url = new URL("http://192.168.103.7:"+3000+"/api/post?url="+filename);
 
                         urlConnection = (HttpURLConnection) url
                                 .openConnection();
@@ -119,18 +142,7 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
   public void onTimeUpdate(MediaPlayer.Event event) {
       Log.d("onTimeUpdate", "onTimeUpdate ");
 
-      TextureView textureView = (TextureView) findViewById(R.id.textureView);
-      Bitmap bitmap = textureView.getBitmap();
-
-      try {
-          File file = screenshot.getInstance()
-                  .saveScreenshotToPicturesFolder(MainActivity.this, bitmap, "my_screenshot");
-
-          mBackgroundHandler.obtainMessage(START_POST_MSG, file.getAbsolutePath()).sendToTarget();
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-
+      mBackgroundHandler.obtainMessage(START_POST_MSG, "").sendToTarget();
   }
 
   @Override
