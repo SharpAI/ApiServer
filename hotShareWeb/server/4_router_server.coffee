@@ -338,51 +338,53 @@ if Meteor.isServer
         name = PERSON.getName(null, userGroup.group_id,id)
         p_ids_name = [];
         #存在可能性最大的三个人的id
-        if p_ids and p_ids.length > 0
-          for pid in p_ids
-            person = Person.findOne({group_id:userGroup.group_id,'faces.id':pid},{sort:{createAt:1}});
-            if person
-              p_person = {
-                name:person.name,
-                id:pid,
-                url:person.url,
-                p_id:person._id
-              }
-              if(_.pluck(p_ids_name, 'p_id').indexOf(person._id) is -1)
-                p_ids_name.push(p_person)
+        # if p_ids and p_ids.length > 0
+        #   for pid in p_ids
+        #     person = Person.findOne({group_id:userGroup.group_id,'faces.id':pid},{sort:{createAt:1}});
+        #     if person
+        #       p_person = {
+        #         name:person.name,
+        #         id:pid,
+        #         url:person.url,
+        #         p_id:person._id
+        #       }
+        #       if(_.pluck(p_ids_name, 'p_id').indexOf(person._id) is -1)
+        #         p_ids_name.push(p_person)
 
         #没有准确度的人一定是没有识别出来的
         name = if accuracy then name else null
         #没有识别的人的准确度清0
         Accuracy =  if name then accuracy else false
         Fuzziness = fuzziness
-        sendMqttMessage('/msg/g/'+ userGroup.group_id, {
-          _id: new Mongo.ObjectID()._str
-          form: {
-            id: user._id
-            name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
-            icon: user.profile.icon
-          }
-          to: {
-            id: userGroup.group_id
-            name: userGroup.group_name
-            icon: userGroup.group_icon
-          }
-          images: [
-            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness, sqlid: sqlid, style: style,p_ids:p_ids_name} # 暂一次只能发一张图
-          ]
-          to_type: "group"
-          type: "text"
-          text: if !name then 'Work AI发现有人在活动' else 'AI观察到 ' + name + ':'
-          create_time: create_time
-          people_id: id
-          people_uuid: uuid
-          people_his_id: _id
-          wait_lable: !name
-          is_people: true
-          is_read: false
-          tid:tracker_id
-        })
+        if checkIfSendRecoMsg(userGroup.group_id, uuid, id) and name
+          console.log('--------send reco msg to --------', uuid, '----', id, '----', name)
+          sendMqttMessage('/msg/g/'+ userGroup.group_id, {
+            _id: new Mongo.ObjectID()._str
+            form: {
+              id: user._id
+              name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
+              icon: user.profile.icon
+            }
+            to: {
+              id: userGroup.group_id
+              name: userGroup.group_name
+              icon: userGroup.group_icon
+            }
+            images: [
+              {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness, sqlid: sqlid, style: style,p_ids:p_ids_name} # 暂一次只能发一张图
+            ]
+            to_type: "group"
+            type: "text"
+            text: 'AI观察到 ' + name + ':'
+            create_time: create_time
+            people_id: id
+            people_uuid: uuid
+            people_his_id: _id
+            wait_lable: !name
+            is_people: true
+            is_read: false
+            tid:tracker_id
+          })
 
         # update to DeviceTimeLine
         timeObj = {
