@@ -117,6 +117,9 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
   }
 
   public boolean isPlaying() {
+      if (player != null) {
+          Log.d("VlcVideoLibrary", "player.isPlaying() " + player.isPlaying());
+      }
     return player != null && player.isPlaying();
   }
 
@@ -132,6 +135,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
     if (player != null && player.isPlaying()) {
       player.stop();
       player.release();
+      player = null;
     }
   }
 
@@ -196,7 +200,7 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
         break;
       case MediaPlayer.Event.TimeChanged:
           vlcListener.onTimeUpdate(event);
-        Log.d("TimeChanged", "TimeChanged = " + player.getTime());
+          //Log.d("TimeChanged", "TimeChanged = " + player.getTime());
         break;
       default:
         break;

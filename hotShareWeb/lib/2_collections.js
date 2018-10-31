@@ -236,6 +236,23 @@ ModelParam = new Meteor.Collection('modelParam');
 
 
 if(Meteor.isServer){
+  MsgAlertLimit = new Mongo.Collection("alertlimit_app_reco_msg")
+
+  // only send recognition msg (for one person) once within 2mins.
+  var expiresTime = 2*60
+  MsgAlertLimit._ensureIndex({group_id: 1, uuid: 1, person_id: 1}, {expiresAfterSeconds: expiresTime});
+  MsgAlertLimit._ensureIndex({createdAt: 1}, {expiresAfterSeconds: expiresTime});
+
+  checkIfSendRecoMsg = function(groupd_id,uuid,person_id){
+    if(MsgAlertLimit.findOne({group_id: groupd_id, uuid: uuid, person_id: person_id})){
+      console.log(MsgAlertLimit.findOne({group_id: groupd_id, uuid: uuid, person_id:person_id}))
+      return false;
+    } else {
+      MsgAlertLimit.insert({group_id: groupd_id, uuid: uuid, person_id:person_id, createdAt: new Date()})
+      return true
+    }
+  }
+
 
   KnownUnknownAlertLimit = new Mongo.Collection("alertlimit_known_unknown");
 
