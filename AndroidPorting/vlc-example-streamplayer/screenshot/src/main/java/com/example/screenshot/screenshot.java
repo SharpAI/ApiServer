@@ -107,7 +107,8 @@ public class screenshot {
             throw new NullPointerException("Error creating media file, check storage permissions!");
         }
         FileOutputStream fos = new FileOutputStream(bitmapFile);
-        image.compress(Bitmap.CompressFormat.PNG, 90, fos);
+        //image.compress(Bitmap.CompressFormat.PNG, 90, fos);
+        image.compress(Bitmap.CompressFormat.JPEG,90,fos);
         fos.close();
 
         // Initiate media scanning to make the image available in gallery apps
