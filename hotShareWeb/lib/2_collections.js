@@ -240,8 +240,8 @@ if(Meteor.isServer){
 
   // only send recognition msg (for one person) once within 2mins.
   var expiresTime = 2*60
-  MsgAlertLimit._ensureIndex({group_id: 1, uuid: 1, person_id: 1}, {expiresAfterSeconds: expiresTime});
-  MsgAlertLimit._ensureIndex({createdAt: 1}, {expiresAfterSeconds: expiresTime});
+  MsgAlertLimit._ensureIndex({group_id: 1, uuid: 1, person_id: 1}, {expireAfterSeconds: expiresTime});
+  MsgAlertLimit._ensureIndex({createdAt: 1}, {expireAfterSeconds: expiresTime});
 
   checkIfSendRecoMsg = function(groupd_id,uuid,person_id){
     if(MsgAlertLimit.findOne({group_id: groupd_id, uuid: uuid, person_id: person_id})){
