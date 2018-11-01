@@ -170,8 +170,8 @@ public class VlcVideoLibrary implements MediaPlayer.EventListener {
       width = textureView.getWidth();
       height = textureView.getHeight();
 
-        Log.d("width", "width = " + width);
-        Log.d("height", "height = " + height);
+      Log.d("width", "width = " + width);
+      Log.d("height", "height = " + height);
 
     } else if (surfaceTexture != null) {
       vlcOut.setVideoSurface(surfaceTexture);

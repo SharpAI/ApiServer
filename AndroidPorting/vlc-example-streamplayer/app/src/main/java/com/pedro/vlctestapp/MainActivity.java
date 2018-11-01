@@ -2,14 +2,17 @@ package com.pedro.vlctestapp;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.PixelCopy;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -17,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -115,12 +119,20 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
     super.onCreate(savedInstanceState);
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     setContentView(R.layout.activity_main);
-    SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
+    etEndpoint = (EditText) findViewById(R.id.et_endpoint);
     TextureView textureView = (TextureView) findViewById(R.id.textureView);
+
+    FrameLayout.LayoutParams params =
+              new FrameLayout.LayoutParams(
+                      1920,
+                      1080,
+                      Gravity.CENTER);
+    textureView.setLayoutParams(params);
+
 
     bStartStop = (Button) findViewById(R.id.b_start_stop);
     bStartStop.setOnClickListener(this);
-    etEndpoint = (EditText) findViewById(R.id.et_endpoint);
+
     vlcVideoLibrary = new VlcVideoLibrary(this, this, textureView);
     vlcVideoLibrary.setOptions(Arrays.asList(options));
 
@@ -130,6 +142,18 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
     mBackgroundHandler = new Handler(handlerThread.getLooper(), callback);
 
     ensureStoragePermissionGranted();
+
+    View decorView = getWindow().getDecorView();
+    // Hide the status bar.
+    int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+    decorView.setSystemUiVisibility(uiOptions);
+
+
+    SharedPreferences myPreferences
+              = PreferenceManager.getDefaultSharedPreferences(this);
+
+    String endPoint = myPreferences.getString("endPoint", "rtsp://admin:abc123@10.20.10.96:554/cam/realmonitor?channel=1&subtype=0");
+    etEndpoint.setText(endPoint);
   }
 
     /** For processes to access shared internal storage (/sdcard) we need this permission. */
@@ -149,6 +173,16 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
     }
   @Override
   public void onComplete() {
+
+      String endPoint = etEndpoint.getText().toString();
+
+      SharedPreferences myPreferences
+              = PreferenceManager.getDefaultSharedPreferences(this);
+
+      SharedPreferences.Editor myEditor = myPreferences.edit();
+      myEditor.putString("endPoint", endPoint);
+      myEditor.commit();
+
     Toast.makeText(this, "Playing", Toast.LENGTH_SHORT).show();
   }
 
@@ -170,7 +204,9 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
   public void onClick(View view) {
       try {
         if (!vlcVideoLibrary.isPlaying()) {
-          vlcVideoLibrary.play("rtsp://admin:abc123@10.20.10.96:554/cam/realmonitor?channel=1&subtype=0");
+          String endPoint = etEndpoint.getText().toString();
+
+          vlcVideoLibrary.play(endPoint);
           bStartStop.setText(getString(R.string.stop_player));
 
         } else {
