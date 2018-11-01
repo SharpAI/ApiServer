@@ -1,6 +1,10 @@
 package com.pedro.vlctestapp;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -43,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
   private VlcVideoLibrary vlcVideoLibrary;
   private Button bStartStop;
   private EditText etEndpoint;
-
+  private static final int REQUESTCODE_PERMISSION_STORAGE = 1234;
   private String[] options = new String[]{":fullscreen"};
 
     private static final int START_POST_MSG = 1001;
@@ -124,8 +128,25 @@ public class MainActivity extends AppCompatActivity implements VlcListener, View
     handlerThread.start();
     MyCallback callback = new MyCallback();
     mBackgroundHandler = new Handler(handlerThread.getLooper(), callback);
+
+    ensureStoragePermissionGranted();
   }
 
+    /** For processes to access shared internal storage (/sdcard) we need this permission. */
+    @TargetApi(Build.VERSION_CODES.M)
+    public boolean ensureStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUESTCODE_PERMISSION_STORAGE);
+                return false;
+            }
+        } else {
+            // Always granted before Android 6.0.
+            return true;
+        }
+    }
   @Override
   public void onComplete() {
     Toast.makeText(this, "Playing", Toast.LENGTH_SHORT).show();
