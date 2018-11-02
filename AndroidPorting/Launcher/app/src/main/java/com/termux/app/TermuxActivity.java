@@ -66,6 +66,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.NetworkInterface;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -566,16 +567,55 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
         return (DrawerLayout) findViewById(R.id.drawer_layout);
     }
 
+
+
+    private static String getMacAddr() {
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if ( !nif.getName().equalsIgnoreCase("eth0") &&
+                    !nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
+                }
+
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    // res1.append(Integer.toHexString(b & 0xFF) + ":");
+                    res1.append(String.format("%02X",b));
+                }
+
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                return res1.toString();
+            }
+        } catch (Exception ex) {
+            //handle exception
+        }
+        return "";
+    }
+    private String getUniqueSerialNO(){
+        String android_id = Settings.Secure.getString(this.getContentResolver(),
+            Settings.Secure.ANDROID_ID);
+        String UDID = "";
+        if(android_id == null || android_id ==""){
+            android_id = "0000000";
+        }
+        UDID = android_id +"_"+getMacAddr();
+
+        return UDID;
+    }
     void addNewSession(boolean failSafe, String sessionName) {
         String homePath = TermuxService.HOME_PATH;
         File roSerialFile = new File(homePath,".ro_serialno");
         if(!roSerialFile.exists()){
-            String android_id = Settings.Secure.getString(this.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
             FileOutputStream stream = null;
             try {
                 stream = new FileOutputStream(roSerialFile);
-                stream.write(android_id.getBytes());
+                stream.write(getUniqueSerialNO().getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
