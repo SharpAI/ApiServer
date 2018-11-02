@@ -112,8 +112,8 @@ public class screenshot {
         fos.close();
 
         // Initiate media scanning to make the image available in gallery apps
-        MediaScannerConnection.scanFile(context, new String[] { bitmapFile.getPath() },
-                new String[] { "image/jpeg" }, null);
+        //MediaScannerConnection.scanFile(context, new String[] { bitmapFile.getPath() },
+        //        new String[] { "image/jpeg" }, null);
         return bitmapFile;
     }
 
@@ -121,7 +121,7 @@ public class screenshot {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         File mediaStorageDirectory = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                         + File.separator);
         // Create the storage directory if it does not exist
         if (!mediaStorageDirectory.exists()) {

@@ -25,6 +25,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -61,6 +62,9 @@ import com.termux.view.TerminalView;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -563,6 +567,25 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
     }
 
     void addNewSession(boolean failSafe, String sessionName) {
+        String homePath = TermuxService.HOME_PATH;
+        File roSerialFile = new File(homePath,".ro_serialno");
+        if(!roSerialFile.exists()){
+            String android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+            FileOutputStream stream = null;
+            try {
+                stream = new FileOutputStream(roSerialFile);
+                stream.write(android_id.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         if (mTermService.getSessions().size() >= MAX_SESSIONS) {
             new AlertDialog.Builder(this).setTitle(R.string.max_terminals_reached_title).setMessage(R.string.max_terminals_reached_message)
                 .setPositiveButton(android.R.string.ok, null).show();
