@@ -607,7 +607,7 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
             UDID = "0000000";
         }
 
-        return UDID;
+        return UDID.toLowerCase();
     }
     void addNewSession(boolean failSafe, String sessionName) {
         String homePath = TermuxService.HOME_PATH;
