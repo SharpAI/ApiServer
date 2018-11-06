@@ -464,10 +464,10 @@ if Meteor.isServer
                         .setOptions null, 60
                         .send (err, res)->
                           if err
-                            console.log 'err: ' + err.message +", "+pushToken.token
+                            console.log 'err: '+err.message+", "+pushToken.token
                           else
-                            console.log 'Sendno: ' + res.sendno
-                            console.log 'Msg_id: ' + res.msg_id + ', '+pushToken.token
+                            console.log 'Sendno: '+res.sendno
+                            console.log 'Msg_id: '+res.msg_id+', '+pushToken.token
                     else if pushToken.type is 'iOS'
                       console.log 'Server PN to iOS '+pushToken.token
                       token = pushToken.token
