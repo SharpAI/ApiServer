@@ -356,7 +356,7 @@ if Meteor.isServer
         #没有识别的人的准确度清0
         Accuracy =  if name then accuracy else false
         Fuzziness = fuzziness
-        if checkIfSendRecoMsg(userGroup.group_id, uuid, id) and name
+        if name and checkIfSendRecoMsg(userGroup.group_id, uuid, id)
           console.log('--------send reco msg to --------', uuid, '----', id, '----', name)
           sendMqttMessage('/msg/g/'+ userGroup.group_id, {
             _id: new Mongo.ObjectID()._str
