@@ -598,13 +598,14 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
         return "";
     }
     private String getUniqueSerialNO(){
-        String android_id = Settings.Secure.getString(this.getContentResolver(),
-            Settings.Secure.ANDROID_ID);
-        String UDID = "";
-        if(android_id == null || android_id ==""){
-            android_id = "0000000";
+        String UDID = getMacAddr();
+        if (UDID == null || UDID.length() == 0) {
+            UDID = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
         }
-        UDID = android_id +"_"+getMacAddr();
+        if (UDID == null || UDID.length() == 0) {
+            UDID = "0000000";
+        }
 
         return UDID;
     }
