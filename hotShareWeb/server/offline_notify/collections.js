@@ -1,6 +1,7 @@
 peerCollection = new Meteor.Collection('peer');
 RaidInfoLogs = new Mongo.Collection("raidinfologs");
 Commands = new Mongo.Collection("commands");
+BoxVersion = new Meteor.Collection('boxversion');
 /*
 if(Meteor.isClient) {
   inactiveClientCollection = new Meteor.Collection('inactive')

@@ -634,7 +634,7 @@ Template.boxMonitorsAlive.helpers({
     verInfo: function () {
       var cid = Session.get('monitorBoxId');
       var res = peerCollection.findOne({clientID: cid});
-      var verRes = BoxVersion.findOne({isNew: true});
+      var verRes = BoxVersion.findOne({});
       var str = '';
       if (res && res.version && res.version.v2 && res.version.v2 != 'unknown') {
         for (const key in res.version.v2) {

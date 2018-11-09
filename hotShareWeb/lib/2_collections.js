@@ -591,6 +591,9 @@ if(Meteor.isServer){
  Meteor.publish('commands', function (client_id){
      return Commands.find({client_id:client_id,done : false},{limit: 5,sort:{createdAt:1}});
  });
+ Meteor.publish('latestboxversion', function (){
+     return BoxVersion.find({}, {limit: 1});
+ });
 
  Meteor.publish('group-device-timeline', function(group_id,timeRange){
      if(!this.userId || !group_id || !timeRange) {
