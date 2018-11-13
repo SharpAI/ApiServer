@@ -780,6 +780,16 @@ if Meteor.isServer
       #unless userGroup or userGroup.group_id
       #  return this.response.end('{"result": "failed", "cause": "group not found"}\n')
   )
+  Router.route('/restapi/get_name_by_faceid', {where: 'server'}).get(()->
+    face_id = this.params.query.face_id
+    group_id = this.params.query.group_id
+    if not face_id or not group_id
+      return this.response.end(JSON.stringify({result: 'invalid parameters'}))
+    person = Person.findOne({group_id: group_id, faceId: face_id})
+    if not person
+      return this.response.end(JSON.stringify({result: 'no such item'}))
+    return this.response.end(JSON.stringify({result: 'success', name: person.name}))
+  )
   Router.route('/restapi/clean_device', {where: 'server'}).get(()->
     uuid = this.params.query.uuid
     device = Devices.findOne({"uuid" : uuid})
