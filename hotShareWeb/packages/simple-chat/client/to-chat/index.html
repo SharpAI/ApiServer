@@ -440,9 +440,9 @@
   {{else}}
   <div class="img_container _close {{eventType}}">
     <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-    {{#if hasAccAndFuzz}}
+    <!-- {{#if hasAccAndFuzz}}
     <div class="value_bg"><div class="accuracy">{{accuracy}}</div><div class="fuzziness">{{fuzziness}}</div></div>
-    {{/if}}
+    {{/if}} -->
   </div>
   {{/if}}
 </template>
@@ -517,7 +517,7 @@
 
 <template name="_simleChatToSwipeBox">
   <div class="simple-chat-swipe-box">
-    {{#if hasAccAndFuzz}}
+    <!-- {{#if hasAccAndFuzz}}
     <div class="swipe_value_bg">
       <div class="swipe_accuracy">
         <span>准确度:</span>{{data.accuracy}}
@@ -526,7 +526,7 @@
         <span>模糊度:</span>{{data.fuzziness}}
       </div>
     </div>
-    {{/if}}
+    {{/if}} -->
   </div>
 </template>
 
