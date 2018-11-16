@@ -845,8 +845,8 @@ if Meteor.isServer
       img_type = this.params.query.type
       tracker_id = this.params.query.tid
       console.log '/restapi/workai get request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
-      unless id and img_url and uuid
-        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      unless id or img_url or uuid
+        return this.response.end('{"result": "failed", "cause": "invalid params,check id,uuid,img_url"}\n')
       accuracy = this.params.query.accuracy
       sqlid = this.params.query.sqlid
       style = this.params.query.style
