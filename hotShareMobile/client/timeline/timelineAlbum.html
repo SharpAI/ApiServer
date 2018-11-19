@@ -35,10 +35,14 @@
       </ul> -->
       <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more" style="height: 353px;overflow-x:hidden; overflow-y:scroll;">
         <!-- <li role="presentation" id="timeRange"><input type="radio" {{filterTimeRange}}><label>时间范围</label></li> -->
-        <li role="presentation" >
+        <li role="presentation checkRecognize" >
           <h4>识别状态</h4>
-          <label id="onlyShowUnknown" for="1"><input id="1" type="radio" {{onlyShowUnknown}}><span>未识别</span></label>
-          <label id="clearFilter" for="2"><input id="2" type="radio" {{showAll}}><span>显示全部</span></label>
+          <label id="onlyShowUnknown">
+            <input id="1" type="radio" name="recognize" {{onlyShowUnknown}}><span>未识别</span>
+          </label>
+          <label id="clearFilter">
+            <input id="2" type="radio" name="recognize" {{showAll}}><span>显示全部</span>
+          </label>
         </li>
         <li role="separator" class="divider"></li>
         <li id="fuzz-panel" role="presentation">
@@ -157,10 +161,10 @@
               <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
                 {{> timelineAlbumImg}}
                 {{#if showAccAndFuzz accuracy fuzziness}}
-                <div class="value_bg">
+                <!-- <div class="value_bg">
                   <div class="accuracy">{{accuracy}}</div>
                   <div class="fuzziness">{{fuzziness}}</div>
-                </div>
+                </div> -->
                 {{/if}}
                 <div class="person-name">{{showName person_name accuracy label_times}}</div>
               </div>
@@ -168,10 +172,10 @@
               <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
                 {{> timelineAlbumImg}}
                 {{#if showAccAndFuzz accuracy fuzziness}}
-                <div class="value_bg">
+                <!-- <div class="value_bg">
                   <div class="accuracy">{{accuracy}}</div>
                   <div class="fuzziness">{{fuzziness}}</div>
-                </div>
+                </div> -->
                 {{/if}}
                 <div class="person-name">{{showName person_name accuracy label_times}}</div>
               </div>
@@ -189,10 +193,10 @@
             <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
               {{> timelineAlbumImg}}
               {{#if showAccAndFuzz accuracy fuzziness}}
-              <div class="value_bg">
+              <!-- <div class="value_bg">
                 <div class="accuracy">{{accuracy}}</div>
                 <div class="fuzziness">{{fuzziness}}</div>
-              </div>
+              </div> -->
               {{/if}}
               <div class="person-name">{{showName person_name accuracy label_times}}</div>
             </div>
