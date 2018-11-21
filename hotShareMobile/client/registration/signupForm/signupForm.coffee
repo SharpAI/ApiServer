@@ -68,7 +68,7 @@ Template.signupForm.events
   'click #btn_back' :->
     $('input').blur()
     Session.set("signUpName", '')
-    # Session.set("signUpMail", '')
+    Session.set("signUpMail", '')
     Session.set('signUpRepwd','')
     Session.set("signUpPwd", '')
     PUB.back()
@@ -83,19 +83,19 @@ Template.signupForm.events
       PUB.toast '当前为离线状态,请检查网络连接'
       return
     Session.set("signUpName", '')
-    # Session.set("signUpMail", '')
+    Session.set("signUpMail", '')
     names = t.find('#signup-username').value
-    # email = t.find('#signup-email').value.toLowerCase()
+    email = t.find('#signup-email').value.toLowerCase()
     Session.set 'userName',names
     pass1 = t.find('#signup-password').value
     pass2 = t.find('#signup-repassword').value
     myRegExp = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{2,6}/ ;
     if names is ''
-      PUB.toast '请输入姓名！'
-    # else if myRegExp.test(email) is false
-    #   PUB.toast '你的邮箱有误！'
+      PUB.toast '用户名不能为空！'
+    else if myRegExp.test(email) is false
+      PUB.toast '邮箱格式有误,请重新输入.'
     else if pass1 != pass2
-      PUB.toast '两次输入密码不一致'
+      PUB.toast '密码输入不一致,请重新输入.'
     else if pass1.length < 6
       PUB.toast '密码至少要6位！'
     else
@@ -103,7 +103,7 @@ Template.signupForm.events
       t.find('#sub-registered').innerText = '正在提交信息...'
       Accounts.createUser
         username:Session.get('userName')
-        # email:email
+        email:email
         password:pass1
         profile:
           fullname: Session.get('userName')
@@ -113,7 +113,7 @@ Template.signupForm.events
           if err
             console.log err
             trackEvent("signupuser","user signup failure.")
-            PUB.toast '注册失败，姓名可能已经存在！'
+            PUB.toast '注册失败，用户名或邮箱已经注册！'
             t.find('#sub-registered').disabled = false
             t.find('#sub-registered').innerText = '创建帐户'
           else
