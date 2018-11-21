@@ -439,11 +439,11 @@ PERSON = {
     }
     setObj.person_name = person.name;
     if (relation) {
-      if (!relation.checkin_image) {
+      if (!relation.checkin_image && data.checkin_image) {
         setObj.checkin_image = data.checkin_image;
       }
-      if (!relation.checkout_image) {
-        data.checkout_image = data.checkout_image;
+      if (!relation.checkout_image && data.checkout_image) {
+        setObj.checkout_image = data.checkout_image;
       }
       if (!relation.isWaitRelation) {
         setObj.isWaitRelation = false;
