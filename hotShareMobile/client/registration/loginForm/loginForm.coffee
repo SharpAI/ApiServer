@@ -145,6 +145,19 @@ Template.recoveryForm.events
         return false
       if qqValueReg.test(email)
         email += '@qq.com'
+      # if Meteor.call('checkUserByEmail', email) is 'undefined'
+      #   PUB.toast '未检测到与您输入邮箱匹配的帐号,请检查输入的邮箱'
+      Meteor.call('checkUserByEmail', email,(error,result)->
+        if result isnt undefined and result isnt null
+          Meteor.call('sendResetPasswordEmail', result._id, result.emails[0].address)
+          console.log result
+          PUB.toast('密码重置邮件已发送到您的注册邮箱,请查收邮件后继续操作。')
+          Router.go '/loginForm'
+        else
+          PUB.toast('未检测到与您输入邮箱匹配的帐号,请检查输入的邮箱。')
+        );
+      return
+
       t.find('#sub-recovery').disabled = true
       t.find('#sub-recovery').innerText = '正在重设...'
       subject = '用户' + email + '需要重置密码！'

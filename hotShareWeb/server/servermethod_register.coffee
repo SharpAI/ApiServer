@@ -457,6 +457,10 @@ if Meteor.isServer
           return {status: 'SUCCESS'}
         else
           return {status: 'ERROR', message: 'Invalid Password'}
+      'checkUserByEmail': (email)->
+        return Accounts.findUserByEmail(email)
+      'sendResetPasswordEmail':(userId, email)->
+        return Accounts.sendResetPasswordEmail(userId, email)
       'removeAssociatedUser': (userId)->
         this.unblock()
         Meteor.defer ()->
