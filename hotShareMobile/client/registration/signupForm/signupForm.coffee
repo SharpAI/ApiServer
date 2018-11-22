@@ -91,11 +91,11 @@ Template.signupForm.events
     pass2 = t.find('#signup-repassword').value
     myRegExp = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{2,6}/ ;
     if names is ''
-      PUB.toast '请输入姓名！'
+      PUB.toast '用户名不能为空！'
     else if myRegExp.test(email) is false
-      PUB.toast '你的邮箱有误！'
+      PUB.toast '邮箱格式有误,请重新输入.'
     else if pass1 != pass2
-      PUB.toast '两次输入密码不一致'
+      PUB.toast '密码输入不一致,请重新输入.'
     else if pass1.length < 6
       PUB.toast '密码至少要6位！'
     else
