@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.pedro.vlctestapp"
+    package="com.sharpai.videocapture"
     >
 
   <uses-permission android:name="android.permission.INTERNET" />
@@ -16,7 +16,7 @@
       android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
       >
     <activity
-        android:name=".MainActivity"
+        android:name="com.sharpai.videocapture.MainActivity"
         android:screenOrientation="landscape"
         >
       <intent-filter>

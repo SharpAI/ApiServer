@@ -1,4 +1,4 @@
-package com.pedro.vlctestapp;
+package com.sharpai.videocapture;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -13,38 +13,30 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.PixelCopy;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.pedro.vlc.VlcListener;
-import com.pedro.vlc.VlcVideoLibrary;
+import com.sharpai.vlc.VlcListener;
+import com.sharpai.vlc.VlcVideoLibrary;
 
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.videolan.libvlc.MediaPlayer;
 
 import com.example.screenshot.screenshot;
 
 
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Message;
 
 /**
- * Created by pedro on 25/06/17.
+ * Created by sharpai on 25/06/17.
  */
 public class MainActivity extends AppCompatActivity implements VlcListener, View.OnClickListener {
 

@@ -1,7 +1,6 @@
-package com.pedro.vlc;
+package com.sharpai.vlc;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.util.Log;
@@ -9,12 +8,9 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
-import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
@@ -23,7 +19,7 @@ import org.videolan.libvlc.MediaPlayer;
 
 
 /**
- * Created by pedro on 25/06/17.
+ * Created by sharpai on 25/06/17.
  * Play and stop need be in other thread or app can freeze
  */
 public class VlcVideoLibrary implements MediaPlayer.EventListener {

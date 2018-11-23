@@ -1,8 +1,8 @@
-package com.pedro.vlc;
+package com.sharpai.vlc;
 
 import org.videolan.libvlc.MediaPlayer;
 /**
- * Created by pedro on 25/06/17.
+ * Created by sharpai on 25/06/17.
  */
 public interface VlcListener {
 
