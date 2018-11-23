@@ -51,6 +51,7 @@ if (Meteor.isClient) {
           }
           console.log(Session.get("_resetPasswordToken"))
           Accounts.resetPassword(Session.get("_resetPasswordToken"), newPass,function(error){
+              console.log(error)
               if(error){
                   if(error.error===403 && error.reason==="Token expired"){
                     Session.set("pwdErrorInfo", "密码重设链接已经过期，请从手机端再次发起重设请求");
@@ -65,12 +66,13 @@ if (Meteor.isClient) {
                           $('.errorInfo').hide();
                       },3000);
                     }
+              return
               }
-              else{
-                 Session.set("resetPasswordSuccess", true);
-              }
+             console.log('resetOK')
+             Session.set("resetPasswordSuccess", true);
           });
-          return false;
+          Session.set("resetPasswordSuccess", true);
+          return;
       },
        'click #finishReset' :function(){
            Session.set('resetPassword', false);
