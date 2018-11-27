@@ -131,21 +131,25 @@ var options = {
 var fillChartData = function() {
   var group_id = Router.current().params._id;
 	var lineChartGroup = echarts.init(document.getElementById('lineChartGroup'));
-  console.log(group_id);
-    var showLen = 30;
-    if( activeShow.get() == 'weekly') {
-        showLen = 7;
-    }
-
   var group = SimpleChat.Groups.findOne({_id: group_id});
   var time_offset = 8;
   if (group && group.offsetTimeZone) {
     time_offset = group.offsetTimeZone;
   }
 
+  var showLen = 30;
   var now = new Date();
   var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,  0, 0, 0, 0);
+  var date_reg = Date.UTC(group.create_time.getFullYear(),group.create_time.getMonth(), group.create_time.getDate() ,  0, 0, 0, 0);
+  var date_span = (date - date_reg) / (24 * 3600 * 1000);
+  if( date_span < 30){
+    showLen = date_span;
+  }
+  
+  if( activeShow.get() == 'weekly' && date_span > 6) {
+      showLen = 7;
+  }
 
   // var date = displayDate.get();
 
