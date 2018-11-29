@@ -195,7 +195,7 @@ Template.homePage.events({
           console.log("enter this device timeline")
           // return PUB.page('/timelineAlbum/' + deviceLists[0].uuid + '?from=groupchat');
           // return PUB.page('/chooseLabelType/' + deviceLists[0].uuid);
-          var uuid = Router.current().params.uuid;
+          var uuid = deviceLists[0].uuid;
           return PUB.page('/timelineAlbum/' + uuid + '?from=groupchat');
         } else {
           console.log("select a device")
