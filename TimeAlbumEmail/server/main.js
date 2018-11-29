@@ -10,8 +10,8 @@ Meteor.startup(() => {
     console.log("SEND MAIL", group._id, group.report_emails);
     to = group.report_emails
     
-    var from = 'DeepEye<notify@email.tiegushi.com>';
-    var subject = group.name + ' Daily Report';
+    var from = '来了吗App<notify@email.tiegushi.com>';
+    var subject = group.name + '动态提醒';
     
     Email.send({
       to: to,
