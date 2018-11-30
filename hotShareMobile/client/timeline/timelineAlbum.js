@@ -201,7 +201,6 @@ var checkInOutWithOutName = function(type,name,taId,taName){
 
 
 var setLists = function(overlay) {
-  debugger
   var timelineAlbumCounts = 0;
   var uuid = Router.current().params._uuid;
   var person_id = Router.current().params.query.pid;
