@@ -45,12 +45,12 @@ window.inCompanyTimeLength = function(time_offset, status){
 			out_time = day_end;
 			self.in_time = date.getTime();
 		}
-		//今天的时间（没有离开过公司）
+		//今天的时间（没有离开过监控组）
 		else if(!out_time && isToday) {
 			var now_time = Date.now();
 			out_time = now_time;
 		}
-		//今天的时间（离开公司又回到公司）
+		//今天的时间（离开监控组又回到监控组）
 		else if(out_time && this.status === 'in' && isToday) {
 			var now_time = Date.now();
 			out_time = now_time;
@@ -90,7 +90,7 @@ var options = {
           var res = '日期: ' + params[0].name;
           for (var i = 0, l = params.length; i < l; i++) {
               if(params[i].seriesType == 'bar'){
-                res += '<br/>工作时间: ' + getHourMinutesTime(params[i].value);
+                res += '<br/>出现时间: ' + getHourMinutesTime(params[i].value);
               }
           }
           return res;

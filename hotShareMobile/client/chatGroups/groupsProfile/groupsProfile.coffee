@@ -191,8 +191,8 @@ if Meteor.isClient
       return group.announcement.length > 2
     isGroupCreator:()->
       # 具有以下特殊权限
-      # 1.公司名称修改
-      # 2.解散公司
+      # 1.监控组名称修改
+      # 2.解散监控组
       # 3.群管理员管理权限
 
       group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
@@ -244,13 +244,13 @@ if Meteor.isClient
       Session.set("groupsProfileMenu","groupBarCode")
     'click .deleteAndExit':(event)->
       if event.currentTarget.id is 'delThisGroup'
-        return PUB.confirm('删除后，将不再保留本公司相关信息',()->
+        return PUB.confirm('删除后，将不再保留本监控组相关信息',()->
           Meteor.call('creator-delete-group',Session.get('groupsId'), Meteor.userId(),(err,id)->
             groupDelOrQuitCB(err,id,true)
           )
         )
 
-      PUB.confirm('退出后，将不再接收本公司消息',()->
+      PUB.confirm('退出后，将不再接收本监控组消息',()->
         Meteor.call('remove-group-user',Session.get('groupsId'),Meteor.userId(),(err,id)->
           groupDelOrQuitCB(err,id, false)
           # console.log(err)
@@ -464,8 +464,8 @@ if Meteor.isClient
   Template.setGroupname.helpers
     placeholderText:()->
       if Session.equals('fromCreateNewGroups',true)
-         return '输入公司名称'
-      return '输入新的公司名称'
+         return '输入监控组名称'
+      return '输入新的监控组名称'
     groupName:()->
       if Session.equals('fromCreateNewGroups',true)
          return Session.get('AI_Group_Name') || ''
@@ -498,7 +498,7 @@ if Meteor.isClient
 
         Session.set("groupsProfileMenu","groupInformation")
       else
-        PUB.toast '公司名称不能为空~'
+        PUB.toast '监控组名称不能为空~'
       false
 
   Template.groupBarCode.helpers

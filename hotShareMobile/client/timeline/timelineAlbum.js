@@ -182,7 +182,7 @@ var checkInOutWithOutName = function(type,name,taId,taName){
     }
     if(res && res.result == 'succ'){
       PUB.toast('已记录到每日出勤报告');
-      // 发送代Ta 签到成功通知
+      // 发送代Ta 出现成功通知
       if(taId){
         console.log(msgObj)
         sendMqttUserMessage(taId,msgObj);
@@ -249,7 +249,7 @@ var setLists = function(overlay) {
           img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
           var index = personIds.indexOf(person_id);
           if( !(onlyShowUnknown.get()) && img.person_name && ids.indexOf(img.img_url) < 0 ){
-            // if(person_id && img.person_id != person_id ) { // 修改某人签到信息时的处理
+            // if(person_id && img.person_id != person_id ) { // 修改某人出现信息时的处理
             //   continue;
             // }
             //fuzziness filter
@@ -852,7 +852,7 @@ Template.timelineAlbum.events({
     var taId = Router.current().params.query.taId;
     var person_id = Router.current().params.query.pid;
 
-    // 修改指定的人的上下班时间
+    // 修改指定的人的监控时间
     if (person_id) {
       person_name = Session.get('modifyMyStatus_person_name');
 
@@ -883,7 +883,7 @@ Template.timelineAlbum.events({
       });
       return;
     }
-    // 帮别人签到
+    // 帮别人出现
     if(taId){
       data.user_id = taId;
 
@@ -962,7 +962,7 @@ Template.timelineAlbum.events({
 
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
-            // 发送代Ta 签到成功通知
+            // 发送代Ta 出现成功通知
             if(taId){
               console.log(msgObj)
               sendMqttUserMessage(taId,msgObj);
@@ -1022,7 +1022,7 @@ Template.timelineAlbum.events({
 
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
-            // 发送代Ta 签到成功通知
+            // 发送代Ta 出现成功通知
             if(taId){
               console.log(msgObj)
               sendMqttUserMessage(taId,msgObj);
@@ -1090,7 +1090,7 @@ Template.timelineAlbum.events({
 
       if(res && res.result == 'succ'){
         PUB.toast('已记录到每日出勤报告');
-        // 发送代Ta 签到成功通知
+        // 发送代Ta 出现成功通知
         if(taId){
           console.log(msgObj)
           sendMqttUserMessage(taId,msgObj);

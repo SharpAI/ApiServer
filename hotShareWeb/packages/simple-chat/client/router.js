@@ -1464,11 +1464,11 @@ Template._simpleChatToChat.helpers({
     return res == true;*/
   },
   showLNPTips: function() {
-    return false;
-    /*if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
+    // return false;
+    if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
       return false;
     }
-    return true;*/
+    return true;
   },
   inDevMode:function(){
     return isInDevMode();

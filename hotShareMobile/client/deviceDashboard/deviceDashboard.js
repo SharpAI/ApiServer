@@ -403,7 +403,7 @@ Template.deviceDashPoppage.events({
   },
   'click .resetWorkStatus': function (e) {
     e.stopImmediatePropagation();
-      // PUB.confirm('是否要移除该成员当前签到信息？请确认！', function() {
+      // PUB.confirm('是否要移除该成员当前出现信息？请确认！', function() {
       //   var obj = popObj.get();
       //   var personId = obj.person_id[0].id;
 
@@ -423,7 +423,7 @@ Template.deviceDashPoppage.events({
     //直接转到标识人页面
     // Session.set('channel','device/dashboard/'+group_id);
     // Router.page('');
-    //2.删除签到记录
+    //2.删除出现记录
     Meteor.call('resetMemberWorkStatus', e.currentTarget.id, personId, function (error, result) {
       if (error) {
         return PUB.toast('请重试~');
@@ -502,7 +502,7 @@ Template.deviceDashPoppage.events({
       changeLogic();
     })
     var changeLogic = function () {
-      //修改:1.删除签到记录 2.加入训练集
+      //修改:1.删除出现记录 2.加入训练集
       //屏蔽返回按钮
       // Session.set('no-back', true);
       SimpleChat.show_label(group_id, url, function (name) {
@@ -510,7 +510,7 @@ Template.deviceDashPoppage.events({
         if (!name || name == '') {
           return;
         }
-        // PUB.confirm('修改当前签到信息，并将它加入到' + name + '的训练集?', function () {
+        // PUB.confirm('修改当前出现信息，并将它加入到' + name + '的训练集?', function () {
         Meteor.call('resetMemberWorkStatus', e.currentTarget.id, personId, function (error, result) {
           if (error) {
             return PUB.toast('请重试~');

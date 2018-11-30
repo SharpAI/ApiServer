@@ -393,7 +393,7 @@ if Meteor.isServer
     console.log "sharpai_pushnotification: type:"+type
     if type is "notify_stranger"
       group_notify = true
-      group_name = if doc.group_name then doc.group_name else "公司"
+      group_name = if doc.group_name then doc.group_name else "监控组"
       content = 'SharpAI '+'在'+group_name+'发现了'+'陌生人。'
       extras = {
         type: "notify_stranger"
@@ -401,7 +401,7 @@ if Meteor.isServer
       toUserId = userId
     else if type is "notify_knownPeople"
       group_notify = true
-      group_name = if doc.group_name then doc.group_name else "公司"
+      group_name = if doc.group_name then doc.group_name else "监控组"
       person_name = if doc.person_name then doc.person_name else "多个人"
       content = 'SharpAI '+'在'+group_name+'看到了'+person_name+'。'
       extras = {
@@ -410,14 +410,14 @@ if Meteor.isServer
       toUserId = userId
     else if type is "device_offline"
       group_notify = true
-      group_name = if doc.group_name then doc.group_name else "公司"
+      group_name = if doc.group_name then doc.group_name else "监控组"
       content = group_name+'：您的设备('+userId+')已经离线，请检查'
       extras = {
         type: "device_offline"
       }
     else if type is "device_online"
       group_notify = true
-      group_name = if doc.group_name then doc.group_name else "公司"
+      group_name = if doc.group_name then doc.group_name else "监控组"
       content = group_name+'：您的设备('+userId+')已经在线'
       extras = {
         type: "device_online"

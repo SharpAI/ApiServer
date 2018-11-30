@@ -2,15 +2,15 @@
 {{> _checkGroupDevice}}
 <div class="homePage" style="{{noCompany}}">
   <div class="head">
-    <strong class="top-home-btn active">公司主页</strong>
+    <strong class="top-home-btn active">监控组</strong>
     <div class="rightDropMenu dropdown">
       <div class="rightButton dropdown-toggle" id="add-more" data-toggle="dropdown">
         <img src="/add_more.png" height="30" >
       </div>
       <ul class="dropdown-menu" role="menu" aria-labelledby="add-more">
-        <!-- <li role="presentation"><a id="joinTestChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-users add-more-drop-item"></i>加入公司</a></li> -->
-        <li role="presentation"><a id="createNewChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-comment add-more-drop-item"></i>创建公司</a></li>
-        <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫码加入公司</a></li>
+        <!-- <li role="presentation"><a id="joinTestChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-users add-more-drop-item"></i>加入监控组</a></li> -->
+        <li role="presentation"><a id="createNewChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-comment add-more-drop-item"></i>创建监控组</a></li>
+        <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫码加入监控组</a></li>
         {{#if isAndroid}}
         <li role="presentation"><a id="scanimage" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫图片</a></li>
         {{/if}}
@@ -56,13 +56,13 @@
     </li>
     <li class="goGroupProfile" id="{{_id}}">
       <div class="icon"><img src="/group_set.png"/></div>
-      <label>公司管理</label>
+      <label>监控组管理</label>
       <div class="value"><i class="fa fa-angle-right"></i></div>
     </li>
     <li class="viewWorkStatus">
       <div class="icon"><img src="/check_canlder.png"/></div>
-      <label>签到信息</label>
-      <div class="value">已签到 {{getInCount}}人 <i class="fa fa-angle-right"></i></div>
+      <label>今日出现信息</label>
+      <div class="value">已出现 {{getInCount}}人 <i class="fa fa-angle-right"></i></div>
     </li>
     <li class="goInstallTest">
       <div class="icon"><img src="/install-test.png"/></div>
@@ -71,12 +71,12 @@
     </li>
     <li class="goGroupPerson">
       <div class="icon"><img src="/group_users.png"/></div>
-      <label>员工照片</label>
+      <label>成员照片</label>
       <div class="value"><i class="fa fa-angle-right"></i></div>
     </li>
     <li class="goPersonHistory">
       <div class="icon"><i class="fa fa-history"></i></div>
-      <label>工作记录</label>
+      <label>出现记录</label>
       <div class="value"><i class="fa fa-angle-right"></i></div>
     </li>
     <li class="goStranger">
@@ -86,7 +86,7 @@
     </li>
     <li class="goGroupReporter">
       <div class="icon"><i class="fa fa-compass"></i></div>
-      <label>工作时间报表</label>
+      <label>出现时间报表</label>
       <div class="value"><i class="fa fa-angle-right"></i></div>
     </li>
   </ul>
