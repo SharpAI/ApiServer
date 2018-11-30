@@ -8,6 +8,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
+import android.hardware.display.VirtualDisplay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ import org.videolan.libvlc.MediaPlayer;
  */
 public class VlcVideoLibrary implements MediaPlayer.EventListener {
 
-  private int width = 0, height = 0;
+  private int width = 1920, height = 1080;
   private LibVLC vlcInstance;
   private MediaPlayer player;
   private VlcListener vlcListener;

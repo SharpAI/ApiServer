@@ -108,7 +108,9 @@ public class screenshot {
         }
         FileOutputStream fos = new FileOutputStream(bitmapFile);
         //image.compress(Bitmap.CompressFormat.PNG, 90, fos);
-        image.compress(Bitmap.CompressFormat.JPEG,100,fos);
+        image.compress(Bitmap.CompressFormat.JPEG,90,fos);
+        fos.flush();
+        fos.getFD().sync();
         fos.close();
 
         // Initiate media scanning to make the image available in gallery apps
