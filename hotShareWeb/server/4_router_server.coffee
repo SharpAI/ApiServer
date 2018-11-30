@@ -889,8 +889,8 @@ if Meteor.isServer
         p_ids = this.request.body.p_ids
 
       console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type + ' sqlid=' + sqlid + ' style=' + style + 'img_ts=' + img_ts
-      unless id and img_url and uuid
-        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      unless id or img_url or uuid
+        return this.response.end('{"result": "failed", "cause": "invalid params,check id,uuid,img_url"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
       if this.params.query.opt and this.params.query.opt is 'remove'
