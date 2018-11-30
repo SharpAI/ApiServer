@@ -167,11 +167,12 @@ var isGroupNoDeviceWizardFinished = function(group_id) {
 }
 
 var isChatTipFinished = function() {
-  if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){          // 1423
+  /*if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){          // 1423
     return true;                                                                                                    // 1424
   }
 
-  return false;
+  return false;*/
+  return true;
 };
 
 var setGroupWizardFinished = function(group_id, finished) {
@@ -1464,11 +1465,11 @@ Template._simpleChatToChat.helpers({
     return res == true;*/
   },
   showLNPTips: function() {
-    // return false;
-    if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
+    return false;
+    /*if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
       return false;
     }
-    return true;
+    return true;*/
   },
   inDevMode:function(){
     return isInDevMode();
