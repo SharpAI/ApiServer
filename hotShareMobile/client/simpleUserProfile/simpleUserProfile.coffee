@@ -73,8 +73,8 @@ if Meteor.isClient
         return false
     isGroupCreator:()->
       # 具有以下特殊权限
-      # 1.公司名称修改
-      # 2.解散公司
+      # 1.监控组名称修改
+      # 2.解散监控组
       # 3.群管理员管理权限
       #group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
       #if group and group.creator and group.creator.id is Meteor.userId()

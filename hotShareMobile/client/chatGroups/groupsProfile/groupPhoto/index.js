@@ -481,7 +481,7 @@ Template.groupPhotoImg1.events({
         return $('._checkGroupDevice').fadeIn();
       }
     }
-    return PUB.toast('该公司下暂无脸脸盒');
+    return PUB.toast('该监控组下暂无脸脸盒');
 
   },
   'click li': function(e){

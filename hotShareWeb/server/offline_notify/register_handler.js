@@ -9,11 +9,16 @@ Meteor.startup(function () {
         //user = Meteor.users.findOne({username: uuid)
         userGroups = SimpleChat.GroupUsers.findOne({user_id: info.user._id})
         console.log(userGroups)
-        if(userGroups){
+        Devices.update({uuid: info.user.username},{$set:{online:true}})
+        var not_yet_notified_offline = cancel_offline_notification(info.user.username);
+        /*
+         * 如果用户掉线后，掉线消息还没发，设备就已经上线了，就不再通知用户
+         * 只有超过定义的时间如10分钟，离线消息才会发出。这样避免网络抖动带来的频繁通知
+         * 也避免服务器重启动之后，所有设备都会被通知掉线
+         */
+        if(userGroups && !not_yet_notified_offline){
           sharpai_pushnotification("device_online",userGroups,info.user.username)
         }
-        Devices.update({uuid: info.user.username},{$set:{online:true}})
-        cancel_offline_notification(info.user.username);
         info.connection.onClose(function(){
           console.log('Device: '+info.user.username+' --> disconnected')
           Meteor.users.update(

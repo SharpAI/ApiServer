@@ -29,7 +29,7 @@ if(Meteor.isServer){
       job_report = job_report.replaceAll('{{company_name}}', group.name);
       job_report = job_report.replaceAll('{{job_date}}', new Date(date).toISOString().split('T')[0]);
 
-      var subject = "每日考勤报告";
+      var subject = "每日出现报告";
       var to = group.report_emails;
       if (emails){
         to = emails;
@@ -46,7 +46,6 @@ if(Meteor.isServer){
 
       var workStatus = WorkStatus.find({group_id: group_id, date: date});
       console.log('==sr==. date is '+date+' and time is '+new Date(date) +' and local time is '+ DateTimezone(time_offset));
-
       if (workStatus) {
         workStatus.forEach(function(ws) {
           var pContentCheck = Assets.getText('email/job-checkin-item.html');
@@ -121,19 +120,21 @@ if(Meteor.isServer){
     function sendJobReport() {
       console.log("send email out");
       try {
-        var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
+        //var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
+        var groups = SimpleChat.GroupUsers.find({report_emails: {$exists: true}});
         groups.forEach(function(group) {
           var time_offset = 8;
           if (group && group.offsetTimeZone) {
             time_offset = group.offsetTimeZone;
           }
-
           var local_time = DateTimezone(time_offset);
+          console.log('Sending time email'+local_time.getHours())
           if(local_time.getHours() == 19) { // 群组本地时间 12 点 发送
             console.log('sendJobReport, and group_id is '+group._id+', and current timeOffsetZone is '+time_offset);
             console.log(group._id, group.report_emails);
             sendGroupJobReport(group);
           }
+          
         });
       }
       catch(ex) {
@@ -170,7 +171,28 @@ if(Meteor.isServer){
         sendGroupJobReport(group, emails);
       }
     });
-  //
+
+    // Meteor.methods({
+    //   // for local test method 
+    //   'testGroupDailyReport': function (group_id, emails) {SimpleChat.GroupUsers
+    //     var group = SimpleChat.GroupUsers.findOne({group_id: group_id});
+    //     console.log(group._id, emails);
+    //     console.log(group._id, group.report_emails);
+    //     sendGroupJobReport(group, emails);
+    //   }
+    // });
   //sendJobReport();
+
+  // function sendTestEmail() {
+  //   var group = SimpleChat.Groups.findOne({_id: 'a5119193a661db15fc425f6c'});
+  //   console.log('send test emails');
+  //       console.log('group_id:', group._id, group.report_emails);
+  //       sendGroupJobReport(group, 'zezhang@actiontec.com');
+  // }
+  // sendTestEmail();
+
+  
+  
+
   });
 }

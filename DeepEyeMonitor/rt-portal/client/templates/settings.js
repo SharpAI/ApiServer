@@ -103,11 +103,11 @@ Template.settings.helpers({
 		return options;
   },
   verInfoNow: function () {
-    var res = BoxVersion.findOne({isNew: true});
+    var res = BoxVersion.findOne({});
     var str = '';
     if (res) {
       for (const key in res) {
-        if (res.hasOwnProperty(key) && key != 'isNew' && key != '_id' && key != 'createTime') {
+        if (res.hasOwnProperty(key) && key != '_id' && key != 'createTime') {
           str += '<tr class="version-item">'
               + '<td style="text-align:right; width: 150px;">' + key + '：</td>'
               + '<td style="text-align:left; width: 100px">' + res[key] + '</td>'
@@ -127,7 +127,7 @@ Template.settings.helpers({
       'workai_flower',
       'face_detector',
       'workaipython',
-      'watchtowe'
+      'watchtower'
     ];
     return res;
   },
@@ -136,7 +136,7 @@ Template.settings.helpers({
     var str = '';
     if (res) {
       for (const key in res) {
-        if (res.hasOwnProperty(key) && key != 'isNew') {
+        if (res.hasOwnProperty(key)) {
           str += '<tr>'
               + '<td style="text-align:right; width:50%;">' + key + '：</td>'
               + '<td style="text-align:left; width:40%;">' + res[key] + '</td>'
@@ -221,22 +221,22 @@ Template.settings.events({
     var resObj = {};
     for (var i = 0; i < formDOM.length; i++){
       if (formDOM[i].type.toLowerCase() == 'text') {
+        if(!formDOM[i].value || formDOM[i].value.length < 1) {
+            resObj = {};
+            break;
+        }
         resObj[formDOM[i].id] = formDOM[i].value;
       }
     }
     Session.set('versionFormInfo',resObj);
   },
   'click #versionSet': function () {
-    var oldRes = BoxVersion.find({isNew: true}).fetch();
-    if (oldRes) {
-      for (var i = 0; i < oldRes.length; i++) {
-        BoxVersion.update({_id: oldRes[i]._id},{$set:{isNew: false}});
-      }
-    } else {
-      return;
-    }
+    var oldRes = BoxVersion.findOne({});
     var newRes = Session.get('versionFormInfo');
-    newRes.isNew = true;
+    if(JSON.stringify(newRes) == "{}") {
+        return
+    }
+
     newRes.createTime = new Date().getTime();
     Meteor.call('setVersionMonitorClient', newRes);
   }

@@ -63,14 +63,14 @@ if (Meteor.isClient) {
                    return Router.go(gotoPage);
                 }
                 if (result === 'not find group') {
-                  PUB.toast('二维码格式错误');
+                  PUB.toast('二维码格式错误或该群组已被删除');
                   return Router.go(gotoPage);
                 }
               });
             }
             else{
               Router.go(gotoPage);
-              PUB.toast('二维码格式错误')
+              PUB.toast('二维码格式错误或该群组已被删除')
             }
 
           }
@@ -150,14 +150,14 @@ if (Meteor.isClient) {
                return Router.go(gotoPage);
             }
             if (result === 'not find group') {
-              PUB.toast('二维码格式错误');
+              PUB.toast('二维码格式错误或该群组已被删除');
               return Router.go(gotoPage);
             }
           });
         }
         else{
           Router.go(gotoPage);
-          PUB.toast('二维码格式错误')
+          PUB.toast('二维码格式错误或该群组已被删除')
         }
       }
       else{
@@ -208,7 +208,7 @@ if (Meteor.isClient) {
             decodecallback(result);
           }, function (err) {
             console.log('##RDBG decodeImage err: ' + err);
-            PUB.toast('二维码格式错误');
+            PUB.toast('二维码格式错误或该群组已被删除');
           });
         }
       }, function (error) {

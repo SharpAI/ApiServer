@@ -8,8 +8,8 @@ Meteor.startup(function () {
   Meteor.methods({
     report: function(info) {
       this.unblock();
-      console.log('report info')
-      console.log(info)
+      //console.log('report info')
+      //console.log(info)
 
       var peerData = peerCollection.findOne({clientID: info.clientID});
       info.updateBy = new Date();
@@ -21,6 +21,15 @@ Meteor.startup(function () {
       } else if(info.total_tasks===0){
         console.log('Camera disconnected')
         Devices.update({uuid: info.clientID},{$set:{camera_run:false}})
+      }
+
+      if(info && info.version) {
+        if(info.version.islatest) {
+          Devices.update({uuid: info.clientID},{$set:{islatest:true}})
+        }
+        else {
+          Devices.update({uuid: info.clientID},{$set:{islatest:false}})
+        }
       }
     }
   })

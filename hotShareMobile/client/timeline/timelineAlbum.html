@@ -35,21 +35,25 @@
       </ul> -->
       <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more" style="height: 353px;overflow-x:hidden; overflow-y:scroll;">
         <!-- <li role="presentation" id="timeRange"><input type="radio" {{filterTimeRange}}><label>时间范围</label></li> -->
-        <li role="presentation" >
+        <li role="presentation checkRecognize" >
           <h4>识别状态</h4>
-          <label id="onlyShowUnknown" for="1"><input id="1" type="radio" {{onlyShowUnknown}}><span>未识别</span></label>
-          <label id="clearFilter" for="2"><input id="2" type="radio" {{showAll}}><span>显示全部</span></label>
+          <label id="onlyShowUnknown">
+            <input id="1" type="radio" name="recognize" {{onlyShowUnknown}}><span>未识别</span>
+          </label>
+          <label id="clearFilter">
+            <input id="2" type="radio" name="recognize" checked="checked" {{showAll}}><span>显示全部</span>
+          </label>
         </li>
         <li role="separator" class="divider"></li>
         <li id="fuzz-panel" role="presentation">
           <h4>模糊度</h4>
           <div id="fuzz-value">
               <label id="fuzz-five"><input type="radio" name="radio" value="5" ><span>5</span></label>
-              <label id="fuzz-ten" style="margin-left: 36.1%;"><input type="radio" name="radio" value="10"><span>10</span></label>
+              <label id="fuzz-ten"><input type="radio" name="radio" value="10"><span>10</span></label>
           </div>
           <div id="fuzz-value">
               <label id="fuzz-fifty"><input type="radio" name="radio" value="50"><span>50</span></label>
-              <label id="fuzz-hundred" style="margin-left: 32%;"><input type="radio" name="radio" value="100" checked><span>100</span></label>
+              <label id="fuzz-hundred"><input type="radio" name="radio" value="100" checked><span>100</span></label>
           </div>
         </li>
         <li role="separator" class="divider"></li>
@@ -70,7 +74,7 @@
     {{#if lists}}
     <ul class="timeLine">
       <div style="color: #FF9800;font-size: 16px;position: relative; top: -10px; text-align: right;"><button id="goHint" style="color:rgb(0, 119, 255); display: inline-block;">标注助手</button></div>
-      <div style="color: #FF9800;font-size: 16px;position: relative"> 点击头像，选择您的上/下班时间</div>
+      <div style="color: #FF9800;font-size: 16px;position: relative"> 点击头像，调整您的出现时间</div>
       <!--{{#each lists}}
       {{#if isShowTime}}
       <div class="timeLine-time">
@@ -157,10 +161,10 @@
               <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
                 {{> timelineAlbumImg}}
                 {{#if showAccAndFuzz accuracy fuzziness}}
-                <div class="value_bg">
+                <!-- <div class="value_bg">
                   <div class="accuracy">{{accuracy}}</div>
                   <div class="fuzziness">{{fuzziness}}</div>
-                </div>
+                </div> -->
                 {{/if}}
                 <div class="person-name">{{showName person_name accuracy label_times}}</div>
               </div>
@@ -168,10 +172,10 @@
               <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
                 {{> timelineAlbumImg}}
                 {{#if showAccAndFuzz accuracy fuzziness}}
-                <div class="value_bg">
+                <!-- <div class="value_bg">
                   <div class="accuracy">{{accuracy}}</div>
                   <div class="fuzziness">{{fuzziness}}</div>
-                </div>
+                </div> -->
                 {{/if}}
                 <div class="person-name">{{showName person_name accuracy label_times}}</div>
               </div>
@@ -189,10 +193,10 @@
             <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
               {{> timelineAlbumImg}}
               {{#if showAccAndFuzz accuracy fuzziness}}
-              <div class="value_bg">
+              <!-- <div class="value_bg">
                 <div class="accuracy">{{accuracy}}</div>
                 <div class="fuzziness">{{fuzziness}}</div>
-              </div>
+              </div> -->
               {{/if}}
               <div class="person-name">{{showName person_name accuracy label_times}}</div>
             </div>
@@ -278,7 +282,7 @@
 <template name="zhoushou">
     <div class="zhoushou" style="z-index: 1000;">
         <div class="head">
-          <strong>公司陌生人</strong>
+          <strong>监控组陌生人</strong>
           <div id="farhint" class="leftButton">
             <i class="fa fa-angle-left fa-fw"></i>
           </div>

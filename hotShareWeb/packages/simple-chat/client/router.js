@@ -600,8 +600,7 @@ Template._simpleChatToChat.onRendered(function(){
 
       is_loading.set(false);
     });
-    // 用户发图
-    setScrollToBottom();
+    
     $box.scroll(function () {
       console.log("$box.scrollTop()="+$box.scrollTop()+", is_loading.get()="+is_loading.get());
       if($box.scrollTop() === 0 && !is_loading.get()){
@@ -674,6 +673,10 @@ Template._simpleChatToChat.onRendered(function(){
         });
       }, 2000);
     }
+    Meteor.setTimeout(function(){
+      // 用户发图
+      setScrollToBottom();
+    }, 600);
   }, 200);
 });
 
@@ -1461,11 +1464,11 @@ Template._simpleChatToChat.helpers({
     return res == true;*/
   },
   showLNPTips: function() {
-    return false;
-    /*if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
+    // return false;
+    if (localStorage.getItem('_LabelNewPersonTip') && localStorage.getItem('_LabelNewPersonTip') == 'true' ){
       return false;
     }
-    return true;*/
+    return true;
   },
   inDevMode:function(){
     return isInDevMode();

@@ -92,6 +92,7 @@ if Meteor.isServer
     Person._ensureIndex({group_id: 1,'faces.id':1,createAt:1})
     Person._ensureIndex({group_id: 1, name: 1,createAt: 1})
     Person._ensureIndex({group_id: 1, createAt: 1})
+    Person._ensureIndex({group_id: 1, faceId: 1})
     ClusterPerson._ensureIndex({group_id: 1,createAt: -1});
     Devices._ensureIndex({uuid:1})
     Devices._ensureIndex({groupId:1})

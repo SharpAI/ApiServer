@@ -380,6 +380,21 @@ GetDataBoxMonitor = function() {
   });
 };
 
+var getDevList = function () {
+    var lists = [];
+    GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}, {fields: {'_id': 1, 'group_id': 1}}).forEach(function(item){
+        var devices =  Devices.find({groupId: item.group_id},{sort:{createAt:-1}}, {fields: {'_id': 1, 'uuid': 1}}).fetch();
+        if(devices && devices.length > 0){
+            for (let i = 0; i < devices.length; i++) {
+                if (devices[i]&& devices[i].uuid) {
+                    lists.push(devices[i].uuid);
+                }
+            }
+        }
+    });
+    return lists;
+}
+
 Template.boxMonitorTraffic.rendered = function() {
   Session.set('noTrafficData','loading')
   $(".box-traffic-chart").css({
@@ -483,7 +498,9 @@ Template.boxMonitorsAlive.helpers({
       }
     },
     totalClient: function(){
-      return peerCollection.find().count();
+        var lists = getDevList();
+        
+        return peerCollection.find({clientID: {$in: lists}}).count();
     },
     counter: function () {
       return Session.get('counter');
@@ -491,15 +508,19 @@ Template.boxMonitorsAlive.helpers({
     peersInfo: function(){
       var limit = 20;
       var page = Session.get('boxMonitorPage');
-      return peerCollection.find({},{limit:limit, skip:(page-1)*limit});
+      var lists = getDevList();
+      
+      return peerCollection.find({clientID: {$in: lists}},{limit:limit, skip:(page-1)*limit});
     },
     inactivePeersInfo: function(){
       var limit = 20;
       var page = Session.get('boxMonitorPage');
-      return inactiveClientCollection.find({},{limit:limit, skip:(page-1)*limit});
+      var lists = getDevList();
+        return inactiveClientCollection.find({clientID: {$in: lists}},{limit:limit, skip:(page-1)*limit});
     },
     totalInactiveClient: function(){
-      return inactiveClientCollection.find().count();
+        var lists = getDevList();
+        return inactiveClientCollection.find({clientID: {$in: lists}}).count();
     },
     ceil: function(num){
       return Math.ceil(num/4)
@@ -634,7 +655,7 @@ Template.boxMonitorsAlive.helpers({
     verInfo: function () {
       var cid = Session.get('monitorBoxId');
       var res = peerCollection.findOne({clientID: cid});
-      var verRes = BoxVersion.findOne({isNew: true});
+      var verRes = BoxVersion.findOne({});
       var str = '';
       if (res && res.version && res.version.v2 && res.version.v2 != 'unknown') {
         for (const key in res.version.v2) {
@@ -663,10 +684,9 @@ Template.boxMonitorsAlive.helpers({
     }
   });
 Template.boxMonitorsAlive.rendered = function(){
-  Session.set('currBoxMonitorTab', 'alive');
-  Session.set('boxMonitorPage',1);
-  Meteor.subscribe('version-isnew', function() {
-  });
+    Session.set('currBoxMonitorTab', 'alive');
+    Session.set('boxMonitorPage',1);
+    Meteor.subscribe('version-isnew', function() {});
 }
 Template.boxMonitorsAlive.events({
   'click .box-monitor-status': function(e){

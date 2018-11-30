@@ -13,7 +13,9 @@ cleanLeftRelationAndStatusDate = function(){
   });
 };
 
+
 var Fiber = Npm.require('fibers');
+
 PERSON = {
   upsetDevice: function(uuid, group_id,name,in_out){
     var device = Devices.findOne({uuid: uuid});
@@ -322,7 +324,7 @@ PERSON = {
       return {result:'error',reason:'参数不全'};
     }
 
-    /*重打卡/代打卡　选择了不是今天的图片，要写到对应的天的考勤记录里面,不要更新WorkAIUserRelations*/
+    /*重打卡/代打卡　选择了不是今天的图片，要写到对应的天的出现记录里面,不要更新WorkAIUserRelations*/
     var checktime = data.checkout_time || data.checkin_time || person_info.ts;
     var isToday = PERSON.checkIsToday(checktime,person_info.group_id);
 
@@ -439,11 +441,11 @@ PERSON = {
     }
     setObj.person_name = person.name;
     if (relation) {
-      if (!relation.checkin_image) {
+      if (!relation.checkin_image && data.checkin_image) {
         setObj.checkin_image = data.checkin_image;
       }
-      if (!relation.checkout_image) {
-        data.checkout_image = data.checkout_image;
+      if (!relation.checkout_image && data.checkout_image) {
+        setObj.checkout_image = data.checkout_image;
       }
       if (!relation.isWaitRelation) {
         setObj.isWaitRelation = false;
@@ -452,7 +454,7 @@ PERSON = {
         relation.ai_persons.push({id: person._id});
         setObj.ai_persons = relation.ai_persons;
       }
-      //聊天室标记或者打卡设备记录考勤时，如果选取的照片拍摄时间小于当前的考勤上班时间或大于当前的下班时间才应当更新考勤；如果是主页考勤点更改上下班时间或个人信息重打卡则都更改
+      //聊天室标记或者打卡设备记录出现时，如果选取的照片拍摄时间小于当前的出现上班时间或大于当前的下班时间才应当更新出现；如果是主页出现点更改监控时间或个人信息重打卡则都更改
       if (!data.wantModify) {
         var time = setObj.checkin_time || setObj.checkout_time;
         var d = new Date(time);
@@ -475,7 +477,7 @@ PERSON = {
           workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'person_name': relation.person_name, 'date': day_utc});
         }
         if (workstatus) {
-          //当前考勤上班时间小于标记时间
+          //当前出现上班时间小于标记时间
           if (workstatus.in_time && setObj.checkin_time && workstatus.in_time > 0 && workstatus.in_time < setObj.checkin_time) {
             // delete setObj.checkin_time;
             // delete setObj.checkin_image;
@@ -485,7 +487,7 @@ PERSON = {
             setObj.checkin_image = workstatus.in_image;
             setObj.checkin_video = workstatus.in_video;
           }
-          //当前考勤下班时间大于标记时间
+          //当前出现下班时间大于标记时间
           if (workstatus.out_time && setObj.checkout_time && workstatus.out_time > setObj.checkout_time) {
             console.log('workstatus out_time later than setObj checkout_time');
             setObj.checkout_time = workstatus.out_time;
@@ -545,7 +547,7 @@ PERSON = {
     PERSON.updateToDeviceTimeline2(timeLineData);
     return {result:'succ'};
   },
-  //App用户关联过的员工，更新考勤信息
+  //App用户关联过的成员，更新出现信息
   updateWorkStatus: function(ai_person_id){
     console.log('updateWorkStatus -->'+ai_person_id);
     relation = WorkAIUserRelations.findOne({'ai_persons.id': ai_person_id})
@@ -783,7 +785,7 @@ PERSON = {
       WorkStatus.update({_id: workstatus._id}, {$set: setObj});
     }
   },
-  //更新历史考勤信息
+  //更新历史出现信息
   updateWorkStatusHistory: function(workStatusObj){
     console.log('updateWorkStatusHistory --->'+JSON.stringify(workStatusObj));
   //{
@@ -861,7 +863,7 @@ PERSON = {
       checkout_time = workStatusObj.checkout_time;
     }
 
-    //这一天存在考勤记录
+    //这一天存在出现记录
     if (workstatus) {
       intime = workstatus.in_time ? workstatus.in_time : 0;
       outtime = workstatus.out_time ? workstatus.out_time : 0;
@@ -1208,7 +1210,7 @@ PERSON = {
       });
     }
 
-    //匹配历史考勤表
+    //匹配历史出现表
     var workStatus1 = WorkStatus.findOne({group_id:group_id,in_image:img_url});
     if (workStatus1) {
       return WorkStatus.update({_id:workStatus1._id},{
