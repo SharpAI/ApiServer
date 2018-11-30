@@ -512,7 +512,7 @@ if Meteor.isServer
     minutes = minutes.getMinutes()
     console.log("minutes="+minutes)
 
-    # Step 1. 修正考勤记录, WorkAIUserRelations或workStatus
+    # Step 1. 修正出现记录, WorkAIUserRelations或workStatus
     fixWorkStatus = (work_status,in_out)->
       today = new Date(create_time.getTime())
       today.setHours(0,0,0,0)
@@ -581,16 +581,16 @@ if Meteor.isServer
       WorkStatus.update({_id: work_status._id},$set: setObj)
 
     work_status_in = WorkStatus.findOne({in_image: url})
-    # 匹配到进的考勤
+    # 匹配到进的出现
     if work_status_in
-      console.log('padCallRemove Fix WorkStatus, 需要修正进的考勤')
+      console.log('padCallRemove Fix WorkStatus, 需要修正进的出现')
       #fixWorkStatus(work_status_in,'in')
     work_status_out = WorkStatus.findOne({out_image: url})
-    # 匹配到出的考勤
+    # 匹配到出的出现
     if work_status_out
-      console.log('padCallRemove Fix WorkStatus, 需要修正出的考勤')
+      console.log('padCallRemove Fix WorkStatus, 需要修正出的出现')
       #fixWorkStatus(work_status_out,'out')
-     # 删除考勤
+     # 删除出现
     WorkStatus.remove({$or:[{in_image: url},{out_image: url}]});
     # Step 2. 从设备时间轴中移除
     selector = {
@@ -972,7 +972,7 @@ if Meteor.isServer
               console.log("people_config="+JSON.stringify(people_config))
               if isShow and checkIfSendKnownUnknownPushNotification(userGroup.group_id,person_id)
                   group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
-                  group_name = '公司'
+                  group_name = '监控组'
                   if group && group.name
                     group_name = group.name
                   console.log("group_id="+userGroup.group_id)
@@ -983,7 +983,7 @@ if Meteor.isServer
                   sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null, ai_person_id)
           else
               group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
-              group_name = '公司'
+              group_name = '监控组'
               is_notify_stranger = true
               if group && group.settings && group.settings.notify_stranger == false
                 is_notify_stranger = false
@@ -1048,7 +1048,7 @@ if Meteor.isServer
             return
 
           group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
-          group_name = '公司'
+          group_name = '监控组'
           is_notify_stranger = true
           if group && group.settings && group.settings.notify_stranger == false
             is_notify_stranger = false
@@ -2129,11 +2129,11 @@ if Meteor.isServer
         #day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
         out_time = day_end;
         workstatus.in_time = date.getTime();
-      #今天的时间（没有离开过公司）
+      #今天的时间（没有离开过监控组）
       else if(!out_time and isToday)
         now_time = Date.now();
         out_time = now_time;
-      #今天的时间（离开公司又回到公司）
+      #今天的时间（离开监控组又回到监控组）
       else if(out_time and workstatus.status is 'in' and isToday)
         now_time = Date.now();
         out_time = now_time;

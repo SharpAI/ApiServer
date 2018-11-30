@@ -9,38 +9,38 @@
             <div id="groupsProfilePageback" class="leftButton back">
                 <i class="fa fa-angle-left fa-fw"></i>
             </div>
-            <strong>公司信息</strong>
+            <strong>监控组信息</strong>
         </div>
         <div class="content">
             <div id="wrapper">
                 {{> groupUsers}}
                 <!-- <div class="shareGroup eachViewer">
-                <span>分享公司</span>
+                <span>分享监控组</span>
             </div> -->
                 <div class="line" style="height: 12px;"></div>
-                <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">公司部门信息</div>
+                <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">监控组信息</div>
                 {{#if isGroup}}
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <!-- {{#if isGroupCreator}} -->
                     {{#if isGroupAdmin}}
                     <li class="name editName">
-                        <label>公司名称</label>
+                        <label>监控组名称</label>
                         <div class="value">{{groupName}}<i class="fa fa-angle-right"></i></div>
                     </li>
                     {{else}}
                     <li class="name">
-                        <label>公司名称</label>
+                        <label>监控组名称</label>
                         <div class="value">{{groupName}}<i class="fa fa-angle-right"></i></div>
                     </li>
                     {{/if}}
                     {{#if hasBarCode}}
                     <li class="barcode">
-                        <label>公司二维码</label>
+                        <label>监控组二维码</label>
                         <div class="value"><img src="{{barcodeUrl}}"><i class="fa fa-angle-right"></i></div>
                     </li>
                     {{/if}}
                     <li id="groupDevice">
-                        <label>公司设备列表</label>
+                        <label>监控组设备列表</label>
                         <div class="value"><i class="fa fa-angle-right"></i></div>
                     </li>
                     <li id="recognitionCounts">
@@ -49,7 +49,7 @@
                     </li>
                     {{#if hasTemplate}}
                     <li class="group_template">
-                        <label style="top: 20px;">公司模板</label>
+                        <label style="top: 20px;">监控组模板</label>
                         <div class="template_value">
                             <span class="template_name">{{templateName}}</span>
                             <img src="{{templateIcon}}">
@@ -80,7 +80,7 @@
                     {{/if}}
                     {{#if isGroupAdmin}}
                     <li id="groupInOutTime">
-                        <label>上下班时间设置</label>
+                        <label>监控时间设置</label>
                         <div class="value">{{getGroupInOutTime}}<i class="fa fa-angle-right"></i></div>
                     </li>
                     {{/if}}
@@ -108,7 +108,7 @@
                 <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">识别规则</div>
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="">
-                        <label>接收未识别员工信息</label>
+                        <label>接收未识别成员信息</label>
                         <div class="value"><input id="switchRejectUnknowMember" class="switch" style="margin-top:-6px;outline:none;" type="checkbox" {{checkedIf rejectUnknowMember}}></div>
                     </li>
                     <!-- <li class="groupAccuracy">
@@ -222,7 +222,7 @@
         <div class="head" style="position: fixed;">
             <div class="title" style="position:relative;">
                 <div class="left-btn">取消</div>
-                <span class="Contacts">公司名称</span>
+                <span class="Contacts">监控组名称</span>
                 <div class="right-btn">保存</div>
             </div>
         </div>
@@ -245,7 +245,7 @@
                 <div id="groupBarCodePageback" class="leftButton back">
                     <i class="fa fa-angle-left fa-fw"></i>
                 </div>
-                <span>公司二维码</span>
+                <span>监控组二维码</span>
                 <div class="rightDropMenu dropdown">
                     <div class="rightButton dropdown-toggle" id="btn-more" data-toggle="dropdown">
                       <img src="/more.png" height="30" >

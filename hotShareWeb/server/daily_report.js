@@ -29,7 +29,7 @@ if(Meteor.isServer){
       job_report = job_report.replaceAll('{{company_name}}', group.name);
       job_report = job_report.replaceAll('{{job_date}}', new Date(date).toISOString().split('T')[0]);
 
-      var subject = "每日考勤报告";
+      var subject = "每日出现报告";
       var to = group.report_emails;
       if (emails){
         to = emails;

@@ -14,7 +14,7 @@ Template.messageDialogGroupInfo.helpers
         if session.sesType is 'chatNotify' or session.sesType is 'groupChat'
           return MsgGroup.findOne(session.toGroupId)
         
-    PUB.toast('当前聊天会话不是公司！')
+    PUB.toast('当前聊天会话不是监控组！')
     Session.set("Social.LevelOne.Menu", 'contactsList')
     
   is_manager:(group)->

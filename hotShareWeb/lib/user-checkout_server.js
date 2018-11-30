@@ -25,7 +25,7 @@ if (Meteor.isServer){
         },
         to_type: "user",
         type: "text",
-        text: '您今天还会进入公司吗？',
+        text: '您今天还会进入监控组吗？',
         create_time: new Date(),
         is_read: false
       });

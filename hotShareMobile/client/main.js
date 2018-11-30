@@ -54,7 +54,7 @@ if (Meteor.isCordova) {
         var hasShow = Session.get('notificationConfim');
 
         if (!data.isEnabled && !hasShow) {
-          navigator.notification.confirm('能及时收到考勤提醒',function(index){
+          navigator.notification.confirm('能及时收到出现提醒',function(index){
               Session.set('notificationConfim','showed');
               if (index == 2) {
                 if (device.platform === 'iOS') {
