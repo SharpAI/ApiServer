@@ -624,9 +624,9 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
                     res1.append(String.format("%02X",b));
                 }
 
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                }
+                //if (res1.length() > 0) {
+                //    res1.deleteCharAt(res1.length() - 1);
+                //}
                 return res1.toString();
             }
         } catch (Exception ex) {
