@@ -51,6 +51,10 @@ Template.groupDevices.helpers({
 
 
 Template.groupDevices.events({
+  'click .latest_update': function(e,t){
+    PUB.toast('您的脸脸安全盒当前是最新版本');
+    return
+  },
   'click #switch_update': function(e,t){
     console.log('switch update')
     if(this.autoUpdate){
