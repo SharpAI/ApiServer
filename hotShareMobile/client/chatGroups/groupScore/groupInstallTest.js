@@ -30,7 +30,6 @@ Template.groupInstallTest.onRendered(function(){
             showPop.set(1);
         }
     });
-    
 })
 
 Template.groupInstallTest.helpers({
@@ -149,43 +148,82 @@ var test_score = function(){
     var st = Session.get('isStarting');
     st.isTesting = false;
     st.showScore = true;
-    
-    var totalCount = message_queue.length;
-    var labelArr = _.filter(message_queue,function(m){
-        if(m.label &&  m.label != ''){
-            return true;
-        }
-        return false;
-    });
-    var frontArr = _.filter(message_queue,function(m){
-        return m.style == 'front'
-    });
-    var front_len = frontArr.length;
-    if(totalCount != 0){
-        roateScore.set(Math.floor(front_len/totalCount * 100) + '');
-        showRes.set(true);
-    }else{
-        roateScore.set('0');
-        showPop.set(2);
-        showRes.set(false);
+    var cId;
+    if (Router.current().params && Router.current().params.uuid) {
+        cId = Router.current().params.uuid;
+        peerCollection.find({"clientID": cId}).observe({
+            added: function(res) {
+                if(res && res.face_detected && res.face_detected != 0){
+                    roateScore.set(Math.floor(res.face_detected_front/res.face_detected * 100) + '');
+                    showRes.set(true);
+                }else{
+                    roateScore.set('0');
+                    showPop.set(2);
+                    showRes.set(false);
+                }
+                if(res && res.face_detected_front && res.face_detected_front != 0){
+                    if(res.face_recognized >= res.face_detected_front){
+                        labelScore.set(100 + '');
+                    }else{
+                        labelScore.set(Math.floor(res.face_recognized/res.face_detected_front * 100) + '');
+                    }
+                }else{
+                    labelScore.set('0');
+                }
+                message_queue = [];
+                if(res.face_detected && res.face_detected == 0
+                    || res.face_detected_front && res.face_detected_front == 0){
+                    st.status = "fail";
+                }else{
+                    st.status = "success";
+                }
+                Session.set('isStarting',st);
+            },
+            changed: function(newRes, oldRes){
+                
+            },
+            removed: function(res){
+                
+            }
+        })
     }
-    if(front_len != 0){
-        if(labelArr.length >= front_len){
-            labelScore.set(100 + '');
-        }else{
-            labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
-        }
+
+    // var totalCount = message_queue.length;
+    // var labelArr = _.filter(message_queue,function(m){
+    //     if(m.label &&  m.label != ''){
+    //         return true;
+    //     }
+    //     return false;
+    // });
+    // var frontArr = _.filter(message_queue,function(m){
+    //     return m.style == 'front'
+    // });
+    // var front_len = frontArr.length;
+    // if(totalCount != 0){
+    //     roateScore.set(Math.floor(front_len/totalCount * 100) + '');
+    //     showRes.set(true);
+    // }else{
+    //     roateScore.set('0');
+    //     showPop.set(2);
+    //     showRes.set(false);
+    // }
+    // if(front_len != 0){
+    //     if(labelArr.length >= front_len){
+    //         labelScore.set(100 + '');
+    //     }else{
+    //         labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
+    //     }
         
-    }else{
-        labelScore.set('0');
-    }
-    message_queue = [];
-    if(totalCount == 0 || front_len == 0){
-        st.status = "fail";
-    }else{
-        st.status = "success";
-    }
-    Session.set('isStarting',st);
+    // }else{
+    //     labelScore.set('0');
+    // }
+    // message_queue = [];
+    // if(totalCount == 0 || front_len == 0){
+    //     st.status = "fail";
+    // }else{
+    //     st.status = "success";
+    // }
+    // Session.set('isStarting',st);
 }
 Template.popup.events({
     'click .close':function(){
