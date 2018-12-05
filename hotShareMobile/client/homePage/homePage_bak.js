@@ -167,7 +167,7 @@ Template.homePage1.helpers({
   enable_push:function(app_notifaction_status){
     return app_notifaction_status === 'on';
   },
-  //显示在公司的状态（历史考勤都离开公司）
+  //显示在监控组的状态（历史出现都离开监控组）
   isStatusIN: function(status){
     if (this.in_time > 0) {
       var date = new Date(this.in_time);
@@ -184,7 +184,7 @@ Template.homePage1.helpers({
     }
     return status === 'in';
   },
-  //当天在公司的状态
+  //当天在监控组的状态
   isCurrentStatusIN:function(status){
     return status === 'in';
   },
@@ -259,12 +259,12 @@ Template.homePage1.helpers({
         out_time = day_end;
         this.in_time = date.getTime();
       }
-      //今天的时间（没有离开过公司）
+      //今天的时间（没有离开过监控组）
       else if(!out_time && isToday) {
         var now_time = Date.now();
         out_time = now_time;
       }
-      //今天的时间（离开公司又回到公司）
+      //今天的时间（离开监控组又回到监控组）
       else if(out_time && this.status === 'in' && isToday) {
         var now_time = Date.now();
         out_time = now_time;
@@ -485,11 +485,11 @@ Template.homePage1.events({
     Session.set('modifyMyStatus_ta_name',taName);
 
     modifyStatusFun(group_id, in_out, taId);
-    // navigator.notification.confirm('要帮「'+taName+'」签到吗？',function(index){
+    // navigator.notification.confirm('要帮「'+taName+'」出现吗？',function(index){
     //   if(index === 2){
     //     modifyStatusFun(group_id, in_out, taId);
     //   }
-    // },'提示',['取消','帮TA签到']);
+    // },'提示',['取消','帮TA出现']);
   },
   'click .in-out-pic': function(e){
     e.stopImmediatePropagation();
@@ -559,7 +559,7 @@ Template.homePage1.events({
       Router.go('perfShow');
     }
     else{
-      PUB.toast('尚未绑定公司~快去扫描绩效二维码进行绑定吧！');
+      PUB.toast('尚未绑定监控组~快去扫描绩效二维码进行绑定吧！');
     }
   },*/
   'click .day_before':function(e){

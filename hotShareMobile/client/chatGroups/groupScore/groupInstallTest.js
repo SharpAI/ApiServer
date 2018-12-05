@@ -57,9 +57,9 @@ Template.groupInstallTest.helpers({
                 break;
             case 3:
                 head = '评测帮助';
-                content = '<p class="title_failure">失败原因</p><p class="failure_info">1.“网络堵塞”可能导致部署评测失败。（“网络堵塞”并不会影响“来了吗”的其它功能。）</p><p class="failure_info">2. 如果想得到准确的部署评测分数，您可以根据以下操作来进行调整：' +
-                            '</p><p class="perform_perform">操作</p><p class="perform_order">1. 先在镜头前行走1-2次后，再点击开始<small class="url_review url_fa">部署评测</small></p><p class="perform_order">2. 在首页<small class="url_time url_fa">时间轴</small>里观察行人照片出现的时间</p><p class="perform_order">&lt;=10秒，网络正常；</p>'+
-                            '<p class="perform_order">=&gt30秒，网络拥挤；</p><p class="perform_order">=&gt;60秒，网络堵塞；</p>'
+                content = '<p class="title_failure">失败原因</p><p class="failure_info">1.“网络堵塞”可能导致部署评测失败,但是网络堵塞并不会影响来了吗的其它功能。</p><p class="failure_info">2. 如果想得到准确的部署评测分数，您可以根据以下操作来进行调整：' +
+                '</p><p class="perform_perform">操作</p><p class="perform_order">先在镜头前行走1-2次后，再点击<small class="url_review url_fa">部署评测</small></p><p class="perform_order"></p><p class="perform_perform">说明</p><p class="perform_order">操作过程中，你可以去<small class="url_time url_fa">时间轴</small>里观察行人照片出现的时间，参考下列标准检测你的网络堵塞状态</p><p class="perform_order">&lt;=10秒，网络正常；</p>'+
+                '<p class="perform_order">=&gt30秒，网络拥挤；</p><p class="perform_order">=&gt;60秒，网络堵塞；</p>'
                 btn = "确定";
                 break;
             case 4:

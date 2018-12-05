@@ -13,7 +13,7 @@ if (Meteor.isClient){
       return;
     }
 
-    Template._user_checkout_confirm.open('系统于 '+time.toLocaleString()+' 检测到你离开了公司，请确认是否已经下班了?', function(result){
+    Template._user_checkout_confirm.open('系统于 '+time.toLocaleString()+' 检测到你离开了监控组，请确认是否已经下班了?', function(result){
 
       localStorage.setItem('latest_user_checkout_confirm',Date.now());
       localStorage.setItem('latest_user_checkout_log_time', time);

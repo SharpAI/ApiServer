@@ -29,7 +29,7 @@
     <ul class="set-up comFadeIn" style="margin-top: 10px;margin-bottom: 10px;border: none;">
       <li class="name bindGroupUser">
           <label style="position: relative;margin-top: 0px;">群组成员绑定</label>
-          <div class="help-info" style="font-size: 12px;color: #555;">将帐号与对应群组成员绑定，实时查看、更正自己的考勤信息</div>
+          <div class="help-info" style="font-size: 12px;color: #555;">将帐号与对应群组成员绑定，实时查看、更正自己的出现信息</div>
       </li>
       <li class="name collect">
           <label style="position: relative;margin-top: 0px;">收藏</label>
@@ -129,7 +129,7 @@
         {{#each myGroupWorkStatus}}
         {{#if workstatus group_id}}
         <div class="panel panel-default" style="margin-bottom: 0px;">
-          <div class="panel-heading">我的考勤({{group_name}})</div>
+          <div class="panel-heading">我的出现({{group_name}})</div>
           {{#each workstatus group_id}}
           <div style="font-weight: 400;">
             <div style="position: relative;padding: 10px 0;border: solid 1px #eee;">
@@ -163,7 +163,7 @@
         {{/each}}
         {{else}}
         <div class="panel panel-default" style="margin-bottom: 0px">
-          <div class="panel-heading">我的考勤</div>
+          <div class="panel-heading">我的出现</div>
           <div style="font-weight: 400;">
             <div style="position: relative;padding: 10px 0;border: solid 1px #eee;">
               <i class="fa fa-circle " style="color: #27d496;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
@@ -231,7 +231,7 @@
     <!--{{#if hasJoinGroup}}
     <div class="groupsList">
       <div class="item_head">
-        <span>我的公司</span>
+        <span>我的监控组</span>
         {{#if hasTwoMore}}
         <span class="check_all">查看全部></span>
         {{/if}}

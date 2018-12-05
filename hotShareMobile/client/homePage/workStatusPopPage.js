@@ -345,7 +345,7 @@ Template.workStatusPopPage.events({
         return;
       }
     }
-    return PUB.toast('该公司下暂无脸脸盒');
+    return PUB.toast('该监控组下暂无脸脸盒');
   },
   'click #closeStausPop': function(){
     return workStatusPopPage.close();

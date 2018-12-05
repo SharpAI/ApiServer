@@ -356,7 +356,7 @@ if Meteor.isServer
         #没有识别的人的准确度清0
         Accuracy =  if name then accuracy else false
         Fuzziness = fuzziness
-        if name and checkIfSendRecoMsg(userGroup.group_id, uuid, id)
+        if true #name and checkIfSendRecoMsg(userGroup.group_id, uuid, id)
           console.log('--------send reco msg to --------', uuid, '----', id, '----', name)
           sendMqttMessage('/msg/g/'+ userGroup.group_id, {
             _id: new Mongo.ObjectID()._str
@@ -375,7 +375,7 @@ if Meteor.isServer
             ]
             to_type: "group"
             type: "text"
-            text: 'AI观察到 ' + name + ':'
+            text: if !name then 'Work AI发现有人在活动' else 'AI观察到 ' + name + ':'
             create_time: create_time
             people_id: id
             people_uuid: uuid
@@ -512,7 +512,7 @@ if Meteor.isServer
     minutes = minutes.getMinutes()
     console.log("minutes="+minutes)
 
-    # Step 1. 修正考勤记录, WorkAIUserRelations或workStatus
+    # Step 1. 修正出现记录, WorkAIUserRelations或workStatus
     fixWorkStatus = (work_status,in_out)->
       today = new Date(create_time.getTime())
       today.setHours(0,0,0,0)
@@ -581,16 +581,16 @@ if Meteor.isServer
       WorkStatus.update({_id: work_status._id},$set: setObj)
 
     work_status_in = WorkStatus.findOne({in_image: url})
-    # 匹配到进的考勤
+    # 匹配到进的出现
     if work_status_in
-      console.log('padCallRemove Fix WorkStatus, 需要修正进的考勤')
+      console.log('padCallRemove Fix WorkStatus, 需要修正进的出现')
       #fixWorkStatus(work_status_in,'in')
     work_status_out = WorkStatus.findOne({out_image: url})
-    # 匹配到出的考勤
+    # 匹配到出的出现
     if work_status_out
-      console.log('padCallRemove Fix WorkStatus, 需要修正出的考勤')
+      console.log('padCallRemove Fix WorkStatus, 需要修正出的出现')
       #fixWorkStatus(work_status_out,'out')
-     # 删除考勤
+     # 删除出现
     WorkStatus.remove({$or:[{in_image: url},{out_image: url}]});
     # Step 2. 从设备时间轴中移除
     selector = {
@@ -780,6 +780,16 @@ if Meteor.isServer
       #unless userGroup or userGroup.group_id
       #  return this.response.end('{"result": "failed", "cause": "group not found"}\n')
   )
+  Router.route('/restapi/get_name_by_faceid', {where: 'server'}).get(()->
+    face_id = this.params.query.face_id
+    group_id = this.params.query.group_id
+    if not face_id or not group_id
+      return this.response.end(JSON.stringify({result: 'invalid parameters'}))
+    person = Person.findOne({group_id: group_id, faceId: face_id})
+    if not person
+      return this.response.end(JSON.stringify({result: 'no such item'}))
+    return this.response.end(JSON.stringify({result: 'success', name: person.name}))
+  )
   Router.route('/restapi/clean_device', {where: 'server'}).get(()->
     uuid = this.params.query.uuid
     device = Devices.findOne({"uuid" : uuid})
@@ -835,8 +845,8 @@ if Meteor.isServer
       img_type = this.params.query.type
       tracker_id = this.params.query.tid
       console.log '/restapi/workai get request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
-      unless id and img_url and uuid
-        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      unless id or img_url or uuid
+        return this.response.end('{"result": "failed", "cause": "invalid params,check id,uuid,img_url"}\n')
       accuracy = this.params.query.accuracy
       sqlid = this.params.query.sqlid
       style = this.params.query.style
@@ -879,8 +889,8 @@ if Meteor.isServer
         p_ids = this.request.body.p_ids
 
       console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type + ' sqlid=' + sqlid + ' style=' + style + 'img_ts=' + img_ts
-      unless id and img_url and uuid
-        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      unless id or img_url or uuid
+        return this.response.end('{"result": "failed", "cause": "invalid params,check id,uuid,img_url"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
       if this.params.query.opt and this.params.query.opt is 'remove'
@@ -962,7 +972,7 @@ if Meteor.isServer
               console.log("people_config="+JSON.stringify(people_config))
               if isShow and checkIfSendKnownUnknownPushNotification(userGroup.group_id,person_id)
                   group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
-                  group_name = '公司'
+                  group_name = '监控组'
                   if group && group.name
                     group_name = group.name
                   console.log("group_id="+userGroup.group_id)
@@ -973,7 +983,7 @@ if Meteor.isServer
                   sharpai_pushnotification("notify_knownPeople", {active_time:active_time, group_id:userGroup.group_id, group_name:group_name, person_name:person_name}, null, ai_person_id)
           else
               group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
-              group_name = '公司'
+              group_name = '监控组'
               is_notify_stranger = true
               if group && group.settings && group.settings.notify_stranger == false
                 is_notify_stranger = false
@@ -1038,7 +1048,7 @@ if Meteor.isServer
             return
 
           group = SimpleChat.Groups.findOne({_id: userGroup.group_id})
-          group_name = '公司'
+          group_name = '监控组'
           is_notify_stranger = true
           if group && group.settings && group.settings.notify_stranger == false
             is_notify_stranger = false
@@ -2119,11 +2129,11 @@ if Meteor.isServer
         #day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
         out_time = day_end;
         workstatus.in_time = date.getTime();
-      #今天的时间（没有离开过公司）
+      #今天的时间（没有离开过监控组）
       else if(!out_time and isToday)
         now_time = Date.now();
         out_time = now_time;
-      #今天的时间（离开公司又回到公司）
+      #今天的时间（离开监控组又回到监控组）
       else if(out_time and workstatus.status is 'in' and isToday)
         now_time = Date.now();
         out_time = now_time;

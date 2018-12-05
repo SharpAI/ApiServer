@@ -99,8 +99,8 @@ function fastEmailMessge(timeItem, group) {
           }
         }
 
-        email_title = EmailCompanyName + ' AI发现' + EmailPersonName
-        var mqtt_title = 'AI发现' + MQTTPersonName
+        email_title = EmailCompanyName + ' 发现' + EmailPersonName
+        var mqtt_title = '发现' + MQTTPersonName
         console.log("SETTING:", group.settings, pushOn, emailOn, needSend)
 
         if(needSend && pushOn){

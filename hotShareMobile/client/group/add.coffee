@@ -42,7 +42,7 @@ if Meteor.isClient
       Meteor.call 'create-group', null, null, _.pluck(selected, 'followerId'), (err, id)->
         console.log(err)
         if err or !id
-          return PUB.toast('创建公司失败，请重试~')
+          return PUB.toast('创建监控组失败，请重试~')
         Meteor.subscribe('get-group',id,{
             onReady:()->
               group = SimpleChat.Groups.findOne({_id:id});

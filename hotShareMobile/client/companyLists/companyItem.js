@@ -45,12 +45,12 @@ window.inCompanyTimeLength = function(time_offset, status){
 			out_time = day_end;
 			self.in_time = date.getTime();
 		}
-		//今天的时间（没有离开过公司）
+		//今天的时间（没有离开过监控组）
 		else if(!out_time && isToday) {
 			var now_time = Date.now();
 			out_time = now_time;
 		}
-		//今天的时间（离开公司又回到公司）
+		//今天的时间（离开监控组又回到监控组）
 		else if(out_time && this.status === 'in' && isToday) {
 			var now_time = Date.now();
 			out_time = now_time;
@@ -90,7 +90,7 @@ var options = {
           var res = '日期: ' + params[0].name;
           for (var i = 0, l = params.length; i < l; i++) {
               if(params[i].seriesType == 'bar'){
-                res += '<br/>工作时间: ' + getHourMinutesTime(params[i].value);
+                res += '<br/>出现时间: ' + getHourMinutesTime(params[i].value);
               }
           }
           return res;
@@ -131,21 +131,25 @@ var options = {
 var fillChartData = function() {
   var group_id = Router.current().params._id;
 	var lineChartGroup = echarts.init(document.getElementById('lineChartGroup'));
-  console.log(group_id);
-    var showLen = 30;
-    if( activeShow.get() == 'weekly') {
-        showLen = 7;
-    }
-
   var group = SimpleChat.Groups.findOne({_id: group_id});
   var time_offset = 8;
   if (group && group.offsetTimeZone) {
     time_offset = group.offsetTimeZone;
   }
 
+  var showLen = 30;
   var now = new Date();
   var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() ,  0, 0, 0, 0);
+  var date_reg = Date.UTC(group.create_time.getFullYear(),group.create_time.getMonth(), group.create_time.getDate() ,  0, 0, 0, 0);
+  var date_span = (date - date_reg) / (24 * 3600 * 1000);
+  if( date_span < 30){
+    showLen = date_span;
+  }
+  
+  if( activeShow.get() == 'weekly' && date_span > 6) {
+      showLen = 7;
+  }
 
   // var date = displayDate.get();
 

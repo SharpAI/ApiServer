@@ -219,6 +219,8 @@ if Meteor.isClient
   Router.route '/help',()->
     this.render 'help'
     return
+  Router.route '/reset/:token',()->
+    this.render 'resetPwd'
   Router.route 'userProfilePage1',
     template: 'userProfile'
     path: '/userProfilePage1'

@@ -3,12 +3,14 @@ RaidInfoLogs = new Mongo.Collection("raidinfologs");
 Commands = new Mongo.Collection("commands");
 Devices = new Meteor.Collection('devices');
 BoxVersion = new Meteor.Collection('boxversion');
+GroupUsers = new Mongo.Collection('simple_chat_groups_users');
 if(Meteor.isClient) {
   inactiveClientCollection = new Meteor.Collection('inactive')
   Session.setDefault('counter', 0);
   Meteor.startup(function(){
     Meteor.subscribe('peerInfo')
     Meteor.subscribe('inactiveClients')
+    Meteor.subscribe('group_devices');
   });
 }
 if(Meteor.isServer){
@@ -50,6 +52,24 @@ if(Meteor.isServer){
         Devices.find({uuid:uuid})
         // Meteor.users.find({username: uuid})
     ];
+  });
+  Meteor.publish('group_devices',function(){
+      console.log(this.userId);
+      
+    if(this.userId){
+        var groupIds = []
+        var groups = GroupUsers.find({user_id: this.userId}).fetch();
+        for(var i = 0;i< groups.length; i++){
+            groupIds.push(groups[i].group_id);
+        }
+        if(groupIds){
+            return [
+                Devices.find({groupId: {$in:groupIds}}, {fields: {'_id': 1, 'uuid': 1, 'groupId': 1}}),
+                GroupUsers.find({user_id: this.userId}, {fields: {'_id': 1, 'group_id': 1, 'user_id': 1}})
+            ];
+        }
+    }
+    return this.ready();
   });
 }
 

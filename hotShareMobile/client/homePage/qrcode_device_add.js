@@ -7,13 +7,16 @@ window.QRCodeAddDevice = function() {
         Cancelled: 0
       */
       var checkDeviceQRCode = function(code){
-        var regex = /[a-zA-Z0-9]{12}/;
+        var regex = /^[a-z0-9]{12,64}$/;
         if(!regex.test(code)){
-          PUB.toast('请扫描有效的脸脸盒二维码!');
-          return;
+          return false;
         }
+        return true;
       }
-      checkDeviceQRCode(result.text);
+      if (!checkDeviceQRCode(result.text)) {
+        PUB.toast('请扫描有效的脸脸盒二维码!');
+        return;
+      }
       console.log("We got a barcode\n" +
         "Result: " + result.text + "\n" +
         "Format: " + result.format + "\n" +

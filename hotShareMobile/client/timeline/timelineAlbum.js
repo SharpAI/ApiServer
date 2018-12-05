@@ -182,7 +182,7 @@ var checkInOutWithOutName = function(type,name,taId,taName){
     }
     if(res && res.result == 'succ'){
       PUB.toast('已记录到每日出勤报告');
-      // 发送代Ta 签到成功通知
+      // 发送代Ta 出现成功通知
       if(taId){
         console.log(msgObj)
         sendMqttUserMessage(taId,msgObj);
@@ -248,8 +248,8 @@ var setLists = function(overlay) {
           }
           img._id = new Mongo.ObjectID()._str; // 用于多选时标记图片的唯一性
           var index = personIds.indexOf(person_id);
-          if( !(onlyShowUnknown.get() && img.person_name) && ids.indexOf(img.img_url) < 0 ){
-            // if(person_id && img.person_id != person_id ) { // 修改某人签到信息时的处理
+          if( !(onlyShowUnknown.get()) && img.person_name && ids.indexOf(img.img_url) < 0 ){
+            // if(person_id && img.person_id != person_id ) { // 修改某人出现信息时的处理
             //   continue;
             // }
             //fuzziness filter
@@ -266,8 +266,29 @@ var setLists = function(overlay) {
               var mergedImgs = tmpObj.images[index].mergedImgs || [];
               mergedImgs.push(img);
               tmpObj.images[index].mergedImgs = mergedImgs;
-              console.log("img="+JSON.stringify(img));
-              console.log("tmpObj.images[index].person_name="+tmpObj.images[index].person_name+", img.person_name="+img.person_name+", img.accuracy="+img.accuracy);
+              //console.log("img="+JSON.stringify(img));
+              //console.log("tmpObj.images[index].person_name="+tmpObj.images[index].person_name+", img.person_name="+img.person_name+", img.accuracy="+img.accuracy);
+              if (tmpObj.images[index].person_name == null && img.person_name != null && img.accuracy != false) {
+                tmpObj.images[index].person_name = img.person_name;
+              }
+            }
+            ids.push(img.img_url);
+          }else if(onlyShowUnknown.get() && !img.person_name && ids.indexOf(img.img_url) < 0){
+            if (img.fuzziness < fuzziness.get())
+              continue;
+            //face type filter
+              if (face_type.get() == 'front' && img.style != 'front') {
+              continue;
+            }
+            if(index < 0){
+              personIds.push(person_id)
+              tmpObj.images.push(img);
+            } else {
+              var mergedImgs = tmpObj.images[index].mergedImgs || [];
+              mergedImgs.push(img);
+              tmpObj.images[index].mergedImgs = mergedImgs;
+              //console.log("img="+JSON.stringify(img));
+              //console.log("tmpObj.images[index].person_name="+tmpObj.images[index].person_name+", img.person_name="+img.person_name+", img.accuracy="+img.accuracy);
               if (tmpObj.images[index].person_name == null && img.person_name != null && img.accuracy != false) {
                 tmpObj.images[index].person_name = img.person_name;
               }
@@ -586,7 +607,6 @@ Template.timelineAlbum.helpers({
     var group_id = device.groupId;
     var time_offset = 8;
     var group = SimpleChat.Groups.findOne({_id: group_id});
-    console.log(group);
     if (group && group.offsetTimeZone) {
       time_offset = group.offsetTimeZone;
     }
@@ -690,11 +710,8 @@ Template.timelineAlbum.events({
       dropdownTimer = null;
     }
     e.stopPropagation();
-    if(onlyShowUnknown.get()) {
-      onlyShowUnknown.set(false);
-    } else {
-      onlyShowUnknown.set(true);
-    }
+    onlyShowUnknown.set(true);
+    $(e.target).children("input[name='recognize']").attr('checked','checked');
     setLists(true);
     dropdownTimer = Meteor.setTimeout(function(){
       t.$('#btn-more').trigger('click');
@@ -707,6 +724,7 @@ Template.timelineAlbum.events({
     }
     e.stopPropagation();
     onlyShowUnknown.set(false);
+    $(e.target).children("input[name='recognize']").attr('checked','checked');
     timeRange.set([]);
     // reset limit
     limit.set(5);
@@ -834,7 +852,7 @@ Template.timelineAlbum.events({
     var taId = Router.current().params.query.taId;
     var person_id = Router.current().params.query.pid;
 
-    // 修改指定的人的上下班时间
+    // 修改指定的人的监控时间
     if (person_id) {
       person_name = Session.get('modifyMyStatus_person_name');
 
@@ -865,7 +883,7 @@ Template.timelineAlbum.events({
       });
       return;
     }
-    // 帮别人签到
+    // 帮别人出现
     if(taId){
       data.user_id = taId;
 
@@ -944,7 +962,7 @@ Template.timelineAlbum.events({
 
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
-            // 发送代Ta 签到成功通知
+            // 发送代Ta 出现成功通知
             if(taId){
               console.log(msgObj)
               sendMqttUserMessage(taId,msgObj);
@@ -1004,7 +1022,7 @@ Template.timelineAlbum.events({
 
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
-            // 发送代Ta 签到成功通知
+            // 发送代Ta 出现成功通知
             if(taId){
               console.log(msgObj)
               sendMqttUserMessage(taId,msgObj);
@@ -1072,7 +1090,7 @@ Template.timelineAlbum.events({
 
       if(res && res.result == 'succ'){
         PUB.toast('已记录到每日出勤报告');
-        // 发送代Ta 签到成功通知
+        // 发送代Ta 出现成功通知
         if(taId){
           console.log(msgObj)
           sendMqttUserMessage(taId,msgObj);

@@ -746,7 +746,7 @@ Meteor.methods({
       if (!res) {
         return;
       }
-      BoxVersion.insert(res);
+      BoxVersion.update({}, {$set: res}, {upsert: true});
     }
 });
 //

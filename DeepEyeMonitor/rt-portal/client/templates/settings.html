@@ -174,7 +174,11 @@
           <h3 class="modal-title" id="myModalLabel">更改确认</h3>
         </div>
         <div class="modal-body">
+            {{#if verInfoConfirm}}
             <h5>确认更新版本为如下信息？</h5>
+            {{else}}
+            <h5>每项都是必填！请重新填写</h5>
+            {{/if}}
             <table class="table table-hover table-condensed table-striped">
                 {{{verInfoConfirm}}}
               </table>
