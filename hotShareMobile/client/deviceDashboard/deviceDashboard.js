@@ -234,7 +234,7 @@ Template.deviceDashboard.helpers({
     if(this.in_time) {
       ts = this.in_time;
     }
-    if(this.out_time) {
+    else if(this.out_time) {
       ts = this.out_time;
     }
 
