@@ -10,6 +10,7 @@ var $box = null;
 var $box_ul = null;
 
 var label_name_text =  new ReactiveVar('');
+var search_str =  new ReactiveVar('');
 var touchTimeout = null;
 var toolsBar = null;
 
@@ -73,6 +74,9 @@ Template._simpleChatToChat.helpers({
       //       res[i].has_show_time = false;
       //   }
       // }
+      if(!!Session.get('search_str') && doc.text && doc.text.indexOf(Session.get('search_str'))==-1){
+        return;
+      }
       //陌生人标红
       if(doc.text && doc.text.indexOf('陌生人')!=-1 && doc.type == 'text'){
         doc.text = doc.text.replace('陌生人','<span style="color:red">陌生人</span>')
@@ -273,8 +277,11 @@ Router.route(AppConfig.path + '/to/:type', {
           {'form.id': to, 'to.id': Meteor.userId(), to_type: type}  // ta -> me
         ]
       };
-
-    // console.log('where:', where);
+    if(!!Session.get('search_str')){
+      where.images = {$elemMatch:{'label':Session.get('search_str')}};
+    }
+    //where.images = {$elemMatch:{'label':'张欢'}};
+    console.log('where:', where);
     return {
       id: slef.params.query['id'],
       title: function(){
@@ -684,6 +691,7 @@ Template._simpleChatToChat.onRendered(function(){
 Template._simpleChatToChat.onDestroyed(function(){
   page_data = null;
   Session.set('newMsgCount',0);
+  Session.set('search_str','');
   Meteor.clearInterval(setScrollToBottomInterval);
   if(Meteor.isCordova && (typeof(device) !== 'undefined') && device.platform === 'iOS'){
     try{
@@ -1570,6 +1578,24 @@ Template._checkGroupDevice.events({
 
 
 Template._simpleChatToChat.events({
+  'click .rightButton': function(){
+    var isHidden = $('.chat-search').is(':hidden');
+    if(!isHidden){
+      $('.chat-search').hide();
+    }else{
+      $('.chat-search').show();
+    }
+  },
+  'click .chat-search .search-submit': function(){
+    var searchVal = $('#searchVal').val();
+    Session.set('search_str',searchVal);
+    PUB.page(Router.current().url + '&keyword=' + searchVal);
+  },
+  'click .chat-search .search-cancel': function(){
+    Session.set('search_str','');
+    $('.chat-search').hide();
+    PUB.page(Router.current().url);
+  },
   'click #btnCancel': function(event) {
     setGroupNoDeviceWizardFinished(this.id, true);
     $('#groupNoDevice').modal('hide');

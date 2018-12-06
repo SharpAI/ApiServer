@@ -20,7 +20,7 @@
         {{#if isGroups}}
           <!--<div class="right groupsProfile"></div>-->
         {{else}}
-          <div class="right userProfile">
+          <div class="right">
               <i class="fa fa-user"></i>
           </div>
         {{/if}}
@@ -29,6 +29,14 @@
         {{#if loading}}
         <div class="loading"></div>
         {{/if}}
+        <div class="rightButton" style="display: inline-block;position: absolute;right: 0;width: 10%;text-align: center;">
+          <i class="fa fa-search"></i>
+        </div>
+      </div>
+      <div class="chat-search">
+        <input type="text" id="searchVal" placeholder="请输入搜索内容">
+        <span class="search-submit">确定</span>
+        <span class="search-cancel">取消</span>
       </div>
 
       <div class="box">
