@@ -154,7 +154,13 @@ var test_score = function(){
         peerCollection.find({"clientID": cId}).observe({
             added: function(res) {
                 if(res && res.face_detected && res.face_detected != 0){
-                    roateScore.set(Math.floor(res.face_detected_front/res.face_detected * 100) + '');
+                    var roateResNum = Math.floor(res.face_detected_front/res.face_detected * 100);
+                    if (roateResNum < 100) {
+                        roateScore.set(roateResNum + '');
+                    } else {
+                        roateScore.set('100');
+                    }
+                    
                     showRes.set(true);
                 }else{
                     roateScore.set('0');
@@ -165,7 +171,12 @@ var test_score = function(){
                     if(res.face_recognized >= res.face_detected_front){
                         labelScore.set(100 + '');
                     }else{
-                        labelScore.set(Math.floor(res.face_recognized/res.face_detected_front * 100) + '');
+                        var labelResNum = Math.floor(res.face_recognized/res.face_detected_front * 100);
+                        if (labelResNum < 100) {
+                            labelScore.set(labelResNum + '');
+                        } else {
+                            labelScore.set('100');
+                        }
                     }
                 }else{
                     labelScore.set('0');
