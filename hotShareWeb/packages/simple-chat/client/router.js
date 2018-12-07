@@ -1589,12 +1589,10 @@ Template._simpleChatToChat.events({
   'click .chat-search .search-submit': function(){
     var searchVal = $('#searchVal').val();
     Session.set('search_str',searchVal);
-    PUB.page(Router.current().url + '&keyword=' + searchVal);
   },
   'click .chat-search .search-cancel': function(){
     Session.set('search_str','');
     $('.chat-search').hide();
-    PUB.page(Router.current().url);
   },
   'click #btnCancel': function(event) {
     setGroupNoDeviceWizardFinished(this.id, true);
