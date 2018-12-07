@@ -156,8 +156,8 @@ public class EasyPlayerClient implements Client.SourceCallBack {
     }
 
     private static class FrameInfoQueue extends PriorityQueue<Client.FrameInfo> {
-        public static final int CAPACITY = 500;
-        public static final int INITIAL_CAPACITY = 300;
+        public static final int CAPACITY = 5000;
+        public static final int INITIAL_CAPACITY = 3000;
 
         public FrameInfoQueue() {
             super(INITIAL_CAPACITY, new Comparator<Client.FrameInfo>() {
