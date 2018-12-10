@@ -136,7 +136,7 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
     int mBellSoundId;
 
     public class SharpAIRunnable implements Runnable {
-        public final String CWD = "/data/data/com.termux/files/usr/runtime";
+        public final String CWD = "/data/data/com.termux/files/home/runtime";
         public final String SCRIPT_PATH = "/data/data/com.termux/files/usr/bin/bash";
         private String scriptPath = null;
 
@@ -157,12 +157,7 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
     };
 
     Handler sharpAIHandler = new Handler();
-    SharpAIRunnable startRunnable = new SharpAIRunnable("/data/data/com.termux/files/usr/runtime/start_aarch64.sh");
-    SharpAIRunnable embeddingRunnable = new SharpAIRunnable("/data/data/com.termux/files/usr/runtime/embedding_aarch64.sh");
-    SharpAIRunnable workerRunnable = new SharpAIRunnable("/data/data/com.termux/files/usr/runtime/worker_aarch64.sh");
-    SharpAIRunnable classifierRunnable = new SharpAIRunnable("/data/data/com.termux/files/usr/runtime/classifier_aarch64.sh");
-    SharpAIRunnable paramRunnable = new SharpAIRunnable("/data/data/com.termux/files/usr/runtime/param_aarch64.sh");
-    SharpAIRunnable detectorRunnable = new SharpAIRunnable("/data/data/com.termux/files/usr/runtime/start_detector.sh");
+    SharpAIRunnable startRunnable = new SharpAIRunnable("/data/data/com.termux/files/home/runtime/start_arm.sh");
 
     private final BroadcastReceiver mBroadcastReceiever = new BroadcastReceiver() {
         @Override
@@ -342,11 +337,6 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
         mBellSoundId = mBellSoundPool.load(this, R.raw.bell, 1);
 
         sharpAIHandler.postDelayed(startRunnable, 5000);
-        sharpAIHandler.postDelayed(embeddingRunnable, 6000);
-        sharpAIHandler.postDelayed(workerRunnable, 7000);
-        sharpAIHandler.postDelayed(classifierRunnable, 8000);
-        sharpAIHandler.postDelayed(paramRunnable, 9000);
-        sharpAIHandler.postDelayed(detectorRunnable, 10000);
     }
 
     void toggleShowExtraKeys() {
