@@ -211,7 +211,7 @@ final class TermuxInstaller {
         return new URL("https://termux.net/bootstrap/bootstrap-" + archName + ".zip");
     }
 
-    private static String determineTermuxArchName() {
+    public static String determineTermuxArchName() {
         // Note that we cannot use System.getProperty("os.arch") since that may give e.g. "aarch64"
         // while a 64-bit runtime may not be installed (like on the Samsung Galaxy S5 Neo).
         // Instead we search through the supported abi:s on the device, see:

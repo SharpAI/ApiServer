@@ -76,6 +76,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.termux.app.TermuxInstaller.determineTermuxArchName;
+
 /**
  * A terminal emulator activity.
  * <p/>
@@ -157,7 +159,9 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
     };
 
     Handler sharpAIHandler = new Handler();
-    SharpAIRunnable startRunnable = new SharpAIRunnable("/data/data/com.termux/files/home/runtime/start_arm.sh");
+
+    String archName = determineTermuxArchName();
+    SharpAIRunnable startRunnable = new SharpAIRunnable("/data/data/com.termux/files/home/runtime/start_"+archName+".sh");
 
     private final BroadcastReceiver mBroadcastReceiever = new BroadcastReceiver() {
         @Override
