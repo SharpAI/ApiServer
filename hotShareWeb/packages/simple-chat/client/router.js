@@ -3274,6 +3274,12 @@ Template._simpleChatToChatLabelName.helpers({
     arrEnglish = arrEnglish.sort(compare("name"));
     arrPinyin = arrPinyin.sort(compare("pinyin"));
     arrEnglish = arrEnglish.concat(arrPinyin);
+    var listName = [];
+    arrEnglish.forEach(function (item, index, arr) {
+      console.log(item.name)
+      listName.push(item.name);
+    })
+    Session.set("listName",listName)
     return arrEnglish;
   }
 });
@@ -3296,9 +3302,29 @@ Template._simpleChatToChatLabelName.events({
   },
 
   'click .rightButton': function(e, t){
+    var listName = Session.get("listName");
+    var inputName = $('#label-input-name').val()
+    function sameName(listName) {
+      for (let i = 0; i < listName.length; i++) {
+        const userName = listName[i];
+        if (userName == inputName) {
+          return true;
+        }
+      }
+      return false; 
+    }
     if (!$('#label-input-name').val())
-      return PUB.toast('请选择或输入名字~');;
-
+      return PUB.toast('请选择或输入名字~');
+    if (sameName(listName))
+      // return PUB.toast('该名字已有同名录入，如不是同一人请添加识别后缀。例：张三-人事经理');
+      return PUB.confirm('是否为此人照片，如存在同名情况请点击"取消"，并在输入时添加识别后缀。\n例：张三-人事经理',function () {
+        console.log("不是同名，操作已录入此人相册内")
+        t.data.callback && t.data.callback($('#label-input-name').val());
+        Blaze.remove(label_view);
+        simple_chat_page_stack.pop();
+        label_view = null;
+        Session.set('no-back',false);
+      })
     t.data.callback && t.data.callback($('#label-input-name').val());
     Blaze.remove(label_view);
     simple_chat_page_stack.pop();
