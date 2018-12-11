@@ -74,7 +74,11 @@
     {{#if lists}}
     <ul class="timeLine">
       <div style="color: #FF9800;font-size: 16px;position: relative; top: -10px; text-align: right;"><button id="goHint" style="color:rgb(0, 119, 255); display: inline-block;">标注助手</button></div>
+      {{#if timelinehref}}
+      <div style="color: #FF9800;font-size: 16px;position: relative"> 点击头像，进行标注</div>
+      {{else}}
       <div style="color: #FF9800;font-size: 16px;position: relative"> 点击头像，调整您的出现时间</div>
+      {{/if}}
       <!--{{#each lists}}
       {{#if isShowTime}}
       <div class="timeLine-time">

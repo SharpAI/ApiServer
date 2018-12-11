@@ -1563,6 +1563,7 @@ Template._checkGroupDevice.events({
       Session.set('toPath',null);
       return PUB.page(path+'/'+this.uuid);
     }
+    Session.set("timelinehref",true)
     return PUB.page('/timelineAlbum/'+this.uuid+'?from=groupchat');
   },
   'click ._checkGroupDevice, click ._cgd_close': function(e) {

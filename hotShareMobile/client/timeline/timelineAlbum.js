@@ -494,6 +494,9 @@ Template.timelineAlbum.onDestroyed(function(){
 
 });
 Template.timelineAlbum.helpers({
+  timelinehref:function(){
+    return Session.get('timelinehref')
+  },
   showHint:function(){
     return Session.get('showHint');
   },

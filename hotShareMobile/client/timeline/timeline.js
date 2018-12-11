@@ -44,6 +44,7 @@ Template.timeline.events({
     return PUB.back();
   },
   'click .deviceItem': function(e){
+    Session.set("timelinehref",false)
     return PUB.page('/timelineAlbum/'+e.currentTarget.id+'?from=timeline');
   }
 })
