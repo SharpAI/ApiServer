@@ -3244,6 +3244,12 @@ Template._simpleChatToChatLabelName.helpers({
 
     var arrEnglish = [];
     var arrPinyin = [];
+
+     PersonNames.find(selector, {sort: {name: 1}, limit: label_limit.get()}).forEach(function(item){
+        arrEnglish.push(item);
+    });
+
+    /*
     PersonNames.find(selector, {sort: {createAt: 1}, limit: label_limit.get()}).forEach(function(item){
       if(item.name && item.name.charCodeAt(0) > 255){
         item.pinyin = makePy(item.name)[0];
@@ -3274,12 +3280,14 @@ Template._simpleChatToChatLabelName.helpers({
     arrEnglish = arrEnglish.sort(compare("name"));
     arrPinyin = arrPinyin.sort(compare("pinyin"));
     arrEnglish = arrEnglish.concat(arrPinyin);
+    */
     var listName = [];
     arrEnglish.forEach(function (item, index, arr) {
       console.log(item.name)
       listName.push(item.name);
     })
     Session.set("listName",listName)
+
     return arrEnglish;
   }
 });

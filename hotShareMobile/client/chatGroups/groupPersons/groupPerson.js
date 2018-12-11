@@ -13,6 +13,17 @@ Template.groupPerson.helpers({
     var arrEnglish = [];
     var arrPinyin = [];
     var group_id = Router.current().params._id;
+    /*
+    Person.find(selector, {sort: {name: 1}, limit: label_limit.get()}).forEach(function(item){
+        arrEnglish.push(item);
+    });
+    */
+    
+    Person.find({group_id: group_id},{limit: limit.get(), sort:{name: 1}}).forEach(function(item){
+        arrEnglish.push(item);
+    });
+    
+    /*
     Person.find({group_id: group_id},{limit: limit.get(), sort:{createAt: -1}}).forEach(function(item){
       if(item.name && item.name.charCodeAt(0) > 255){
         item.pinyin = makePy(item.name)[0];
@@ -43,12 +54,15 @@ Template.groupPerson.helpers({
     arrEnglish = arrEnglish.sort(compare("name"));
     arrPinyin = arrPinyin.sort(compare("pinyin"));
     arrEnglish = arrEnglish.concat(arrPinyin);
+    */
+    
     return arrEnglish;
   }
 });
 
 Template.groupPerson.events({
   'click .back': function(){
+    limit.set(0);
     return PUB.back();
   }
 });
@@ -70,15 +84,17 @@ Template.groupPerson.onRendered(function(){
     $(this).scroll(function(){
       var height = $(this).find('> ul').height();
       var top = $(this).scrollTop();
+
       if ($(this).scrollTop() <= 0){
         var _limit = 0;
-        _limit = limit.get() + 50;
+        _limit = limit.get() + 20;
         limit.set(_limit);
-        Meteor.subscribe('group_person',group_id, limit.get());
+        //Meteor.subscribe('group_person',group_id, limit.get());
         console.log('==已经滚动到顶部了 ==');
-      } else if (height-top <= $(this).height() -20){
-        limit.set(limit.get()+50);
+      } else if (height - top <= $(this).height() - 20){
+        limit.set(limit.get()+20);
         console.log('==已经滚动到底部了 ==');
+        Meteor.subscribe('group_person',group_id, limit.get());
       }
     });
   });
