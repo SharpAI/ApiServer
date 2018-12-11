@@ -37,7 +37,7 @@ Template.scannerAddDevice.helpers({
 
 Template.scannerAddDevice.events({
   'click .leftButton': function(e) {
-    return PUB.back();
+    return PUB.page('/');
   },
   /**
    * add device
