@@ -3314,8 +3314,8 @@ Template._simpleChatToChatLabelName.events({
     var listName = Session.get("listName");
     var inputName = $('#label-input-name').val()
     function sameName(listName) {
-      for (let i = 0; i < listName.length; i++) {
-        const userName = listName[i];
+      for (var i = 0; i < listName.length; i++) {
+        var userName = listName[i];
         if (userName == inputName) {
           return true;
         }
