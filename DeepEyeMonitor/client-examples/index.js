@@ -4,7 +4,13 @@ var DDPClient = require("ddp");
 WebSocket = require('ws');
 var login = require('ddp-login');
 var CryptoJS = require("crypto-js");
+var Docker = require('dockerode');
+var YAML = require('yamljs');
+var fs = require("fs");
+var docker = new Docker();
 var flowerws = process.env.FLOWER_WS || 'ws://flower:5555/api/task/events/task-succeeded/';
+var exec = require('child_process').exec;
+var latestBoxVersion = {};
 
 var ddpClient = new DDPClient({
   // All properties optional, defaults shown
@@ -19,6 +25,10 @@ var DEVICE_UUID_FILE = process.env.UUID_FILE || '/dev/ro_serialno'
 var DEVICE_GROUP_ID = process.env.GROUP_ID || '/data/usr/com.deep.workai/cache/groupid.txt'
 var VERSION_FILE = process.env.VERSION_FILE || '../version'
 var AUTO_UPDATE_FILE = process.env.AUTO_UPDATE_FILE || '../workaipython/wtconf/enableWT'
+var DOCKER_COMPOSE_YML = process.env.DOCKER_COMPOSE_YML || '../docker-compose.yml'
+var RUNTIME_DIR = process.env.RUNTIME_DIR || '../'
+var RESTART_TIMEOUT = process.env.RESTART_TIMEOUT || 10
+var DOCKER_COMPOSE_YML_FILENAME = process.env.DOCKER_COMPOSE_YML_FILENAME || 'docker-compose.yml'
 
 function get_device_uuid(cb){
   fs.readFile(DEVICE_UUID_FILE, function (err,data) {
@@ -29,7 +39,8 @@ function get_device_uuid(cb){
   });
 }
 
-var connectedToServer = false;
+var connectedToServer = false
+var timesInSilence = 0
 function login_with_device_id(device_id, callback){
   var real_pwd = CryptoJS.HmacSHA256(device_id, "sharp_ai98&#").toString()
   console.log(real_pwd)
@@ -55,6 +66,7 @@ function login_with_device_id(device_id, callback){
         console.log('login ok:'+token)
         sub_command_list(device_id)
         sub_device_info(device_id)
+        sub_BoxVersion();
       }
 
       callback && callback(error,userInfo)
@@ -105,6 +117,7 @@ function processing_command_config(config, cb) {
                 return cb && cb("fs.writeFile failed");
             }
             else {
+                console.log("watchtower enabled")
                 return cb && cb ();
             }
         });
@@ -112,6 +125,7 @@ function processing_command_config(config, cb) {
     /*going to disable update*/
     else {
         if(!update_enabled) {
+            console.log("watchtower disabled")
             return cb && cb ();
         }
         fs.unlink(AUTO_UPDATE_FILE, function(err){
@@ -119,6 +133,7 @@ function processing_command_config(config, cb) {
                 return cb && cb(err)
             }
             else {
+                console.log("watchtower disabled")
                 return cb && cb ();
             }
         })
@@ -130,7 +145,7 @@ function processing_command_done(id, client_id) {
     ddpClient.call('cmd_done',[id, {"client_id": client_id, "command_id": id}])
 }
 
-function processing_command(id){
+function processing_command(id, client_id){
   var command_contex = ddpClient.collections.commands[id];
   var clientid = command_contex.client_id;
   var cmd = command_contex.command;
@@ -144,6 +159,14 @@ function processing_command(id){
       }
       else {
           processing_command_done(id, clientid);
+      }
+  } else if(cmd && cmd == "restartmonit") {
+      if(clientid == client_id) {
+          processing_command_done(id, clientid);
+          console.log("got cmd: restartmonit, goingto restart in 5sec")
+          setTimeout(function() {
+              process.exit(-10)
+          },5000)
       }
   } else {
       processing_command_done(id, clientid);
@@ -175,6 +198,17 @@ function sub_device_info(client_id){
               handle_group_id(doc['groupId'])
           }
         }
+        if(doc && doc.hasOwnProperty('autoUpdate')) {
+            processing_command_config({'autoUpdate': doc['autoUpdate']}, function(err) {
+                if(err) console.log(err);
+            })
+        }
+        else {
+            console.log("autoUpdate not found")
+            processing_command_config({'autoUpdate': false}, function(err) {
+                if(err) console.log(err);
+            })
+        }
       };
       observer.changed = function(id, oldFields, clearedFields, newFields) {
         console.log("[CHANGED] in " + observer.name + ":  " + id);
@@ -183,6 +217,22 @@ function sub_device_info(client_id){
         console.log("[CHANGED] new fields: ", newFields);
         if(newFields['groupId']){
           handle_group_id(newFields['groupId'])
+        }
+
+        if(clearedFields && clearedFields.hasOwnProperty('autoUpdate')) {
+            console.log('cleared autoUpdate')
+            processing_command_config({'autoUpdate': false}, function(err) {
+                if(err) {
+                    console.log(err);
+                }
+            })
+        }
+        if(newFields && newFields.hasOwnProperty('autoUpdate')) {
+            processing_command_config({'autoUpdate': newFields['autoUpdate']}, function(err) {
+                if(err) {
+                    console.log(err);
+                }
+            })
         }
       };
       observer.removed = function(id, oldValue) {
@@ -210,7 +260,7 @@ function sub_command_list(client_id){
     observer.added = function(id) {
       console.log("[ADDED] to " + observer.name + ":  " + id);
       console.log(ddpClient.collections.commands);
-      processing_command(id)
+      processing_command(id, client_id)
     };
     observer.changed = function(id, oldFields, clearedFields, newFields) {
       console.log("[CHANGED] in " + observer.name + ":  " + id);
@@ -232,6 +282,46 @@ function sub_command_list(client_id){
       function () {             // callback when the subscription is complete
         console.log('commands complete:');
         console.log(ddpClient.collections.commands);
+      }
+    );
+}
+
+function syncBoxVersionInfo(ver) {
+    for(var prop in ver) {
+        latestBoxVersion[prop] = ver[prop];
+    }
+    console.log(latestBoxVersion)
+}
+
+function sub_BoxVersion(){
+      /*
+     * Observe a collection.
+     */
+    var observer = ddpClient.observe("boxversion");
+    observer.added = function(id) {
+      console.log("[ADDED] to " + observer.name + ":  " + id);
+      syncBoxVersionInfo(ddpClient.collections.boxversion[id])
+    };
+    observer.changed = function(id, oldFields, clearedFields, newFields) {
+      console.log("[CHANGED] in " + observer.name + ":  " + id);
+      console.log("[CHANGED] old field values: ", oldFields);
+      console.log("[CHANGED] cleared fields: ", clearedFields);
+      console.log("[CHANGED] new fields: ", newFields);
+      syncBoxVersionInfo(newFields);
+    };
+    observer.removed = function(id, oldValue) {
+      console.log("[REMOVED] in " + observer.name + ":  " + id);
+      console.log("[REMOVED] previous value: ", oldValue);
+    };
+
+    /*
+     * Subscribe to a Meteor Collection
+     */
+    ddpClient.subscribe(
+      'latestboxversion',                  // name of Meteor Publish function to subscribe to
+      function () {             // callback when the subscription is complete
+        console.log('boxversion complete:');
+        console.log(ddpClient.collections.boxversion);
       }
     );
 }
@@ -289,17 +379,87 @@ function cpu_mem_uptime_temp(cb) {
     return cb && cb({'cpu': cpu_average, 'mem': mem, 'uptime': uptime, 'temp': temp})
 }
 
+function get_docker_version(filepath, cb) {
+    var ymlexists = fs.existsSync(filepath);
+    if(!ymlexists)
+         return cb && cb("yml not found", null);
+    var data = null;
+    try{
+        data = YAML.parse(fs.readFileSync(filepath).toString());
+    }
+    catch(e){
+        console.log('error..');
+    }
+    if(!data || !data.services)
+        return cb && cb("YAML.parse failed", null);
+    var services = data.services;
+    var imagesname = {};
+    for (var prop in services) {
+        if(prop && services[prop] && services[prop].image)
+            imagesname[services[prop].image] = '????????????'
+    }
+    if(imagesname.length < 1)
+        return cb && cb("image name not found", null);
+
+   docker.listImages(function(err, list) {
+     if (err) return cb && cb(err, null);
+     var result = {};
+     for(var prop in imagesname) {
+         var shortname = prop.split('/')[1].split(':')[0]
+         result[shortname] = imagesname[prop]
+
+         for (var i = 0, len = list.length; i < len; i++) {
+             if(!list[i].RepoTags || !list[i].Id)
+                 continue
+
+                 repotag = list[i].RepoTags;
+                 for(var j = 0; j < repotag.length; j++) {
+                     if(prop == repotag[j]) {
+                         tag = list[i].Id.split(':')[1]
+                         result[shortname] = tag.slice(0,11)
+                     }
+                 }
+         }
+     }
+     return cb && cb(null, result);
+   });
+}
+
 function get_curent_version(cb) {
-    var all_version = {'v1': 'unknown', 'v2': 'unknown'};
+    var all_version = {'v1': 'unknown', 'v2': 'unknown', 'islatest': false};
     var exists = fs.existsSync(VERSION_FILE);
+    var islatest = true;
     if(exists) {
         var version_val = fs.readFileSync(VERSION_FILE, 'utf8').replace(/[\r\n]/g,"");
         if(version_val.length > 0) {
             all_version.v1 = version_val;
         }
     }
-    /*TODO: get v2 from docker*/
-    return cb && cb(all_version);
+    /* get v2 from docker*/
+    get_docker_version(DOCKER_COMPOSE_YML, function(err, result) {
+        if(!err && result)
+            all_version.v2 = result;
+
+        for(var prop in result) {
+            if(!latestBoxVersion.hasOwnProperty(prop)) {
+                console.log('not hasOwnProperty ' + prop)
+                islatest = false;
+                break;
+            }
+
+            if(prop == 'watchtower') {
+               continue;
+            }
+
+            if(latestBoxVersion[prop] != result[prop]) {
+              islatest = false;
+              break;
+            }
+        }
+        all_version.islatest = islatest;
+
+        return cb && cb(all_version);
+    })
 }
 
 function get_curent_config(cb) {
@@ -308,51 +468,39 @@ function get_curent_config(cb) {
     if(exists) {
         all_config.autoupdate = true;
     }
-    /*TODO: get v2 from docker*/
     return cb && cb(all_config);
 }
 
-get_device_uuid(function(uuid){
-  var my_client_id = uuid
-  connectToMeteorServer(my_client_id)
+var connected_to_camera = false;
+var camera_monitor_timeout = null;
+var status = {
+    total_tasks:0,
+    face_detected:0,
+    face_detected_front:0,
+    face_recognized:0,
+    heartbeats: 0,
+    os: {},
+    version: {},
+    cfg: {}
+}
+function restart_docker_compose(){
+    var command = `cd ${RUNTIME_DIR} && docker-compose -f ${DOCKER_COMPOSE_YML_FILENAME} down && docker-compose -f ${DOCKER_COMPOSE_YML_FILENAME} up`
+    console.log(command)
+    exec(command, function(err, stdout, stderr) {
+      if (err) {
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        console.log("node couldn't execute the command")
+        return;
+      }
 
+      // the *entire* stdout and stderr (buffered)
+      console.log(`stdout: ${stdout}`);
+      console.log(`stderr: ${stderr}`);
+    });
+}
+function connectToFlower(){
   var ws = new WebSocket(flowerws);
-  var connected_to_camera = false;
-  var camera_monitor_timeout = null;
-  var status = {
-      total_tasks:0,
-      face_detected:0,
-      face_recognized:0,
-      os: {},
-      version: {},
-      cfg: {}
-  }
-
-  setInterval(function(){
-    cpu_mem_uptime_temp(function(os_info) {
-        status.os = os_info;
-    })
-    get_curent_version(function(version_info) {
-       status.version = version_info;
-    })
-    get_curent_config(function(cfg) {
-       status.cfg = cfg;
-    })
-
-    ddpClient.call('report',[{
-        clientID :my_client_id,
-        total_tasks:     status.total_tasks,
-        face_detected:   status.face_detected,
-        face_recognized: status.face_recognized,
-        os:              status.os,
-        version:         status.version,
-        cfg:             status.cfg }])
-
-    status.total_tasks = 0;
-    status.face_detected = 0;
-    status.face_recognized = 0;
-  },60*1000)
-
   ws.onmessage = function (event) {
       var result = JSON.parse(event.data)
       status.total_tasks++;
@@ -361,6 +509,13 @@ get_device_uuid(function(uuid){
          if(detect_result.detected == true){
            status.face_detected++;
            console.log('face detected')
+           if(detect_result.cropped && detect_result.cropped.length > 0) {
+             for(var i=0;i<detect_result.cropped.length; i++) {
+               if(detect_result.cropped[i] && detect_result.cropped[i].style && detect_result.cropped[i].style == 'front') {
+                 status.face_detected_front++;
+               }
+             }
+           }
          }
       }
       if(result.hostname == "celery@embedding"){
@@ -374,4 +529,61 @@ get_device_uuid(function(uuid){
          }
       }
   }
+  ws.onerror = function(event) {
+      console.log("ws.onerror ")
+  };
+  ws.onclose = function(event) {
+      console.log("ws.onclose ")
+      setTimeout(function(){
+          connectToFlower()
+      },5*1000)
+  };
+}
+get_device_uuid(function(uuid){
+  var my_client_id = uuid
+  connectToMeteorServer(my_client_id)
+  connectToFlower()
+
+  setInterval(function(){
+    cpu_mem_uptime_temp(function(os_info) {
+        status.os = os_info;
+    })
+
+    /*get version every 10min*/
+    if(status.heartbeats%9 == 0) {
+        get_curent_version(function(version_info) {
+           status.version = version_info;
+        })
+    }
+    get_curent_config(function(cfg) {
+       status.cfg = cfg;
+    })
+
+
+    ddpClient.call('report',[{
+        clientID :my_client_id,
+        total_tasks:     status.total_tasks,
+        face_detected:   status.face_detected,
+        face_detected_front:   status.face_detected_front,
+        face_recognized: status.face_recognized,
+        os:              status.os,
+        version:         status.version,
+        cfg:             status.cfg }])
+
+    if(status.total_tasks === 0){
+        timesInSilence++
+        if(timesInSilence >= RESTART_TIMEOUT){
+            console.log('need restart docker compose')
+            restart_docker_compose()
+            timesInSilence = 0
+        }
+    } else {
+        timesInSilence = 0
+    }
+    status.total_tasks = 0;
+    status.face_detected = 0;
+    status.face_detected_front = 0;
+    status.face_recognized = 0;
+    status.heartbeats += 1;
+  },60*1000)
 })
