@@ -753,6 +753,18 @@ if Meteor.isServer
     else
       this.response.end('{"result": "ok", "reason": "params must be an Array"}\n')
   )
+  Router.route('/restapi/workai/faces_json', {where: 'server'}).post(()->
+    json_data = this.request.body
+    data = []
+    data.push(json_data)
+    if (typeof data is 'object')
+      data.forEach((face)->
+        insertFaces(face)
+      )
+      this.response.end('{"result": "ok"}\n')
+    else
+      this.response.end('{"result": "ok", "reason": "params must be an Array"}\n')
+  )
   Router.route('/restapi/list_device', {where: 'server'}).get(()->
     uuid = this.params.query.uuid
     console.log(groups)
