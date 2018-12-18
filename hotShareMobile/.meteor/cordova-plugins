@@ -19,7 +19,7 @@ cordova-plugin-inappbrowser@https://github.com/PluginCordova/inappbrowser/tarbal
 cordova-plugin-iosaudiopicker@https://github.com/PluginCordova/iosaudiopicker/tarball/c0ed773bc6b6de8211466d136e1992e880b25812
 cordova-plugin-keyboard@1.1.5
 cordova-plugin-media@https://github.com/PluginCordova/media/tarball/2d158b0ef7173cad2b2f84c05c62727932635f8e
-cordova-plugin-meteor-webapp@https://github.com/PluginCordova/cordova-plugin-meteor-webapp/tarball/45f242a3ef35b45c82f656b4dcf856701806d1ef
+cordova-plugin-meteor-webapp@https://github.com/zisanjie/cordova-plugin-meteor-webapp.git#16bc26dd7434496468287bfdc654ef1fb1a97436
 cordova-plugin-network-information@1.2.0
 cordova-plugin-splashscreen@https://github.com/PluginCordova/sharpAiSplashScreen/tarball/d23b8a319c67a2ebcf858806bf9800224fd7deb3
 cordova-plugin-statusbar@https://github.com/PluginCordova/cordova-plugin-statusbar/tarball/995e4fdf9de78609ff0fb30bab2610b9e5293410

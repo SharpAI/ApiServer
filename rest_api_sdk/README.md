@@ -18,6 +18,7 @@ res: {"result":"success","name":"leon"}
 body: {"result":"success","name":"leon"}
 
 
+
 ## 调试人脸头像数据API
 
 node workai_faces.js
@@ -43,7 +44,6 @@ post参数
 err: null
 res: { result: 'ok' }
 body: { result: 'ok' }
-
 
 
 ## 获取设备信息API

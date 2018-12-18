@@ -390,3 +390,10 @@ if (Meteor.isClient) {
     document.title = Session.get("DocumentTitle");
   });
 }
+
+Reload._onMigrate(function (retry) {
+  if (Meteor.isCordova) {
+    cordova.exec(callback, console.error, 'WebAppLocalServer', 'switchPendingVersion', []);
+  }
+  return [true, {}];
+});
