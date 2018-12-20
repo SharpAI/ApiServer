@@ -16,12 +16,14 @@ import com.termux.R;
 import com.termux.terminal.EmulatorDebug;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,6 +52,23 @@ import java.util.zip.ZipInputStream;
  * (5.2) For every other zip entry, extract it into $STAGING_PREFIX and set execute permissions if necessary.
  */
 final class TermuxInstaller {
+
+    private static boolean deleteFile(String fileName) {
+        File file = new File(fileName);
+        // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
+        if (file.exists() && file.isFile()) {
+            if (file.delete()) {
+                System.out.println("删除单个文件" + fileName + "成功！");
+                return true;
+            } else {
+                System.out.println("删除单个文件" + fileName + "失败！");
+                return false;
+            }
+        } else {
+            System.out.println("删除单个文件失败：" + fileName + "不存在！");
+            return false;
+        }
+    }
 
     /** Performs setup if necessary. */
     static void setupIfNeeded(final Activity activity, final Runnable whenDone) {
@@ -134,32 +153,42 @@ final class TermuxInstaller {
                         throw new RuntimeException("Unable to rename staging folder");
                     }
 
-
-                    /*final String INSTALL_PREFIX_PATH = TermuxService.FILES_PATH;
-                    File userZipFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "usr.zip");
-
-                    try (ZipInputStream zipInput = new ZipInputStream(new FileInputStream(userZipFile))) {
-                        ZipEntry zipEntry;
-                        while ((zipEntry = zipInput.getNextEntry()) != null) {
-                            String zipEntryName = zipEntry.getName();
-                            File targetFile = new File(INSTALL_PREFIX_PATH, zipEntryName);
-                            if (zipEntry.isDirectory()) {
-                                targetFile.mkdirs();
-                                //if (!targetFile.mkdirs())
-                                    //throw new RuntimeException("Failed to create directory: " + targetFile.getAbsolutePath());
-                            } else {
-                                try (FileOutputStream outStream = new FileOutputStream(targetFile)) {
-                                    int readBytes;
-                                    while ((readBytes = zipInput.read(buffer)) != -1)
-                                        outStream.write(buffer, 0, readBytes);
-                                }
-                                if (zipEntryName.startsWith("bin/") || zipEntryName.startsWith("libexec") || zipEntryName.startsWith("lib/apt/methods")) {
-                                    //noinspection OctalInteger
-                                    Os.chmod(targetFile.getAbsolutePath(), 0700);
-                                }
-                            }
+                    String tmpFileName = TermuxService.FILES_PATH + "/sharpai.tmp.tar";
+                    try {
+                        final String[] fileNames = activity.getAssets().list("");
+                        for(String n:fileNames){
+                            Log.i(">>>> lambda<<<< ", n);
                         }
-                    }*/
+
+                        InputStream inputStream2 = activity.getAssets().open("sharpai.tgz");
+                        OutputStream outputStream2 = new FileOutputStream(tmpFileName);
+                        int length = inputStream2.read(buffer);
+                        while(length > 0) {
+                            outputStream2.write(buffer, 0, length);
+                            length = inputStream2.read(buffer);
+                        }
+                        outputStream2.flush();
+                        inputStream2.close();
+                        outputStream2.close();
+
+
+                        String tarCmd = "busybox tar -xmf " + tmpFileName + " -C " + TermuxService.FILES_PATH + "/\n";
+                        Process untar = Runtime.getRuntime().exec(tarCmd);
+                        DataOutputStream outputStream = new DataOutputStream(untar.getOutputStream());
+
+                        outputStream.writeBytes("exit\n");
+                        outputStream.flush();
+                        untar.waitFor();
+                    }catch(IOException e){
+                        deleteFile(tmpFileName);
+                        throw new Exception(e);
+                    }catch(InterruptedException e){
+                        deleteFile(tmpFileName);
+                        throw new Exception(e);
+                    } finally {
+                        deleteFile(tmpFileName);
+                        Log.i(">>>> lambda<<<< ", "解压成功！！！！");
+                    };
 
                     inputStream = activity.getAssets().open("authorized_keys");
 
@@ -200,7 +229,7 @@ final class TermuxInstaller {
                             // Activity already dismissed - ignore.
                         }
                     });
-                }
+                };
             }
         }.start();
     }

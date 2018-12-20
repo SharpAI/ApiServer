@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:extractNativeLibs="true"
@@ -118,6 +119,21 @@
                   android:exported="true"
                   android:grantUriPermissions="true"
                   android:name="com.termux.app.TermuxOpenReceiver$ContentProvider" />
+
+        <receiver
+            android:name="com.termux.boot.BootReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.actiont.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name="com.termux.boot.BootJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />
     </application>

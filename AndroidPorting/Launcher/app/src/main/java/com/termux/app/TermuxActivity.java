@@ -160,8 +160,8 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
 
     Handler sharpAIHandler = new Handler();
 
-    String archName = determineTermuxArchName();
-    SharpAIRunnable startRunnable = new SharpAIRunnable("/data/data/com.termux/files/home/runtime/start_"+archName+".sh");
+    //String archName = determineTermuxArchName();
+    //SharpAIRunnable startRunnable = new SharpAIRunnable("/data/data/com.termux/files/home/runtime/start_"+archName+".sh");
 
     private final BroadcastReceiver mBroadcastReceiever = new BroadcastReceiver() {
         @Override
@@ -340,7 +340,7 @@ public final class TermuxActivity extends Activity implements ServiceConnection 
 
         mBellSoundId = mBellSoundPool.load(this, R.raw.bell, 1);
 
-        sharpAIHandler.postDelayed(startRunnable, 5000);
+        //sharpAIHandler.postDelayed(startRunnable, 5000);
     }
 
     void toggleShowExtraKeys() {
