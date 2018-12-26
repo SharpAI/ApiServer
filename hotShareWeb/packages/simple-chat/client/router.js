@@ -1558,12 +1558,12 @@ Template._checkGroupDevice.events({
     Session.set('_checkGroupDevice_status', 'status_open_device');
     console.log("_checkGroupDevice_status set to status_open_device")
     Session.set('_timelineAlbumFromGroupId', this.groupId);
-    var path = Session.get('toPath');
-    if(path && path!=''){
-      Session.set('toPath',null);
-      return PUB.page(path+'/'+this.uuid);
-    }
-    return PUB.page('/timelineAlbum/'+this.uuid+'?from=groupchat');
+    // var path = Session.get('toPath');
+    // if(path && path!=''){
+    //   Session.set('toPath',null);
+    //   return PUB.page(path+'/'+this.uuid);
+    // }
+    return PUB.page('/timelineAlbum/' + this.uuid + '?from=groupchat');
   },
   'click ._checkGroupDevice, click ._cgd_close': function(e) {
     Session.set('_groupChatDeviceLists',[]);
