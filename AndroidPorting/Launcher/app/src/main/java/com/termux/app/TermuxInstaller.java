@@ -154,7 +154,7 @@ final class TermuxInstaller {
                     }
 
                     String tmpFileName = TermuxService.FILES_PATH + "/sharpai.tmp.tar";
-                    String sharpaiName = "sharpai.tgz";
+                    String sharpaiName = "sharpai-base.tgz";
                     try {
                         final String[] fileNames = activity.getAssets().list("");
                         for(String filename:fileNames) {
@@ -176,6 +176,46 @@ final class TermuxInstaller {
 
 
                             String tarCmd = "busybox tar -xmf " + tmpFileName + " -C " + TermuxService.FILES_PATH + "/\n";
+                            Process untar = Runtime.getRuntime().exec(tarCmd);
+                            DataOutputStream outputStream = new DataOutputStream(untar.getOutputStream());
+
+                            outputStream.writeBytes("exit\n");
+                            outputStream.flush();
+                            untar.waitFor();
+                        }
+                    }catch(IOException e){
+                        deleteFile(tmpFileName);
+                        throw new Exception(e);
+                    }catch(InterruptedException e){
+                        deleteFile(tmpFileName);
+                        throw new Exception(e);
+                    } finally {
+                        deleteFile(tmpFileName);
+                        Log.i(">>>> lambda<<<< ", "解压成功！！！！");
+                    };
+
+                    String sharpaiAppName = "sharpai-app.tgz";
+                    try {
+                        final String[] fileNames = activity.getAssets().list("");
+                        for(String filename:fileNames) {
+                            Log.i(">>>> lambda<<<< ", filename);
+                            if (!sharpaiAppName.equals(filename)) {
+                                continue;
+                            }
+
+                            InputStream inputStream2 = activity.getAssets().open(sharpaiAppName);
+                            OutputStream outputStream2 = new FileOutputStream(tmpFileName);
+                            int length = inputStream2.read(buffer);
+                            while (length > 0) {
+                                outputStream2.write(buffer, 0, length);
+                                length = inputStream2.read(buffer);
+                            }
+                            outputStream2.flush();
+                            inputStream2.close();
+                            outputStream2.close();
+
+
+                            String tarCmd = "busybox tar -xmf " + tmpFileName + " -C " + TermuxService.FILES_PATH + "/home/\n";
                             Process untar = Runtime.getRuntime().exec(tarCmd);
                             DataOutputStream outputStream = new DataOutputStream(untar.getOutputStream());
 
