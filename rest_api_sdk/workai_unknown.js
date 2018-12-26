@@ -5,7 +5,7 @@ var request = require('./index')
 
 //陌生人标记
 request.post(
-  'http://localhost:3000/restapi/workai_unknown',{
+  'http://workaicdn.tiegushi.com/restapi/workai_unknown',{
   body: {
     person_id:'',
     persons:[{

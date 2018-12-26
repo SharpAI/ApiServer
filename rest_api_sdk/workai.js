@@ -19,7 +19,7 @@ var request = require('./index')
 
 //workAI 识别信息消息
 request.post(
-  'http://localhost:3000/restapi/workai',{
+  'http://workaicdn.tiegushi.com/restapi/workai',{
   body: {
     'id':'7YRBBDB72200271715027668215821893',
     'uuid':'28DDU17602003551',

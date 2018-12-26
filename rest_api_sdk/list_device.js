@@ -5,7 +5,7 @@ var request = require('./index')
 
 //查看设备信息
 request.get({
-  url:'http://localhost:3000/restapi/list_device',
+  url:'http://workaicdn.tiegushi.com/restapi/list_device',
   qs: {
     uuid:'28DDU17602003551'
   }

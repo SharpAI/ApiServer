@@ -21,7 +21,7 @@ var request = require('./index')
 // # }]
 //接受人脸识别数据
 request.post(
-  'http://localhost:3000/restapi/workai/faces_json',{
+  'http://workaicdn.tiegushi.com/restapi/workai/faces_json',{
   body: {
     "id":"28D6R16C1200588515222765925380176",
     "uuid":"28D6R16C12005885",

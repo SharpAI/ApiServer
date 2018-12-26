@@ -5,7 +5,7 @@ var request = require('./index')
 
 //删除设备
 request.get({
-  url:'http://localhost:3000/restapi/clean_device',
+  url:'http://workaicdn.tiegushi.com/restapi/clean_device',
   qs: {
     uuid:'2fcccc9f'
   }

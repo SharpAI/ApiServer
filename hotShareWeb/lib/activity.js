@@ -143,6 +143,10 @@ activity_update_time = function (person_id, create_time, image_url){
 	workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'person_name': relation.person_name, 'date': day_utc});
     }
 
+    if (!image_url) {
+    	PUB.toast("头像不能为空");
+    	return;
+    }
     console.log("workstatus", workstatus)
     if (!workstatus) {
 	var intime = act_time

@@ -555,6 +555,10 @@ PERSON = {
       console.log("invalid arguments of updateWorkStatus")
       return
     }
+    if(!relation.checkin_image || !relation.checkout_image){
+      console.log("invalid arguments of updateWorkStatus,check image")
+      return
+    }
 
     var time_offset = 8; //US is -7, China is +8
 
