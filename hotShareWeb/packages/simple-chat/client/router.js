@@ -1563,7 +1563,6 @@ Template._checkGroupDevice.events({
       Session.set('toPath',null);
       return PUB.page(path+'/'+this.uuid);
     }
-    Session.set("timelinehref",true)
     return PUB.page('/timelineAlbum/'+this.uuid+'?from=groupchat');
   },
   'click ._checkGroupDevice, click ._cgd_close': function(e) {
@@ -1653,7 +1652,7 @@ Template._simpleChatToChat.events({
   'click #labelNewPerson': function(e) {
     // get the device list
     var data = page_data;
-
+    Session.set("timelinehref",true)
     var deviceLists = Devices.find({groupId: data.id}).fetch();
     if (deviceLists && deviceLists.length > 0) {
       if(deviceLists.length == 1 && deviceLists[0].uuid) {

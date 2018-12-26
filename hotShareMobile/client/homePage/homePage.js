@@ -189,6 +189,7 @@ Template.homePage.events({
         console.log('getDeviceListByGroupId:',err);
         return;
       }
+      Session.set("timelinehref",true)
       console.log("device lists is: ", JSON.stringify(deviceLists));
       if (deviceLists && deviceLists.length > 0) {
         if (deviceLists.length == 1 && deviceLists[0].uuid) {
