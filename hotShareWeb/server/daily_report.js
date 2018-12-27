@@ -126,7 +126,7 @@ if(Meteor.isServer){
         var groups_users = SimpleChat.GroupUsers.find({report_emails: {$exists: true}});
         groups_users.forEach(function(group_user) {
           var group = SimpleChat.Groups.findOne({_id: group_user.group_id});
-          if (!group)
+          if (!group || !group_user.report_emails)
             return;
           var time_offset = 8;
           if (group && group.offsetTimeZone) {
