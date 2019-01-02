@@ -516,6 +516,7 @@ if(Meteor.isServer){
         date: date,
         group_id: group_id
     };
+    selector.$or = [{in_uuid:{$ne:null}},{out_uuid:{$ne:null}}];
     if(status){
         selector.status = status
     }
