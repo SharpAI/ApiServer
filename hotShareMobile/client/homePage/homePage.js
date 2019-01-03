@@ -201,7 +201,7 @@ Template.homePage.events({
         } else {
           console.log("select a device")
           Session.set('_groupChatDeviceLists', deviceLists);
-          Session.set('toPath','/timelineAlbum');
+          // Session.set('toPath','/timelineAlbum');
           //workStatusPopPage.close();
           $('._checkGroupDevice').fadeIn();
           //workStatusPopPage.hide();
