@@ -50,16 +50,12 @@ Template.groupInstallTest.helpers({
                 btn = '开始';
                 break;
             case 2:
-                content = '设备未接通，请查看右上角帮助';
+                content = '请确保有人走过';
                 // btn = '确定';
                 showFoot = 'display:none';
                 break;
             case 3:
-                head = '评测帮助';
-                content = '<p class="title_failure">失败原因</p><p class="failure_info">1.“网络堵塞”可能导致部署评测失败,但是网络堵塞并不会影响来了吗的其它功能。</p><p class="failure_info">2. 如果想得到准确的部署评测分数，您可以根据以下操作来进行调整：' +
-                '</p><p class="perform_perform">操作</p><p class="perform_order">先在镜头前行走1-2次后，再点击<small class="url_review url_fa">部署评测</small></p><p class="perform_order"></p><p class="perform_perform">说明</p><p class="perform_order">操作过程中，你可以去<small class="url_time url_fa">时间轴</small>里观察行人照片出现的时间，参考下列标准检测你的网络堵塞状态</p><p class="perform_order">&lt;=10秒，网络正常；</p>'+
-                '<p class="perform_order">=&gt30秒，网络拥挤；</p><p class="perform_order">=&gt;60秒，网络堵塞；</p>'
-                btn = "确定";
+                content = '设备未接通，请检查连接是否正常'
                 break;
             case 4:
                 head = '设备状态';
@@ -150,6 +146,7 @@ var test_score = function(){
     $('.progress').hide();
     $('.progress-bar').removeClass('time');
     var st = Session.get('isStarting');
+    var dev = Devices.findOne({uuid: Router.current().params.uuid});
     st.isTesting = false;
     st.showScore = true;
     var cId;
@@ -158,7 +155,7 @@ var test_score = function(){
         peerCollection.find({"clientID": cId}).observe({
             added: function(res) {
                 if(res && res.face_detected && res.face_detected != 0){
-                    var roateResNum = Math.floor(res.face_detected_front/res.face_detected * 100);
+                    var roateResNum = Math.floor(res.face_detected/res.face_detected * 100);
                     if (roateResNum < 100) {
                         roateScore.set(roateResNum + '');
                     } else {
@@ -167,15 +164,20 @@ var test_score = function(){
                     
                     showRes.set(true);
                 }else{
+                    if (dev.online && dev.camera_run){
+                        showPop.set(2);
+                    }else {
+                        showPop.set(3);
+                    }
                     roateScore.set('0');
-                    showPop.set(2);
                     showRes.set(false);
                 }
-                if(res && res.face_detected_front && res.face_detected_front != 0){
-                    if(res.face_recognized >= res.face_detected_front){
+                if(res && res.face_detected && res.face_detected != 0){
+                    if(res.face_recognized >= res.face_detected){
                         labelScore.set(100 + '');
                     }else{
                         var labelResNum = Math.floor(res.face_recognized/res.face_detected_front * 100);
+                        
                         if (labelResNum < 100) {
                             labelScore.set(labelResNum + '');
                         } else {
@@ -186,9 +188,10 @@ var test_score = function(){
                     labelScore.set('0');
                 }
                 message_queue = [];
-                if(res.face_detected && res.face_detected == 0
-                    || res.face_detected_front && res.face_detected_front == 0){
+                if(res.face_detected && res.face_detected == 0){
                     st.status = "fail";
+                    st.isTesting = false
+                    alert(st+"--"+st.status+"--"+st.isTesting+"--")
                 }else{
                     st.status = "success";
                 }
