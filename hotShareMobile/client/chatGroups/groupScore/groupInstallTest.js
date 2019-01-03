@@ -191,7 +191,6 @@ var test_score = function(){
                 if(res.face_detected && res.face_detected == 0){
                     st.status = "fail";
                     st.isTesting = false
-                    alert(st+"--"+st.status+"--"+st.isTesting+"--")
                 }else{
                     st.status = "success";
                 }
