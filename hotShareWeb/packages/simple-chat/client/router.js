@@ -2389,11 +2389,11 @@ var msgSideFaceAnalyze = function(group_id, msgObj) {
   });
 
   console.log('##RDBG, groupData:', group_id, ',total:', groupData.total, 'side_face:', groupData.side_face);
-
+  
   if (groupData.total > 100) {
     var side_percent = groupData.side_face*1.0/groupData.total;
     console.log('##RDBG, percent:', side_percent);
-    if (side_percent > 0.5) {
+    if (side_percent > 0.9) {
       console.log('##RDBG, side face percent is too large, need to evaluate again');
       localStorage.setItem(group_id + '_wizardfinished', false);
       groupData = {total: 0, side_face:0};
