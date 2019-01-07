@@ -2395,7 +2395,7 @@ var msgSideFaceAnalyze = function(group_id, msgObj) {
     console.log('##RDBG, percent:', side_percent);
     if (side_percent > 0.9) {
       console.log('##RDBG, side face percent is too large, need to evaluate again');
-      localStorage.setItem(group_id + '_wizardfinished', false);
+      //localStorage.setItem(group_id + '_wizardfinished', false);
       groupData = {total: 0, side_face:0};
     }
   }
