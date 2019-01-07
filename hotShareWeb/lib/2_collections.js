@@ -720,6 +720,10 @@ if(Meteor.isClient){
   Meteor.startup(function(){
     Meteor.subscribe('peerInfo')
   });
+
+  window.refreshMainDataSource = function(){
+      Meteor.subscribe('waitreadcount');
+  };
 }
 
 if(Meteor.isServer){
