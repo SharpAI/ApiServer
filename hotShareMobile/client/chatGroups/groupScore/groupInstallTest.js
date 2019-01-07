@@ -30,6 +30,7 @@ Template.groupInstallTest.onRendered(function(){
             showPop.set(1);
         }
     });
+    
 })
 
 Template.groupInstallTest.helpers({
@@ -50,26 +51,26 @@ Template.groupInstallTest.helpers({
                 btn = '开始';
                 break;
             case 2:
-                content = '请确保有人走过';
+                content = '设备未接通，请查看右上角帮助';
                 // btn = '确定';
                 showFoot = 'display:none';
                 break;
             case 3:
-                content = '设备未接通，请检查连接是否正常'
+                head = '评测帮助';
+                content = '<p class="title_failure">失败原因</p><p class="failure_info">1.“网络堵塞”可能导致部署评测失败,但是网络堵塞并不会影响来了吗的其它功能。</p><p class="failure_info">2. 如果想得到准确的部署评测分数，您可以根据以下操作来进行调整：' +
+                '</p><p class="perform_perform">操作</p><p class="perform_order">先在镜头前行走1-2次后，再点击<small class="url_review url_fa">部署评测</small></p><p class="perform_order"></p><p class="perform_perform">说明</p><p class="perform_order">操作过程中，你可以去<small class="url_time url_fa">时间轴</small>里观察行人照片出现的时间，参考下列标准检测你的网络堵塞状态</p><p class="perform_order">&lt;=10秒，网络正常；</p>'+
+                '<p class="perform_order">=&gt30秒，网络拥挤；</p><p class="perform_order">=&gt;60秒，网络堵塞；</p>'
+                btn = "确定";
                 break;
             case 4:
                 head = '设备状态';
                 if (dev.online)
-                    deviceImg = '/face_box_online.svg';
-                else
-                    deviceImg = '/face_box_offline.svg';
+                    deviceImg = '/device_online.png';
                 if (dev.camera_run)
-                    cameraImg = '/camera_online.svg';
-                else
-                    cameraImg = '/camera_offline.svg';
+                    cameraImg = '/camera_online.png';
                 content = '<div><div style="margin: 10px 20px;">脸脸盒：<img src="' + deviceImg
-                 + '" "'+ "width='30' height='20'" +'"></div><div style="margin: 10px 20px;">摄像头：<img src="' + cameraImg 
-                 + '" "'+ "width='26' height='22'" +'"></div><p style="margin: 10px 20px; color: red; text-align: center;">您的设备未接通，请检查设备连接后再次进行部署评测</p></div>';
+                 + '"></div><div style="margin: 10px 20px;">摄像头：<img src="' + cameraImg
+                 + '"></div><p style="margin: 10px 20px; color: red; text-align: center;">您的设备未接通，请检查设备连接后再次进行部署评测</p></div>';
                 btn = "放弃";
                 showClose = 'display: none;';
                 break;
@@ -146,101 +147,45 @@ var test_score = function(){
     $('.progress').hide();
     $('.progress-bar').removeClass('time');
     var st = Session.get('isStarting');
-    var dev = Devices.findOne({uuid: Router.current().params.uuid});
     st.isTesting = false;
     st.showScore = true;
-    var cId;
-    if (Router.current().params && Router.current().params.uuid) {
-        cId = Router.current().params.uuid;
-        peerCollection.find({"clientID": cId}).observe({
-            added: function(res) {
-                if(res && res.face_detected && res.face_detected != 0){
-                    var roateResNum = Math.floor(res.face_detected/res.face_detected * 100);
-                    if (roateResNum < 100) {
-                        roateScore.set(roateResNum + '');
-                    } else {
-                        roateScore.set('100');
-                    }
-                    
-                    showRes.set(true);
-                }else{
-                    if (dev.online && dev.camera_run){
-                        showPop.set(2);
-                    }else {
-                        showPop.set(3);
-                    }
-                    roateScore.set('0');
-                    showRes.set(false);
-                }
-                if(res && res.face_detected && res.face_detected != 0){
-                    if(res.face_recognized >= res.face_detected){
-                        labelScore.set(100 + '');
-                    }else{
-                        var labelResNum = Math.floor(res.face_recognized/res.face_detected_front * 100);
-                        
-                        if (labelResNum < 100) {
-                            labelScore.set(labelResNum + '');
-                        } else {
-                            labelScore.set('100');
-                        }
-                    }
-                }else{
-                    labelScore.set('0');
-                }
-                message_queue = [];
-                if(res.face_detected && res.face_detected == 0){
-                    st.status = "fail";
-                    st.isTesting = false
-                }else{
-                    st.status = "success";
-                }
-                Session.set('isStarting',st);
-            },
-            changed: function(newRes, oldRes){
-                
-            },
-            removed: function(res){
-                
-            }
-        })
+    
+    var totalCount = message_queue.length;
+    var labelArr = _.filter(message_queue,function(m){
+        if(m.label &&  m.label != ''){
+            return true;
+        }
+        return false;
+    });
+    var frontArr = _.filter(message_queue,function(m){
+        return m.style == 'front'
+    });
+    var front_len = frontArr.length;
+    if(totalCount != 0){
+        roateScore.set(Math.floor(front_len/totalCount * 100) + '');
+        showRes.set(true);
+    }else{
+        roateScore.set('0');
+        showPop.set(2);
+        showRes.set(false);
     }
-
-    // var totalCount = message_queue.length;
-    // var labelArr = _.filter(message_queue,function(m){
-    //     if(m.label &&  m.label != ''){
-    //         return true;
-    //     }
-    //     return false;
-    // });
-    // var frontArr = _.filter(message_queue,function(m){
-    //     return m.style == 'front'
-    // });
-    // var front_len = frontArr.length;
-    // if(totalCount != 0){
-    //     roateScore.set(Math.floor(front_len/totalCount * 100) + '');
-    //     showRes.set(true);
-    // }else{
-    //     roateScore.set('0');
-    //     showPop.set(2);
-    //     showRes.set(false);
-    // }
-    // if(front_len != 0){
-    //     if(labelArr.length >= front_len){
-    //         labelScore.set(100 + '');
-    //     }else{
-    //         labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
-    //     }
+    if(front_len != 0){
+        if(labelArr.length >= front_len){
+            labelScore.set(100 + '');
+        }else{
+            labelScore.set(Math.floor(labelArr.length/front_len * 100) + '');
+        }
         
-    // }else{
-    //     labelScore.set('0');
-    // }
-    // message_queue = [];
-    // if(totalCount == 0 || front_len == 0){
-    //     st.status = "fail";
-    // }else{
-    //     st.status = "success";
-    // }
-    // Session.set('isStarting',st);
+    }else{
+        labelScore.set('0');
+    }
+    message_queue = [];
+    if(totalCount == 0 || front_len == 0){
+        st.status = "fail";
+    }else{
+        st.status = "success";
+    }
+    Session.set('isStarting',st);
 }
 Template.popup.events({
     'click .close':function(){

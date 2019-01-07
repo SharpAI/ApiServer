@@ -253,11 +253,6 @@ if(Meteor.isServer){
     }
   }
 
-  Meteor.publish('peerInfo', function peerInfoPublication() {
-    var serverDate = new Date()
-    serverDate.setMinutes(serverDate.getMinutes() - 5);
-    return peerCollection.find({updateBy:{$gte:serverDate}});
-  });
 
   KnownUnknownAlertLimit = new Mongo.Collection("alertlimit_known_unknown");
 
@@ -406,9 +401,8 @@ if(Meteor.isServer){
     if(!this.userId || !group_id){
       return this.ready();
     }
-    var limit = limit || 20;
-    //return Person.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
-    return Person.find({group_id: group_id},{limit: limit,sort:{name: 1}});
+    var limit = limit || 50;
+    return Person.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
   });
 
   Meteor.publish('group_cluster_person', function(group_id, limit){
@@ -516,7 +510,6 @@ if(Meteor.isServer){
         date: date,
         group_id: group_id
     };
-    selector.$or = [{in_uuid:{$ne:null}},{out_uuid:{$ne:null}}];
     if(status){
         selector.status = status
     }
@@ -716,14 +709,6 @@ if(Meteor.isClient){
   DynamicMoments = new Meteor.Collection('dynamicmoments');
   NewDynamicMoments = new Meteor.Collection('newdynamicmoments');
   SuggestPosts = new Meteor.Collection('suggestposts');
-  peerCollection = new Meteor.Collection('peer');
-  Meteor.startup(function(){
-    Meteor.subscribe('peerInfo')
-  });
-
-  window.refreshMainDataSource = function(){
-      Meteor.subscribe('waitreadcount');
-  };
 }
 
 if(Meteor.isServer){
