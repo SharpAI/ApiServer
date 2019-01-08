@@ -65,12 +65,16 @@ Template.groupInstallTest.helpers({
             case 4:
                 head = '设备状态';
                 if (dev.online)
-                    deviceImg = '/device_online.png';
+                    deviceImg = '/face_box_online.svg';
+                else
+                    deviceImg = '/face_box_offline.svg';
                 if (dev.camera_run)
-                    cameraImg = '/camera_online.png';
+                    cameraImg = '/camera_online.svg';
+                else
+                    cameraImg = '/camera_offline.svg';
                 content = '<div><div style="margin: 10px 20px;">脸脸盒：<img src="' + deviceImg
-                 + '"></div><div style="margin: 10px 20px;">摄像头：<img src="' + cameraImg
-                 + '"></div><p style="margin: 10px 20px; color: red; text-align: center;">您的设备未接通，请检查设备连接后再次进行部署评测</p></div>';
+                + '" "'+ "width='30' height='20'" +'"></div><div style="margin: 10px 20px;">摄像头：<img src="' + cameraImg 
+                + '" "'+ "width='26' height='22'" +'"></div><p style="margin: 10px 20px; color: red; text-align: center;">您的设备未接通，请检查设备连接后再次进行部署评测</p></div>';
                 btn = "放弃";
                 showClose = 'display: none;';
                 break;
