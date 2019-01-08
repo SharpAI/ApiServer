@@ -9,7 +9,7 @@ cordova-plugin-actionsheet@https://github.com/PluginCordova/cordova-plugin-actio
 cordova-plugin-apprate@https://github.com/PluginCordova/apprate/tarball/b318cabf92aec3ed1b0d90c7803a5ff07c75ae4a
 cordova-plugin-camera@https://github.com/PluginCordova/cordova-plugin-camera/tarball/394a5b1dbf9de3a76f64127acaf8366e4cf82920
 cordova-plugin-crop@https://github.com/PluginCordova/cordova-plugin-crop/tarball/dfa847173a9c1d449a20004f7baf5c0e8ba47bf2
-cordova-plugin-fastrde-mqtt@https://github.com/PluginCordova/cordova-plugin-fastrde-mqtt/tarball/3ba13734351e4dc5597c21e3ea617109172289b9
+cordova-plugin-fastrde-mqtt@https://github.com/PluginCordova/cordova-plugin-fastrde-mqtt/tarball/b7e1e5ca1b93f40cef522845c747d02b3cc84022
 cordova-plugin-device@1.1.1
 cordova-plugin-device-motion@1.2.0
 cordova-plugin-dialogs@1.2.0

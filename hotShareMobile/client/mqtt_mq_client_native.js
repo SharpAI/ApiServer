@@ -2,6 +2,15 @@
  * Created by simba on 5/12/16.
  */
 if(Meteor.isClient && withNativeMQTTLIB){
+  var network_status = ""
+  function isJSON(message) {
+      if(typeof(message) == "object" &&
+          Object.prototype.toString.call(message).toLowerCase() == "[object object]" && !message.length){
+          return true;
+      } else {
+          return false;
+      }
+  }
   Meteor.startup(function(){
     var undeliveredMessages = [];
     var unsendMessages = [];
@@ -12,74 +21,22 @@ if(Meteor.isClient && withNativeMQTTLIB){
     Session.set('history_message',false);
     var noMessageTimer = null;
     //mqtt_connected = false;
-    var onMessageArrived = function(message) {
-        console.log("onMessageArrived:"+message.message);
-        console.log('message.destinationName= '+message.topic);
-        //console.log('message= ', msgKey, JSON.stringify(message));
-        var history = Session.get('history_message');
-        var msgKey = null
-        var mqttCallback = null
-
-        if(noMessageTimer){
-            Meteor.clearTimeout(noMessageTimer);
-            noMessageTimer = null;
-        }
-        /*if(history && len == 0){
-            console.log('sync finish');
-            Session.set('history_message',false);
-        }*/
-        function reciveMsg(message, msgKey){
-            try {
-                var topic = message.topic;
-                console.log('on mqtt message topic: ' + topic + ', message: ' + message.message);
-                if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
-                {
-                    SimpleChat.onMqttMessage(topic, message.message, msgKey, mqttCallback);
-                    var isTesting = Session.get('isStarting');
-                    if(isTesting && (topic == '/msg/g/'+isTesting.group_id) && isTesting.isTesting){
-                        GroupInstallTest(message.message);
-                    }
-                }
-                else if (topic.startsWith('/msg/l/'))
-                    SimpleChat.onMqttLabelMessage(topic, message.message, msgKey, mqttCallback);
-            } catch (ex) {
-                console.log('exception onMqttMessage: ' + ex);
-            }
-        }
-        if (Session.equals('GroupUsersLoaded',true)) {
-            setImmediateWrap(function() {
-                reciveMsg(message, msgKey);
-            });
-        }
-        else{
-            console.log('subscribe get my group!');
-            uninsertMessages.push(message);
-            uninsertMessages_msgKey.push(msgKey)
-            Meteor.subscribe('get-my-group', Meteor.userId(),{
-                onReady:function(){
-                    Session.set('GroupUsersLoaded',true);
-                    console.log('GroupUsersLoaded!!');
-                    if (uninsertMessages.length > 0) {
-                        for (var i = 0; i < uninsertMessages.length; i++) {
-                            reciveMsg(uninsertMessages[i], uninsertMessages_msgKey[i]);
-                        }
-                        uninsertMessages = [];
-                        uninsertMessages_msgKey = [];
-                    }
-                }
-            });
-        }
-    };
+    function check_if_message_sent_byself(message){
+      if(Meteor.userId() && message && message.form && message.form.id){
+        return message.form.id===Meteor.userId()
+      }
+      return false
+    }
     initMQTT = function(clientId){
       if(mqtt.host){
         console.log('already inited')
-        if(!connected){
+        //if(!connected){
           mqtt.disconnect(function(){
             setTimeout(function(){
               mqtt.connect()
             },1*1000)
           })
-        }
+        //}
         return
       }
         var mqttOptions = {
@@ -117,9 +74,9 @@ if(Meteor.isClient && withNativeMQTTLIB){
         },1*1000)
 
         mqtt.on('connect',onConnect,onFailure)
-        mqtt.on('publish', onMessageDelivered,function(errorMessage){
+        /*mqtt.on('publish', onMessageDelivered,function(errorMessage){
           console.log('publish failed, ', errorMessage)
-        })
+        })*/
         mqtt.on('message', onMessageArrived)
         function clearUndeliveredMessages() {
             console.log('clearUndeliveredMessages: undeliveredMessages.length='+undeliveredMessages.length);
@@ -168,6 +125,77 @@ if(Meteor.isClient && withNativeMQTTLIB){
                 //mqtt_connection.connect(pahoMqttOptions);
                 initMQTT();
             }, 5*1000);
+        };
+
+        function onMessageArrived(message) {
+            if(!isJSON(message)){
+              message = JSON.parse(message)
+            }
+            console.log("onMessageArrived:"+message.message);
+            console.log('message.destinationName= '+message.topic);
+            //console.log('message= ', msgKey, JSON.stringify(message));
+            var history = Session.get('history_message');
+            var msgKey = null
+            var mqttCallback = null
+            try{
+              var messageObj = JSON.parse(message.message)
+              if(check_if_message_sent_byself(messageObj)){
+                console.log('self sent message from broker')
+                onMessageDelivered(message)
+                return
+              }
+            } catch (e){
+              console.log('exception by JSON.parsh and check_if_message_sent_byself ',e)
+            }
+            if(noMessageTimer){
+                Meteor.clearTimeout(noMessageTimer);
+                noMessageTimer = null;
+            }
+            /*if(history && len == 0){
+                console.log('sync finish');
+                Session.set('history_message',false);
+            }*/
+            function reciveMsg(message, msgKey){
+                try {
+                    var topic = message.topic;
+                    console.log('on mqtt message topic: ' + topic + ', message: ' + message.message);
+                    if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
+                    {
+                        SimpleChat.onMqttMessage(topic, message.message, msgKey, mqttCallback);
+                        var isTesting = Session.get('isStarting');
+                        if(isTesting && (topic == '/msg/g/'+isTesting.group_id) && isTesting.isTesting){
+                            GroupInstallTest(message.message);
+                        }
+                    }
+                    else if (topic.startsWith('/msg/l/'))
+                        SimpleChat.onMqttLabelMessage(topic, message.message, msgKey, mqttCallback);
+                } catch (ex) {
+                    console.log('exception onMqttMessage: ' + ex);
+                }
+            }
+            if (Session.equals('GroupUsersLoaded',true)) {
+                setImmediateWrap(function() {
+                    reciveMsg(message, msgKey);
+                });
+            }
+            else{
+                console.log('subscribe get my group!');
+                uninsertMessages.push(message);
+                uninsertMessages_msgKey.push(msgKey)
+                Meteor.subscribe('get-my-group', Meteor.userId(),{
+                    onReady:function(){
+                        Session.set('GroupUsersLoaded',true);
+                        console.log('GroupUsersLoaded!!');
+                        if (uninsertMessages.length > 0) {
+                            for (var i = 0; i < uninsertMessages.length; i++) {
+                                reciveMsg(uninsertMessages[i], uninsertMessages_msgKey[i]);
+                            }
+                            uninsertMessages = [];
+                            uninsertMessages_msgKey = [];
+                        }
+                    }
+                });
+            }
         };
         function onMessageDelivered(message) {
             try {
@@ -228,14 +256,6 @@ if(Meteor.isClient && withNativeMQTTLIB){
             };
             unsendMessages.push(unsendMsg);
             console.log('unsendMessages push: message='+JSON.stringify(message));
-        }
-        function isJSON(message) {
-            if(typeof(message) == "object" &&
-                Object.prototype.toString.call(message).toLowerCase() == "[object object]" && !message.length){
-                return true;
-            } else {
-                return false;
-            }
         }
 
         var conn_time = new Date().getTime();
@@ -358,12 +378,13 @@ if(Meteor.isClient && withNativeMQTTLIB){
         };
 
     }
-    MQTTDisconnect = function() {
+    MQTTDisconnect = function(cb) {
       try {
-        mqtt.disconnect()
+        mqtt.disconnect(cb)
         connected = false
       } catch (error) {
         console.log(error)
+        cb && cb()
       }
     }
     subscribeMyChatGroups = function() {
@@ -442,10 +463,17 @@ if(Meteor.isClient && withNativeMQTTLIB){
     document.addEventListener("offline", function(){
       console.log('device get offline')
       MQTTDisconnect();
+      network_status = navigator.connection.type
     }, false);
     document.addEventListener("online", function(){
       console.log('device get online')
-      startMQTT();
+      //startMQTT()
+      if(network_status !== navigator.connection.type){
+        MQTTDisconnect(function(){
+          network_status = navigator.connection.type
+          startMQTT();
+        });
+      }
     }, false);
   })
 }
