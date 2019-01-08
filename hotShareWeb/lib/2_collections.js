@@ -938,5 +938,10 @@ if(Meteor.isClient){
 
           Meteor.subscribe('versions');
       });
+   //To prevent method not defined exception.
+   window.refreshMainDataSource = function(){		
+       //Meteor.subscribe('waitreadcount');		
+   };
+	  
   }
 }
