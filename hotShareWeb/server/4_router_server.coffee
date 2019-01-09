@@ -1008,6 +1008,110 @@ if Meteor.isServer
       )
       this.response.end('{"result": "ok"}\n')
     )
+  Router.route('restapi/workai_unknown_label', {where: 'server'}).get(()->
+
+    ).post(()->
+      person_id = ''
+      persons = []
+      person_name = null
+      active_time = null
+      is_person = false
+      if this.request.body.hasOwnProperty('person_id')
+        person_id = this.request.body.person_id
+      if this.request.body.hasOwnProperty('persons')
+        persons = this.request.body.persons
+      console.log("restapi/workai_unknown post: person_id="+person_id+", persons="+JSON.stringify(persons))
+      if (!(persons instanceof Array) or persons.length < 1)
+        console.log("restapi/workai_unknown: this.request.body is not array.")
+        return this.response.end('{"result": "failed!", "cause": "this.request.body is not array."}\n')
+      user = Meteor.users.findOne({username: persons[0].uuid})
+      unless user
+        console.log("restapi/workai_unknown: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/workai_unknown: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+      if !persons[0].person_name
+        return this.response.end('{"result": "failed!", "cause":"person_name is null."}\n')
+      if person_id != ''
+        is_person = true
+      person_id = if person_id != '' then person_id else new Mongo.ObjectID()._str
+      userGroups.forEach((userGroup)->
+        person_name = persons[0].person_name
+        person_data = PERSON.getIdByName(persons[0].uuid, person_name, userGroup.group_id)
+        console.log(person_name)
+        faceId = null
+        if person_data and person_data.faceId
+          faceId = person_data.faceId
+        else if persons[0].person_name
+          faceId = new Mongo.ObjectID()._str
+        else 
+          faceId = person_id
+        for person in persons
+          trainsetObj = {
+            group_id: userGroup.group_id,
+            type: 'trainset',
+            url: person.img_url,
+            person_id: person_id,
+            device_id: person.uuid,
+            face_id: faceId,
+            drop: false,
+            img_type: 'face',
+            style:person.style,
+            sqlid:person.sqlid
+            };
+          console.log("==sr==. unknow_label: " + JSON.stringify(trainsetObj));
+          sendMqttMessage('/device/'+userGroup.group_id, trainsetObj);
+          
+          setNames = [];
+          setNames.push({
+            uuid: person.uuid,
+            id: faceId,
+            url: person.img_url,
+            name: person_name,
+            sqlid:person.sqlid,
+            style:person.style
+          });
+          PERSON.updateLabelTimes(userGroup.group_id,setNames);
+          PERSON.setName(
+            userGroup.group_id,
+            person.uuid,
+            faceId,
+            person.img_url,
+            person_name
+          )
+          LABLE_DADASET_Handle.insert({
+            group_id:userGroup.group_id,
+            uuid:person.uuid,
+            id:faceId,
+            url:person.img_url,
+            name:person_name,
+            sqlid:person.sqlid,
+            style:person.style,
+            action:'rest_api标记'});
+          
+          person_info = {
+            'uuid': person.uuid,
+            'name': person_name,
+            'group_id':userGroup.group_id,
+            'img_url': person.img_url,
+            'type': 'face',
+            'ts': person.img_ts,
+            'accuracy': person.accuracy,
+            'fuzziness': person.fuzziness,
+            'sqlid':person.sqlid,
+            'style':person.style
+          };
+          check_data = {
+              face_id: person_id,
+              person_info: person_info,
+              formLabel: true
+            };
+          PERSON.aiCheckInOutHandle(check_data);
+      )
+      this.response.end('{"result": "ok"}\n')
+    )
   Router.route('restapi/workai_multiple_people', {where: 'server'}).get(()->
 
     ).post(()->

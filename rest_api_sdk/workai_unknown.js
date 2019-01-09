@@ -5,13 +5,15 @@ var request = require('./index')
 
 //陌生人标记
 request.post(
-  'http://workaicdn.tiegushi.com/restapi/workai_unknown',{
+  'http://workaicdn.tiegushi.com/restapi/workai_unknown_label',{
   body: {
     person_id:'',
+    token:'f623fb2eb072cdd9c2f7ff2ee2961af2c89c1869',
     persons:[{
       'id':'28D6R16C1200588515222765925380176',
       'uuid':'28D6R16C12005885',
       'group_id': 'a4fbc3b9cb484bba568047a6',
+      'person_name': 'new_person',
       'img_url': 'http://workaiossqn.tiegushi.com/1d25a07c-32d9-11e8-8756-a4caa09c959f',
       'position': null,
       'type': 'face',
