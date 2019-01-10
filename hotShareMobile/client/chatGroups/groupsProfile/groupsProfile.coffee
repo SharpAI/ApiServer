@@ -275,6 +275,7 @@ if Meteor.isClient
           #   PUB.back()
           # ,100)
         )
+        return PUB.page '/'
       )
     'click .groupPhoto':(event)->
       Template.groupPhoto.open(Session.get('groupsId'));
