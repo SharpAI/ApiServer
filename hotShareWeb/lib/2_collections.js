@@ -510,9 +510,14 @@ if(Meteor.isServer){
         date: date,
         group_id: group_id
     };
+    selector.$or = [
+      {in_image:{$nin:[null,'']}},{out_image:{$nin:[null,'']}}
+    ]
+
     if(status){
         selector.status = status
     }
+    console.log(selector)
     return WorkStatus.find(selector);
   });
 
