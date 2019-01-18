@@ -394,7 +394,7 @@ if Meteor.isServer
     if type is "notify_stranger"
       group_notify = true
       group_name = if doc.group_name then doc.group_name else "监控组"
-      content = 'SharpAI '+'在'+group_name+'发现了'+'陌生人。'
+      content = 'SharpAI '+'在'+group_name+'发现了'+'陌生人。' + '\n30分钟内不重复推送'
       extras = {
         type: "notify_stranger"
       }
