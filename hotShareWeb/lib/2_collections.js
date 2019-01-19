@@ -402,7 +402,7 @@ if(Meteor.isServer){
       return this.ready();
     }
     var limit = limit || 50;
-    return Person.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
+    return Person.find({group_id: group_id},{limit: limit,sort:{name: 1}});
   });
 
   Meteor.publish('group_cluster_person', function(group_id, limit){

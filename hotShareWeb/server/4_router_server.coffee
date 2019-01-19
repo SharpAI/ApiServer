@@ -913,6 +913,77 @@ if Meteor.isServer
       this.response.end('{"result": "ok"}\n')
     )
 
+  Router.route('restapi/workai_autolabel', {where: 'server'}).get(()->
+
+    ).post(()->
+      person_id = ''
+      persons = []
+      person_name = null
+      active_time = null
+      if this.request.body.hasOwnProperty('person_id')
+        person_id = this.request.body.person_id
+      else
+        console.log('restapi/workai_autolabel: no person_id, return.')
+        return
+      if this.request.body.hasOwnProperty('persons')
+        persons = this.request.body.persons
+      console.log("restapi/workai_autolabel post: person_id="+person_id+", persons="+JSON.stringify(persons))
+      if (!(persons instanceof Array) or persons.length < 1)
+        console.log("restapi/workai_autolabel: this.request.body is not array.")
+        return this.response.end('{"result": "failed!", "cause": "this.request.body is not array."}\n')
+
+      user = Meteor.users.findOne({username: persons[0].uuid})
+      unless user
+        console.log("restapi/workai_autolabel: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/workai_autolabel: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+      faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str
+      random_id = new Mongo.ObjectID()._str + "_autolabel"
+      console.log("restapi/workai_autolabel: uuid = "+persons[0].uuid+", faceId="+faceId+", random_id="+random_id)
+      #name = PERSON.getName(null, userGroup.group_id, person_id)
+      userGroups.forEach((userGroup)->
+          console.log("restapi/workai_autolabel: userGroup.group_id="+userGroup.group_id)
+          person_name = if person_id != '' then PERSON.getName(null, userGroup.group_id, person_id) else new Mongo.ObjectID()._str
+          console.log("restapi/workai_autolabel: person_name="+person_name)
+          for person in persons
+              console.log("person="+JSON.stringify(person))
+              PERSON.setName(
+                userGroup.group_id,
+                person.uuid,
+                random_id,
+                person.img_url,
+                person_name
+              );
+              LABLE_DADASET_Handle.insert({
+                group_id:userGroup.group_id,
+                uuid:person.uuid,
+                id:random_id,
+                url:person.img_url,
+                name:person_name,
+                sqlid:person.sqlid,
+                style:person.style,
+                action:'AutoLabel'});
+              trainsetObj = {
+                group_id: userGroup.group_id,
+                type: 'trainset',
+                url: person.img_url,
+                #person_id: person_id,
+                device_id: person.uuid,
+                face_id: faceId,
+                drop: false,
+                img_type: 'face',
+                style:person.style,
+                sqlid:person.sqlid
+                };
+              console.log("restapi/workai_autolabel: " + JSON.stringify(trainsetObj));
+              sendMqttMessage('/device/'+userGroup.group_id, trainsetObj);
+      )
+      this.response.end('{"result": "ok"}\n')
+    )
+
   Router.route('restapi/workai_unknown', {where: 'server'}).get(()->
 
     ).post(()->
