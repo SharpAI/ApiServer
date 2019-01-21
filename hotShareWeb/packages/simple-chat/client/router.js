@@ -3622,7 +3622,7 @@ Template._showImgOne.events({
       //Template._simpleChatLabelDevice.open(thiss);
       return PUB.page(Session.get("urlMsg_set"));
     }
-    Template._simpleChatLabelLabel.open(thiss);
+    //Template._simpleChatLabelLabel.open(thiss);
     return PUB.page(Session.get("urlMsg_set"));
   }
 })
