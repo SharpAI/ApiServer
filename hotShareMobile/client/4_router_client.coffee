@@ -137,6 +137,10 @@ if Meteor.isClient
       this.render 'splashScreen'
       Session.set 'channel', 'splashScreen'
       return
+    Router.route '/_showImgOne',()->
+      this.render '_showImgOne'
+      Session.set 'channel', '_showImgOne'
+      return
     Router.route '/search',()->
       if Meteor.isCordova is true
         this.render 'search'

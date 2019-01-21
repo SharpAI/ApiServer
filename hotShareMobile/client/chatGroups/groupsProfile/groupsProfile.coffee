@@ -46,7 +46,9 @@ if Meteor.isClient
       errMsg = '删除失败，请重试~'
     console.log(err)
     if err or !id
-      return PUB.toast(errMsg)
+      #return PUB.toast(errMsg)
+      PUB.toast(errMsg)
+      return PUB.page '/'
     if mqtt_connection
       mqtt_connection.unsubscribe("/msg/g/" + id)
     MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: id})

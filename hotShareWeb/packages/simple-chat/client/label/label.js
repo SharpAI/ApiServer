@@ -34,6 +34,12 @@ Template._simpleChatLabelLabel.helpers({
   },
   label: function(){
     return message.get().images[0].label;
+  },
+  imgs_url: function(){
+    return Session.get("imgUrl")
+  },
+  user_name: function(){
+    return Session.get("userName")
   }
 });
 
@@ -169,7 +175,8 @@ Template._simpleChatLabelLabel.events({
         },
         createAt: new Date()
       });
-      sendReLabelMsg();
+      //像消息界面发送一条消息
+      //sendReLabelMsg();
       PUB.toast('操作成功~');
     });
     Template._simpleChatLabelLabel.close();

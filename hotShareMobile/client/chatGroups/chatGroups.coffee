@@ -131,7 +131,8 @@ if Meteor.isClient
         setTimeout ()->
           PUB.page(urlMsg)
         ,animatePageTrasitionTimeout
-        
+      #记录跳转路径
+      Session.set("urlMsg_set",urlMsg)
       #Session.set('hasNewLabelMsg',false)
       #updateTotalReadCount()
     'click .delBtnContent': (e,t)->

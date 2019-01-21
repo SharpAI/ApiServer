@@ -21,7 +21,6 @@ Array.prototype.removeByIndex= function(index){
   return this.slice(0,index).concat(this.slice(index+1,this.length));
 }
 
-
 Template._simpleChatToChat.onCreated(function() {
   // Blaze.render(Template.toolsBarDown, document.body);
   page_data = this.data;
@@ -1983,10 +1982,9 @@ var renderMoreButton = function(){
 
 Template._simpleChatToChatItem.onRendered(function(){
   var data = this.data;
-
   // if (data.form.id === Meteor.userId() && data.send_status === 'sending')
   //   sendMqttMsg(data);
-
+  Session.set("this_co", data)
   touch.on(this.$('li'),'hold',function(ev){
     var msg = Messages.findOne({_id: data._id});
     console.log('hold event:', msg);
@@ -2020,6 +2018,7 @@ Template._simpleChatToChatItem.onRendered(function(){
           });
           break;
       }
+      
     }
   });
 });
@@ -3402,6 +3401,18 @@ Template._simpleChatToChatItemImg.events({
   'click .video_container':function(e){
     var video_src = $(e.currentTarget).data('videosrc');
     openVideoInBrowser(video_src);
+  },
+  'click .swipebox': function(e){
+    var face =  this.img_type;
+    if(face === "face"){
+      //获得点击的图片的URL
+      var imgUrl = e.target.getAttribute("data-original");
+      Session.set("imgUrl",imgUrl)
+      Session.set("userName",this.label)
+      PUB.page('/_showImgOne')
+      return;
+    }
+    return
   }
 })
 
@@ -3441,6 +3452,186 @@ Template._checkAgentMsgItem.helpers({
   }
 })
 
+Template._showImgOne.events({
+  'click #yes_no': function(){
+    return PUB.page(Session.get("urlMsg_set"));
+  },
+  'click .yes': function(){
+    var thiss = Session.get("this_co")
+    if (thiss.type === 'url') {
+      return;
+    }
+    // update label
+   var name = thiss.images[0].label;
+   var msgObj = thiss;
+    Meteor.call('get-id-by-name1', msgObj.people_uuid, name, msgObj.to.id, function(err, res){
+      if (err || !res)
+        return PUB.toast('标注失败，请重试~');
+
+      var setNames = [];
+      for (var i=0;i<msgObj.images.length;i++){
+        //if (msgObj.images[i].label) {
+
+          var faceId = null;
+          if (res && res.faceId){
+            faceId = res.faceId
+          }else {
+            faceId = msgObj.images[i].id
+          }
+
+          var trainsetObj = {
+            group_id: msgObj.to.id,
+            type: 'trainset',
+            url: msgObj.images[i].url,
+            person_id: '',
+            device_id: msgObj.people_uuid,
+            face_id: faceId,
+            drop: false,
+            img_type: msgObj.images[i].img_type,
+            style:msgObj.images[i].style,
+            sqlid:msgObj.images[i].sqlid
+          };
+          console.log("##RDBG clicked yes: " + JSON.stringify(trainsetObj));
+          sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+        //}
+
+        //if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
+          setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: msgObj.images[i].label,sqlid:msgObj.images[i].sqlid,style:msgObj.images[i].style});
+      }
+      if (setNames.length > 0)
+        Meteor.call('set-person-names', msgObj.to.id, setNames);
+
+      for (var i=0;i<msgObj.images.length;i++){
+        if (msgObj.images[i].label) {
+          try {
+            if(msgObj.images[i].img_type && msgObj.images[i].img_type == 'face') {
+              var person_info = {
+                //'id': res[updateObj.images[i].label].faceId,
+                'uuid': msgObj.people_uuid,
+                'name': msgObj.images[i].label,
+                'group_id': msgObj.to.id,
+                'img_url': msgObj.images[i].url,
+                'type': msgObj.images[i].img_type,
+                'ts': new Date(msgObj.create_time).getTime(),
+                'accuracy': 1,
+                'fuzziness': 1,
+                'sqlid':msgObj.images[i].sqlid,
+                'style':msgObj.images[i].style
+              };
+              var data = {
+                face_id:msgObj.images[i].id,
+                person_info: person_info,
+                formLabel:true //是否是聊天室标记
+              };
+              //Meteor.call('send-person-to-web', person_info, function(err, res){});
+              Meteor.call('ai-checkin-out',data,function(err,res){});
+            }
+          } catch(e){}
+        }
+      }
+      var user = Meteor.user();
+      if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
+        sendMqttGroupLabelMessage(msgObj.to.id, {
+          _id: new Mongo.ObjectID()._str,
+          msgId: msgObj._id,
+          user: {
+            id: user._id,
+            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+          },
+          is_admin_relay: true,
+          people_id: setNames[0].id,
+          text: setNames[0].name,
+          admin_label_false: true,
+          createAt: new Date()
+        });
+        return;
+      }
+      sendMqttGroupLabelMessage(msgObj.to.id, {
+        _id: new Mongo.ObjectID()._str,
+        msgId: msgObj._id,
+        user: {
+          id: user._id,
+          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+        },
+        createAt: new Date()
+      });
+
+      // update collection
+      Messages.update({_id: msgObj._id}, {$set: {label_complete: true}});
+
+      // Meteor.setTimeout(function(){
+      //   var $box = $('.box');
+      //   if ($('.oneself_box').length > 0) {
+      //      $box = $('.oneself_box');
+      //   }
+      //   $box.scrollTop($box.scrollTop()+10);
+      //   $box.trigger("scroll");
+      // }, 500);
+
+    });
+    return PUB.page(Session.get("urlMsg_set"));
+  },
+  'click .no': function(){
+    var thiss = Session.get("this_co")
+    if (thiss.type === 'url') {
+      return;
+    }
+    var user = Meteor.user();
+    if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
+      console.log(thiss)
+      var msgObj = thiss;
+      var images = thiss.images;
+      for(var i=0;i< images.length;i++){
+        // send to device
+        var trainsetObj = {
+          group_id: msgObj.to.id,
+          type: 'trainset',
+          url: images[i].url,
+          device_id: msgObj.people_uuid,
+          face_id: msgObj.people_id ? msgObj.people_id : images[i].id,
+          drop: true,
+          img_type: images[i].img_type,
+          raw_face_id: images[i].id,
+          style:images[i].style,
+          sqlid:images[i].sqlid
+        };
+        console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
+        sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+
+        images[i].label = null;
+      }
+
+       // 同时删除普通用户识别错的消息
+      // sendMqttGroupLabelMessage(msgObj.to.id, {
+      //   _id: new Mongo.ObjectID()._str,
+      //   msgId: msgObj._id,
+      //   user: {
+      //     id: user._id,
+      //     name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+      //     icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+      //   },
+      //   is_admin_relay: true,
+      //   text: msgObj.text,
+      //   admin_remove: true,
+      //   createAt: new Date()
+      // });
+
+      thiss.images = images;
+      //Template._simpleChatLabelDevice.open(thiss);
+      return PUB.page(Session.get("urlMsg_set"));
+    }
+    Template._simpleChatLabelLabel.open(thiss);
+    return PUB.page(Session.get("urlMsg_set"));
+  }
+})
+
+Template._showImgOne.onRendered(function(){
+  $(".show_imgage").attr("src",Session.get("imgUrl"))
+  $(".user_name_show .user_name").html(Session.get("userName"))
+})
+
 Template._checkAgentMsgItem.events({
   'click .is_right':function(){
     Messages.update({_id:this._id},{$set:{hadReCheck:true,is_right:true,text:''}});
@@ -3468,52 +3659,51 @@ $(function() {
     }
   });
 
-  touch.on('body', 'tap', 'li img.swipebox', function(e){
-   var imgs = []
-    var index = 0;
-    var selected = 0;
-    console.log(e.target);
-    var data = Blaze.getData($(e.target).attr('data-type') === 'images' ? $(e.target).parent().parent().parent()[0] : $('#'+this._id)[0]);
+  // touch.on('body', 'tap', 'li img.swipebox', function(e){
+  //  var imgs = []
+  //   var index = 0;
+  //   var selected = 0;
+  //   console.log(e.target);
+  //   var data = Blaze.getData($(e.target).attr('data-type') === 'images' ? $(e.target).parent().parent().parent()[0] : $('#'+this._id)[0]);
+  //   console.log('data:', data);
+  //   if(data.images.length > 0){
+  //     for(var i=0;i<data.images.length;i++){
+  //       imgs.push({
+  //         href: data.images[i].url,
+  //         title: ''
+  //       });
+  //       if(data.images[i].url === $(e.target).attr('src'))
+  //         selected = i;
+  //     }
+  //   }
+  //   if(imgs.length > 0){
+  //     console.log('imgs:', imgs);
+  //     var labelView = null;
 
-    console.log('data:', data);
-    if(data.images.length > 0){
-      for(var i=0;i<data.images.length;i++){
-        imgs.push({
-          href: data.images[i].url,
-          title: ''
-        });
-        if(data.images[i].url === $(e.target).attr('src'))
-          selected = i;
-      }
-    }
-    if(imgs.length > 0){
-      console.log('imgs:', imgs);
-      var labelView = null;
+  //     $.swipebox(imgs, {
+  //       initialIndexOnArray: selected,
+  //       hideCloseButtonOnMobile : true,
+  //       loopAtEnd: false,
+  //       beforeOpen: function(){
+  //         if (data.people_id)
+  //           Session.set('SimpleChatToChatLabelImage', data.images[selected]);
+  //           labelView = Blaze.renderWithData(Template._simleChatToSwipeBox, data, document.body);
+  //       },
+  //       afterClose: function(){
+  //         if (data.people_id)
+  //           Blaze.remove(labelView);
+  //       },
+  //       indexChanged: function(index){
+  //         var data = Blaze.getData($('.simple-chat-swipe-box')[0]);
+  //         var $img = $('#swipebox-overlay .slide.current img');
 
-      $.swipebox(imgs, {
-        initialIndexOnArray: selected,
-        hideCloseButtonOnMobile : true,
-        loopAtEnd: false,
-        beforeOpen: function(){
-          if (data.people_id)
-            Session.set('SimpleChatToChatLabelImage', data.images[selected]);
-            labelView = Blaze.renderWithData(Template._simleChatToSwipeBox, data, document.body);
-        },
-        afterClose: function(){
-          if (data.people_id)
-            Blaze.remove(labelView);
-        },
-        indexChanged: function(index){
-          var data = Blaze.getData($('.simple-chat-swipe-box')[0]);
-          var $img = $('#swipebox-overlay .slide.current img');
-
-          console.log($img.attr('src'));
-          console.log(_.pluck(data.images, 'url'));
-          Session.set('SimpleChatToChatLabelImage', data.images[index]);
-        }
-      });
-    }
-  });
+  //         console.log($img.attr('src'));
+  //         console.log(_.pluck(data.images, 'url'));
+  //         Session.set('SimpleChatToChatLabelImage', data.images[index]);
+  //       }
+  //     });
+  //   }
+  // });
 
   touch.on('body', 'hold', '.msg-content', function(event){
     var dataItem = Blaze.getData($(event.target).parents('li:first')[0]);
