@@ -1579,6 +1579,7 @@ Template._checkGroupDevice.events({
 Template._simpleChatToChat.events({
   'click .rightButton': function(){
     var isHidden = $('.chat-search').is(':hidden');
+    $('#searchVal').val('');
     if(!isHidden){
       $('.chat-search').hide();
     }else{
@@ -1588,8 +1589,10 @@ Template._simpleChatToChat.events({
   'click .chat-search .search-submit': function(){
     var searchVal = $('#searchVal').val();
     Session.set('search_str',searchVal);
+    $('.chat-search').hide();
   },
   'click .chat-search .search-cancel': function(){
+    $('#searchVal').val();
     Session.set('search_str','');
     $('.chat-search').hide();
   },
