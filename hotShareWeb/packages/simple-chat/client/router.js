@@ -1417,7 +1417,7 @@ var setScrollToBottom = function(){
         Session.set('atBottom',true);
       }
       if(Session.get('atBottom') == true){
-        $box.scrollTop($box_ul.height());
+        $box.scrollTop($box_ul.height() + 30);
       }
     },400);
   }, 200);
@@ -1592,7 +1592,7 @@ Template._simpleChatToChat.events({
     $('.chat-search').hide();
   },
   'click .chat-search .search-cancel': function(){
-    $('#searchVal').val();
+    $('#searchVal').val('');
     Session.set('search_str','');
     $('.chat-search').hide();
   },
@@ -3394,6 +3394,9 @@ Template._simpleChatToChatItemImg.helpers({
       return true;
     }
     return false;
+  },
+  hasImgType: function() {
+    return !this.img_type;
   },
   hasAccAndFuzz:function(){
     return this.accuracy || this.fuzziness;
