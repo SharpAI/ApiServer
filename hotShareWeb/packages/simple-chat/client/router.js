@@ -3460,13 +3460,14 @@ Template._showImgOne.events({
     return PUB.page(Session.get("urlMsg_set"));
   },
   'click .yes': function(){
-    var thiss = Session.get("this_co")
-    if (thiss.type === 'url') {
+    var this_data = Session.get("this_co")
+    if (this_data.type === 'url') {
       return;
     }
-    // update label
-   var name = thiss.images[0].label;
-   var msgObj = thiss;
+     // update label
+    //var name = this_data.images[0].label;
+    var name = Session.get("userName");
+    var msgObj = this_data;
     Meteor.call('get-id-by-name1', msgObj.people_uuid, name, msgObj.to.id, function(err, res){
       if (err || !res)
         return PUB.toast('标注失败，请重试~');
@@ -3577,15 +3578,15 @@ Template._showImgOne.events({
     return PUB.page(Session.get("urlMsg_set"));
   },
   'click .no': function(){
-    var thiss = Session.get("this_co")
-    if (thiss.type === 'url') {
+    var this_data = Session.get("this_co")
+    if (this_data.type === 'url') {
       return;
     }
     var user = Meteor.user();
     if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
-      console.log(thiss)
-      var msgObj = thiss;
-      var images = thiss.images;
+      console.log(this_data)
+      var msgObj = this_data;
+      var images = this_data.images;
       for(var i=0;i< images.length;i++){
         // send to device
         var trainsetObj = {
@@ -3621,11 +3622,11 @@ Template._showImgOne.events({
       //   createAt: new Date()
       // });
 
-      thiss.images = images;
-      //Template._simpleChatLabelDevice.open(thiss);
+      this_data.images = images;
+      Template._simpleChatLabelDevice.open(this_data);
       return PUB.page(Session.get("urlMsg_set"));
     }
-    //Template._simpleChatLabelLabel.open(thiss);
+    Template._simpleChatLabelLabel.open(this_data);
     return PUB.page(Session.get("urlMsg_set"));
   }
 })
