@@ -33,7 +33,7 @@ activity_update_time = function (person_id, create_time, image_url){
     var first_in = false
     var in_image_url, lastin_image_url, out_image_url;
 
-    relation = WorkAIUserRelations.findOne({'ai_persons.id':person_id})
+    var relation = WorkAIUserRelations.findOne({'ai_persons.id':person_id})
 
     if (relation == null){
 	return
@@ -184,23 +184,23 @@ activity_update_time = function (person_id, create_time, image_url){
 	});
     }else {
 	if (!workstatus.in_time || workstatus.in_time > act_time){
-	    in_time = act_time
+	    intime = act_time
 	    in_image = image_url
 	}else {
-	    in_time = workstatus.in_time
+	    intime = workstatus.in_time
 	    in_image = workstatus.in_image
 	}
 
 	if (!workstatus.out_time ||
 	    workstatus.out_time < act_time){
-	    out_time = act_time
+	    outtime = act_time
 	    out_image = image_url
 	}else {
-	    out_time = workstatus.out_time
+	    outtime = workstatus.out_time
 	    out_image = workstatus.out_image
 	}
 
-	if (first_in || in_time == out_time){
+	if (first_in || intime == outtime){
 	    now_status = 'in'
 	}else {
 	    now_status = 'out'
@@ -208,9 +208,9 @@ activity_update_time = function (person_id, create_time, image_url){
 
 	setObj = {
 	    status : now_status,
-	    in_time:in_time,
+	    in_time:intime,
 	    in_image:in_image,
-	    out_time:out_time,
+	    out_time:outtime,
 	    out_image:out_image,
 	}
 
