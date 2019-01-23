@@ -3248,7 +3248,8 @@ Template._simpleChatToChatLabelName.helpers({
     var arrEnglish = [];
     var arrPinyin = [];
 
-     PersonNames.find(selector, {sort: {name: 1}, limit: label_limit.get()}).forEach(function(item){
+    PersonNames.find(selector, {sort: {name: 1}, limit: label_limit.get()}).forEach(function(item){
+      if(item.url.match(".gif") != ".gif")
         arrEnglish.push(item);
     });
 
