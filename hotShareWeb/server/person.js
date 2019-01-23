@@ -587,7 +587,7 @@ PERSON = {
       console.log("invalid arguments of updateWorkStatus")
       return
     }
-    if(!relation.checkin_image || !relation.checkout_image){
+    if(!relation.checkin_image  && !relation.checkout_image && !relation.ai_in_image && !relation.ai_out_image){
       console.log("invalid arguments of updateWorkStatus,check image")
       return
     }
