@@ -49,9 +49,10 @@ if Meteor.isClient
       #return PUB.toast(errMsg)
       PUB.toast(errMsg)
       return PUB.page '/'
-    if mqtt_connection
-      mqtt_connection.unsubscribe("/msg/g/" + id)
+    if mqtt.host
+      mqtt.unsubscribe("/msg/g/" + id)
     MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: id})
+    console.log MsgSessionId
     if MsgSessionId
       SimpleChat.MsgSession.remove(MsgSessionId._id)
     try
