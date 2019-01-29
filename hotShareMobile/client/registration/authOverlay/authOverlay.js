@@ -42,6 +42,7 @@ if (Meteor.isClient) {
                         msgObj = {
                           toUserId: group._id,
                           toUserName: group.name,
+                          toUserNames: group.name,
                           toUserIcon: group.icon,
                           sessionType: 'group',
                           userId: user._id,
