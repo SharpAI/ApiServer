@@ -200,15 +200,16 @@
 
 <!--对和错的弹框-->
 <template name="_showImgOne">
-   <div id="yes_no">
+   <div id="label_check">
+      <div class="label_cancel">取消</div>
       <div class="with_me">
         <div class="top_img">
-          <img class="img-responsive center-block show_imgage" src="">
+          <img class="img-responsive center-block show_imgage" src="{{label_img}}">
         </div>
         <div class="bottom_btn">
-          <div class="user_name_show">这是 <span class="user_name"></span> 吗？</div>
-          <button type="button" class="btn btn-default no_do no">错</button>
-          <button type="button" class="btn btn-default yes_do yes">对</button>
+          <div class="user_name_show">这是 <span class="user_name">{{label_name}}</span> 吗？</div>
+          <button type="button" class="btn btn-default label_wrong">错</button>
+          <button type="button" class="btn btn-default label_right">对</button>
         </div>
       </div>
     </div>
@@ -415,6 +416,9 @@
             <!--标记消息 end-->
             {{/if}}
             {{> _checkAgentMsgItem}}
+            {{#if isLabelComplete}}
+              <i class="fa fa-check label-status"></i>
+            {{/if}}
           </div>
         {{else}}
           <div class="img msg-content">

@@ -116,5 +116,17 @@ Meteor.methods({
             console.log("==sr==. timeLine multiSelect: " + JSON.stringify(trainsetObj));
             sendMqttMessage('/device/' + group_id, trainsetObj);
         })
+    },
+    //成员添加识别照片
+    add_person_image:function(person_data, group_id){
+        LABLE_DADASET_Handle.insert({
+            group_id:group_id,
+            uuid:person_data.uuid,
+            id:person_data.id,
+            url:person_data.url,
+            name:person_data.name,
+            sqlid:person_data.sqlid,
+            style:person_data.style
+        })
     }
 })
