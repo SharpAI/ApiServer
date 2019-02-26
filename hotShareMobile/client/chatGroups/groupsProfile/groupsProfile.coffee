@@ -40,6 +40,14 @@ if Meteor.isClient
           return PUB.toast('下班时间早于上班时间，请重试')
         Meteor.call('updateGroupInOutTime',Session.get('groupsId'),group_intime, group_outtime)
     })
+  initGroupIndex = (user_id)->
+      size = 0
+      groupList = SimpleChat.GroupUsers.find({user_id: user_id}, { sort: { index: 1 }}).fetch();
+      console.log(groupList);
+      if groupList
+        for group in groupList
+          SimpleChat.GroupUsers.update(group._id, { $set: { index: size } });
+          size = size + 1
   groupDelOrQuitCB = (err,id,isDel)->
     errMsg = '退出失败，请重试~'
     if isDel
@@ -250,12 +258,14 @@ if Meteor.isClient
         return PUB.confirm('删除后，将不再保留本监控组相关信息',()->
           Meteor.call('creator-delete-group',Session.get('groupsId'), Meteor.userId(),(err,id)->
             groupDelOrQuitCB(err,id,true)
+            initGroupIndex(Meteor.userId())
           )
-        )
+        )     
 
       PUB.confirm('退出后，将不再接收本监控组消息',()->
         Meteor.call('remove-group-user',Session.get('groupsId'),Meteor.userId(),(err,id)->
           groupDelOrQuitCB(err,id, false)
+          initGroupIndex(Meteor.userId())
           # console.log(err)
           # if err or !id
           #   return PUB.toast('删除失败，请重试~')
@@ -278,6 +288,7 @@ if Meteor.isClient
           #   PUB.back()
           # ,100)
         )
+        
         return PUB.page '/'
       )
     'click .groupPhoto':(event)->
