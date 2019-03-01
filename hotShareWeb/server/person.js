@@ -115,7 +115,7 @@ PERSON = {
     }
     console.log('==sr==. names =='+ JSON.stringify(names));
   },
-  setName: function(group_id, uuid, id, url, name,is_video, callback){
+  setName: function(group_id, uuid, id, url, name, is_video, is_human_shape, callback){
     var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
     var dervice = Devices.findOne({uuid: uuid});
     var personName = PersonNames.findOne({group_id: group_id, name: name});
@@ -131,13 +131,30 @@ PERSON = {
       }
       person.url = url;
       person.updateAt = new Date();
-      if(_.pluck(person.faces, 'id').indexOf(id) === -1)
-        person.faces.push({id: id, url: url});
-      else
-        person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
-      // Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
-      console.log("update person.faces = "+JSON.stringify(person.faces));
-      Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
+      if (is_human_shape) {
+        if(person.human_shape == undefined){
+          person.human_shape = [];
+        }
+        if(_.pluck(person.human_shape, 'id').indexOf(id) === -1)
+          person.human_shape.push({id: id, url: url});
+        else
+          person.human_shape[_.pluck(person.human_shape, 'id').indexOf(id)].url = url;
+        // Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
+        console.log("update person.faces = "+JSON.stringify(person.human_shape));
+        Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, human_shape: person.human_shape}});
+      } else {
+        if(person.faces == undefined){
+          person.faces = [];
+        }
+        if(_.pluck(person.faces, 'id').indexOf(id) === -1)
+          person.faces.push({id: id, url: url});
+        else
+          person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
+        // Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
+        console.log("update person.faces = "+JSON.stringify(person.faces));
+        Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
+      }
+      
       //标记，立即训练
       var obj = SimpleChat.Groups.findOne({_id: group_id});
       var to = {
@@ -187,20 +204,37 @@ PERSON = {
       Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
     }*/
      else {
-      person = {
-        _id: new Mongo.ObjectID()._str,
-        id: Person.find({group_id: group_id, faceId: id}).count() + 1,
-        group_id:group_id,
-        faceId: id,
-        url: url,
-        name: name,
-        faces: [{id: id, url: url}],
-        deviceId: dervice._id,
-        DeviceName: dervice.name,
-        label_times: 1,
-        createAt: new Date(),
-        updateAt: new Date()
-      };
+      if(is_human_shape){
+        person = {
+          _id: new Mongo.ObjectID()._str,
+          id: Person.find({group_id: group_id, faceId: id}).count() + 1,
+          group_id:group_id,
+          faceId: id,
+          url: url,
+          name: name,
+          human_shape: [{id: id, url: url}],
+          deviceId: dervice._id,
+          DeviceName: dervice.name,
+          label_times: 1,
+          createAt: new Date(),
+          updateAt: new Date()
+        };
+      }else{
+        person = {
+          _id: new Mongo.ObjectID()._str,
+          id: Person.find({group_id: group_id, faceId: id}).count() + 1,
+          group_id:group_id,
+          faceId: id,
+          url: url,
+          name: name,
+          faces: [{id: id, url: url}],
+          deviceId: dervice._id,
+          DeviceName: dervice.name,
+          label_times: 1,
+          createAt: new Date(),
+          updateAt: new Date()
+        };
+      }
       if (is_video) {
         delete person.faces;
         delete person.faceId;
@@ -409,6 +443,10 @@ PERSON = {
     if (person_info.type === 'video') {
       is_video = true;
     }
+    var is_human_shape = false;
+    if (person_info.type === 'human_shape') {
+      is_human_shape = true;
+    }
     if (person && person.name) {
       console.log('person info:'+person.name);
     }
@@ -427,7 +465,7 @@ PERSON = {
           return {result:'error',reason:'请选择一张有名字的照片或前往聊天室进行标记~'};
         }
       }
-      person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name,is_video);
+      person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name,is_video, is_human_shape);
       if (!is_video) {
         console.log('LABLE_DADASET_Handle 1')
         LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:data.face_id,url:person_info.img_url,uuid:person_info.uuid,sqlid:person_info.sqlid,style:person_info.style,user_id:data.operator,name:person_name,action:'时间轴打卡时选择了未识别的照片'});
@@ -465,7 +503,7 @@ PERSON = {
       console.log('person_info name isnt person name');
       PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id,person_info.img_url,is_video);
       var newImageId = new Mongo.ObjectID()._str;
-      person = PERSON.setName(person_info.group_id,person_info.uuid,newImageId,person_info.img_url,person_name,is_video);
+      person = PERSON.setName(person_info.group_id,person_info.uuid,newImageId,person_info.img_url,person_name,is_video,is_human_shape);
       if (!is_video) {
         console.log('LABLE_DADASET_Handle 2')
         LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:newImageId,url:person_info.img_url,uuid:person_info.uuid,sqlid:person_info.sqlid,style:person_info.style,user_id:'',name:person_name,action:'时间轴打卡时输入的名字与person中对应的人名字不一样'});
@@ -1477,7 +1515,11 @@ Meteor.methods({
     var slef = this;
     PERSON.updateLabelTimes(group_id,items);
     for(var i=0;i<items.length;i++) {
-      PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
+      if(items[i].style == "human_shape"){
+        PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name, false, true);
+      }else{
+        PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
+      }
       console.log('LABLE_DADASET_Handle 3')
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:slef.userId,action:'聊天室标记'});
     }

@@ -5,6 +5,15 @@
       <div id="groupsProfilePageback" class="leftButton back">
         <i class="fa fa-angle-left fa-fw"></i>
       </div>
+      <div class="check_img_type">
+        {{#if is_human_shape}}
+          <span class="human_bth type_on">人形</span>
+          <span class="face_bth">人脸</span>
+        {{else}}
+          <span class="human_bth">人形</span>
+          <span class="face_bth type_on">人脸</span>
+        {{/if}}
+      </div>
     </div>
     <div class="con-main" style="bottom: 40px;">
       <div class="photos hover">

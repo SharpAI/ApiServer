@@ -2657,6 +2657,7 @@ SimpleChat.onMqttMessage = function (topic, msg, msgKey, mqttCallback) {
   };
 
   var msgObj = JSON.parse(msg);
+  console.log('msgObj msg',msgObj);
 
   //Messages表尚未初始化
   if (!Messages) {

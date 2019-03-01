@@ -20,7 +20,11 @@ Template.groupPerson.helpers({
     */
     
     Person.find({group_id: group_id},{limit: limit.get(), sort:{name: 1}}).forEach(function(item){
-        arrEnglish.push(item);
+        if(Session.get('is_human_shape') && !!item.human_shape){
+          arrEnglish.push(item);
+        }else if(!Session.get('is_human_shape') && !!item.faces){
+          arrEnglish.push(item);
+        }
     });
     
     /*
@@ -57,6 +61,9 @@ Template.groupPerson.helpers({
     */
     
     return arrEnglish;
+  },
+  is_human_shape:function(){
+    return Session.get('is_human_shape');
   }
 });
 
@@ -64,6 +71,12 @@ Template.groupPerson.events({
   'click .back': function(){
     limit.set(0);
     return PUB.back();
+  },
+  'click .human_bth': function(){
+    Session.set('is_human_shape', true);
+  },
+  'click .face_bth': function(){
+    Session.set('is_human_shape', false);
   }
 });
 

@@ -105,7 +105,7 @@ if Meteor.isClient
           console.log 'should be triggered in scrolling'
           return false
       critiaria = { group_id: { $eq: this.toUserId} };
-      face_settings = {"face_list" : ["front"], "fuzziness" : "100"}
+      face_settings = {"face_list" : ["front","human_shape"], "fuzziness" : "100"}
       if face_settings
           critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
       scursor = Strangers.find(critiaria);
@@ -131,8 +131,7 @@ if Meteor.isClient
         setTimeout ()->
           PUB.page(urlMsg)
         ,animatePageTrasitionTimeout
-      #记录跳转路径
-      Session.set("urlMsg_set",urlMsg)
+        
       #Session.set('hasNewLabelMsg',false)
       #updateTotalReadCount()
     'click .delBtnContent': (e,t)->

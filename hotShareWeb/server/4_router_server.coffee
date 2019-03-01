@@ -2240,6 +2240,42 @@ if Meteor.isServer
 
       this.response.end(JSON.stringify(syncDateSet))
     )
+  Router.route('/restapi/humandatasync/:token/:groupid', {where: 'server'}).get(()->
+      token = this.params.token
+      groupid = this.params.groupid
+
+      headers = {
+        'Content-type':'text/html;charest=utf-8',
+        'Date': Date.now()
+      }
+      this.response.writeHead(200, headers)
+      console.log '/restapi/datasync get request, token:' + token + ' groupid:' + groupid
+
+      group = SimpleChat.Groups.findOne({'_id': groupid})
+      unless group
+        console.log 'no group found:' + groupid
+        return this.response.end('[]\n')
+
+      syncDateSet=[]
+
+      #取出群相册里面所有已经标注的数据
+      persons = Person.find({group_id: groupid, human_shape: {$exists: true}},{fields:{name: 1, faceId: 1, human_shape: 1}}).fetch()
+      console.log('leon person', persons)
+      persons.forEach((item)->
+        urls=[]
+        console.log('leon item', item)
+        item.human_shape.forEach((item2)->
+          urls.push({
+            url: item2.url,
+            style: 'human_shape',
+            sqlid: null
+          })
+        )
+        if item and item.faceId
+          syncDateSet.push({faceId: item.faceId, urls: urls})
+      )
+      this.response.end(JSON.stringify(syncDateSet))
+    )
   Router.route('/restapi/groupdatasync/:token/:groupid', {where: 'server'}).get(()->
       token = this.params.token
       groupid = this.params.groupid
