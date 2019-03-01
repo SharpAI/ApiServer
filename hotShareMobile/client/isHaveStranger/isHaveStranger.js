@@ -68,9 +68,11 @@ Template.haveStranger.events({
             var uuid = this.uuid
             var id = this._id
             var group_id = this.group_id
+            var imgTs = (new Date(this.createTime)).getTime()
             // imgData = JSON.parse(imgData)
             // var faceId = new Mongo.ObjectID()._str
             Session.set("isMark", true)
+
 
             var call_back_handle = function(name) {
                 if (!name) {
@@ -81,9 +83,9 @@ Template.haveStranger.events({
                 var setNames = [];
                 Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res) {
                     if (err || !res) {
+
                         return PUB.toast('标注失败，请重试');
                     }
-
                     var faceId = null;
                     if (res && res.faceId) {
                         faceId = res.faceId;
@@ -134,13 +136,15 @@ Template.haveStranger.events({
                         }
 
                         try {
+                            var ts = imgTs ? imgTs : new Date().getTime();
                             var person_info = {
                                 'uuid': uuid,
+                                'person_id': item.faceid,
                                 'name': name,
                                 'group_id': group_id,
                                 'img_url': item.url,
                                 'type': 'face',
-                                'ts': new Date().getTime(),
+                                'ts': ts,
                                 'accuracy': item.accuracy,
                                 'fuzziness': item.fuzziness,
                                 'sqlid': item.sqlid,

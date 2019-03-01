@@ -567,14 +567,22 @@ PERSON = {
     else
       PERSON.updateWorkStatusHistory(setObj);
     PERSON.sendPersonInfoToWeb(person_info);
+
     var timeLineData = {
       uuid:person_info.uuid,
       group_id:person_info.group_id,
+      person_id:person_info.person_id ? person_info.person_id : null,
       user_id: user ? user._id : null,
       user_name:user_name,
       person_name:person.name,
+      img_url:person_info.img_url,
       ts:person_info.ts,
-      type:person_info.type
+      type:person_info.type,
+      accuracy: person_info.accuracy,
+      fuzziness: person_info.fuzziness,
+      sqlid: person_info.sqlid,
+      style: person_info.style
+
     };
     PERSON.updateToDeviceTimeline2(timeLineData);
     return {result:'succ'};
@@ -1028,6 +1036,7 @@ PERSON = {
       if(err){
         console.log('updateToDeviceTimeline Err:'+err);
       } else {
+        console.log('updateToDeviceTimeline res',res)
         console.log('updateToDeviceTimeline Success');
       }
     });
@@ -1113,7 +1122,10 @@ PERSON = {
     DeviceTimeLine.update(selector,modifier,function(err,res){
       if(err){
         console.log('updateToDeviceTimeline2 Err:'+err);
-      } else {
+      }else if(!res){
+        // 无更新数据返回,插入新的时间轴数据
+        PERSON.updateToDeviceTimeline(obj.uuid, obj.group_id, obj);
+      }else {
         console.log('updateToDeviceTimeline2 Success');
       }
     });
