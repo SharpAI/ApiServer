@@ -15,6 +15,7 @@ cleanLeftRelationAndStatusDate = function(){
 
 
 var Fiber = Npm.require('fibers');
+var gLastTrainTimestamp = new Date().getTime();
 
 PERSON = {
   upsetDevice: function(uuid, group_id,name,in_out){
@@ -140,7 +141,7 @@ PERSON = {
         else
           person.human_shape[_.pluck(person.human_shape, 'id').indexOf(id)].url = url;
         // Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
-        console.log("update person.faces = "+JSON.stringify(person.human_shape));
+        console.log("update person.humanshapes = "+JSON.stringify(person.human_shape));
         Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, human_shape: person.human_shape}});
       } else {
         if(person.faces == undefined){
@@ -183,7 +184,11 @@ PERSON = {
         is_trigger_train:true
       };
       try{
-        sendMqttGroupMessage(group_id,msg);
+        var now = new Date().getTime();
+        if (now - gLastTrainTimestamp > 10*1000) {
+          gLastTrainTimestamp = now;
+          sendMqttGroupMessage(group_id,msg);
+        }
       } catch (e){
         console.log('try sendMqttGroupMessage Err:',e)
       }
@@ -269,7 +274,11 @@ PERSON = {
         is_trigger_train:true
       };
       try{
-        sendMqttGroupMessage(group_id,msg);
+        var now = new Date().getTime();
+        if (now - gLastTrainTimestamp > 10*1000) {
+          gLastTrainTimestamp = now;
+          sendMqttGroupMessage(group_id,msg);
+        }
       } catch (e){
         console.log('try sendMqttGroupMessage Err:',e)
       }
