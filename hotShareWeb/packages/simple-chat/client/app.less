@@ -625,18 +625,20 @@
 #label_check{
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.7);
-  position:absolute;
-  top:0;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  top: 0;
   left: 0;
   z-index: 9999;
+  display: table;
+  vertical-align: middle;
 }
 #label_check .with_me{
   width: 100%;
-  height: 50%;
   z-index: 9999;
   position: relative;
-  top: 345px;
+  display: table-cell;
+  vertical-align: middle;
 }
 #label_check .with_me .top_img{
   width: 100%;
@@ -668,8 +670,9 @@
   font-size: 18px;
 }
 #label_check .label_cancel{
-  float: right;
+  right: 3vw;
   line-height: 8vw;
   font-size: 14px;
-  margin-right: 3vw;
+  display: block;
+  position: absolute;
 }
