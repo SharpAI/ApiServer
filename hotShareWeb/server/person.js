@@ -15,7 +15,7 @@ cleanLeftRelationAndStatusDate = function(){
 
 
 var Fiber = Npm.require('fibers');
-var gLastTrainTimestamp = new Date().getTime();
+var gLastTrainTimestamp = {};
 
 PERSON = {
   upsetDevice: function(uuid, group_id,name,in_out){
@@ -185,8 +185,11 @@ PERSON = {
       };
       try{
         var now = new Date().getTime();
-        if (now - gLastTrainTimestamp > 10*1000) {
-          gLastTrainTimestamp = now;
+        var groupLastTrain = gLastTrainTimestamp[group_id];
+        if (groupLastTrain == undefined || groupLastTrain == null)
+          groupLastTrain = 0;
+        if (now - groupLastTrain > 10*1000) {
+          gLastTrainTimestamp[group_id] = now;
           sendMqttGroupMessage(group_id,msg);
         }
       } catch (e){
@@ -275,8 +278,11 @@ PERSON = {
       };
       try{
         var now = new Date().getTime();
-        if (now - gLastTrainTimestamp > 10*1000) {
-          gLastTrainTimestamp = now;
+        var groupLastTrain = gLastTrainTimestamp[group_id];
+        if (groupLastTrain == undefined || groupLastTrain == null)
+          groupLastTrain = 0;
+        if (now - groupLastTrain > 10*1000) {
+          gLastTrainTimestamp[group_id] = now;
           sendMqttGroupMessage(group_id,msg);
         }
       } catch (e){
