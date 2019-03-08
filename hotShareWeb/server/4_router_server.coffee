@@ -1347,6 +1347,11 @@ if Meteor.isServer
       device_join_group(uuid,group_id,name,'inout')
       sendMqttMessage('/msg/d/'+uuid, {text:'groupchanged'});
       return "ok"
+    'getMqttSessionInfo': (clientId) ->
+      # API返回格式可参阅 http://www.emqtt.com/docs/v2/rest.html#id12
+      url = 'http://mq.tiegushi.com:8081/api/v2/sessions/' + clientId
+      result = HTTP.call('GET', url, {auth: 'admin:public'})
+      return result.data.result.objects[0]
   }
 
   Router.route('/restapi/workai-join-group', {where: 'server'}).get(()->

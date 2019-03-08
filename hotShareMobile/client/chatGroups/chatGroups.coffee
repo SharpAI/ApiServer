@@ -1,5 +1,10 @@
 if Meteor.isClient
   @sysMsgToUserId = 'fTnmgpdDN4hF9re8F'
+  Template.chatGroups.created = ->
+    if Session.get('offlineMsgOverflow')
+      PUB.toast('收件箱已满，消息可能丢失......')
+      Session.set('offlineMsgOverflow', false)
+    
   Template.chatGroups.rendered=->
     #$('.content').css 'min-height',$(window).height()
     #Meteor.subscribe("get-my-group", Meteor.userId())
