@@ -466,6 +466,10 @@ Template.groupPhotoImg1.helpers({
     }
     return this.faces.length;
   },
+  imageCount: function(){
+    //return LableDadaSet.find({group_id: groupid, name: name}).count();
+    return this.imgCount
+  },
   isNeedLabelMore: function() {
     return this.imgCount < 15;
   },
