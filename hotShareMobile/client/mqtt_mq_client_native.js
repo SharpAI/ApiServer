@@ -57,6 +57,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
         //}
         return;
       }
+
       var mqttOptions = {
         username: clientId,
         password: localStorage.getItem('Meteor.loginToken'),
@@ -111,19 +112,17 @@ if (Meteor.isClient && withNativeMQTTLIB) {
       function onConnect(conact) {
         // Once a connection has been made, make a subscription and send a message.
         console.log('mqtt onConnect');
-        console.log(conact);
         connected = true;
         // get MQTT_TIME_DIFF
         // TODO: 跨域问题跨域问题导致该段代码无效，后期需要处理
-        var url = 'http://' + server_domain_name + '/restapi/date/';
-        $.get(url, function (data) {
-          if (data) {
-            MQTT_TIME_DIFF = Number(data) - Date.now();
-            console.log('MQTT_TIME_DIFF===', MQTT_TIME_DIFF);
-          }
-        });
+        // var url = 'http://' + server_domain_name + '/restapi/date/';
+        // $.get(url, function (data) {
+        //   if (data) {
+        //     MQTT_TIME_DIFF = Number(data) - Date.now();
+        //     console.log('MQTT_TIME_DIFF===', MQTT_TIME_DIFF);
+        //   }
+        // });
         console.log('Connected to mqtt server');
- 
 
         noMessageTimer = Meteor.setTimeout(function () {
           console.log('no message to receive');
@@ -196,6 +195,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
             console.log('exception onMqttMessage: ' + ex);
           }
         }
+
         if (Session.equals('GroupUsersLoaded', true)) {
           setImmediateWrap(function () {
             reciveMsg(message, msgKey);
@@ -204,6 +204,10 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           console.log('subscribe get my group!');
           uninsertMessages.push(message);
           uninsertMessages_msgKey.push(msgKey);
+          /**
+           * TODO: 该处订阅影响首页打开速度(一定要等到mqtt连接成功才能订阅到groupuser数据)，
+           * 该处方法暂时保留，首页数据直接在首页订阅
+           */
           Meteor.subscribe('get-my-group', Meteor.userId(), {
             onReady: function () {
               Session.set('GroupUsersLoaded', true);
@@ -321,6 +325,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           var str = (dt.getTime() + dt.getMilliseconds() + Math.random() * 1000).toString();
           msgId = MD5(str);
         }
+
         if (isJSON(message)) {
           var newMessage = {};
           newMessage.msgId = msgId;
@@ -329,12 +334,15 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           }
           message = newMessage;
         }
+
         undeliveredMessages.push({
           topic: topic,
           message: message,
           onMessageDeliveredCallback: callback
         });
+
         console.log('sendMqttMessage:', topic, JSON.stringify(message));
+
         mqtt.publish({
           topic: topic,
           message: JSON.stringify(message),
@@ -348,6 +356,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
 
         //addToUnsendMessaages(topic, message, callback);
       };
+
       subscribeMqttGroup = function (group_id) {
         if (group_id) {
           console.log('sub mqtt:' + group_id);
@@ -361,6 +370,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           }); // label 消息
         }
       };
+
       unsubscribeMqttGroup = function (group_id) {
         if (mqtt) {
           if (group_id) {
@@ -373,6 +383,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           }
         }
       };
+
       subscribeMqttUser = function (user_id) {
         if (mqtt && user_id) {
           console.log('sub mqtt:' + user_id);
@@ -382,6 +393,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           });
         }
       };
+
       unsubscribeMqttUser = function (user_id) {
         if (mqtt && user_id) {
           mqtt.unsubscribe({
@@ -389,6 +401,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           });
         }
       };
+
       sendMqttGroupMessage = function (group_id, message, callback) {
         message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
         if (Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
@@ -398,10 +411,12 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           sendMqttMessage('/msg/g/' + group_id, message, callback);
         }
       };
+
       sendMqttUserMessage = function (user_id, message, callback) {
         // console.log('sendMqttUserMessage:', message);
         sendMqttMessage('/msg/u/' + user_id, message, callback);
       };
+
       sendMqttGroupLabelMessage = function (group_id, message, callback) {
         message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
         if (Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
@@ -415,8 +430,8 @@ if (Meteor.isClient && withNativeMQTTLIB) {
           sendMqttMessage('/msg/l/' + group_id, message, callback);
         }
       };
-
     };
+
     MQTTDisconnect = function (cb) {
       try {
         mqtt.disconnect(cb);
@@ -426,7 +441,12 @@ if (Meteor.isClient && withNativeMQTTLIB) {
         cb && cb();
       }
     };
+
     subscribeMyChatGroups = function () {
+      /**
+       * TODO: 该处订阅影响首页打开速度(一定要等到mqtt连接成功才能订阅到groupuser数据)，
+       * 该处方法暂时保留，首页数据直接在首页订阅
+       */
       Meteor.subscribe('get-my-group', Meteor.userId(), {
         onReady: function () {
           Session.set('GroupUsersLoaded', true);
@@ -451,6 +471,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
         }
       });
     };
+
     getMqttClientID = function () {
       var client_id = window.localStorage.getItem('mqtt_client_id');
       if (!client_id) {
@@ -476,6 +497,7 @@ if (Meteor.isClient && withNativeMQTTLIB) {
         }, 500);
       }
     }
+
     mqttEventResume = function () {
       console.log('##RDBG, mqttEventResume, reestablish mqtt connection');
       setTimeout(function () {
@@ -491,10 +513,12 @@ if (Meteor.isClient && withNativeMQTTLIB) {
       }
       catch (ex) { console.log('mqtt reconnect ex=', ex); }*/
     };
+
     mqttEventPause = function () {
       console.log('##RDBG, mqttEventPause, disconnect mqtt');
       MQTTDisconnect();
     };
+
     Deps.autorun(function () {
       if (Meteor.userId()) {
         startMQTT();
@@ -502,11 +526,13 @@ if (Meteor.isClient && withNativeMQTTLIB) {
         MQTTDisconnect();
       }
     });
+
     document.addEventListener('offline', function () {
       console.log('device get offline');
       MQTTDisconnect();
       network_status = navigator.connection.type;
     }, false);
+
     document.addEventListener('online', function () {
       console.log('device get online');
       //startMQTT()

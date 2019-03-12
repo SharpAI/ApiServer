@@ -90,6 +90,9 @@ if Meteor.isClient
       cordova.InAppBrowser.open('http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere', '_system')
   
   Template.home.onRendered ()->
+    # 首页数据直接在首页订阅，不需要等mqtt连接成功，提升首页打开速度
+    Meteor.subscribe 'get-my-group', Meteor.userId()
+
     if !localStorage.getItem('scantipFlag')
       maskDescription.set({
         maskEllipse: false,
@@ -104,8 +107,9 @@ if Meteor.isClient
         iconStyle: 'display: block; position: absolute; bottom: 60px; left: 31%;',
         spanStyle: 'display: block; font-size: 18px; position: absolute; bottom: 110px; left: 20%;',
         spanContent: '点击时间轴查看设备在线状态'
-      });
-      currentTip = 'timeLineTab';
+      })
+
+      currentTip = 'timeLineTab'
       showScanTipHint.set(true)
 
   Template.home.helpers
