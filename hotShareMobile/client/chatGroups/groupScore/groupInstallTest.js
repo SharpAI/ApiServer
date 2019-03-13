@@ -162,9 +162,13 @@ var test_score = function(){
         return false;
     });
     var frontArr = _.filter(message_queue,function(m){
+        if(m.style == "human_shape"){
+            return m.style = "human_shape"
+        }
         return m.style == 'front'
     });
     var front_len = frontArr.length;
+   
     if(totalCount != 0){
         roateScore.set(Math.floor(front_len/totalCount * 100) + '');
         showRes.set(true);
