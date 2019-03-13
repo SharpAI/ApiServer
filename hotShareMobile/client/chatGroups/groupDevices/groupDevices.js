@@ -49,11 +49,61 @@ Template.groupDevices.helpers({
   }
 });
 
-
+var cameraParams = {};
+function isValidateIPaddress(ipaddress) {  
+  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+    return (true);
+  }  
+  
+  return (false);
+} 
 Template.groupDevices.events({
   'click .latest_update': function(e,t){
     PUB.toast('您的脸脸安全盒当前是最新版本');
     return
+  },
+  'click .camera-settings': function(e,t){
+    cameraParams.id = this._id;
+    cameraParams.uuid = this.uuid;
+    $('#cameraSettings').modal('show');
+  },
+  'click .saveCameraSettings': function(e,t){
+    var ip = $('#ipaddr').val();
+    var camusername = $('#camusername').val();
+    var campassword = $('#campassword').val();
+    ip = ip.trim();
+    camusername = camusername.trim();
+    campassword = campassword.trim();
+    if (ip == "") {
+      PUB.toast('摄像头IP不能为空！');
+      return;
+    }
+    if (!isValidateIPaddress(ip)) {
+      PUB.toast('请输入正确的IP地址！');
+      return;
+    }
+    if (camusername == "") {
+      PUB.toast('摄像头用户名不能为空！');
+      return;
+    }
+    if (campassword == "") {
+      PUB.toast('摄像头密码不能为空！');
+      return;
+    }
+
+    var obj = {
+      camip: ip,
+      camusername: camusername,
+      campassword: campassword,
+      uuid: cameraParams.uuid,
+      id: cameraParams.id,
+      groupId: Router.current().params._id
+    };
+
+    console.log('##RDBG obj: ' + JSON.stringify(obj));
+    sendMqttMessage('/camerasettings', obj);
+    
+    $('#cameraSettings').modal('hide');
   },
   'click #switch_update': function(e,t){
     console.log('switch update')

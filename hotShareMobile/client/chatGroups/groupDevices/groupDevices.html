@@ -31,6 +31,7 @@
             {{/if}}
 
             <img class="latest_update" style="{{isLatest uuid}}" src="/islatest.png">
+            <img class="camera-settings" src="/scanlancamera.png">
           <!-- {{/if}} -->
           <!-- </span> -->
 
@@ -71,6 +72,39 @@
           });
         })
     </script>
+
+    <!-- Modal camera-settings Start -->
+    <div class="modal fade" id="cameraSettings" tabindex="-1" role="dialog" aria-labelledby="cameraSettingsLabel">
+        <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">摄像头配置</h4>
+            </div>
+            <div class="modal-body">
+            <form>
+            <div class="form-group">
+                <label for="ipaddr">摄像头IP地址：</label>
+                <input type="text" class="form-control" id="ipaddr">
+            </div>
+            <div class="form-group">
+                <label for="camusername">摄像头用户名：</label>
+                <input type="text" class="form-control" id="camusername">
+            </div>
+            <div class="form-group">
+                    <label for="campassword">摄像头密码：</label>
+                    <input type="password" class="form-control" id="campassword">
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-default cancelCameraSettings" data-dismiss="modal">取消</button>
+            <button type="button" id="" class="btn btn-primary saveCameraSettings">保存</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <!-- Modal camera-settings End -->
 </template>
 
 <template name="setDevicename">
