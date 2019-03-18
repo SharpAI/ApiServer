@@ -112,8 +112,10 @@ Template.homePage.helpers({
     return group_intime + ' - ' + group_outtime;
   },
   getInCount: function () {
-    var group_id = this._id;
-    return WorkStatus.find({ group_id: this._id, date: Session.get('theCurrentDay'), status: { $in: ['in', 'out'] } }).count();
+
+    // var counts = WorkStatus.find({ group_id: this._id, date: Session.get('theCurrentDay'), status: { $in: ['in', 'out'] } }).count();
+    var counts = _.uniq(_.map(WorkStatus.find({group_id: this._id, date: Session.get('theCurrentDay')}).fetch(), function(ws){return ws.person_name})).length;
+    return counts
   },
   isShowDownArrow: function(index) {
     return index < SimpleChat.GroupUsers.find({ user_id: Meteor.userId() }).count() - 1;

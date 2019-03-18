@@ -142,7 +142,7 @@ Template.deviceDashboard.onRendered(function () {
       console.log(err);
     }
   });
-
+  
 });
 
 Template.deviceDashboard.helpers({
@@ -181,13 +181,25 @@ Template.deviceDashboard.helpers({
     // date.set(_date); //UTC日期
     // today.set(_today);
 
-    var lists = [];
-    WorkStatus.find({group_id: group_id, date:curTime.get().utc}).forEach( function (item) {
+    var frList =[];
+    //查询今日出现的人 并且存在frList数组中
+    WorkStatus.find({group_id: group_id, date:curTime.get().utc}).forEach(function(item){
       if (item.in_time || item.out_time) {
-        lists.push(item);
+        frList.push(item);
+      }
+    })
+    //查找重复出现的人并且删除此人
+    WorkStatus.find({group_id: group_id, date:curTime.get().utc}).forEach( function (item,index) {
+      if (item.in_time || item.out_time) {
+        for (var i = index + 1; i < frList.length; i++) {
+          if(item.person_name && item.person_name == frList[i].person_name){
+            //删除重复出现的人
+            frList.splice(i,1)
+          }
+        }
       }
     });
-    return lists;
+    return frList;
   },
   zeroLists: function() {
     if (isOut.get()) {
