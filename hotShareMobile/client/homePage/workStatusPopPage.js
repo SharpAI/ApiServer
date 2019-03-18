@@ -195,14 +195,32 @@ Template.workStatusPopPage.helpers({
     return WorkStatus.find({group_id: group.get()._id,date: curTime.get().utc}).count() > 0;
   },
   lists: function(){
-    // return WorkStatus.find({group_id: group.get()._id,date: curTime.get().utc}).fetch();
-    var lists = [];
-    WorkStatus.find({group_id: group.get()._id,date: curTime.get().utc}).forEach( function (item) {
+    var frList =[];
+    //查询今日出现的人 并且存在frList数组中
+    WorkStatus.find({group_id: group.get()._id, date:curTime.get().utc}).forEach(function(item){
       if (item.in_time || item.out_time) {
-        lists.push(item);
+        frList.push(item);
       }
+    })
+     //查找重复出现的人并且删除此人
+    WorkStatus.find({group_id: group.get()._id, date:curTime.get().utc}).forEach( function (item,index) {
+      if (item.in_time || item.out_time) {
+        for (var i = index + 1; i < frList.length; i++) {
+          if(item.person_name && item.person_name == frList[i].person_name){
+            //删除重复出现的人
+            frList.splice(i,1)
+          }
+        }
+      }	     
     });
-    return lists;
+    
+    // var lists = [];
+    // WorkStatus.find({group_id: group.get()._id,date: curTime.get().utc}).forEach( function (item) {
+    //   if (item.in_time || item.out_time) {
+    //     lists.push(item);
+    //   }
+    // });
+    return frList;
   },
   devices: function(){
     var group_id = Session.get('modifyMyStatus_group_id') || group.get()._id;
