@@ -9,7 +9,7 @@ var limit = new ReactiveVar(5);
 
 var onlyShowUnknown = new ReactiveVar(false);
 var fuzziness = new ReactiveVar(100);
-var face_type = new ReactiveVar('front');
+var face_type = new ReactiveVar('all');
 
 var timelineLists = new ReactiveVar([]);
 var timelineIds = new ReactiveVar([]);
@@ -421,6 +421,8 @@ var treatAsTrainData = function(name, data) {
 
 Template.timelineAlbum.onRendered(function(){
   initTimeRangeSet();
+
+  // face_type.set("all");
 
   var taId = Router.current().params.query.taId;
   if(taId){
