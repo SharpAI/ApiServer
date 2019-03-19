@@ -384,8 +384,8 @@ var treatAsTrainData = function(name, data) {
         id: faceId, //item.person_id,
         url: item.img_url,
         name: name,
-        sqlid:item.style,
-        style:item.sqlid
+        sqlid: item.sqlid,
+        style: item.style
       });
     });
 
@@ -1191,7 +1191,7 @@ Template.timelineAlbum.events({
       if (!name) {
         return;
       }
-
+      
       PUB.showWaitLoading('处理中');
       var setNames = [];
       Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res){
@@ -1224,17 +1224,16 @@ Template.timelineAlbum.events({
           };
           console.log("==sr==. timeLine multiSelect: " + JSON.stringify(trainsetObj));
           sendMqttMessage('/device/'+group_id, trainsetObj);
-
           setNames.push({
             uuid: uuid,
             id: faceId, //item.person_id,
             url: item.img_url,
             name: name,
-            sqlid:item.style,
-            style:item.sqlid
+            sqlid: item.sqlid,
+            style: item.style
           });
         });
-
+        
         if (setNames.length > 0){
           Meteor.call('set-person-names', group_id, setNames);
         }

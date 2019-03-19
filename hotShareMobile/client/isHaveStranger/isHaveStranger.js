@@ -121,8 +121,8 @@ Template.haveStranger.events({
                             id: faceId, //item.person_id,
                             url: item.url,
                             name: name,
-                            sqlid: item.style,
-                            style: item.sqlid
+                            sqlid: item.sqlid,
+                            style: item.style
                         });
                     });
 
