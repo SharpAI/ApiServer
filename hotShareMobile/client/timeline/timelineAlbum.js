@@ -422,7 +422,8 @@ var treatAsTrainData = function(name, data) {
 Template.timelineAlbum.onRendered(function(){
   initTimeRangeSet();
 
-  // face_type.set("all");
+  console.log(face_type.get());
+  face_type.set("all");
 
   var taId = Router.current().params.query.taId;
   if(taId){
