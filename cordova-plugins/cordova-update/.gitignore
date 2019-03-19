@@ -1,6 +1,0 @@
-# ignore following files
-.DS_Store
-.settings
-.idea
-*.iml
-.fetch.json

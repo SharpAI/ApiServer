@@ -1,7 +1,0 @@
-{
-  "socketURL": "/",
-  "socketMessageEvent": "RTCMultiConnection-Message",
-  "socketCustomEvent": "RTCMultiConnection-Custom-Message",
-  "port": "80",
-  "enableLogs": "false"
-}

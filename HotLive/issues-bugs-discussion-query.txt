@@ -1,7 +1,0 @@
-Issues?
-
-    https://github.com/muaz-khan/RTCMultiConnection/issues/
-
-Email:
-    muazkh@gmail.com
-    

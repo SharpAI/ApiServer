@@ -1,1 +1,0 @@
-RefComments = new Mongo.Collection("refcomments");
