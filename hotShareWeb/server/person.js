@@ -118,7 +118,7 @@ PERSON = {
   },
   setName: function(group_id, uuid, id, url, name, is_video, is_human_shape, callback){
     var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
-    var dervice = Devices.findOne({uuid: uuid});
+    var device = Devices.findOne({uuid: uuid});
     var personName = PersonNames.findOne({group_id: group_id, name: name});
 
     if (!personName)
@@ -221,8 +221,8 @@ PERSON = {
           url: url,
           name: name,
           human_shape: [{id: id, url: url}],
-          deviceId: dervice._id,
-          DeviceName: dervice.name,
+          deviceId: device._id,
+          DeviceName: device.name,
           label_times: 1,
           createAt: new Date(),
           updateAt: new Date()
@@ -236,8 +236,8 @@ PERSON = {
           url: url,
           name: name,
           faces: [{id: id, url: url}],
-          deviceId: dervice._id,
-          DeviceName: dervice.name,
+          deviceId: device._id,
+          DeviceName: device.name,
           label_times: 1,
           createAt: new Date(),
           updateAt: new Date()
@@ -1400,7 +1400,7 @@ CLUSTER_PERSON = {
     addFace: function(group_id, uuid, faceId, unique_face_id, url, name, is_video, callback){
         CLUSTER_PERSON.removeFaceByUrl(group_id, url);
         var person = ClusterPerson.findOne({group_id:group_id, faceId: faceId}, {sort: {createAt: 1}});
-        var dervice = Devices.findOne({uuid: uuid});
+        var device = Devices.findOne({uuid: uuid});
         if (person){
             if (is_video) {
                 return person;
@@ -1426,8 +1426,8 @@ CLUSTER_PERSON = {
                 url: url,
                 name: name,
                 faces: [{id: unique_face_id, url: url}],
-                deviceId: dervice ? dervice._id : '',
-                DeviceName: dervice ? dervice.name : '',
+                deviceId: device ? device._id : '',
+                DeviceName: device ? device.name : '',
                 createAt: new Date(),
                 updateAt: new Date()
             };
@@ -1465,7 +1465,7 @@ CLUSTER_PERSON = {
             Fiber(function(){
                 /*PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
                 console.log('LABLE_DADASET_Handle 3')
-                LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:slef.userId,action:'聊天室标记'});
+                LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:self.userId,action:'聊天室标记'});
                 */
                 console.log("updateAutogroupResult: item = "+JSON.stringify(item));
                 if (item.url == undefined || item.url == '') {
@@ -1527,7 +1527,7 @@ Meteor.methods({
   },
   'set-person-names': function(group_id, items){
     console.log('set-person-names:', items);
-    var slef = this;
+    var self = this;
     PERSON.updateLabelTimes(group_id,items);
     for(var i=0;i<items.length;i++) {
       if(items[i].style == "human_shape"){
@@ -1536,7 +1536,7 @@ Meteor.methods({
         PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
       }
       console.log('LABLE_DADASET_Handle 3')
-      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:slef.userId,action:'聊天室标记'});
+      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:self.userId,action:'聊天室标记'});
     }
 
     // forEachAsynSeries + Fiber (出现两个 同名 person, 其中一个faceId 为空 & 数据集不全【label_dataset 中标记4张，只记录 1 张的情况】，先用回 for 循环的方式)
@@ -1544,7 +1544,7 @@ Meteor.methods({
       Fiber(function(){
         PERSON.setName(group_id, item.uuid, item.id, item.url, item.name, function(){
             console.log('LABLE_DADASET_Handle 3')
-            LABLE_DADASET_Handle.insert({group_id:group_id,uuid:item.uuid,id:item.id,url:item.url,name:item.name,sqlid:item.sqlid,style:item.style,user_id:slef.userId,action:'聊天室标记'});
+            LABLE_DADASET_Handle.insert({group_id:group_id,uuid:item.uuid,id:item.id,url:item.url,name:item.name,sqlid:item.sqlid,style:item.style,user_id:self.userId,action:'聊天室标记'});
             callback();
         });
       }).run();
@@ -1554,7 +1554,7 @@ Meteor.methods({
   },
   'mark-strangers': function(group_id, items){
     // console.log(items[0].url)
-    var slef = this;
+    var self = this;
     PERSON.updateLabelTimes(group_id,items);
     for(var i=0;i<items[0].url.length;i++) {
       PERSON.setName(group_id, items[0].uuid, items[0].id, items[0].url[i], items[0].name);
@@ -1570,10 +1570,10 @@ Meteor.methods({
       PERSON.removeName(null,items[i].uuid, items[i].id);
   },
   'remove-persons1': function(group_id, items){
-    var slef = this;
+    var self = this;
     for(var i=0;i<items.length;i++){
       PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
-      LABLE_DADASET_Handle.remove({group_id:group_id,id:items[i].id,url:items[i].img_url,user_id:slef.userId,action:'聊天室标错或者删除'});
+      LABLE_DADASET_Handle.remove({group_id:group_id,id:items[i].id,url:items[i].img_url,user_id:self.userId,action:'聊天室标错或者删除'});
     }
   },
   'remove-person-face': function(lists){
@@ -1685,7 +1685,7 @@ Meteor.methods({
   // 群相册里的批量标注
   'upLabels': function(groupId, data, waitLabels, type){
     this.unblock();
-    var slef = this;
+    var self = this;
 
     waitLabels.map(function(wait){
       var trainsetObj = {
@@ -1702,7 +1702,7 @@ Meteor.methods({
         sendMqttMessage('/device/' + groupId, trainsetObj);
         console.log('send mqtt to device:', trainsetObj);
         PERSON.removeName(groupId, wait.uuid, wait.id,wait.url);
-        LABLE_DADASET_Handle.remove({group_id:groupId,id:wait.id,url:wait.url,user_id:slef.userId,action:'群相册--未标注里点删除'});
+        LABLE_DADASET_Handle.remove({group_id:groupId,id:wait.id,url:wait.url,user_id:self.userId,action:'群相册--未标注里点删除'});
         return;
       }
       var name = PERSON.getIdByName(wait.uuid, data, groupId);
@@ -1718,7 +1718,7 @@ Meteor.methods({
       console.log('send mqtt to device:', trainsetObj);
       PERSON.setName(groupId, wait.uuid, wait.id, wait.url, data);
       console.log('LABLE_DADASET_Handle 4')
-      LABLE_DADASET_Handle.insert({group_id:groupId,id:wait.id,url:wait.url,uuid:wait.uuid,name:data,sqlid:wait.sqlid,style:wait.style,user_id:slef.userId,action:'群相册--未标注里点标记'});
+      LABLE_DADASET_Handle.insert({group_id:groupId,id:wait.id,url:wait.url,uuid:wait.uuid,name:data,sqlid:wait.sqlid,style:wait.style,user_id:self.userId,action:'群相册--未标注里点标记'});
     });
     return true;
   },
@@ -1884,8 +1884,8 @@ Meteor.methods({
         url: url,
         name: name,
         faces: [{id: face_id, url: url}],
-        // deviceId: dervice._id,
-        // DeviceName: dervice.name,
+        // deviceId: device._id,
+        // DeviceName: device.name,
         label_times: 1,
         createAt: new Date(),
         updateAt: new Date()
@@ -1921,7 +1921,7 @@ Meteor.methods({
       console.log("update person.faces = "+JSON.stringify(person.faces));
       Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
     }
-      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[0].uuid,id:id,url:url,name:name,sqlid:items[0].sqlid,style:items[0].style,user_id:slef.userId,action:'签到标记'});
+      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[0].uuid,id:id,url:url,name:name,sqlid:items[0].sqlid,style:items[0].style,user_id:self.userId,action:'签到标记'});
     },
     //获取随机名 guestN
     'get-guest-name':function(group_id){
