@@ -1,4 +1,4 @@
-# WorkAi Api
+# App Server API
 ---------
 
 ### 单张标注
@@ -8,7 +8,7 @@ POST /api/v1/groups/:groupId/faces
 | Attribute  | Type | Required | Description |
 |:------------|:------|:----------|:-------------|
 |  uuid       |  string   | yes       | 设备id             |
-|  img_url    |  string   | yes       | 人脸url            |
+|  img_url    |  string   | yes       | 人脸图片url(112*112)           |
 |  name    |  string   | yes       | 标注人名            |
 |  position   |  null     | no       | 设备位置            |
 |  type       | string    | no       | 图片类型 默认：face           |
