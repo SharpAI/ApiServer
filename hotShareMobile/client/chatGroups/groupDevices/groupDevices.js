@@ -62,7 +62,7 @@ Template.groupDevices.events({
     PUB.toast('您的脸脸安全盒当前是最新版本');
     return
   },
-  'click .camera-settings': function(e,t){
+  'click .set-camera': function(e,t){
     cameraParams.id = this._id;
     cameraParams.uuid = this.uuid;
     $('#cameraSettings').modal('show');

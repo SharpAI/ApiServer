@@ -30,8 +30,9 @@
             <input class="edit" id="{{getId uuid}}" style="{{isShow uuid 2}}" value="未知设备">
             {{/if}}
 
-            <img class="latest_update" style="{{isLatest uuid}}" src="/islatest.png">
-            <img class="camera-settings" src="/scanlancamera.png">
+            <div class="set-camera">
+                <span class="set-size">摄像头配置</span>
+            </div> 
           <!-- {{/if}} -->
           <!-- </span> -->
 
@@ -77,15 +78,12 @@
     <div class="modal fade" id="cameraSettings" tabindex="-1" role="dialog" aria-labelledby="cameraSettingsLabel">
         <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
         <div class="modal-content">
-            <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">摄像头配置</h4>
+            <div class="modal-header"> 
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="false" style="font-size:35px;">&times;</span></button>
+            <h3 class="modal-title" id="myModalLabel">摄像头配置</h3>
             </div>
             <div class="modal-body">
             <form>
-            <div class="form-group">
-                <label style="width: 100%; text-align:center;">设置完成后，大约15秒后生效</label>
-            </div>
             <div class="form-group">
                 <label for="ipaddr">摄像头IP地址：</label>
                 <input type="text" class="form-control" id="ipaddr">
@@ -101,8 +99,11 @@
             </form>
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-default cancelCameraSettings" data-dismiss="modal">取消</button>
-            <button type="button" id="" class="btn btn-primary saveCameraSettings">保存</button>
+                <div class="pull-left" style="text-align:center; display: inline-block; margin-top: 8px;">设置完成后，大约15秒后生效</div>
+                <div class="pull-right" style="width:130px; margin-right:8px;">
+                    <button type="button" class="btn btn-default cancelCameraSettings" data-dismiss="modal">取消</button>
+                    <button type="button" id="" class="btn btn-primary saveCameraSettings">保存</button>
+                </div>
             </div>
         </div>
         </div>
