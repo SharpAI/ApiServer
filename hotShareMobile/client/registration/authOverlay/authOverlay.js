@@ -42,6 +42,7 @@ if (Meteor.isClient) {
                         msgObj = {
                           toUserId: group._id,
                           toUserName: group.name,
+                          toUserNames: group.name,
                           toUserIcon: group.icon,
                           sessionType: 'group',
                           userId: user._id,
@@ -76,7 +77,7 @@ if (Meteor.isClient) {
           }
           else{
             Router.go(gotoPage);
-            PUB.toast('二维码格式错误')
+            PUB.toast('你可能扫描了错误的二维码，请检查......')
           }
         }
         if (result.cancelled) {
@@ -162,7 +163,7 @@ if (Meteor.isClient) {
       }
       else{
         Router.go(gotoPage);
-        PUB.toast('二维码格式错误')
+        PUB.toast('你可能扫描了错误的二维码，请检查......')
       }
     }
     if(device.platform === 'Android' ){

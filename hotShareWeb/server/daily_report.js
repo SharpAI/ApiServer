@@ -16,7 +16,10 @@ if(Meteor.isServer){
       return millisTill23;
     }
 
-    function sendGroupJobReport(group, emails) {
+    function sendGroupJobReport(group_user, emails) {
+      var group = SimpleChat.Groups.findOne({_id: group_user.group_id});
+      if (!group)
+        return;
       var group_id = group._id;
       var time_offset = 8;
       if (group && group.offsetTimeZone) {
@@ -120,9 +123,11 @@ if(Meteor.isServer){
     function sendJobReport() {
       console.log("send email out");
       try {
-        //var groups = SimpleChat.Groups.find({report_emails: {$exists: true}});
-        var groups = SimpleChat.GroupUsers.find({report_emails: {$exists: true}});
-        groups.forEach(function(group) {
+        var groups_users = SimpleChat.GroupUsers.find({report_emails: {$exists: true}});
+        groups_users.forEach(function(group_user) {
+          var group = SimpleChat.Groups.findOne({_id: group_user.group_id});
+          if (!group || !group_user.report_emails)
+            return;
           var time_offset = 8;
           if (group && group.offsetTimeZone) {
             time_offset = group.offsetTimeZone;
@@ -131,8 +136,8 @@ if(Meteor.isServer){
           console.log('Sending time email'+local_time.getHours())
           if(local_time.getHours() == 19) { // 群组本地时间 12 点 发送
             console.log('sendJobReport, and group_id is '+group._id+', and current timeOffsetZone is '+time_offset);
-            console.log(group._id, group.report_emails);
-            sendGroupJobReport(group);
+            console.log(group._id, group_user.report_emails);
+            sendGroupJobReport(group_user, group_user.report_emails);
           }
           
         });

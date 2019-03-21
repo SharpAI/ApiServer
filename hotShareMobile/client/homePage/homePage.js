@@ -112,8 +112,10 @@ Template.homePage.helpers({
     return group_intime + ' - ' + group_outtime;
   },
   getInCount: function () {
-    var group_id = this._id;
-    return WorkStatus.find({ group_id: this._id, date: Session.get('theCurrentDay'), status: { $in: ['in', 'out'] } }).count();
+
+    // var counts = WorkStatus.find({ group_id: this._id, date: Session.get('theCurrentDay'), status: { $in: ['in', 'out'] } }).count();
+    var counts = _.uniq(_.map(WorkStatus.find({group_id: this._id, date: Session.get('theCurrentDay')}).fetch(), function(ws){return ws.person_name})).length;
+    return counts
   },
   isShowDownArrow: function(index) {
     return index < SimpleChat.GroupUsers.find({ user_id: Meteor.userId() }).count() - 1;
@@ -189,6 +191,7 @@ Template.homePage.events({
         console.log('getDeviceListByGroupId:',err);
         return;
       }
+      Session.set("timelinehref",true)
       console.log("device lists is: ", JSON.stringify(deviceLists));
       if (deviceLists && deviceLists.length > 0) {
         if (deviceLists.length == 1 && deviceLists[0].uuid) {
@@ -200,7 +203,7 @@ Template.homePage.events({
         } else {
           console.log("select a device")
           Session.set('_groupChatDeviceLists', deviceLists);
-          Session.set('toPath','/chooseLabelType');
+          // Session.set('toPath','/timelineAlbum');
           //workStatusPopPage.close();
           $('._checkGroupDevice').fadeIn();
           //workStatusPopPage.hide();

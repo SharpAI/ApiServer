@@ -9,6 +9,7 @@ cordova-plugin-actionsheet@https://github.com/PluginCordova/cordova-plugin-actio
 cordova-plugin-apprate@https://github.com/PluginCordova/apprate/tarball/b318cabf92aec3ed1b0d90c7803a5ff07c75ae4a
 cordova-plugin-camera@https://github.com/PluginCordova/cordova-plugin-camera/tarball/394a5b1dbf9de3a76f64127acaf8366e4cf82920
 cordova-plugin-crop@https://github.com/PluginCordova/cordova-plugin-crop/tarball/dfa847173a9c1d449a20004f7baf5c0e8ba47bf2
+cordova-plugin-fastrde-mqtt@https://github.com/PluginCordova/cordova-plugin-fastrde-mqtt/tarball/b7e1e5ca1b93f40cef522845c747d02b3cc84022
 cordova-plugin-device@1.1.1
 cordova-plugin-device-motion@1.2.0
 cordova-plugin-dialogs@1.2.0
@@ -19,7 +20,7 @@ cordova-plugin-inappbrowser@https://github.com/PluginCordova/inappbrowser/tarbal
 cordova-plugin-iosaudiopicker@https://github.com/PluginCordova/iosaudiopicker/tarball/c0ed773bc6b6de8211466d136e1992e880b25812
 cordova-plugin-keyboard@1.1.5
 cordova-plugin-media@https://github.com/PluginCordova/media/tarball/2d158b0ef7173cad2b2f84c05c62727932635f8e
-cordova-plugin-meteor-webapp@https://github.com/PluginCordova/cordova-plugin-meteor-webapp/tarball/45f242a3ef35b45c82f656b4dcf856701806d1ef
+cordova-plugin-meteor-webapp@https://github.com/panter/cordova-plugin-meteor-webapp.git#7bb095ce393d17f662cc6bb596ce91acf743d17a
 cordova-plugin-network-information@1.2.0
 cordova-plugin-splashscreen@https://github.com/PluginCordova/sharpAiSplashScreen/tarball/d23b8a319c67a2ebcf858806bf9800224fd7deb3
 cordova-plugin-statusbar@https://github.com/PluginCordova/cordova-plugin-statusbar/tarball/995e4fdf9de78609ff0fb30bab2610b9e5293410

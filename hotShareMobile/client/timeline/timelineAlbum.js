@@ -9,7 +9,7 @@ var limit = new ReactiveVar(5);
 
 var onlyShowUnknown = new ReactiveVar(false);
 var fuzziness = new ReactiveVar(100);
-var face_type = new ReactiveVar('front');
+var face_type = new ReactiveVar('all');
 
 var timelineLists = new ReactiveVar([]);
 var timelineIds = new ReactiveVar([]);
@@ -384,8 +384,8 @@ var treatAsTrainData = function(name, data) {
         id: faceId, //item.person_id,
         url: item.img_url,
         name: name,
-        sqlid:item.style,
-        style:item.sqlid
+        sqlid: item.sqlid,
+        style: item.style
       });
     });
 
@@ -421,6 +421,9 @@ var treatAsTrainData = function(name, data) {
 
 Template.timelineAlbum.onRendered(function(){
   initTimeRangeSet();
+
+  console.log(face_type.get());
+  face_type.set("all");
 
   var taId = Router.current().params.query.taId;
   if(taId){
@@ -494,6 +497,9 @@ Template.timelineAlbum.onDestroyed(function(){
 
 });
 Template.timelineAlbum.helpers({
+  timelinehref:function(){
+    return Session.get('timelinehref')
+  },
   showHint:function(){
     return Session.get('showHint');
   },
@@ -1188,7 +1194,7 @@ Template.timelineAlbum.events({
       if (!name) {
         return;
       }
-
+      
       PUB.showWaitLoading('处理中');
       var setNames = [];
       Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res){
@@ -1221,17 +1227,16 @@ Template.timelineAlbum.events({
           };
           console.log("==sr==. timeLine multiSelect: " + JSON.stringify(trainsetObj));
           sendMqttMessage('/device/'+group_id, trainsetObj);
-
           setNames.push({
             uuid: uuid,
             id: faceId, //item.person_id,
             url: item.img_url,
             name: name,
-            sqlid:item.style,
-            style:item.sqlid
+            sqlid: item.sqlid,
+            style: item.style
           });
         });
-
+        
         if (setNames.length > 0){
           Meteor.call('set-person-names', group_id, setNames);
         }

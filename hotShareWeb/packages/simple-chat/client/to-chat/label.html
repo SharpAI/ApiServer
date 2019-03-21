@@ -26,11 +26,27 @@
                   </div>
                   <div class="label-input-content" style="padding-left:80px;">
                     <input id="label-input-name" type="text" placeholder="请选择或输入名字~" style="font-size:16px;height: 40px;line-height: 40px;padding: 0px 10px;width: 100%; border: 1px solid #515151; margin-bottom: 10px;" />
-                    <p style="font-size:12px;">Tips: 如果照片中的人已经被标记过， 可直接下面的列表中选择。</p>
+                    <p></p>
+                    <table>
+                      <tr>
+                        <td style="float: left;">Tips: </td>
+                        <td style="font-size:12px;padding-top: 3px;">
+                          1.中文名字小于6位，英文名字小于12位（效果更佳）
+                        </td>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td style="font-size:12px;">
+                            2.如果照片中的人已经被标记过， 可直接下面的列表中选择。
+                        </td>
+                      </tr>
+                    </table>
+                    
+                    
                   </div>
                 </div>
                 
-                <ul style="padding: 0 0 30px 0;margin-top:115px; background: #eee;">
+                <ul style="padding: 0 0 30px 0;margin-top:141px; background: #eee;">
                   {{#each names}}
                   <li>
                     {{> _simpleChatToChatLabelNameImg}}

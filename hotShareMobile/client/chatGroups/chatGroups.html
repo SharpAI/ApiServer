@@ -37,7 +37,11 @@
             {{else}}
             <i class="fa fa-users" aria-hidden="true"></i>
             {{/if}}
-            <div class="name">{{toUserName}}</div>
+            {{#if toUserNames}}
+              <div class="name n1">{{toUserNames}}</div>
+            {{else}}
+              <div class="name n2">{{toUserName}}</div>
+            {{/if}}
             <div class="text">{{lastText}}</div>
             <div class="time">{{formatTime updateAt}}</div>
             {{#if hasCount count}}
@@ -86,7 +90,7 @@
 
     //解决消息列表红点问题
     var listCount = $("#counts").each(function(i,v){return i});
-    if(listCount.html() == undefined){
+    if(listCount.html() == undefined || listCount.html() == ""){
       Session.set('hasNewLabelMsg',false);
     }else{
       Session.set('hasNewLabelMsg',true);

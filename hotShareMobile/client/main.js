@@ -234,57 +234,41 @@ if (Meteor.isCordova) {
 
     function eventResume(){
         if ($('body').text().length === 0 || $('body').text().indexOf("Oops, looks like there's no route on the client or the server for url:") > -1 ) {
-          location.reload();
+          //restartApplication();
+          //location.reload();
         }
         if (Meteor.status().connected !== true)
           Meteor.reconnect();
         //checkNewVersion2();
         if (Meteor.user()) {
-            console.log('Refresh Main Data Source when resume');
-            if (Meteor.isCordova) {
-                window.refreshMainDataSource();
-                checkShareUrl();
-                checkShareExtension();
-                window.checkNotificationServicesEnabled();
-                if(Meteor.user().profile.waitReadCount > 0){
-                  Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
-                }
-
-                if(device.platform === 'Android'){
-                  window.plugins.shareExtension.getShareData(function(data) {
-                    console.log("##RDBG getShareData: " + JSON.stringify(data));
-                      if(data){
-                         editFromShare(data);
-                      }
-                  }, function() {});
-                  window.plugins.shareExtension.emptyData(function(result) {}, function(err) {});
-                }
-            }
+            setTimeout(function(){
+              console.log('Refresh Main Data Source when resume');
+              if (Meteor.isCordova) {
+                  window.refreshMainDataSource();
+                  window.checkNotificationServicesEnabled();
+                  if(Meteor.user().profile.waitReadCount > 0){
+                    Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+                  }
+              }
+            },1*1000)
         }
         //mqttEventResume();
         if (lastPauseDate != null) {
           var now = new Date();
           if (now.getTime() - lastPauseDate.getTime() > 5*60*1000) {
-            restartApplication();
+            //restartApplication();
           }
         }
         try{
-          if(mqtt_connection){
-            console.log('try reconnect mqtt')
-            // mqtt_connection._reconnect();
-            mqttEventResume();
-          }
+          console.log('try reconnect mqtt')
+          // mqtt_connection._reconnect();
+          mqttEventResume();
         } catch (error) {
           console.log('mqtt reconnect Error=',error);
         }
     }
     function eventPause(){
-      if(withAutoSavedOnPaused) {
-          if (location.pathname === '/add') {
-              Template.addPost.__helpers.get('saveDraft')()
-          }
-      }
-      //mqttEventPause();
+      mqttEventPause();
       lastPauseDate = new Date();
     }
 
@@ -378,7 +362,7 @@ if (Meteor.isCordova) {
 }
 
 if (Meteor.isClient) {
-  Session.set("DocumentTitle",'故事贴');
+  Session.set("DocumentTitle",'来了吗');
   Deps.autorun(function(){
     if(Meteor.userId()){
       //Meteor.subscribe("topics");
@@ -390,3 +374,10 @@ if (Meteor.isClient) {
     document.title = Session.get("DocumentTitle");
   });
 }
+
+/*Reload._onMigrate(function (retry) {
+  if (Meteor.isCordova) {
+    cordova.exec(callback, console.error, 'WebAppLocalServer', 'switchPendingVersion', []);
+  }
+  return [true, {}];
+});*/

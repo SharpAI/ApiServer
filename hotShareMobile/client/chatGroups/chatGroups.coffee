@@ -1,5 +1,10 @@
 if Meteor.isClient
   @sysMsgToUserId = 'fTnmgpdDN4hF9re8F'
+  Template.chatGroups.created = ->
+    if Session.get('offlineMsgOverflow')
+      PUB.toast('收件箱已满，消息可能丢失......')
+      Session.set('offlineMsgOverflow', false)
+    
   Template.chatGroups.rendered=->
     #$('.content').css 'min-height',$(window).height()
     #Meteor.subscribe("get-my-group", Meteor.userId())
@@ -105,7 +110,7 @@ if Meteor.isClient
           console.log 'should be triggered in scrolling'
           return false
       critiaria = { group_id: { $eq: this.toUserId} };
-      face_settings = {"face_list" : ["front"], "fuzziness" : "100"}
+      face_settings = {"face_list" : ["front","human_shape"], "fuzziness" : "100"}
       if face_settings
           critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
       scursor = Strangers.find(critiaria);

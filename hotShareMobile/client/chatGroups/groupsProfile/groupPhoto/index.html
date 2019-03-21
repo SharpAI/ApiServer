@@ -67,14 +67,15 @@
 </template>
 
 <template name="groupPhotoImg1">
-  <li id="{{_id}}" class="labeled-item group-photo-labeled-item" data-did="{{deviceId}}" data-gid="{{group_id}}" data-fid="{{faceId}}" data-name="{{name}}">
+  <li id="{{_id}}" class="labeled-item group-photo-labeled-item {{human_shape}}" data-did="{{deviceId}}" data-gid="{{group_id}}" data-fid="{{faceId}}" data-name="{{name}}">
     <img class="lazy" data-original="{{url}}" id={{_id}}  data-gid="{{group_id}}" data-fid="{{faceId}}"  data-name="{{name}}"/> 
     <h2 class="name">
       {{name}} 
       {{#if isNeedLabelMore}}<img src="/electric_quantity.png" style="width: 26px;height: 26px;background: none;float: none;"/>{{/if}}
     </h2>
     <p>
-      {{#if imgCount}}{{imgCount}} 张照片{{/if}}
+      <!-- {{#if imgCount}}{{imgCount}} 张照片{{/if}}  -->
+      {{imageCount}} 张照片
       {{#if isNeedLabelMore}}<span class="label_times labelMoreImage">标记</span>{{/if}}
     </p>
   </li>
@@ -135,7 +136,11 @@
 
 <template name='labelDatasetImg'>
   <li id="{{_id}}" class="labeled-item" data-did="{{uuid}}" data-gid="{{group_id}}" data-fid="{{id}}" data-name="{{name}}">
-     <img class="lazy" data-original="{{url}}" /> 
+    {{#if isAutoLabel id}}
+        <img class="lazy" style="border:solid 3px blue;" data-original="{{url}}" />
+    {{else}}
+        <img class="lazy" data-original="{{url}}" />
+    {{/if}}
      {{#if has_selected _id}}
      <div class="selected"><i class="fa fa-check" aria-hidden="true"></i></div>
      {{/if}}

@@ -460,8 +460,27 @@ Template.groupPhotoImg1.helpers({
     }
     return times;
   },
+  imgCount:function(){
+    if(Session.get('is_human_shape')){
+      return this.human_shape.length;
+    }
+    return this.faces.length;
+  },
+  imageCount: function(){
+    //return LableDadaSet.find({group_id: groupid, name: name}).count();
+    return this.imgCount
+  },
   isNeedLabelMore: function() {
     return this.imgCount < 15;
+  },
+  url: function(){
+    if(Session.get('is_human_shape')){
+      return this.human_shape[0].url;
+    }
+    return this.url;
+  },
+  human_shape:function(){
+    return Session.get('is_human_shape') ? 'human_shape' : '';
   }
 });
 
@@ -579,6 +598,10 @@ Template.labelDatasetImg.onRendered(function(){
 });
 
 Template.labelDatasetImg.helpers({
+  isAutoLabel: function(id) {
+    console.log("isAutoLabel: id = "+id);
+    return id != null && id.indexOf("_autolabel") >= 0;
+  },
   has_selected: function(id){
     return selected2.get().indexOf(id) >= 0;
   },
@@ -661,6 +684,7 @@ Template.person_labelDataset.onRendered(function(){
 
 Template.person_labelDataset.helpers({
   list:function(){
+    var list = LableDadaSet.find({group_id: this.group_id,name:this.name},{limit: limit3.get(), sort:{createAt: -1}}).fetch();
     return LableDadaSet.find({group_id: this.group_id,name:this.name},{limit: limit3.get(), sort:{createAt: -1}}).fetch();
   },
   is_selected2:function(){

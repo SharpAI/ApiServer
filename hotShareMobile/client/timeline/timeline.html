@@ -16,15 +16,25 @@
       </div>
       {{else}}
       {{#if lists}}
-      <div class="sub_head"><p>请选择要查看的设备</p></div>
+      <div class="sub_head">
+        <p style="display: inline-block;">我的设备</p>
+        <p style="display: inline-block;position: absolute;right: 10px;">
+          <span style="display: inline-block;margin-left: 1rem;color: #888888;">
+            <iframe style="border: 0px;" src="/offline_face_box.svg" width="8" height="8"></iframe><small>&nbsp;离线</small>
+          </span>
+          <span style="display: inline-block;margin-left: 1rem;color:#32c6b1;">
+            <iframe style="border: 0px;" src="/online_face_box.svg" width="8" height="8"></iframe><small>&nbsp;在线</small>
+          </span> 
+        </p>
+      </div>
       {{#each lists}}
-        <div id="{{group_id}}" class="line" style="height: 20px; text-align:left; padding-left:10px; color:#555;">{{group_name}}</div>
+        <div id="{{group_id}}" class="line" style="height: 38px; text-align:left; padding-left:10px; color: #333333;font-weight: bold;">{{group_name}}</div>
         <ul class="set-up comFadeIn">
-        {{#each devices}}
+          {{#each devices}}
           {{#if uuid}}
-          <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0;">
+          <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0;border-bottom:1px solid #f5f5f5;">
               {{#if name}}
-                <label style="margin-left:8px;">
+                <label style="width: 107px; margin-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                 {{name}}
                 </label>
               {{else}}
@@ -32,37 +42,38 @@
                 <iframe style="border: 0px;" src="/camera12.svg" width="30" height="30"></iframe>
               {{/if}}
               <!-- 显示状态图标 -->
-              <span style="display:inline-block; position: relative;left: 12rem;top: 0.5rem;">
+              <span style="display:inline-block; position: relative;left: 12rem;top:1.2rem;font-size: 12px;">
                 {{#if deviceSupportOnlineOffline online}}
                   {{#if online}}
-                    <span style="display: inline-block;margin-left: 1.2rem;">
-                      <iframe style="border: 0px;" src="/face_box_online.svg" width="24" height="17"></iframe>
+                    <span style="display: inline-block;margin-left: 1.5rem;color:#32c6b1;">
+                      <iframe style="border: 0px;" src="/face_box_online.svg" width="16" height="12"></iframe><small class="equipment-fa">&nbsp;盒子</small>
                     </span> 
                   {{else}}
-                    <span style="display: inline-block;margin-left: 1.2rem;">
-                      <iframe style="border: 0px;" src="/face_box_offline.svg" width="24" height="17"></iframe>
+                    <span style="display: inline-block;margin-left: 1.5rem;color: #888888;">
+                      <iframe style="border: 0px;" src="/face_box_offline.svg" width="16" height="12"></iframe><small class="equipment-fa">&nbsp;盒子</small>
                     </span>
                   {{/if}}
                   {{#if camera_run}}
-                    <span style="display: inline-block;margin-left: 1.2rem;">
-                      <iframe style="border: 0px;" src="/camera_online.svg" width="24" height="21"></iframe>
+                    <span style="display: inline-block;margin-left: 1rem;color:#32c6b1;">
+                      <iframe style="border: 0px;" src="/camera_online.svg" width="16" height="14"></iframe><small class="equipment-fa">&nbsp;摄像头</small>
                     </span>
                   {{else}}
-                    <span style="display: inline-block;margin-left: 1.2rem;">
-                      <iframe style="border: 0px;" src="/camera_offline.svg" width="24" height="21"></iframe>
+                    <span style="display: inline-block;margin-left: 1rem;color: #888888;">
+                      <iframe style="border: 0px;" src="/camera_offline.svg" width="16" height="14"></iframe><small class="equipment-fa">&nbsp;摄像头</small>
                     </span>
                   {{/if}}
                 {{else}}
-                  <span style="display: inline-block;margin-left: 1.2rem;">
+                  <!-- <span style="display: inline-block;margin-left: 1.2rem;">
                     <iframe style="border: 0px;" src="/what_offline.svg" width="25" height="25"></iframe>
-                  </span>
+                  </span> -->
                 {{/if}}
                 
               </span>
-              <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
+              <div class="value" style="float:right; margin:10px;"><i class="fa fa-angle-right"></i></div>
           </li>
           {{/if}}
         {{/each}}
+        <li style="width:100%;height: 7px;padding: 0px; background-color:#f2f2f2;    position: absolute;left: 0;"></li>
       </ul>
       {{/each}}
       {{else}}

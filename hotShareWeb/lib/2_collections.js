@@ -402,7 +402,7 @@ if(Meteor.isServer){
       return this.ready();
     }
     var limit = limit || 50;
-    return Person.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
+    return Person.find({group_id: group_id},{limit: limit,sort:{name: 1}});
   });
 
   Meteor.publish('group_cluster_person', function(group_id, limit){
@@ -510,9 +510,14 @@ if(Meteor.isServer){
         date: date,
         group_id: group_id
     };
+    selector.$or = [
+      {in_image:{$nin:[null,'']}},{out_image:{$nin:[null,'']}}
+    ]
+
     if(status){
         selector.status = status
     }
+    console.log(selector)
     return WorkStatus.find(selector);
   });
 
@@ -938,5 +943,10 @@ if(Meteor.isClient){
 
           Meteor.subscribe('versions');
       });
+   //To prevent method not defined exception.
+   window.refreshMainDataSource = function(){		
+       //Meteor.subscribe('waitreadcount');		
+   };
+	  
   }
 }

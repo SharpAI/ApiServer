@@ -62,7 +62,7 @@ Meteor.publish('get-my-group', function(user_id){
 
 Meteor.publish('get-label-names', function(group_id, limit){
   limit = limit || 20;
-  return PersonNames.find({group_id: group_id}, {sort: {createAt: 1}, limit: limit});
+  return PersonNames.find({group_id: group_id}, {sort: {name: 1}, limit: limit});
 });
 
 Meteor.publish('get-nlp-label-names', function(group_id, limit){

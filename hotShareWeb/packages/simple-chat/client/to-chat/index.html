@@ -6,31 +6,37 @@
         <script type="text/javascript">
         $('.header .back').click(function(){
           SimpleChat.MsgSession.update({userId: Meteor.userId(), toUserId: location.search.replace('?id=', '')}, {$set: {count: 0}});
-
           var historyArr = Session.get("history_view");
-          if (historyArr && historyArr.length > 0) {
-            PUB.back();
-          }
-          else{
-            Router.go('/');
-          }
+          Router.go('/message');
+          // if (historyArr && historyArr.length > 0) {
+          //   PUB.back();
+          // }
+          // else{
+            // Router.go('/');
+          // }
         })
         </script>
         <span>{{title}}</span>
         {{#if isGroups}}
           <!--<div class="right groupsProfile"></div>-->
+          <div class="rightButton" style="display: inline-block;position: absolute;right: 0;width: 10%;text-align: center;">
+          <i class="fa fa-search"></i>
+        </div>
         {{else}}
-          <div class="right userProfile">
+          <div class="right">
               <i class="fa fa-user"></i>
           </div>
         {{/if}}
-
         <!--<div class="right profile"></div>-->
         {{#if loading}}
         <div class="loading"></div>
         {{/if}}
       </div>
-
+      <div class="chat-search">
+        <input type="text" id="searchVal" placeholder="请输入搜索内容">
+        <span class="search-submit">确定</span>
+        <span class="search-cancel">取消</span>
+      </div>
       <div class="box">
         <ul class="group-list">
           {{#each getMsg}}
@@ -48,7 +54,7 @@
       </div>
 
       <div class="footer"><form class="input-form">
-        <div id="container"></div>
+        <!-- <div id="container"></div> -->
         <style type="text/css">
           #container{width: 60px; display: block;position: absolute;left: 0px;bottom: 0;height: 48px;z-index: 998;}
           #container > div{position: absolute !important;top: 0px !important;left: 0px !important;width: 60px !important;height: 48px !important;overflow: hidden !important;}
@@ -60,7 +66,7 @@
           </div>
           <div class="input"><input class="input-text" type="text" placeholder="粘帖链接，进行训练" /></div>
         {{else}}
-          <div class="btn-box image" id="selectfiles"></div>
+          <!-- <div class="btn-box image" id="selectfiles"></div> -->
           <div class="input"><input class="input-text" type="text" placeholder="说点什么" /></div>
         {{/if}}
         <div class="send-btn"><input class="btn" type="submit" value="发送" style="border-radius: 5px;" /></div>
@@ -191,6 +197,23 @@
   <!--<script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/plupload-2.1.2/js/plupload.full.min.js"></script>-->
   <!--<script type="text/javascript" src="/packages/feiwu_simple-chat/client/upload.min.js"></script>-->
 </template>
+
+<!--对和错的弹框-->
+<template name="_showImgOne">
+   <div id="label_check">
+      <div class="label_cancel">取消</div>
+      <div class="with_me">
+        <div class="top_img">
+          <img class="img-responsive center-block show_imgage" src="{{label_img}}">
+        </div>
+        <div class="bottom_btn">
+          <div class="user_name_show">这是 <span class="user_name">{{label_name}}</span> 吗？</div>
+          <button type="button" class="btn btn-default label_wrong">错</button>
+          <button type="button" class="btn btn-default label_right">对</button>
+        </div>
+      </div>
+    </div>
+</template>
 <!-- message页面 点击进入的消息列表 -->
 <template name="_simpleChatToChatItem">
   {{#if has_show_time}}
@@ -205,8 +228,8 @@
   <li id="{{_id}}"><span class="system_message">{{text}}</span></li>
   {{else}}
     <!--{{#if showUnknowMember to.id}}-->
-    <li id="{{_id}}" class="{{multipleChoiceClass}} data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
-
+    <!-- <li id="{{_id}}" class="{{multipleChoiceClass}} data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}"></li> -->
+    <li id="{{_id}}" class="{{multipleChoiceClass}} data-show-more-render {{ta_me form.id}} show-name" data-time="{{create_time}}">
       <div class="icon-wrap">
         {{#if isMultipleChoice}}
           {{#if is_ta form.id}}
@@ -235,7 +258,7 @@
         </div>
       {{else}}
         {{#if is_text_type type}}
-          <div class="text msg-content" style="{{has_p_ids_style}}">{{{text}}}
+          <div class="text msg-content {{imgsType}}" style="{{has_p_ids_style}}">{{{text}}}
             {{#if wait_classify}}
               <center><!-- <div>努力分析中...</div> --><i class="fa fa-spinner fa-pulse"></i></center>
             {{/if}}
@@ -393,6 +416,9 @@
             <!--标记消息 end-->
             {{/if}}
             {{> _checkAgentMsgItem}}
+            {{#if isLabelComplete}}
+              <i class="fa fa-check label-status"></i>
+            {{/if}}
           </div>
         {{else}}
           <div class="img msg-content">
@@ -434,7 +460,8 @@
 <template name="_simpleChatToChatItemImg">
   {{#if isVideo}}
   <div class="video_container video-click-able"  id="{{id}}" data-imgurl="{{url}}" data-videosrc="{{video_src}}">
-    <img class="lazy" data-original="{{url}}" />
+    <!-- <img class="lazy" data-original="{{url}}" /> -->
+    <img class="lazy" data-original="{{url}}" data-type="video" />
     <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
   </div>
   {{else}}
@@ -446,7 +473,6 @@
   </div>
   {{/if}}
 </template>
-
 <template name="_simpleChatToChatPItemImg">
   <div class="img_container p_imgBg">
     <img class="work-ai-img lazy" data-type="images" data-pname="{{name}}"  data-original="{{url}}" />

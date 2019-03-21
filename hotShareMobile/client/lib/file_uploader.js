@@ -262,7 +262,7 @@ if (Meteor.isCordova){
     * @return {Object} url in callback
     */
     var uploadFileInCordova = function(ImageWidth, ImageHeight, ImageQuality, callback){
-      if(false/*device.platform === 'Android' */){
+      if(device.platform === 'Android'){
            pictureSource = navigator.camera.PictureSourceType;
            destinationType = navigator.camera.DestinationType;
 //          var cameraOptions = {

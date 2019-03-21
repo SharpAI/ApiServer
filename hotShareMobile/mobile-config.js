@@ -23,6 +23,7 @@ App.accessRule('*');
 App.accessRule('http://*');
 App.accessRule('https://*');
 App.accessRule('*', { type: 'navigation' } );
+App.accessRule('data:*', { type: 'navigation' });
 
 App.icons({
   //'iphone': 'resource/icon_57.png',

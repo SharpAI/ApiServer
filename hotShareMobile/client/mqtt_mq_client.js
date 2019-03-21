@@ -1,7 +1,7 @@
 /**
  * Created by simba on 5/12/16.
  */
-if(Meteor.isClient){
+if(Meteor.isClient && !withNativeMQTTLIB){
     var myMqtt = Paho.MQTT;
     var undeliveredMessages = [];
     var unsendMessages = [];
@@ -10,7 +10,8 @@ if(Meteor.isClient){
     var init_timer = null;
     mqtt_connection = null;
     Session.set('history_message',false);
-    var noMessageTimer = null; 
+    var noMessageTimer = null;
+
     //mqtt_connected = false;
     var onMessageArrived = function(message, msgKey,len, mqttCallback) {
         console.log("onMessageArrived:"+message.payloadString);
@@ -70,7 +71,7 @@ if(Meteor.isClient){
     initMQTT = function(clientId){
         if(!mqtt_connection){
             var pahoMqttOptions = {
-                timeout: 30, 
+                timeout: 30,
                 keepAliveInterval:60,
                 cleanSession: false,
                 onSuccess:onConnect,
@@ -95,7 +96,7 @@ if(Meteor.isClient){
                     addToUnsendMessaages(topic, message, onMessageDeliveredCallback, 10*1000);
                 }
             };
-            
+
             function onConnect() {
                 // Once a connection has been made, make a subscription and send a message.
                 console.log("mqtt onConnect");
@@ -115,7 +116,7 @@ if(Meteor.isClient){
                 //mqtt_connection.subscribe('workai');
                 subscribeMyChatGroups();
                 subscribeMqttUser(Meteor.userId());
-                
+
                 setTimeout(function(){
                     console.log("sendMqttMessage /presence")
                     sendMqttMessage('/presence/'+Meteor.userId(),{online:true})
@@ -140,7 +141,7 @@ if(Meteor.isClient){
                     //             break;
                     //         }
                     //     }
-                    // }    
+                    // }
                 }, 20*1000)
             };
             function onFailure(msg) {
@@ -218,10 +219,10 @@ if(Meteor.isClient){
                     timer: timeoutTimer
                 };
                 unsendMessages.push(unsendMsg);
-                console.log('unsendMessages push: message='+JSON.stringify(message)); 
+                console.log('unsendMessages push: message='+JSON.stringify(message));
             }
             function isJSON(message) {
-                if(typeof(message) == "object" && 
+                if(typeof(message) == "object" &&
                     Object.prototype.toString.call(message).toLowerCase() == "[object object]" && !message.length){
                     return true;
                 } else {
@@ -230,7 +231,7 @@ if(Meteor.isClient){
             }
 
             var conn_time = new Date().getTime();
-            var onMessageOld = function(topic, message){              
+            var onMessageOld = function(topic, message){
                 var cur_time = new Date().getTime();
                 if (cur_time - conn_time > 3000) {
                     try {
@@ -273,7 +274,7 @@ if(Meteor.isClient){
                 if (isJSON(message)) {
                     var newMessage = {};
                     newMessage.msgId = msgId;
-                    for (var key in message) { // Looping through all values of the old object 
+                    for (var key in message) { // Looping through all values of the old object
                         newMessage[key] = message[key];
                     }
                     message = newMessage;
@@ -362,7 +363,7 @@ if(Meteor.isClient){
                     if(message.is_admin_relay){
                         sendMqttMessage("/msg/l/" + group_id, JSON.stringify(message),callback);
                     }
-                } 
+                }
                 else {
                     sendMqttMessage("/msg/l/" + group_id, message,callback);
                 }

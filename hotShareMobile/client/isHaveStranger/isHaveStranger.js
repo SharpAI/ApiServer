@@ -38,7 +38,7 @@ Template.haveStranger.events({
         var sessionType = Session.get("session_type")
         var toUserId = Session.get("toUser_id")
         var critiaria = { group_id: { $eq: toUserId} };
-        var face_settings = {"face_list" : ["front"], "fuzziness" : "100"};
+        var face_settings = {"face_list" : ["front","human_shape"], "fuzziness" : "100"};
         if (face_settings) {
             critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
         }
@@ -68,9 +68,11 @@ Template.haveStranger.events({
             var uuid = this.uuid
             var id = this._id
             var group_id = this.group_id
+            var imgTs = (new Date(this.createTime)).getTime()
             // imgData = JSON.parse(imgData)
             // var faceId = new Mongo.ObjectID()._str
             Session.set("isMark", true)
+
 
             var call_back_handle = function(name) {
                 if (!name) {
@@ -81,9 +83,9 @@ Template.haveStranger.events({
                 var setNames = [];
                 Meteor.call('get-id-by-name1', uuid, name, group_id, function(err, res) {
                     if (err || !res) {
+
                         return PUB.toast('标注失败，请重试');
                     }
-
                     var faceId = null;
                     if (res && res.faceId) {
                         faceId = res.faceId;
@@ -119,8 +121,8 @@ Template.haveStranger.events({
                             id: faceId, //item.person_id,
                             url: item.url,
                             name: name,
-                            sqlid: item.style,
-                            style: item.sqlid
+                            sqlid: item.sqlid,
+                            style: item.style
                         });
                     });
 
@@ -134,13 +136,15 @@ Template.haveStranger.events({
                         }
 
                         try {
+                            var ts = imgTs ? imgTs : new Date().getTime();
                             var person_info = {
                                 'uuid': uuid,
+                                'person_id': item.faceid,
                                 'name': name,
                                 'group_id': group_id,
                                 'img_url': item.url,
                                 'type': 'face',
-                                'ts': new Date().getTime(),
+                                'ts': ts,
                                 'accuracy': item.accuracy,
                                 'fuzziness': item.fuzziness,
                                 'sqlid': item.sqlid,
@@ -175,7 +179,7 @@ Template.haveStranger.events({
 Template.haveStranger.helpers({
     isHaveStranger: function() {
         var critiaria = { group_id: { $eq: Session.get("toUser_id")} };
-        var face_settings = {"face_list" : ["front"], "fuzziness" : "100"};
+        var face_settings = {"face_list" : ["front","human_shape"], "fuzziness" : "100"};
         if (face_settings) {
             critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
         }
@@ -187,7 +191,7 @@ Template.haveStranger.helpers({
     },
     Stranger_people: function() {
         var critiaria = { group_id: { $eq: Session.get("toUser_id")} };
-        var face_settings = {"face_list" : ["front"], "fuzziness" : "100"};
+        var face_settings = {"face_list" : ["front","human_shape"], "fuzziness" : "100"};
         if (face_settings) {
             critiaria.imgs = {$elemMatch: {style: {$in: face_settings.face_list}, fuzziness: {$gte: parseInt(face_settings.fuzziness)}}};
         }
