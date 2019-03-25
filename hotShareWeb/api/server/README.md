@@ -35,7 +35,7 @@ POST /api/v1/groups/:groupId/faces
   "img_ts":     "1522276708297.0"
 }
 
-curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/xxxxxx/faces
+curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces
 ```
 Example respones:
 ```
@@ -67,7 +67,7 @@ POST /api/v1/groups/:groupId/faces/batch
   ] 
 }
 
-curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/xxxxxx/faces/batch
+curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces/batch
 ```
 Example respones:
 ```
