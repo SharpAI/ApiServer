@@ -1,4 +1,4 @@
-# WorkAi Api
+# App Server API
 ---------
 
 ### 单张标注
@@ -8,7 +8,7 @@ POST /api/v1/groups/:groupId/faces
 | Attribute  | Type | Required | Description |
 |:------------|:------|:----------|:-------------|
 |  uuid       |  string   | yes       | 设备id             |
-|  img_url    |  string   | yes       | 人脸url            |
+|  img_url    |  string   | yes       | 人脸图片url(112*112)            |
 |  name    |  string   | yes       | 标注人名            |
 |  position   |  null     | no       | 设备位置            |
 |  type       | string    | no       | 图片类型 默认：face           |
@@ -35,7 +35,7 @@ POST /api/v1/groups/:groupId/faces
   "img_ts":     "1522276708297.0"
 }
 
-curl -X POST "@data.json" http://workaicdn.tiegushi.com/api/v1/xxxxxx/faces
+curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/xxxxxx/faces
 ```
 Example respones:
 ```
@@ -67,7 +67,7 @@ POST /api/v1/groups/:groupId/faces/batch
   ] 
 }
 
-curl -X POST "@data.json" http://workaicdn.tiegushi.com/api/v1/xxxxxx/faces/batch
+curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/xxxxxx/faces/batch
 ```
 Example respones:
 ```
@@ -87,7 +87,7 @@ GET /api/v1/persons
 |  faceId    |  string   | no       | face id            |
 
 ```
-curl -X GET http://workaicdn.tiegushi.com/api/v1/persons?groupId=xxxxx&name=xxx
+curl -X GET http://testworkai.tiegushi.com/api/v1/persons?groupId=xxxxx&name=xxx
 ```
 Example respones:
 ```
@@ -114,7 +114,7 @@ POST /api/v1/persons/:id
 |  name    |  string   | yes       | 新标注人名  |
 
 ```
-curl -X POST  http://workaicdn.tiegushi.com/api/v1//persons/xxxx -d '{"name":"test2"}'
+curl -X POST  http://testworkai.tiegushi.com/api/v1//persons/xxxx -d '{"name":"test2"}'
 ```
 Example respones:
 ```
@@ -129,7 +129,7 @@ DELETE /api/v1/persons/:id
 ```
 
 ```
-curl -X DELETE http://workaicdn.tiegushi.com/api/v1/persons/xxxx
+curl -X DELETE http://testworkai.tiegushi.com/api/v1/persons/xxxx
 ```
 Example respones:
 ```
@@ -147,7 +147,7 @@ GET /api/v1/devices
 |  groupId    |  string   | yes    | 组ID            |
 
 ```
-curl -X GET http://workaicdn.tiegushi.com/api/v1/devices?groupId=xxxxx
+curl -X GET http://testworkai.tiegushi.com/api/v1/devices?groupId=xxxxx
 ```
 Example respones:
 ```
@@ -171,12 +171,45 @@ DELETE /api/v1/devices/:id
 ```
 
 ```
-curl -X DELETE http://workaicdn.tiegushi.com/api/v1/devices/xxxx
+curl -X DELETE http://testworkai.tiegushi.com/api/v1/devices/xxxx
 ```
 Example respones:
 ```
 {
   "success": true
+}
+```
+
+### 查询组信息
+```
+GET /api/v1/groups
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  groupName    |  string   | yes    | 组名            |
+|  creator    |  string   | yes    | 创建者            |
+
+
+```
+curl -X GET http://testworkai.tiegushi.com/api/v1/groups?groupName=xxxxx&creator=xxxx
+```
+Example respones:
+```
+{
+  "_id": "xxxxxxxxxx",
+  "name": groupName,
+  "icon": "",
+  "describe": "",
+  "create_time": "2019-03-20T06:04:16.569Z",
+  "template": {},
+  "offsetTimeZone": 8,
+  "last_text": "",
+  "last_time": "2019-03-20T06:04:16.569Z",
+  "barcode": "http://testworkai.tiegushi.com/xxxxx",
+  "creator": {
+    "id": "xxxxxxxx",
+    "name": creator
+  }
 }
 ```
 
