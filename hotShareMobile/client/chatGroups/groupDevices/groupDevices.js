@@ -68,33 +68,15 @@ Template.groupDevices.events({
     $('#cameraSettings').modal('show');
   },
   'click .saveCameraSettings': function(e,t){
-    var ip = $('#ipaddr').val();
-    var camusername = $('#camusername').val();
-    var campassword = $('#campassword').val();
-    ip = ip.trim();
-    camusername = camusername.trim();
-    campassword = campassword.trim();
-    if (ip == "") {
-      PUB.toast('摄像头IP不能为空！');
-      return;
-    }
-    if (!isValidateIPaddress(ip)) {
-      PUB.toast('请输入正确的IP地址！');
-      return;
-    }
-    if (camusername == "") {
-      PUB.toast('摄像头用户名不能为空！');
-      return;
-    }
-    if (campassword == "") {
-      PUB.toast('摄像头密码不能为空！');
+    var rtsp = $('#rtspurl').val();
+    rtsp = rtsp.trim();
+    if (rtsp == "") {
+      PUB.toast('摄像头RTSP URL不能为空！');
       return;
     }
 
     var obj = {
-      camip: ip,
-      camusername: camusername,
-      campassword: campassword,
+      camrtspurl: rtspurl,
       uuid: cameraParams.uuid,
       id: cameraParams.id,
       groupId: Router.current().params._id
