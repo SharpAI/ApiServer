@@ -33,7 +33,7 @@ Api.addRoute('devices/:uuid', {
 }, {
   delete: function () {
     try {
-      var uuid = this.queryParams.uuid && this.queryParams.uuid.trim();
+      var uuid = this.urlParams.uuid && this.urlParams.uuid.trim();
 
       if (!uuid) {
         throw new Meteor.Error('error-devices-param-not-provided', 'The parameter "uuid" is required');

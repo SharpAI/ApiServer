@@ -167,7 +167,7 @@ Example respones:
 
 ### 删除设备
 ```
-DELETE /api/v1/devices/:id
+DELETE /api/v1/devices/:uuid
 ```
 
 ```
