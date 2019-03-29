@@ -8,7 +8,7 @@ POST /api/v1/groups/:groupId/faces
 | Attribute  | Type | Required | Description |
 |:------------|:------|:----------|:-------------|
 |  uuid       |  string   | yes       | 设备id             |
-|  img_url    |  string   | yes       | 人脸图片url(112*112)           |
+|  imgUrl    |  string   | yes       | 人脸图片url(112*112)           |
 |  name    |  string   | yes       | 标注人名            |
 |  position   |  null     | no       | 设备位置            |
 |  type       | string    | no       | 图片类型 默认：face           |
@@ -24,7 +24,7 @@ POST /api/v1/groups/:groupId/faces
 创建data.json文件
 {
   "uuid":       "28D6R16C12005885",
-  "img_url":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f",
+  "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f",
   “name”:       "TESTNAME",
   "type":       "face",
   "current_ts": 1522276593387.0,
@@ -53,13 +53,13 @@ POST /api/v1/groups/:groupId/faces/batch
   "create": [
     {
       "uuid":       "28D6R16C12005885",
-      "img_url":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
+      "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
       “name”:       "TESTNAME1",  // 图片1要标注的名字
       ... // 其他参数和单张标注格式相同
     },
     {
       "uuid":       "28D6R16C12005885",
-      "img_url":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c9591", // 图片2
+      "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c9591", // 图片2
       “name”:       "TESTNAME2", // 图片2要标注的名字
       ...
     }
