@@ -9,7 +9,7 @@ function insertFace(params) {
     group_id:   params.groupId,
     img_url:    params.imgUrl,
     position:   params.position,
-    type:       'face',
+    type:       params.type == 'human_shape' ? params.type : 'face',
     current_ts: new Date().getTime(),
     accuracy:   params.accuracy,
     fuzziness:  params.fuzziness,
@@ -21,7 +21,17 @@ function insertFace(params) {
     createdAt:  new Date()
   };
 
-  doc.id = doc.current_ts + doc.uuid;
+  if (!params.name && params.faceId) {
+    doc.id = params.faceId;
+    var person = Person.findOne({faceId: params.faceId});
+    if (!person) {
+      throw new Meteor.Error('error-persons-not-found', 'faceId(' + params.faceId + ') person Not Found');
+    } else {
+      doc.name = person.name;
+    }
+  } else {
+    doc.id = doc.current_ts + doc.uuid;
+  }
 
   var device = Devices.findOne({
     uuid: doc.uuid
@@ -42,7 +52,8 @@ function label(groupId, items, action = '用户API上传标记') {
   PERSON.updateLabelTimes(groupId, items);
 
   _.each(items, function (item) {
-    var person = PERSON.setName(groupId, item.uuid, item.faceId, item.imgUrl, item.name);
+    var isHumanShape = item.type == 'human_shape'; // 其他类型默认识别为face
+    var person = PERSON.setName(groupId, item.uuid, item.faceId, item.imgUrl, item.name, false, isHumanShape);
     var labelInfo = {
       group_id: groupId,
       uuid:     item.uuid,
@@ -51,6 +62,7 @@ function label(groupId, items, action = '用户API上传标记') {
       name:     item.name,
       sqlid:    item.sqlid,
       style:    item.style,
+      type:     item.type,
       action:   action
     };
 
@@ -62,7 +74,7 @@ function label(groupId, items, action = '用户API上传标记') {
       device_id: person.deviceId,
       face_id:   person.faceId,
       drop:      false,
-      img_type:  'face',
+      img_type:  item.type,
     }, labelInfo);
 
     sendMqttMessage('/device/' + groupId, trainsetObj);
@@ -70,13 +82,14 @@ function label(groupId, items, action = '用户API上传标记') {
 }
 
 function checkFaceData(face) {
-  console.log(face);
   var imgUrl = face.imgUrl && face.imgUrl.trim();
   var uuid   = face.uuid && face.uuid.trim();
   var name   = face.name && face.name.trim();
+  var faceId = face.faceId && face.faceId.trim();
+  var type   = face.type && face.type.trim();
 
-  if (!imgUrl || !uuid || !name) {
-    throw new Meteor.Error('error-faces-param-not-provided', 'The parameter "imgUrl" or "uuid" or "name" is required');
+  if (!imgUrl || !uuid || !type || (!name && !faceId)) {
+    throw new Meteor.Error('error-faces-param-not-provided', 'The parameter "imgUrl" or "type" or "uuid" or "name" or "faceId" is required');
   }
 
   if (!Devices.findOne({uuid: uuid})) {
@@ -92,7 +105,8 @@ function checkFaceData(face) {
  * {
  *    "imgurl":     图片地址, (必填)
  *    "uuid":       设备Id (必填)
- *    "name":       标注名称 (必填)
+ *    "faceId":     face Id (和name 至少存在一个)
+ *    "name":       标注名称 (和faceId 至少存在一个)
  *    "position":   位置 (选填)
  *    "type":       类型.默认:face (选填)
  *    "current_ts": 当前时间 毫秒 (选填)
@@ -129,7 +143,8 @@ Api.addRoute('groups/:groupId/faces', {
         imgUrl: face.img_url,
         name: face.name,
         sqlid: face.sqlid,
-        style: face.style
+        style: face.style,
+        type: face.type
       };
 
       // 标注训练
@@ -179,7 +194,6 @@ Api.addRoute('groups/:groupId/faces/batch', {
         checkFaceData(param);
 
         var face = insertFace(param);
-        console.log(face);
         var item = {
           uuid: face.uuid,
           faceId: face.id,

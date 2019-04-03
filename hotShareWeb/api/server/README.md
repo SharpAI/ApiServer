@@ -9,9 +9,10 @@ POST /api/v1/groups/:groupId/faces
 |:------------|:------|:----------|:-------------|
 |  uuid       |  string   | yes       | 设备id             |
 |  imgUrl    |  string   | yes       | 人脸图片url(112*112)           |
-|  name    |  string   | yes       | 标注人名            |
+|  name    |  string   | yes       | 标注人名 (和faceId 至少存在一个)           |
+|  faceId    |  string   | yes       | 标注faceId  (和name 至少存在一个)           |
+|  type       | string    | yes       | 图片类型 face/human_shape    |
 |  position   |  null     | no       | 设备位置            |
-|  type       | string    | no       | 图片类型 默认：face           |
 |  current_ts |  integer    | no       | 当前时间 毫秒   |
 |  accuracy   |  boolean  | no       | 图片精准度            |
 |  fuzziness  | integer   | no       | 图片模糊度            |
@@ -26,6 +27,7 @@ POST /api/v1/groups/:groupId/faces
   "uuid":       "28D6R16C12005885",
   "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f",
   “name”:       "TESTNAME",
+  // "faceId":     "xxxx", 使用name或者faceId标注
   "type":       "face",
   "current_ts": 1522276593387.0,
   "accuracy":   1,
