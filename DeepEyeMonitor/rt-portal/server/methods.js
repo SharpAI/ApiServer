@@ -747,6 +747,11 @@ Meteor.methods({
         return;
       }
       BoxVersion.update({}, {$set: res}, {upsert: true});
+    },
+    setDeviceParamConfigs: function(config) {
+      var clientId = config.paramConfigs.clientId;
+      console.log('setDeviceParamConfigs, params: ' + JSON.stringify(config));
+      peerCollection.update({clientID: clientId}, {$set: config});
     }
 });
 //
