@@ -762,12 +762,12 @@ Template.boxMonitorsAlive.events({
 
     var peer = peerCollection.findOne({clientID: t.curClientId});
     if (peer && peer.paramConfigs) {
-      $('#blurythreshold').val(peer.paramConfigs.blury_threshold);
+      $('#blurythreshold').val(peer.paramConfigs.blury_threhold);
       $('#score1').val(peer.paramConfigs.score_1);
       $('#score2').val(peer.paramConfigs.score_2);
       $('#fuzziness1').val(peer.paramConfigs.fuzziness_1);
       $('#fuzziness2').val(peer.paramConfigs.fuzziness_2);
-      $('#update_interval').val(peer.paramConfigs.update_interval);
+      $('#update_interval').val(peer.paramConfigs._interval);
     }
     else {
       $('#blurythreshold').val('');

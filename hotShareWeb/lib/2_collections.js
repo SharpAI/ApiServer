@@ -41,8 +41,6 @@ People = new Meteor.Collection('people');
 PeopleHis = new Meteor.Collection('peopleHis');
 Devices = new Meteor.Collection('devices');
 
-Peer = new Meteor.Collection('peer');
-
 Person = new Meteor.Collection('person');
 PersonNames = new Meteor.Collection('personNames');
 ClusterPerson = new Meteor.Collection('clusterPerson');
@@ -595,12 +593,6 @@ if(Meteor.isServer){
          Meteor.users.find({username: uuid})
      ];
  });
- Meteor.publish('peers-by-uuid',function(uuid){
-    if(!this.userId || !uuid){
-        return this.ready();
-    }
-    return Peer.find({clientID: uuid});
-});
  Meteor.publish('commands', function (client_id){
      return Commands.find({client_id:client_id,done : false},{limit: 5,sort:{createdAt:1}});
  });
