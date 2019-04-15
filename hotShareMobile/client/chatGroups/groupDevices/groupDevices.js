@@ -76,7 +76,7 @@ Template.groupDevices.events({
     }
 
     var obj = {
-      camrtspurl: rtspurl,
+      camrtspurl: rtsp,
       uuid: cameraParams.uuid,
       id: cameraParams.id,
       groupId: Router.current().params._id
