@@ -1,6 +1,51 @@
 # App Server API
 ---------
 
+### Auth login
+
+```
+POST /api/v1/login
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  username       |  string   | yes       | 用户名             |
+|  password    |  string   | yes       | 密码          |
+
+```
+curl -X POST http://testworkai.tiegushi.com/api/v1/login/ -d "username=test&password=password"
+```
+Example respones:
+
+```
+{
+  "status": "success",
+  "data":{
+    "authToken": "qpmW0Vx4RFudmSqjGz0Idqj169pcHNqthQW--3LMtLi",
+    "userId": "rzMssYa8LAN7iuMe"
+  }
+}
+```
+### Auth logout
+
+```
+POST /api/v1/logout
+```
+```
+// X-Auth-Token & X-User-Id 可从login api 获取
+curl -X POST -H "X-Auth-Token: qpmW0Vx4RFudmSqjGz0Idqj169pcHNqthQW--3LMtLi" -H "X-User-Id: rzMssYa8LAN7iuMe" http://testworkai.tiegushi.com/api/v1/logout
+```
+Example respones:
+
+```
+{
+  "status": "success",
+  "data": {
+    "message": "You've been logged out!"
+  }
+}
+```
+
+
 ### 单张标注
 ```
 POST /api/v1/groups/:groupId/faces
@@ -214,6 +259,93 @@ Example respones:
   }
 }
 ```
+
+### 创建组(需要鉴权)
+```
+POST /api/groups
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  name    |  string   | yes    | 组名            |
+
+```
+// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
+curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" http://testworkai.tiegushi.com/api/v1/groups -d "name=test groupName"
+```
+Example respones:
+```
+{
+  "groupId": "8b129fc47a3fa97cbd6f7837"
+}
+```
+
+### 加入组
+```
+POST /api/groups/:groupId/users
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  userId    |  string   | yes    | userId          |
+```
+curl -X POST  http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837/users -d "userId=ejxqmx3PDK8yo88F"
+```
+
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### 显示组内被标注的成员信息
+```
+GET /api/groups/:groupId/person
+```
+```
+curl -X GET  http://testworkai.tiegushi.com/api/v1/groups/9933aa9c429695857e9d52dd/person 
+```
+
+Example respones:
+```
+[
+  {
+    "_id": "71f3fd7f055e5aa01bc29fcd",
+    "group_id": "9933aa9c429695857e9d52dd",
+    "faceId": "12967",
+    "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04",
+    "name": "A",
+    "faces": [
+      {
+        "id": "12967",
+        "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04"
+      }
+    ]
+  },
+  ...
+]
+```
+
+### 添加盒子(需鉴权)
+```
+POST /groups/:groupId/devices
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  uuid    |  string   | yes    | 盒子uuid          |
+|  deviceName    |  string   | yes    | 盒子名称          |
+|  type    |  string   | yes    | 盒子type ("in" or "out")    |
+
+```
+// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
+curl -X POST -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837/devices -d '{"uuid": "123456", "deviceName": "test", "type": "in"}'
+```
+Example respones:
+```
+{
+  "success": true
+}
+```
+
 
 
 

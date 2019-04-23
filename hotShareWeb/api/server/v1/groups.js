@@ -218,22 +218,165 @@ Api.addRoute('groups/:groupId/faces/batch', {
 });
 
 Api.addRoute('groups', {
-  authRequired: false
+  authRequired: true
 }, {
-  get: function () {
+  get: {
+    authRequired: false,
+    action: function () {
+      try {
+        var params    = this.queryParams;
+        var groupName = params.groupName && params.groupName.trim();
+        var creator   = params.creator&& params.creator.trim();
+  
+        if (!groupName || !creator) {
+          throw new Meteor.Error('error-groups-param-not-provided', 'The parameter "groupName" or "creator" is required');
+        }
+  
+        var group = SimpleChat.Groups.findOne({name: groupName, 'creator.name': creator});
+        return group || api.success({ result: '未找到对应结果' });
+      } catch (e) {
+        return api.failure(e.message, e.error);
+      }
+    }
+  },
+  post: function () {
     try {
-      var params    = this.queryParams;
-      var groupName = params.groupName && params.groupName.trim();
-      var creator   = params.creator&& params.creator.trim();
-
-      if (!groupName || !creator) {
-        throw new Meteor.Error('error-groups-param-not-provided', 'The parameter "groupName" or "creator" is required');
+      var params = this.bodyParams;
+      
+      var name = params.name && params.name.trim();
+      if (!name) {
+        throw new Meteor.Error('error-groups-param-not-provided', 'The parameter "name" is required');
       }
 
-      var group = SimpleChat.Groups.findOne({name: groupName, 'creator.name': creator});
-      return group || api.success({ result: '未找到对应结果' });
+      if (SimpleChat.Groups.findOne({name: name, 'creator.id': this.userId})) {
+        throw new Meteor.Error('error-groups-already-existed', 'Group has already existed!');
+      }
+
+      var id = new Mongo.ObjectID()._str;
+      var user = this.user;
+      SimpleChat.Groups.insert({
+        _id: id,
+        name: name,
+        icon: '',
+        describe: '',
+        create_time: new Date(),
+        template: null,
+        offsetTimeZone: (new Date().getTimezoneOffset())/-60,
+        last_text: '',
+        last_time: new Date(),
+        barcode: rest_api_url + '/restapi/workai-group-qrcode?group_id=' + id,
+        //建群的人
+        creator:{
+          id: user._id,
+          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username
+        }
+      }, function (err, result) {
+        if(err) {
+          throw new Meteor.Error('error-groups-created-error', 'created failed!');
+        }
+        
+        SimpleChat.GroupUsers.insert({
+          group_id: id,
+          group_name: name,
+          group_icon: '',
+          user_id: user._id,
+          user_name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          user_icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+          create_time: new Date()
+        });
+      });
+      
+      return {groupId: id};
     } catch (e) {
       return api.failure(e.message, e.error);
     }
   }
 });
+
+Api.addRoute('groups/:groupId/users', {
+  authRequired: false
+}, {
+  post: function() {
+    try {
+      var userId = this.bodyParams.userId && this.bodyParams.userId.trim();
+
+      if (!userId) {
+        throw new Meteor.Error('error-groups-users-param-not-provided', 'The parameter "userId" is required');
+      }
+
+      var group = SimpleChat.Groups.findOne(this.urlParams.groupId);
+      if (!group) {
+        throw new Meteor.Error('error-group-not-existed', 'Group(' + this.urlParams.groupId + ') do not exist!');
+      }
+
+      var user = Meteor.users.findOne(userId);
+      if (!user) {
+        throw new Meteor.Error('error-user-not-existed', 'User(' + userId + ') do not exist!');
+      }
+
+      var groupUser = SimpleChat.GroupUsers.findOne({group_id: group._id, user_id: user._id});
+      if (groupUser) {
+        throw new Meteor.Error('error-group-user-already-existed', 'GroupUsers has already existed!');
+      }
+
+      SimpleChat.GroupUsers.insert({
+        group_id: group._id,
+        group_name: group.name,
+        group_icon: '',
+        user_id: user._id,
+        user_name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+        user_icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+        create_time: new Date()
+      });
+
+      return api.success();
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  }
+});
+
+Api.addRoute('groups/:groupId/person', {
+  authRequired: false
+}, {
+  get: function() {
+    try {
+      var groupId = this.urlParams.groupId && this.urlParams.groupId.trim();
+      
+      var group = SimpleChat.Groups.findOne(groupId);
+      if (!group) {
+        throw new Meteor.Error('error-group-not-existed', 'Group(' + groupId + ') do not exist!');
+      }
+
+      return Person.find({group_id: groupId}, {fields: {group_id: 1, name: 1, url: 1, faceId: 1, faces: 1}}).fetch();
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  }
+});
+
+Api.addRoute('groups/:groupId/devices', {
+  authRequired: true
+}, {
+  post: function() {
+    try {
+      var groupId = this.urlParams.groupId && this.urlParams.groupId.trim();
+      var bodyParams = this.bodyParams;
+
+      var uuid = bodyParams.uuid && bodyParams.uuid.trim();
+      var deviceName = bodyParams.deviceName && bodyParams.deviceName.trim();
+      var type = bodyParams.type && bodyParams.type.trim();
+
+      if (!uuid || !deviceName || !type) {
+        throw new Meteor.Error('error-groups-devices-param-not-provided', 'The parameter "uuid" and "deviceName" and "type" is required');
+      }
+
+      Meteor.call('join-group', uuid, groupId, deviceName, type);
+
+      return api.success();
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  }
+})
+

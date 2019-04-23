@@ -61,9 +61,18 @@ function retrain(groupId) {
 }
 
 var ApiV1 = new Restivus({
+  defaultHeaders: {
+    'Content-Type': 'application/json'
+  },
+  onLoggedIn: function () {
+    console.log(this.user.username + ' (' + this.userId + ') logged in');
+  },
+  onLoggedOut: function () {
+    console.log(this.user.username + ' (' + this.userId + ') logged out');
+  },
+  prettyJson: true,
   useDefaultAuth: true,
-  version: 'v1',
-  prettyJson: true
+  version: 'v1'
 });
 
 module.exports = {

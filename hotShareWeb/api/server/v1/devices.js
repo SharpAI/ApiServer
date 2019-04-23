@@ -3,33 +3,40 @@ var api = require('../api.js');
 var Api = api.ApiV1;
 
 Api.addRoute('devices', {
-  authRequired: false
+  authRequired: true
 }, {
-  get: function () {
-    try {
-      var groupId = this.queryParams.groupId && this.queryParams.groupId.trim();
-
-      if (!groupId) {
-        throw new Meteor.Error('error-devices-param-not-provided', 'The parameter "groupId" is required');
-      }
-
-      var devices = Devices.find({
-        groupId: groupId
-      }, {
-        fields: {
-          _id: 0
+  get: {
+    authRequired: false,
+    action: function () {
+      try {
+        var groupId = this.queryParams.groupId && this.queryParams.groupId.trim();
+  
+        if (!groupId) {
+          throw new Meteor.Error('error-devices-param-not-provided', 'The parameter "groupId" is required');
         }
-      }).fetch();
 
-      return _.isEmpty(devices) ? api.success({ result: '未找到结果' }) : devices;
-    } catch (e) {
-      return api.failure(e.message, e.error);
+        if (!SimpleChat.Groups.findOne(groupId)) {
+          throw new Meteor.Error('error-group-not-existed', 'Group(' + groupId + ') do not exist!');
+        }
+  
+        var devices = Devices.find({
+          groupId: groupId
+        }, {
+          fields: {
+            _id: 0
+          }
+        }).fetch();
+  
+        return _.isEmpty(devices) ? api.success({ result: '未找到结果' }) : devices;
+      } catch (e) {
+        return api.failure(e.message, e.error);
+      }
     }
   }
 });
 
 Api.addRoute('devices/:uuid', {
-  authRequired: false
+  authRequired: true
 }, {
   delete: function () {
     try {
