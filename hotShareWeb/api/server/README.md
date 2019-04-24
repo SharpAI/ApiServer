@@ -1,7 +1,7 @@
 # App Server API
 ---------
 
-### Auth login
+### Auth login（鉴权）
 
 ```
 POST /api/v1/login
