@@ -18,7 +18,7 @@ Example respones:
 
 ```
 {
-  "status": "success",
+  "status": "success", // 登录成功
   "data":{
     "authToken": "qpmW0Vx4RFudmSqjGz0Idqj169pcHNqthQW--3LMtLi",
     "userId": "rzMssYa8LAN7iuMe"
@@ -38,7 +38,7 @@ Example respones:
 
 ```
 {
-  "status": "success",
+  "status": "success",  // 登出成功
   "data": {
     "message": "You've been logged out!"
   }
@@ -140,14 +140,14 @@ Example respones:
 ```
 [
   {
-    "_id": "02db41813a9513816357444b",
-    "group_id": "xxx",
-    "faceId": "xxxxxxxxxx",
-    "url": "http://workaiossqn.tiegushi.com/8a89f902-32d8-11e8-8756-a4caa09c959f",
-    "name": "APITEST1",
-    "label_times": 2,
-    "createAt": "2019-03-20T08:33:07.899Z",
-    "updateAt": "2019-03-20T08:33:11.835Z"
+    "_id": "02db41813a9513816357444b", 
+    "group_id": "xxx", // 组id
+    "faceId": "xxxxxxxxxx", // 人脸id
+    "url": "http://workaiossqn.tiegushi.com/8a89f902-32d8-11e8-8756-a4caa09c959f", // 人脸的url
+    "name": "APITEST1",  // 标记的人名
+    "label_times": 2, // 标记次数
+    "createAt": "2019-03-20T08:33:07.899Z",  // 创建时间
+    "updateAt": "2019-03-20T08:33:11.835Z"  // 更新时间
   }
 ]
 ```
@@ -200,14 +200,14 @@ Example respones:
 ```
 [
   {
-    "uuid": "xxxx",
-    "name": "xxxx",
-    "in_out": "inout",
-    "groupId": "xxxxxxx",
-    "createAt": "2019-02-22T03:23:35.904Z",
-    "camera_run": false,
-    "islatest": false,
-    "online": true
+    "uuid": "xxxx", // 设备id
+    "name": "xxxx", // 标记人名
+    "in_out": "inout", // 设备进出类型
+    "groupId": "xxxxxxx", // 组id
+    "createAt": "2019-02-22T03:23:35.904Z",  // 创建时间
+    "camera_run": false, // 摄像头在线状态
+    "islatest": false, // 是否升级
+    "online": true  // 设备在线状态
   }
 ]
 ```
@@ -223,7 +223,7 @@ curl -X DELETE http://testworkai.tiegushi.com/api/v1/devices/xxxx
 Example respones:
 ```
 {
-  "success": true
+  "success": true  // 设备成功删除
 }
 ```
 
@@ -244,18 +244,18 @@ Example respones:
 ```
 {
   "_id": "xxxxxxxxxx",
-  "name": groupName,
-  "icon": "",
+  "name": groupName, // 组名
+  "icon": "",  
   "describe": "",
-  "create_time": "2019-03-20T06:04:16.569Z",
+  "create_time": "2019-03-20T06:04:16.569Z",  // 创建时间
   "template": {},
   "offsetTimeZone": 8,
   "last_text": "",
   "last_time": "2019-03-20T06:04:16.569Z",
-  "barcode": "http://testworkai.tiegushi.com/xxxxx",
+  "barcode": "http://testworkai.tiegushi.com/xxxxx",  // 组二维码
   "creator": {
-    "id": "xxxxxxxx",
-    "name": creator
+    "id": "xxxxxxxx", // 创建者id
+    "name": creator  // 创建者名字
   }
 }
 ```
@@ -275,7 +275,7 @@ curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "
 Example respones:
 ```
 {
-  "groupId": "8b129fc47a3fa97cbd6f7837"
+  "groupId": "8b129fc47a3fa97cbd6f7837"   // 组id
 }
 ```
 
@@ -310,14 +310,14 @@ Example respones:
 [
   {
     "_id": "71f3fd7f055e5aa01bc29fcd",
-    "group_id": "9933aa9c429695857e9d52dd",
-    "faceId": "12967",
-    "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04",
-    "name": "A",
+    "group_id": "9933aa9c429695857e9d52dd", // 组id
+    "faceId": "12967", // 人脸id
+    "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04",// 人脸图片url
+    "name": "A", // 被标记的人名
     "faces": [
       {
-        "id": "12967",
-        "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04"
+        "id": "12967", // 人脸图片id
+        "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04" // 人脸图片url
       }
     ]
   },
@@ -342,7 +342,7 @@ curl -X POST -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "
 Example respones:
 ```
 {
-  "success": true
+  "success": true 
 }
 ```
 
