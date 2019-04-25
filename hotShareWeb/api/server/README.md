@@ -270,7 +270,7 @@ POST /api/groups
 
 ```
 // X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
-curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" http://testworkai.tiegushi.com/api/v1/groups -d "name=test groupName"
+curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" http://testworkai.tiegushi.com/api/v1/groups -d "name=xxx"
 ```
 Example respones:
 ```
