@@ -342,6 +342,11 @@ PERSON = {
     personInfo.in_out = groupDevice.in_out;
     Activity.insert(personInfo);
 
+    /* update workStatus status according to a Activity*/
+    var ws = WorkStatus.findOne({group_id: groupDevice.groupId, 'person_id.id': personInfo.id}, {sort: {date: -1}});
+    if (ws) {
+      WorkStatus.update({_id: ws._id}, {$set: {status: personInfo.in_out}});
+    }
     /*var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
     personInfo.fromWorkai = true;
     HTTP.call('POST', ai_system_url, {
