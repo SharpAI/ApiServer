@@ -380,11 +380,11 @@ if Meteor.isServer
               waitReadCount = 1
               Meteor.users.update({_id: toUserId}, {$set: {'profile.waitReadCount': waitReadCount}});
           #console.log  'waitReadCount>>>>>>>'+waitReadCount
-          pushServer.sendIOS 'me', token , '', content, waitReadCount
+          @pushServer.sendIOS 'me', token , '', content, waitReadCount
         else if pushToken.type is 'GCM'
           #console.log 'Server PN to GCM '
           token = pushToken.token
-          pushServer.sendAndroid 'me', token , '',content, 1
+          @pushServer.sendAndroid 'me', token , '',content, 1
       catch err
         console.log("Exception in pushnotification: err="+err);
 
@@ -473,10 +473,10 @@ if Meteor.isServer
                       token = pushToken.token
                       if token is "2e8da18650ffb952823a6690c6257a877d5b6338932b77fbe7031435e4404a60"
                           return
-                      pushServer.sendIOS 'me', token , '', content
+                      @pushServer.sendIOS 'me', token , '', content
                     else if pushToken.type is 'GCM'
                       console.log 'Server PN to GCM '
                       token = pushToken.token
-                      pushServer.sendAndroid 'me', token , '',content, 1
+                      @pushServer.sendAndroid 'me', token , '',content, 1
             )
     ).run()

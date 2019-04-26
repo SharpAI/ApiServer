@@ -22,3 +22,4 @@ if Meteor.isServer
 
     pushServer.initFeedback()
     root.pushServer = pushServer
+    @pushServer = pushServer
