@@ -45,6 +45,14 @@ Api.addRoute('persons', {
 Api.addRoute('persons/:id', {
   authRequired: false
 }, {
+  get: function() {
+    try {
+      var id = this.urlParams.id && this.urlParams.id.trim();
+      return Person.findOne(id, {fields: {group_id: 1, name: 1, url: 1, faceId: 1}});
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  },
   post: function () {
     try {
       var id = this.urlParams.id && this.urlParams.id.trim();

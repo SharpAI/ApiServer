@@ -152,6 +152,24 @@ Example respones:
 ]
 ```
 
+### show person
+```
+GET api/v1/persons/:id
+```
+```
+curl -X GET http://testworkai.tiegushi.com/api/v1/persons/4d18827a8e888af5e2631821
+```
+Example respones:
+```
+{
+  "_id": "4d18827a8e888af5e2631821",
+  "group_id": "816291518ef7a551be6c9223",
+  "faceId": "de357f6497bce902e48ec9be",
+  "url": "http://cdn.workaioss.tiegushi.com/3032dc7e-6b23-11e9-a278-78c2c0981ed1",
+  "name": "眼镜1"
+}
+```
+
 ### person重命名
 ```
 POST /api/v1/persons/:id
