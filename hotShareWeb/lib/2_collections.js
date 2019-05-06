@@ -406,7 +406,15 @@ if(Meteor.isServer){
     return Person.find({group_id: group_id},{limit: limit,sort:{name: 1}});
   });
 
-  Meteor.publish('group_cluster_person', function(group_id, limit){
+  // 发布 group 已经标注的person 信息
+  Meteor.publish('group_person_info', function(group_id){
+    if(!this.userId || !group_id){
+      return this.ready();
+    }
+    return Person.find({group_id: group_id},{fields:{
+      faceId:1,name:1,group_id:1,_id:1,url:1}});
+  });
+  Meteor.publish('group_cluster_person', function(group_id){
     if(!this.userId || !group_id){
       return this.ready();
     }
@@ -849,6 +857,11 @@ if(Meteor.isServer){
     }
   });
 
+  Meteor.publish('aiMessages.group.unread', function(groupId) {
+    console.log('aiMessages.group.unread',groupId);
+    return AiMessages.find({ groupId:groupId,isRead:false },{sort:{createdAt:-1}});
+  });
+
   LogonIPLogs.allow({
       insert: function (userId, doc) {
           return doc.userId === userId;
@@ -945,9 +958,9 @@ if(Meteor.isClient){
           Meteor.subscribe('versions');
       });
    //To prevent method not defined exception.
-   window.refreshMainDataSource = function(){		
-       //Meteor.subscribe('waitreadcount');		
+   window.refreshMainDataSource = function(){
+       //Meteor.subscribe('waitreadcount');
    };
-	  
+
   }
 }
