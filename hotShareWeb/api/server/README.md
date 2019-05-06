@@ -364,6 +364,32 @@ Example respones:
 }
 ```
 
+### 查询AI Message
+```
+GET /api/v1/ai-messages
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  personId    |  string   | yes    | personID            |
+|  isRead    |  Boolean   | no       | 是否已读default: false  (true or false）            |
+
+```
+curl -X GET http://testworkai.tiegushi.com/api/v1/ai-messages?personId=xxxxx
+```
+Example respones:
+```
+[
+  {
+    "_id": "tSMCXWE5vEEAnAuns",
+    "msg": "10点开会",
+    "personId": "99ab5706859a9cce7070db9e",
+    "groupId": "a5119193a661db15fc425f6c",
+    "isRead": false,
+    "createdAt": "2019-05-06T10:32:05.506Z"
+  }
+]
+```
+
 
 
 

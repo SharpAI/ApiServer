@@ -44,6 +44,7 @@ Devices = new Meteor.Collection('devices');
 Person = new Meteor.Collection('person');
 PersonNames = new Meteor.Collection('personNames');
 ClusterPerson = new Meteor.Collection('clusterPerson');
+AiMessages = new Meteor.Collection('ai_messages');
 /*Person = {
   id: <Integer>,
   uuid: <Integer>,
