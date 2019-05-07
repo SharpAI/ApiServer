@@ -1,7 +1,57 @@
 # App Server API
----------
 
-### Auth login（鉴权）
+
+## 目录
+
+- [注册账号](#注册账号)
+- [鉴权](#鉴权)
+- [鉴权退出](#鉴权退出)
+- [Person](#person)
+  - [查询persons](#查询persons)
+  - [获取person](#获取person)
+  - [重命名person](#重命名person)
+  - [删除person](#删除person)
+  - [删除被标注person的照片](#删除被标注人的照片)
+- [设备](#设备)
+  - [查询设备](#查询设备)
+  - [删除设备](#删除设备)
+- [Group](#group)
+  - [查询组](#查询组)
+  - [创建组](#创建组)
+  - [重命名组](#重命名组)
+  - [删除组](#删除组)
+  - [组的成员信息](#组的成员信息)
+  - [组加人](#组加人)
+  - [组加设备](#组加设备)
+  - [单张标注](#单张标注)
+  - [批量标注](#批量标注)
+- [AI Messages](#ai-message)
+  - [查询Messages](#查询messages)
+
+---------
+### 注册账号
+```
+POST /api/v1/sign-up
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  username       |  string   | yes       | 用户名             |
+|  email       |  string   | yes       | 用户名             |
+|  password    |  string   | yes       | 密码 len > 6         |
+
+```
+curl -X POST -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/sign-up -d '{"username": "test11", "email": "xxxx@xxx.xx", "password": "xxxxxx"}'
+```
+Example respones:
+
+```
+{
+  "success": true
+}
+```
+
+
+### 鉴权
 
 ```
 POST /api/v1/login
@@ -25,7 +75,7 @@ Example respones:
   }
 }
 ```
-### Auth logout
+### 鉴权退出
 
 ```
 POST /api/v1/logout
@@ -46,8 +96,334 @@ Example respones:
 ```
 
 
+### Person
+### 查询persons
+```
+GET /api/v1/persons
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  groupId    |  string   | yes    | 组ID            |
+|  name    |  string   | yes       | 人名            |
+|  faceId    |  string   | no       | face id            |
+
+```
+curl -X GET http://testworkai.tiegushi.com/api/v1/persons?groupId=xxxxx&name=xxx
+```
+Example respones:
+```
+[
+  {
+    "_id": "02db41813a9513816357444b", 
+    "group_id": "xxx", // 组id
+    "faceId": "xxxxxxxxxx", // 人脸id
+    "url": "http://workaiossqn.tiegushi.com/8a89f902-32d8-11e8-8756-a4caa09c959f", // 人脸的url
+    "name": "APITEST1",  // 标记的人名
+    "label_times": 2, // 标记次数
+    "createAt": "2019-03-20T08:33:07.899Z",  // 创建时间
+    "updateAt": "2019-03-20T08:33:11.835Z"  // 更新时间
+  }
+]
+```
+
+### 获取person
+```
+GET api/v1/persons/:id
+```
+```
+curl -X GET http://testworkai.tiegushi.com/api/v1/persons/4d18827a8e888af5e2631821
+```
+Example respones:
+```
+{
+  "_id": "4d18827a8e888af5e2631821",
+  "group_id": "816291518ef7a551be6c9223",
+  "faceId": "de357f6497bce902e48ec9be",
+  "url": "http://cdn.workaioss.tiegushi.com/3032dc7e-6b23-11e9-a278-78c2c0981ed1",
+  "name": "眼镜1"
+}
+```
+
+### 重命名person
+```
+// 需鉴权
+PATCH /api/v1/persons/:id
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  name    |  string   | yes       | 新标注人名  |
+
+```
+curl -X PATCH -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json"  http://testworkai.tiegushi.com/api/v1//persons/xxxx -d '{"name":"test2"}'
+```
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### 删除person
+```
+// 需鉴权
+DELETE /api/v1/persons/:id
+```
+
+```
+curl -X DELETE -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/persons/xxxx
+```
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### 删除被标注人的照片
+```
+// 需鉴权
+PUT /api/v1/persons/:personId/faces/deletion
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  faces    |  Array(object)   | yes       | 要删除照片对象  { faces: [ {id: faceId, url: faceUrl}, ...] }  |
+
+```
+创建data.json文件
+{
+  "faces": [
+    {
+      "id":     "28D6R16C12005885",   // faceId
+      "url":    "http://workaiossqn.tiegushi.co/d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
+ 
+    },
+    {
+      "id":       "28D6R16C12005885",
+      "url":    "http://workaiossqn.tiegushi.co/d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
+    },
+    ......
+  ]
+}
+
+curl -X PUT "@data.json"  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/persons/xxxxxx/faces/deletion
+```
+Example respones:
+```
+{
+  "success": true
+}
+```
+### 设备
+### 查询设备
+```
+GET /api/v1/devices
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  groupId    |  string   | yes    | 组ID            |
+
+```
+curl -X GET http://testworkai.tiegushi.com/api/v1/devices?groupId=xxxxx
+```
+Example respones:
+```
+[
+  {
+    "uuid": "xxxx", // 设备id
+    "name": "xxxx", // 标记人名
+    "in_out": "inout", // 设备进出类型
+    "groupId": "xxxxxxx", // 组id
+    "createAt": "2019-02-22T03:23:35.904Z",  // 创建时间
+    "camera_run": false, // 摄像头在线状态
+    "islatest": false, // 是否升级
+    "online": true  // 设备在线状态
+  }
+]
+```
+
+### 删除设备
+```
+// 需鉴权
+DELETE /api/v1/devices/:uuid
+```
+
+```
+curl -X DELETE  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/devices/xxxx
+```
+Example respones:
+```
+{
+  "success": true  // 设备成功删除
+}
+```
+### Group
+### 查询组
+```
+GET /api/v1/groups
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  groupName    |  string   | yes    | 组名            |
+|  creator    |  string   | yes    | 创建者            |
+
+
+```
+curl -X GET http://testworkai.tiegushi.com/api/v1/groups?groupName=xxxxx&creator=xxxx
+```
+Example respones:
+```
+{
+  "_id": "xxxxxxxxxx",
+  "name": groupName, // 组名
+  "icon": "",  
+  "describe": "",
+  "create_time": "2019-03-20T06:04:16.569Z",  // 创建时间
+  "template": {},
+  "offsetTimeZone": 8,
+  "last_text": "",
+  "last_time": "2019-03-20T06:04:16.569Z",
+  "barcode": "http://testworkai.tiegushi.com/xxxxx",  // 组二维码
+  "creator": {
+    "id": "xxxxxxxx", // 创建者id
+    "name": creator  // 创建者名字
+  }
+}
+```
+
+### 创建组
+```
+// 需鉴权
+POST /api/v1/groups
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  name    |  string   | yes    | 组名            |
+
+```
+// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
+curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups -d "name=xxx"
+```
+Example respones:
+```
+{
+  "groupId": "8b129fc47a3fa97cbd6f7837"   // 组id
+}
+```
+
+### 重命名组
+```
+// 需鉴权
+PATCH /api/v1/groups/:id
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  name    |  string   | yes    | 组新名称          |
+```
+// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
+
+curl -X PATCH  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837 -d '{"name":"test2"}'
+```
+
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### 删除组
+```
+// 需鉴权
+DELETE /api/v1/groups/:id
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  name    |  string   | yes    | 组新名称          |
+```
+// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
+
+curl -X DELETE  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837
+```
+
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### 组的成员信息
+```
+GET /api/v1/groups/:groupId/person
+```
+```
+curl -X GET  http://testworkai.tiegushi.com/api/v1/groups/9933aa9c429695857e9d52dd/person 
+```
+
+Example respones:
+```
+[
+  {
+    "_id": "71f3fd7f055e5aa01bc29fcd",
+    "group_id": "9933aa9c429695857e9d52dd", // 组id
+    "faceId": "12967", // 人脸id
+    "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04",// 人脸图片url
+    "name": "A", // 被标记的人名
+    "faces": [
+      {
+        "id": "12967", // 人脸图片id
+        "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04" // 人脸图片url
+      }
+    ]
+  },
+  ...
+]
+```
+
+### 组加人
+```
+// 需鉴权
+POST /api/v1/groups/:groupId/users
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  userId    |  string   | yes    | userId          |
+```
+curl -X POST  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837/users -d "userId=ejxqmx3PDK8yo88F"
+```
+
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### 组加设备
+```
+// 需鉴权
+POST /api/v1/groups/:groupId/devices
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  uuid    |  string   | yes    | 盒子uuid          |
+|  deviceName    |  string   | yes    | 盒子名称          |
+|  type    |  string   | yes    | 盒子type ("in" or "out")    |
+
+```
+// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
+curl -X POST -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837/devices -d '{"uuid": "123456", "deviceName": "test", "type": "in"}'
+```
+Example respones:
+```
+{
+  "success": true 
+}
+```
+
 ### 单张标注
 ```
+//需要鉴权
 POST /api/v1/groups/:groupId/faces
 ```
 | Attribute  | Type | Required | Description |
@@ -82,7 +458,7 @@ POST /api/v1/groups/:groupId/faces
   "img_ts":     "1522276708297.0"
 }
 
-curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces
+curl -X POST "@data.json"  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces
 ```
 Example respones:
 ```
@@ -90,8 +466,9 @@ Example respones:
   "success": true
 }
 ```
-### 多张批量标注
+### 批量标注
 ```
+//需要鉴权
 POST /api/v1/groups/:groupId/faces/batch
 ```
 ```
@@ -114,7 +491,7 @@ POST /api/v1/groups/:groupId/faces/batch
   ] 
 }
 
-curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces/batch
+curl -X POST "@data.json"  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces/batch
 ```
 Example respones:
 ```
@@ -122,249 +499,8 @@ Example respones:
   "success": true
 }
 ```
-
-### 查询person
-```
-GET /api/v1/persons
-```
-| Attribute  | Type | Required | Description |
-|:------------|:------|:----------|:-------------|
-|  groupId    |  string   | yes    | 组ID            |
-|  name    |  string   | yes       | 人名            |
-|  faceId    |  string   | no       | face id            |
-
-```
-curl -X GET http://testworkai.tiegushi.com/api/v1/persons?groupId=xxxxx&name=xxx
-```
-Example respones:
-```
-[
-  {
-    "_id": "02db41813a9513816357444b", 
-    "group_id": "xxx", // 组id
-    "faceId": "xxxxxxxxxx", // 人脸id
-    "url": "http://workaiossqn.tiegushi.com/8a89f902-32d8-11e8-8756-a4caa09c959f", // 人脸的url
-    "name": "APITEST1",  // 标记的人名
-    "label_times": 2, // 标记次数
-    "createAt": "2019-03-20T08:33:07.899Z",  // 创建时间
-    "updateAt": "2019-03-20T08:33:11.835Z"  // 更新时间
-  }
-]
-```
-
-### show person
-```
-GET api/v1/persons/:id
-```
-```
-curl -X GET http://testworkai.tiegushi.com/api/v1/persons/4d18827a8e888af5e2631821
-```
-Example respones:
-```
-{
-  "_id": "4d18827a8e888af5e2631821",
-  "group_id": "816291518ef7a551be6c9223",
-  "faceId": "de357f6497bce902e48ec9be",
-  "url": "http://cdn.workaioss.tiegushi.com/3032dc7e-6b23-11e9-a278-78c2c0981ed1",
-  "name": "眼镜1"
-}
-```
-
-### person重命名
-```
-POST /api/v1/persons/:id
-```
-| Attribute  | Type | Required | Description |
-|:------------|:------|:----------|:-------------|
-|  name    |  string   | yes       | 新标注人名  |
-
-```
-curl -X POST  http://testworkai.tiegushi.com/api/v1//persons/xxxx -d '{"name":"test2"}'
-```
-Example respones:
-```
-{
-  "success": true
-}
-```
-
-### 删除person
-```
-DELETE /api/v1/persons/:id
-```
-
-```
-curl -X DELETE http://testworkai.tiegushi.com/api/v1/persons/xxxx
-```
-Example respones:
-```
-{
-  "success": true
-}
-```
-
-### 查询设备
-```
-GET /api/v1/devices
-```
-| Attribute  | Type | Required | Description |
-|:------------|:------|:----------|:-------------|
-|  groupId    |  string   | yes    | 组ID            |
-
-```
-curl -X GET http://testworkai.tiegushi.com/api/v1/devices?groupId=xxxxx
-```
-Example respones:
-```
-[
-  {
-    "uuid": "xxxx", // 设备id
-    "name": "xxxx", // 标记人名
-    "in_out": "inout", // 设备进出类型
-    "groupId": "xxxxxxx", // 组id
-    "createAt": "2019-02-22T03:23:35.904Z",  // 创建时间
-    "camera_run": false, // 摄像头在线状态
-    "islatest": false, // 是否升级
-    "online": true  // 设备在线状态
-  }
-]
-```
-
-### 删除设备
-```
-DELETE /api/v1/devices/:uuid
-```
-
-```
-curl -X DELETE http://testworkai.tiegushi.com/api/v1/devices/xxxx
-```
-Example respones:
-```
-{
-  "success": true  // 设备成功删除
-}
-```
-
-### 查询组信息
-```
-GET /api/v1/groups
-```
-| Attribute  | Type | Required | Description |
-|:------------|:------|:----------|:-------------|
-|  groupName    |  string   | yes    | 组名            |
-|  creator    |  string   | yes    | 创建者            |
-
-
-```
-curl -X GET http://testworkai.tiegushi.com/api/v1/groups?groupName=xxxxx&creator=xxxx
-```
-Example respones:
-```
-{
-  "_id": "xxxxxxxxxx",
-  "name": groupName, // 组名
-  "icon": "",  
-  "describe": "",
-  "create_time": "2019-03-20T06:04:16.569Z",  // 创建时间
-  "template": {},
-  "offsetTimeZone": 8,
-  "last_text": "",
-  "last_time": "2019-03-20T06:04:16.569Z",
-  "barcode": "http://testworkai.tiegushi.com/xxxxx",  // 组二维码
-  "creator": {
-    "id": "xxxxxxxx", // 创建者id
-    "name": creator  // 创建者名字
-  }
-}
-```
-
-### 创建组(需要鉴权)
-```
-POST /api/groups
-```
-| Attribute  | Type | Required | Description |
-|:------------|:------|:----------|:-------------|
-|  name    |  string   | yes    | 组名            |
-
-```
-// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
-curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" http://testworkai.tiegushi.com/api/v1/groups -d "name=xxx"
-```
-Example respones:
-```
-{
-  "groupId": "8b129fc47a3fa97cbd6f7837"   // 组id
-}
-```
-
-### 加入组
-```
-POST /api/groups/:groupId/users
-```
-| Attribute  | Type | Required | Description |
-|:------------|:------|:----------|:-------------|
-|  userId    |  string   | yes    | userId          |
-```
-curl -X POST  http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837/users -d "userId=ejxqmx3PDK8yo88F"
-```
-
-Example respones:
-```
-{
-  "success": true
-}
-```
-
-### 显示组内被标注的成员信息
-```
-GET /api/groups/:groupId/person
-```
-```
-curl -X GET  http://testworkai.tiegushi.com/api/v1/groups/9933aa9c429695857e9d52dd/person 
-```
-
-Example respones:
-```
-[
-  {
-    "_id": "71f3fd7f055e5aa01bc29fcd",
-    "group_id": "9933aa9c429695857e9d52dd", // 组id
-    "faceId": "12967", // 人脸id
-    "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04",// 人脸图片url
-    "name": "A", // 被标记的人名
-    "faces": [
-      {
-        "id": "12967", // 人脸图片id
-        "url": "http://onm4mnb4w.bkt.clouddn.com/8855772a-2b0d-11e7-9bfc-d065caa81a04" // 人脸图片url
-      }
-    ]
-  },
-  ...
-]
-```
-
-### 添加盒子(需鉴权)
-```
-POST /groups/:groupId/devices
-```
-| Attribute  | Type | Required | Description |
-|:------------|:------|:----------|:-------------|
-|  uuid    |  string   | yes    | 盒子uuid          |
-|  deviceName    |  string   | yes    | 盒子名称          |
-|  type    |  string   | yes    | 盒子type ("in" or "out")    |
-
-```
-// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
-curl -X POST -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837/devices -d '{"uuid": "123456", "deviceName": "test", "type": "in"}'
-```
-Example respones:
-```
-{
-  "success": true 
-}
-```
-
-### 查询AI Message
+### Ai Message
+### 查询Messages
 ```
 GET /api/v1/ai-messages
 ```

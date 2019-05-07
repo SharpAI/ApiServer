@@ -1,4 +1,4 @@
-function failure(result, errorType) {
+function failure(result, errorType, errorCode) {
   if (_.isObject(result)) {
     result.success = false;
   } else {
@@ -13,7 +13,7 @@ function failure(result, errorType) {
   }
 
   result = {
-    statusCode: 400,
+    statusCode: errorCode || 400,
     body: result,
   };
 
@@ -73,6 +73,43 @@ var ApiV1 = new Restivus({
   prettyJson: true,
   useDefaultAuth: true,
   version: 'v1'
+});
+
+// signup
+ApiV1.addRoute('sign-up', {
+  authRequired: false
+}, {
+  post: function() {
+    try {
+      var params = this.bodyParams;
+      var username = params.username && params.username.trim();
+      var email = params.email && params.email.trim();
+      var password = params.password && params.password.trim();
+  
+      if (!username || !email || !password) {
+        throw new Meteor.Error('error-sign-up-param-not-provided', 'The parameter "username" or "email" or "password" is required');
+      }
+  
+      var emailRegExp = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{2,6}/;
+      if (emailRegExp.test(email) == false) {
+        throw new Meteor.Error('error-email-address-formatted', 'Is that a correct email address?');
+      }
+
+      if (password.length < 6) {
+        throw new Meteor.Error('error-password-length', 'Please input a password longer than 6 char');
+      }
+      
+      Accounts.createUser({
+        username:username,
+        email: email,
+        password: password
+      });
+
+      return success();    
+    } catch (e) {
+      return failure(e.message, e.error);
+    }
+  }
 });
 
 module.exports = {

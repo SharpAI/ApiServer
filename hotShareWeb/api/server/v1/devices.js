@@ -16,7 +16,7 @@ Api.addRoute('devices', {
         }
 
         if (!SimpleChat.Groups.findOne(groupId)) {
-          throw new Meteor.Error('error-group-not-existed', 'Group(' + groupId + ') do not exist!');
+          return api.failure('Group(' + groupId + ') not found', 'error-group-not-found', 404);
         }
   
         var devices = Devices.find({

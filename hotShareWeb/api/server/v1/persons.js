@@ -43,24 +43,27 @@ Api.addRoute('persons', {
 });
 
 Api.addRoute('persons/:id', {
-  authRequired: false
+  authRequired: true
 }, {
-  get: function() {
-    try {
-      var id = this.urlParams.id && this.urlParams.id.trim();
-      return Person.findOne(id, {fields: {group_id: 1, name: 1, url: 1, faceId: 1}});
-    } catch (e) {
-      return api.failure(e.message, e.error);
+  get: {
+    authRequired: false,
+    action: function() {
+      try {
+        var id = this.urlParams.id && this.urlParams.id.trim();
+        return Person.findOne(id, {fields: {group_id: 1, name: 1, url: 1, faceId: 1}});
+      } catch (e) {
+        return api.failure(e.message, e.error);
+      }
     }
   },
-  post: function () {
+  patch: function () {
     try {
       var id = this.urlParams.id && this.urlParams.id.trim();
       var name = this.bodyParams.name && this.bodyParams.name.trim();
 
       var person = Person.findOne(id);
       if (!person) {
-        throw new Meteor.Error('error-persons-doc-not-existed', 'The person is not existed!');
+        return api.failure('Person(' + id + ') not found', 'error-person-not-found', 404);      
       }
 
       if (name) {
@@ -84,7 +87,7 @@ Api.addRoute('persons/:id', {
       var person = Person.findOne(id);
 
       if (!person) {
-        throw new Meteor.Error('error-person-doc-not-existed', 'person is not existed!')
+        return api.failure('Person(' + id + ') not found', 'error-person-not-found', 404);      
       }
 
       Meteor.call('removePersonById', id);
@@ -97,6 +100,62 @@ Api.addRoute('persons/:id', {
 
       // 重新训练
       api.retrain(person.group_id);
+
+      return api.success();
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  }
+});
+
+// 删除被标记人的照片
+Api.addRoute('persons/:personId/faces/deletion', {
+  authRequired: true
+}, {
+  put: function () {
+    try {
+      var faces = this.bodyParams.faces;
+      var personId = this.urlParams.personId && this.urlParams.personId.trim();
+      var person = Person.findOne(personId);
+
+      if (!person) {
+        return api.failure('Person(' + personId + ') not found', 'error-person-not-found', 404);
+      }
+      
+      if (_.isEmpty(faces)) {
+        throw new Meteor.Error('error-group-faces-param-not-provided', 'The parameter "faces" is required'); 
+      }
+
+      var lists = _.map(faces, function(face) {
+        return {
+          face_id: face.id,
+          face_url: face.url,
+          group_id: person.group_id,
+          device_id: person.deviceId,
+          faceId: person.faceId,
+          name: person.name
+        }
+      });
+      
+      Meteor.call('remove-person-face', lists, function(err, res) {
+        for(var i=0; i < lists.length; i++) {
+          var trainsetObj = {
+            group_id: lists[i].group_id,
+            type: 'trainset',
+            url: lists[i].face_url,
+            person_id: '',
+            device_id: lists[i].device_id,
+            face_id: lists[i].face_id,
+            drop: true,
+            img_type: 'face',
+            style: 'front',
+            sqlid: 0
+          }
+
+          sendMqttMessage('/device/'+lists[i].group_id, trainsetObj);
+        }
+        api.retrain(person.group_id);
+      });
 
       return api.success();
     } catch (e) {
