@@ -4,8 +4,8 @@
 ## 目录
 
 - [注册账号](#注册账号)
-- [鉴权](#鉴权)
-- [鉴权退出](#鉴权退出)
+- [登陆](#登陆)
+- [退出](#退出)
 - [Person](#person)
   - [查询persons](#查询persons)
   - [获取person](#获取person)
@@ -51,7 +51,9 @@ Example respones:
 ```
 
 
-### 鉴权
+### 登陆
+
+登陆后返回authToken和userId,供需要鉴权才能访问的api使用，authToken没有过期时间，可一直使用。如需销毁authToken,请调用[退出](#退出)API。
 
 ```
 POST /api/v1/login
@@ -75,7 +77,8 @@ Example respones:
   }
 }
 ```
-### 鉴权退出
+### 退出
+退出将销毁authToken，如需要authToken可重新[登陆](#登陆)。
 
 ```
 POST /api/v1/logout
