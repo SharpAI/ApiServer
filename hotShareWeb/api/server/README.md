@@ -154,7 +154,7 @@ PATCH /api/v1/persons/:id
 |  name    |  string   | yes       | 新标注人名  |
 
 ```
-curl -X PATCH -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json"  http://testworkai.tiegushi.com/api/v1//persons/xxxx -d '{"name":"test2"}'
+curl -X PATCH -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json"  http://testworkai.tiegushi.com/api/v1/persons/xxxx -d '{"name":"test2"}'
 ```
 Example respones:
 ```
@@ -230,7 +230,7 @@ Example respones:
 [
   {
     "uuid": "xxxx", // 设备id
-    "name": "xxxx", // 标记人名
+    "name": "xxxx", // 设备名称
     "in_out": "inout", // 设备进出类型
     "groupId": "xxxxxxx", // 组id
     "createAt": "2019-02-22T03:23:35.904Z",  // 创建时间
@@ -448,7 +448,7 @@ POST /api/v1/groups/:groupId/faces
   "uuid":       "28D6R16C12005885",
   "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f",
   “name”:       "TESTNAME",
-  // "faceId":     "xxxx", 使用name或者faceId标注
+  "faceId":     "xxxx", //使用name或者faceId标注
   "type":       "face",
   "current_ts": 1522276593387.0,
   "accuracy":   1,
