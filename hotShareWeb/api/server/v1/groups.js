@@ -97,6 +97,86 @@ function checkFaceData(face) {
   }
 }
 
+Api.addRoute('groups/:groupId/strangers/:strangerId/label', {
+  authRequired: false,
+}, {
+  post: function() {
+    try {
+      var groupId = this.urlParams.groupId && this.urlParams.groupId.trim();
+      var strangerId = this.urlParams.strangerId && this.urlParams.strangerId.trim();
+
+      var name = this.bodyParams.name && this.bodyParams.name.trim();
+      if (!name) {
+        throw new Meteor.Error('error-groups-strangers-param-not-provided', 'The parameter "name" is required');
+      }
+
+      var stranger = Strangers.findOne(strangerId);
+
+      Meteor.call('get-id-by-name1', stranger.uuid, name, stranger.group_id, function(err, result) {        
+        var faceId = (result && result.faceId) || stranger.imgs[0].faceid;   
+        var setNames = [];
+
+        _.each(stranger.imgs, function(img) {
+          if (!_.contains(['front', 'human_shape'], img.style) && img.fuzziness >= 100) return;
+
+          var transetObj = {
+            group_id: stranger.group_id,
+            type: 'trainset',
+            url: img.url,
+            person_id: img.faceid,
+            device_id: stranger.uuid,
+            face_id: faceId,
+            drop: false,
+            img_type: 'face',
+            style: img.style,
+            sqlid: img.sqlid
+          };
+          sendMqttMessage('/device/' + stranger.group_id, transetObj);
+
+          setNames.push({
+            uuid: stranger.uuid,
+            id: faceId,
+            url: img.url,
+            name: name,
+            sqlid: img.sqlid,
+            style: img.style
+          });
+
+          var person_info = {
+            'uuid': stranger.uuid,
+            'person_id': img.faceid,
+            'name': name,
+            'group_id': stranger.group_id,
+            'img_url': img.url,
+            'type': 'face',
+            'ts': new Date().getTime(),
+            'accuracy': img.accuracy,
+            'fuzziness': img.fuzziness,
+            'sqlid': img.sqlid,
+            'style': img.style          
+          }
+
+          var data = {
+            face_id: faceId,
+            person_info: person_info,
+            formLabel: true
+          }
+
+          Meteor.call('ai-checkin-out', data, function(err, result) {});
+        });
+
+        Meteor.call('set-person-names', stranger.group_id, setNames, function(err, result) {
+          Strangers.remove({_id: strangerId});
+        }); 
+      })
+
+      return api.success();
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  }
+})
+
 /**
  * 
  * 标注单张

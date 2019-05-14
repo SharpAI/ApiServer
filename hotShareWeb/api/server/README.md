@@ -25,6 +25,7 @@
   - [组加设备](#组加设备)
   - [单张标注](#单张标注)
   - [批量标注](#批量标注)
+  - [标注陌生人](#标注陌生人)
 - [AI Messages](#ai-message)
   - [查询Messages](#查询messages)
 
@@ -502,6 +503,26 @@ Example respones:
   "success": true
 }
 ```
+### 标注陌生人
+标注AI识别到的陌生人
+```
+POST groups/:groupId/strangers/:strangerId/label
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  name    |  string   | yes    | 标注人名            |
+
+```
+curl -X POST -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/xxxxx/strangers/xxxxx/label  -d '{"name": "test"}'
+```
+
+Example respones:
+```
+{
+  "success": true
+}
+```
+
 ### Ai Message
 ### 查询Messages
 ```
