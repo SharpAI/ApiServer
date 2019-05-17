@@ -395,7 +395,8 @@ if Meteor.isServer
           style: style,
           accuracy: Accuracy, # 准确度(分数)
           fuzziness: Fuzziness, # 模糊度
-          ts:create_time.getTime()
+          ts:create_time.getTime(),
+          tid: tracker_id
         }
         PERSON.updateToDeviceTimeline(uuid,userGroup.group_id,timeObj)
         #识别准确度在0.85以上才自动打卡
