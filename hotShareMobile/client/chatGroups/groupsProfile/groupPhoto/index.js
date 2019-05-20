@@ -600,7 +600,7 @@ Template.labelDatasetImg.onRendered(function(){
 Template.labelDatasetImg.helpers({
   isAutoLabel: function(id) {
     console.log("isAutoLabel: id = "+id);
-    return id != null && id.indexOf("_autolabel") >= 0;
+    return id != null && id.indexOf("autolabel") >= 0;
   },
   has_selected: function(id){
     return selected2.get().indexOf(id) >= 0;

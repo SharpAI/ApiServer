@@ -841,6 +841,17 @@ if Meteor.isServer
       this.response.end('{"result": "ok", "reason": "invalid params"}\n')
   )
 
+  Router.route('/restapi/workai/group/:_id/last_time', {where: 'server'}).get(()->
+    result = SimpleChat.Groups.findOne({_id: this.params._id}, {fields:{'last_time':1}})
+    if (result and result != {})
+        #console.log("Get last_time in group suc: "+this.params._id + ", last_time="+result.last_time)
+        last_time = new Date(result.last_time).getTime();
+        return this.response.end(JSON.stringify({result: 'ok', last_time: last_time}))
+    else
+        console.log("Update last_time in group failed: "+this.params._id)
+        return this.response.end(JSON.stringify({result: 'failed'}))
+  )
+
   Router.route('/restapi/workai/model_param', {where: 'server'}).post(()->
     group_id = this.request.body.groupid
     uuid = this.request.body.uuid
@@ -921,6 +932,8 @@ if Meteor.isServer
       persons = []
       person_name = null
       active_time = null
+      faceId = null
+      random_id = null
       if this.request.body.hasOwnProperty('person_id')
         person_id = this.request.body.person_id
       else
@@ -941,13 +954,17 @@ if Meteor.isServer
       unless userGroups
         console.log("restapi/workai_autolabel: userGroups is null")
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
-      faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str
-      random_id = new Mongo.ObjectID()._str + "_autolabel"
-      console.log("restapi/workai_autolabel: uuid = "+persons[0].uuid+", faceId="+faceId+", random_id="+random_id)
-      #name = PERSON.getName(null, userGroup.group_id, person_id)
+      faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str+"-autolabel"
+      #random_id = if person_id != '' then new Mongo.ObjectID()._str+"-autolabel" else faceId
+      #console.log("restapi/workai_autolabel: uuid = "+persons[0].uuid+", faceId="+faceId+", random_id="+random_id)
       userGroups.forEach((userGroup)->
           console.log("restapi/workai_autolabel: userGroup.group_id="+userGroup.group_id)
-          person_name = if person_id != '' then PERSON.getName(null, userGroup.group_id, person_id) else new Mongo.ObjectID()._str
+          person_name = if person_id != '' then PERSON.getName(null, userGroup.group_id, person_id) else null
+          if person_name == null
+              random_id = faceId
+          else
+              random_id = new Mongo.ObjectID()._str+"-autolabel"
+          person_name = if person_name != null then person_name else 'Guest_'+new Mongo.ObjectID()._str
           console.log("restapi/workai_autolabel: person_name="+person_name)
           for person in persons
               console.log("person="+JSON.stringify(person))
@@ -966,7 +983,10 @@ if Meteor.isServer
                 name:person_name,
                 sqlid:person.sqlid,
                 style:person.style,
-                action:'AutoLabel'});
+                action:'AutoLabel',
+                faceId: faceId,
+              });
+              ###
               trainsetObj = {
                 group_id: userGroup.group_id,
                 type: 'trainset',
@@ -981,6 +1001,7 @@ if Meteor.isServer
                 };
               console.log("restapi/workai_autolabel: " + JSON.stringify(trainsetObj));
               sendMqttMessage('/device/'+userGroup.group_id, trainsetObj);
+              ###
       )
       this.response.end('{"result": "ok"}\n')
     )
