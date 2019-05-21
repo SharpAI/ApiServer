@@ -10,8 +10,8 @@ if Meteor.isServer
         keyData: apnsDevKey
         gateway: 'gateway.sandbox.push.apple.com'
     
-    apnsProductionCert = Assets.getText 'ios/apn-production/SharpAI_PN_Production_Cert.pem'
-    apnsProductionKey = Assets.getText 'ios/apn-production/SharpAI_PN_Production_Key.pem'
+    apnsProductionCert = Assets.getText 'ios/apn-production/apns-dev-cert.pem'
+    apnsProductionKey = Assets.getText 'ios/apn-production/apns-dev-key.pem'
     optionsProduction =
         passphrase: '123456'
         certData: apnsProductionCert
