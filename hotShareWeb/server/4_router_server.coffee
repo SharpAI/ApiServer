@@ -954,7 +954,7 @@ if Meteor.isServer
       unless userGroups
         console.log("restapi/workai_autolabel: userGroups is null")
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
-      faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str+"-autolabel"
+      faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str+"_autolabel"
       #random_id = if person_id != '' then new Mongo.ObjectID()._str+"-autolabel" else faceId
       #console.log("restapi/workai_autolabel: uuid = "+persons[0].uuid+", faceId="+faceId+", random_id="+random_id)
       userGroups.forEach((userGroup)->
@@ -1004,6 +1004,69 @@ if Meteor.isServer
               console.log("restapi/workai_autolabel: " + JSON.stringify(trainsetObj));
               sendMqttMessage('/device/'+userGroup.group_id, trainsetObj);
               ###
+      )
+      this.response.end('{"result": "ok"}\n')
+    )
+
+  Router.route('restapi/workai_autolabel/batch', {where: 'server'}).get(()->
+
+    ).post(()->
+      person_id = ''
+      persons = []
+      person_name = null
+      active_time = null
+      random_id = null
+      # if this.request.body.hasOwnProperty('person_id')
+      #   person_id = this.request.body.person_id
+      # else
+      #   console.log('restapi/workai_autolabel: no person_id, return.')
+      #   return
+      if this.request.body.hasOwnProperty('persons')
+        persons = this.request.body.persons
+      console.log("restapi/workai_autolabel/batch post: person_id="+person_id+", persons="+JSON.stringify(persons))
+      if (!(persons instanceof Array) or persons.length < 1)
+        console.log("restapi/workai_autolabel/batch: this.request.body is not array.")
+        return this.response.end('{"result": "failed!", "cause": "this.request.body is not array."}\n')
+
+      user = Meteor.users.findOne({username: persons[0].uuid})
+      unless user
+        console.log("restapi/workai_autolabel/batch: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/workai_autolabel/batch: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+
+      userGroups.forEach((userGroup)->
+        console.log("restapi/workai_autolabel/batch: userGroup.group_id="+userGroup.group_id)
+
+        for person in persons
+          console.log("person="+JSON.stringify(person))
+
+          random_id = new Mongo.ObjectID()._str+"_autolabel_batch"
+          person_name = 'Guest_'+new Mongo.ObjectID()._str
+
+          PERSON.setName(
+            userGroup.group_id,
+            person.uuid,
+            random_id,
+            person.img_url,
+            person_name
+          )
+
+          LABLE_DADASET_Handle.insert({
+            group_id: userGroup.group_id,
+            uuid:     person.uuid,
+            id:       random_id,
+            url:      person.img_url,
+            name:     person_name,
+            sqlid:    person.sqlid,
+            style:    person.style,
+            action:   'AutoLabel_Batch',
+            faceId:   random_id,
+          })
+
+          insert_msg2(random_id, person.img_url, person.uuid, person.type, person.accuracy, person.fuzziness, person.sqlid, person.style, person.img_ts, person.current_ts, person.tid)
       )
       this.response.end('{"result": "ok"}\n')
     )
@@ -2691,7 +2754,7 @@ if Meteor.isServer
         console.log("restapi/updateStrangers: userGroups is null")
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')  
 
-      faceId = new Mongo.ObjectID()._str+"-strangers"  
+      faceId = new Mongo.ObjectID()._str+"_strangers"  
 
       userGroups.forEach((userGroup)->
         person_name = 'Guest_' + new Mongo.ObjectID()._str;
