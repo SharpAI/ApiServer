@@ -954,7 +954,9 @@ if Meteor.isServer
       unless userGroups
         console.log("restapi/workai_autolabel: userGroups is null")
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
-      faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str+"_autolabel"
+
+      faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str
+
       #random_id = if person_id != '' then new Mongo.ObjectID()._str+"-autolabel" else faceId
       #console.log("restapi/workai_autolabel: uuid = "+persons[0].uuid+", faceId="+faceId+", random_id="+random_id)
       userGroups.forEach((userGroup)->
@@ -963,7 +965,7 @@ if Meteor.isServer
           if person_name == null
               random_id = faceId
           else
-              random_id = new Mongo.ObjectID()._str+"-autolabel"
+              random_id = new Mongo.ObjectID()._str
           person_name = if person_name != null then person_name else 'Guest_'+new Mongo.ObjectID()._str
           console.log("restapi/workai_autolabel: person_name="+person_name)
           for person in persons
@@ -1043,7 +1045,7 @@ if Meteor.isServer
         for person in persons
           console.log("person="+JSON.stringify(person))
 
-          random_id = new Mongo.ObjectID()._str+"_autolabel_batch"
+          random_id = new Mongo.ObjectID()._str
           person_name = 'Guest_'+new Mongo.ObjectID()._str
 
           PERSON.setName(
@@ -1062,7 +1064,8 @@ if Meteor.isServer
             name:     person_name,
             sqlid:    person.sqlid,
             style:    person.style,
-            action:   'AutoLabel_Batch',
+
+            action:   'AutoLabel',
             faceId:   random_id,
           })
 
@@ -2754,8 +2757,7 @@ if Meteor.isServer
         console.log("restapi/updateStrangers: userGroups is null")
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')  
 
-      faceId = new Mongo.ObjectID()._str+"_strangers"  
-
+      faceId = new Mongo.ObjectID()._str  
       userGroups.forEach((userGroup)->
         person_name = 'Guest_' + new Mongo.ObjectID()._str;
         for img in imgs
