@@ -974,7 +974,7 @@ if Meteor.isServer
                 random_id,
                 person.img_url,
                 person_name
-              );
+              )
               LABLE_DADASET_Handle.insert({
                 group_id:userGroup.group_id,
                 uuid:person.uuid,
@@ -985,7 +985,9 @@ if Meteor.isServer
                 style:person.style,
                 action:'AutoLabel',
                 faceId: faceId,
-              });
+              })
+
+              insert_msg2(random_id, person.img_url, person.uuid, person.type, person.accuracy, person.fuzziness, person.sqlid, person.style, person.img_ts, person.current_ts, person.tid)
               ###
               trainsetObj = {
                 group_id: userGroup.group_id,
@@ -1153,11 +1155,11 @@ if Meteor.isServer
             img_type: 'face',
             style:person.style,
             sqlid:person.sqlid
-            };
-          console.log("==sr==. unknow_label: " + JSON.stringify(trainsetObj));
-          sendMqttMessage('/device/'+userGroup.group_id, trainsetObj);
+          }
+          console.log("==sr==. unknow_label: " + JSON.stringify(trainsetObj))
+          sendMqttMessage('/device/'+userGroup.group_id, trainsetObj)
           
-          setNames = [];
+          setNames = []
           setNames.push({
             uuid: person.uuid,
             id: faceId,
@@ -1166,7 +1168,7 @@ if Meteor.isServer
             sqlid:person.sqlid,
             style:person.style
           });
-          PERSON.updateLabelTimes(userGroup.group_id,setNames);
+          PERSON.updateLabelTimes(userGroup.group_id,setNames)
           PERSON.setName(
             userGroup.group_id,
             person.uuid,
@@ -1182,7 +1184,7 @@ if Meteor.isServer
             name:person_name,
             sqlid:person.sqlid,
             style:person.style,
-            action:'rest_api标记'});
+            action:'rest_api标记'})
           
           person_info = {
             'uuid': person.uuid,
@@ -1195,13 +1197,13 @@ if Meteor.isServer
             'fuzziness': person.fuzziness,
             'sqlid':person.sqlid,
             'style':person.style
-          };
+          }
           check_data = {
               face_id: person_id,
               person_info: person_info,
               formLabel: true
             };
-          PERSON.aiCheckInOutHandle(check_data);
+          PERSON.aiCheckInOutHandle(check_data)
       )
       this.response.end('{"result": "ok"}\n')
     )
@@ -2678,6 +2680,43 @@ if Meteor.isServer
         createTime: new Date(),
         avatar: imgs[0].url
       })
+
+      user = Meteor.users.findOne({username: uuid})
+      unless user
+        console.log("restapi/updateStrangers: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/updateStrangers: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')  
+
+      faceId = new Mongo.ObjectID()._str+"-strangers"  
+
+      userGroups.forEach((userGroup)->
+        person_name = 'Guest_' + new Mongo.ObjectID()._str;
+        for img in imgs
+          PERSON.setName(
+            userGroup.group_id,
+            uuid,
+            faceId,
+            img.url,
+            person_name
+          )
+          LABLE_DADASET_Handle.insert({
+            group_id: userGroup.group_id,
+            uuid:     uuid,
+            id:       faceId,
+            url:      img.url,
+            name:     person_name,
+            sqlid:    img.sqlid,
+            style:    img.style,
+            action:   'Stranger',
+            faceId:   faceId,
+          })
+
+          insert_msg2(faceId, img.url, uuid, img.img_type, img.accuracy, img.fuzziness, img.sqlid, img.style, null, null, trackerId)
+      )  
 
       #console.log(Strangers.find({}).fetch())
       this.response.end('{"result": "ok"}\n')
