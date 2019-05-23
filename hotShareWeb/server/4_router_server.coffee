@@ -395,7 +395,8 @@ if Meteor.isServer
           style: style,
           accuracy: Accuracy, # 准确度(分数)
           fuzziness: Fuzziness, # 模糊度
-          ts:create_time.getTime()
+          ts:create_time.getTime(),
+          tid: tracker_id
         }
         PERSON.updateToDeviceTimeline(uuid,userGroup.group_id,timeObj)
         #识别准确度在0.85以上才自动打卡
@@ -840,6 +841,17 @@ if Meteor.isServer
       this.response.end('{"result": "ok", "reason": "invalid params"}\n')
   )
 
+  Router.route('/restapi/workai/group/:_id/last_time', {where: 'server'}).get(()->
+    result = SimpleChat.Groups.findOne({_id: this.params._id}, {fields:{'last_time':1}})
+    if (result and result != {})
+        #console.log("Get last_time in group suc: "+this.params._id + ", last_time="+result.last_time)
+        last_time = new Date(result.last_time).getTime();
+        return this.response.end(JSON.stringify({result: 'ok', last_time: last_time}))
+    else
+        console.log("Update last_time in group failed: "+this.params._id)
+        return this.response.end(JSON.stringify({result: 'failed'}))
+  )
+
   Router.route('/restapi/workai/model_param', {where: 'server'}).post(()->
     group_id = this.request.body.groupid
     uuid = this.request.body.uuid
@@ -920,6 +932,8 @@ if Meteor.isServer
       persons = []
       person_name = null
       active_time = null
+      faceId = null
+      random_id = null
       if this.request.body.hasOwnProperty('person_id')
         person_id = this.request.body.person_id
       else
@@ -940,13 +954,19 @@ if Meteor.isServer
       unless userGroups
         console.log("restapi/workai_autolabel: userGroups is null")
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+
       faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str
-      random_id = new Mongo.ObjectID()._str + "_autolabel"
-      console.log("restapi/workai_autolabel: uuid = "+persons[0].uuid+", faceId="+faceId+", random_id="+random_id)
-      #name = PERSON.getName(null, userGroup.group_id, person_id)
+
+      #random_id = if person_id != '' then new Mongo.ObjectID()._str+"-autolabel" else faceId
+      #console.log("restapi/workai_autolabel: uuid = "+persons[0].uuid+", faceId="+faceId+", random_id="+random_id)
       userGroups.forEach((userGroup)->
           console.log("restapi/workai_autolabel: userGroup.group_id="+userGroup.group_id)
-          person_name = if person_id != '' then PERSON.getName(null, userGroup.group_id, person_id) else new Mongo.ObjectID()._str
+          person_name = if person_id != '' then PERSON.getName(null, userGroup.group_id, person_id) else null
+          if person_name == null
+              random_id = faceId
+          else
+              random_id = new Mongo.ObjectID()._str
+          person_name = if person_name != null then person_name else 'Guest_'+new Mongo.ObjectID()._str
           console.log("restapi/workai_autolabel: person_name="+person_name)
           for person in persons
               console.log("person="+JSON.stringify(person))
@@ -956,7 +976,7 @@ if Meteor.isServer
                 random_id,
                 person.img_url,
                 person_name
-              );
+              )
               LABLE_DADASET_Handle.insert({
                 group_id:userGroup.group_id,
                 uuid:person.uuid,
@@ -965,7 +985,12 @@ if Meteor.isServer
                 name:person_name,
                 sqlid:person.sqlid,
                 style:person.style,
-                action:'AutoLabel'});
+                action:'AutoLabel',
+                faceId: faceId,
+              })
+
+              insert_msg2(random_id, person.img_url, person.uuid, person.type, person.accuracy, person.fuzziness, person.sqlid, person.style, person.img_ts, person.current_ts, person.tid)
+              ###
               trainsetObj = {
                 group_id: userGroup.group_id,
                 type: 'trainset',
@@ -980,6 +1005,70 @@ if Meteor.isServer
                 };
               console.log("restapi/workai_autolabel: " + JSON.stringify(trainsetObj));
               sendMqttMessage('/device/'+userGroup.group_id, trainsetObj);
+              ###
+      )
+      this.response.end('{"result": "ok"}\n')
+    )
+
+  Router.route('restapi/workai_autolabel/batch', {where: 'server'}).get(()->
+
+    ).post(()->
+      person_id = ''
+      persons = []
+      person_name = null
+      active_time = null
+      random_id = null
+      # if this.request.body.hasOwnProperty('person_id')
+      #   person_id = this.request.body.person_id
+      # else
+      #   console.log('restapi/workai_autolabel: no person_id, return.')
+      #   return
+      if this.request.body.hasOwnProperty('persons')
+        persons = this.request.body.persons
+      console.log("restapi/workai_autolabel/batch post: person_id="+person_id+", persons="+JSON.stringify(persons))
+      if (!(persons instanceof Array) or persons.length < 1)
+        console.log("restapi/workai_autolabel/batch: this.request.body is not array.")
+        return this.response.end('{"result": "failed!", "cause": "this.request.body is not array."}\n')
+
+      user = Meteor.users.findOne({username: persons[0].uuid})
+      unless user
+        console.log("restapi/workai_autolabel/batch: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/workai_autolabel/batch: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+
+      userGroups.forEach((userGroup)->
+        console.log("restapi/workai_autolabel/batch: userGroup.group_id="+userGroup.group_id)
+
+        for person in persons
+          console.log("person="+JSON.stringify(person))
+
+          random_id = new Mongo.ObjectID()._str
+          person_name = 'Guest_'+new Mongo.ObjectID()._str
+
+          PERSON.setName(
+            userGroup.group_id,
+            person.uuid,
+            random_id,
+            person.img_url,
+            person_name
+          )
+
+          LABLE_DADASET_Handle.insert({
+            group_id: userGroup.group_id,
+            uuid:     person.uuid,
+            id:       random_id,
+            url:      person.img_url,
+            name:     person_name,
+            sqlid:    person.sqlid,
+            style:    person.style,
+            action:   'AutoLabel',
+            faceId:   random_id,
+          })
+
+          insert_msg2(random_id, person.img_url, person.uuid, person.type, person.accuracy, person.fuzziness, person.sqlid, person.style, person.img_ts, person.current_ts, person.tid)
       )
       this.response.end('{"result": "ok"}\n')
     )
@@ -1117,7 +1206,7 @@ if Meteor.isServer
           faceId = person_data.faceId
         else if persons[0].person_name
           faceId = new Mongo.ObjectID()._str
-        else 
+        else
           faceId = person_id
         for person in persons
           trainsetObj = {
@@ -1131,11 +1220,11 @@ if Meteor.isServer
             img_type: 'face',
             style:person.style,
             sqlid:person.sqlid
-            };
-          console.log("==sr==. unknow_label: " + JSON.stringify(trainsetObj));
-          sendMqttMessage('/device/'+userGroup.group_id, trainsetObj);
-          
-          setNames = [];
+          }
+          console.log("==sr==. unknow_label: " + JSON.stringify(trainsetObj))
+          sendMqttMessage('/device/'+userGroup.group_id, trainsetObj)
+
+          setNames = []
           setNames.push({
             uuid: person.uuid,
             id: faceId,
@@ -1144,7 +1233,7 @@ if Meteor.isServer
             sqlid:person.sqlid,
             style:person.style
           });
-          PERSON.updateLabelTimes(userGroup.group_id,setNames);
+          PERSON.updateLabelTimes(userGroup.group_id,setNames)
           PERSON.setName(
             userGroup.group_id,
             person.uuid,
@@ -1160,8 +1249,8 @@ if Meteor.isServer
             name:person_name,
             sqlid:person.sqlid,
             style:person.style,
-            action:'rest_api标记'});
-          
+            action:'rest_api标记'})
+
           person_info = {
             'uuid': person.uuid,
             'name': person_name,
@@ -1173,13 +1262,13 @@ if Meteor.isServer
             'fuzziness': person.fuzziness,
             'sqlid':person.sqlid,
             'style':person.style
-          };
+          }
           check_data = {
               face_id: person_id,
               person_info: person_info,
               formLabel: true
             };
-          PERSON.aiCheckInOutHandle(check_data);
+          PERSON.aiCheckInOutHandle(check_data)
       )
       this.response.end('{"result": "ok"}\n')
     )
@@ -2656,6 +2745,43 @@ if Meteor.isServer
         createTime: new Date(),
         avatar: imgs[0].url
       })
+
+      user = Meteor.users.findOne({username: uuid})
+      unless user
+        console.log("restapi/updateStrangers: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/updateStrangers: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+
+      faceId = new Mongo.ObjectID()._str
+
+      userGroups.forEach((userGroup)->
+        person_name = 'Guest_' + new Mongo.ObjectID()._str;
+        for img in imgs
+          PERSON.setName(
+            userGroup.group_id,
+            uuid,
+            faceId,
+            img.url,
+            person_name
+          )
+          LABLE_DADASET_Handle.insert({
+            group_id: userGroup.group_id,
+            uuid:     uuid,
+            id:       faceId,
+            url:      img.url,
+            name:     person_name,
+            sqlid:    img.sqlid,
+            style:    img.style,
+            action:   'Stranger',
+            faceId:   faceId,
+          })
+
+          insert_msg2(faceId, img.url, uuid, img.img_type, img.accuracy, img.fuzziness, img.sqlid, img.style, null, null, trackerId)
+      )
 
       #console.log(Strangers.find({}).fetch())
       this.response.end('{"result": "ok"}\n')

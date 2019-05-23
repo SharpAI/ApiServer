@@ -85,11 +85,11 @@ ApiV1.addRoute('sign-up', {
       var username = params.username && params.username.trim();
       var email = params.email && params.email.trim();
       var password = params.password && params.password.trim();
-  
+
       if (!username || !email || !password) {
         throw new Meteor.Error('error-sign-up-param-not-provided', 'The parameter "username" or "email" or "password" is required');
       }
-  
+
       var emailRegExp = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{2,6}/;
       if (emailRegExp.test(email) == false) {
         throw new Meteor.Error('error-email-address-formatted', 'Is that a correct email address?');
@@ -98,14 +98,14 @@ ApiV1.addRoute('sign-up', {
       if (password.length < 6) {
         throw new Meteor.Error('error-password-length', 'Please input a password longer than 6 char');
       }
-      
+
       Accounts.createUser({
         username:username,
         email: email,
         password: password
       });
 
-      return success();    
+      return success();
     } catch (e) {
       return failure(e.message, e.error);
     }

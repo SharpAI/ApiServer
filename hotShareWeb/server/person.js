@@ -120,6 +120,7 @@ PERSON = {
     var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
     var device = Devices.findOne({uuid: uuid});
     var personName = PersonNames.findOne({group_id: group_id, name: name});
+    var trainCount = 1;
 
     if (!personName)
       PersonNames.insert({group_id: group_id, url: url, id: id, name: name, createAt: new Date(), updateAt: new Date()});
@@ -155,7 +156,7 @@ PERSON = {
         console.log("update person.faces = "+JSON.stringify(person.faces));
         Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
       }
-      
+
       //标记，立即训练
       var obj = SimpleChat.Groups.findOne({_id: group_id});
       var to = {
@@ -276,18 +277,25 @@ PERSON = {
         is_read: false,
         is_trigger_train:true
       };
-      try{
-        var now = new Date().getTime();
-        var groupLastTrain = gLastTrainTimestamp[group_id];
-        if (groupLastTrain == undefined || groupLastTrain == null)
-          groupLastTrain = 0;
-        if (now - groupLastTrain > 10*1000) {
-          gLastTrainTimestamp[group_id] = now;
-          sendMqttGroupMessage(group_id,msg);
-        }
-      } catch (e){
-        console.log('try sendMqttGroupMessage Err:',e)
-      }
+
+      do {
+        Meteor.setTimeout(function() {
+          try{
+            var now = new Date().getTime();
+            var groupLastTrain = gLastTrainTimestamp[group_id];
+            if (groupLastTrain == undefined || groupLastTrain == null)
+              groupLastTrain = 0;
+            if (now - groupLastTrain > 10*1000) {
+              gLastTrainTimestamp[group_id] = now;
+              sendMqttGroupMessage(group_id,msg);
+            }
+          } catch (e){
+            console.log('try sendMqttGroupMessage Err:',e);
+          }
+        }, 5 * 1000 * trainCount);
+
+        ++trainCount;
+      } while (trainCount <= 3);
     }
     callback && callback();
     return person;
@@ -342,6 +350,11 @@ PERSON = {
     personInfo.in_out = groupDevice.in_out;
     Activity.insert(personInfo);
 
+    /* update workStatus status according to a Activity*/
+    var ws = WorkStatus.findOne({group_id: groupDevice.groupId, 'person_id.id': personInfo.id}, {sort: {date: -1}});
+    if (ws) {
+      WorkStatus.update({_id: ws._id}, {$set: {status: personInfo.in_out}});
+    }
     /*var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
     personInfo.fromWorkai = true;
     HTTP.call('POST', ai_system_url, {

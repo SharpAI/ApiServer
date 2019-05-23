@@ -10,7 +10,7 @@ Api.addRoute('devices', {
     action: function () {
       try {
         var groupId = this.queryParams.groupId && this.queryParams.groupId.trim();
-  
+
         if (!groupId) {
           throw new Meteor.Error('error-devices-param-not-provided', 'The parameter "groupId" is required');
         }
@@ -18,7 +18,7 @@ Api.addRoute('devices', {
         if (!SimpleChat.Groups.findOne(groupId)) {
           return api.failure('Group(' + groupId + ') not found', 'error-group-not-found', 404);
         }
-  
+
         var devices = Devices.find({
           groupId: groupId
         }, {
@@ -26,7 +26,7 @@ Api.addRoute('devices', {
             _id: 0
           }
         }).fetch();
-  
+
         return _.isEmpty(devices) ? api.success({ result: '未找到结果' }) : devices;
       } catch (e) {
         return api.failure(e.message, e.error);

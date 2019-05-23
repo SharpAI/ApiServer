@@ -77,6 +77,11 @@ Router.route('settings', {
   path: '/dashboard/settings'
 });
 
+Router.route('groupData', {
+  layoutTemplate: 'dashboard',
+  path: '/dashboard/group-data'
+});
+
 Router.route('box', {
   layoutTemplate: 'dashboard',
   path:'/dashboard/box',

@@ -63,7 +63,7 @@ Api.addRoute('persons/:id', {
 
       var person = Person.findOne(id);
       if (!person) {
-        return api.failure('Person(' + id + ') not found', 'error-person-not-found', 404);      
+        return api.failure('Person(' + id + ') not found', 'error-person-not-found', 404);
       }
 
       if (name) {
@@ -87,7 +87,7 @@ Api.addRoute('persons/:id', {
       var person = Person.findOne(id);
 
       if (!person) {
-        return api.failure('Person(' + id + ') not found', 'error-person-not-found', 404);      
+        return api.failure('Person(' + id + ') not found', 'error-person-not-found', 404);
       }
 
       Meteor.call('removePersonById', id);
@@ -121,9 +121,9 @@ Api.addRoute('persons/:personId/faces/deletion', {
       if (!person) {
         return api.failure('Person(' + personId + ') not found', 'error-person-not-found', 404);
       }
-      
+
       if (_.isEmpty(faces)) {
-        throw new Meteor.Error('error-group-faces-param-not-provided', 'The parameter "faces" is required'); 
+        throw new Meteor.Error('error-group-faces-param-not-provided', 'The parameter "faces" is required');
       }
 
       var lists = _.map(faces, function(face) {
@@ -136,7 +136,7 @@ Api.addRoute('persons/:personId/faces/deletion', {
           name: person.name
         }
       });
-      
+
       Meteor.call('remove-person-face', lists, function(err, res) {
         for(var i=0; i < lists.length; i++) {
           var trainsetObj = {

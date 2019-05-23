@@ -76,8 +76,8 @@ Template.groupPhoto.helpers({
             var val1 = obj1[prop];
             var val2 = obj2[prop];
             // 移除首尾空格
-            val1 = val1.replace(/(^\s*)|(\s*$)/g, ""); 
-            val2 = val2.replace(/(^\s*)|(\s*$)/g, ""); 
+            val1 = val1.replace(/(^\s*)|(\s*$)/g, "");
+            val2 = val2.replace(/(^\s*)|(\s*$)/g, "");
             // 统一英文字符为大写
             val1 = val1.toLocaleUpperCase();
             val2 = val2.toLocaleUpperCase();
@@ -87,8 +87,8 @@ Template.groupPhoto.helpers({
                 return 1;
             } else {
                 return 0;
-            }            
-        } 
+            }
+        }
     }
     arrEnglish = arrEnglish.sort(compare("name"));
     arrPinyin = arrPinyin.sort(compare("pinyin"));
@@ -101,7 +101,7 @@ Template.groupPhoto.helpers({
         return 'bottom: 100px;';
       } else {
         return 'bottom: 40px;';
-      } 
+      }
     } else {
       return 'bottom: 60px;';
     }
@@ -268,7 +268,7 @@ Template.groupPhoto.events({
     if (e.currentTarget.id == 'labeled-del') {
       console.log('is not a');
       var lists = lebeledPreLists.get();
-      console.log(lists);     
+      console.log(lists);
       // 从person 表中删除相应face
       Meteor.call('remove-person-face',lists, function(err, res){
         if(err){
@@ -386,7 +386,7 @@ Template.groupPhotoImg1.onRendered(function(){
 
 Template.groupPhotoImg.helpers({
   has_selected: function(val1, val2){
-    var id = val1 + '|' + val2; 
+    var id = val1 + '|' + val2;
     return selected.get().indexOf(id) >= 0;
   },
   is_type: function(val){
@@ -438,7 +438,7 @@ Template.groupPhoto.close = function(){
   selected.set([]);
   selected2.set([]);
   lebeledPreLists.set([]);
-  
+
   view && Blaze.remove(view);
   view = null;
   $('body').css('overflow', 'auto');
@@ -491,7 +491,7 @@ Template.groupPhotoImg1.events({
 
     var group_id = Router.current().params._id;
     var deviceLists =  Devices.find({groupId: group_id}).fetch();
-    
+
     if (deviceLists && deviceLists.length > 0) {
       if(deviceLists.length == 1 && deviceLists[0].uuid) {
         return PUB.page('/timelineAlbum/'+deviceLists[0].uuid+'?from=groupchat');
@@ -505,7 +505,7 @@ Template.groupPhotoImg1.events({
   },
   'click li': function(e){
     var self = this;
-    
+
     // remove or reName Person
     var options = {
       title: '请选择',
@@ -600,7 +600,7 @@ Template.labelDatasetImg.onRendered(function(){
 Template.labelDatasetImg.helpers({
   isAutoLabel: function(id) {
     console.log("isAutoLabel: id = "+id);
-    return id != null && id.indexOf("_autolabel") >= 0;
+    return id != null && id.indexOf("autolabel") >= 0;
   },
   has_selected: function(id){
     return selected2.get().indexOf(id) >= 0;
@@ -655,7 +655,7 @@ Template.person_labelDataset.close = function(){
   limit3.set(0);
   selected2.set([]);
   lebeledPreLists.set([]);
-  
+
   dadaset_view && Blaze.remove(dadaset_view);
   dadaset_view = null;
 };
@@ -765,8 +765,3 @@ Template.person_labelDataset.events({
     }
   }
 });
-
-
-
-
-
