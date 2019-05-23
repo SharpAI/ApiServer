@@ -2713,6 +2713,69 @@ if Meteor.isServer
     this.response.end('{"result": "ok"}\n')
   )
   #陌生人图片信息
+  Router.route('/restapi/workai_autolabel/single', {where: 'server'}).post(()->
+      if this.request.body.hasOwnProperty('imgs')
+        imgs = this.request.body.imgs
+      if this.request.body.hasOwnProperty('img_gif')
+        img_gif = this.request.body.img_gif
+      if this.request.body.hasOwnProperty('isStrange')
+        isStrange = this.request.body.isStrange
+      if this.request.body.hasOwnProperty('createTime')
+        createTime = this.request.body.createTime
+      if this.request.body.hasOwnProperty('group_id')
+        group_id = this.request.body.group_id
+      if this.request.body.hasOwnProperty('camera_id')
+        cid = this.request.body.camera_id
+      if this.request.body.hasOwnProperty('uuid')
+        uuid = this.request.body.uuid
+      if this.request.body.hasOwnProperty('tid')
+        trackerId = this.request.body.tid
+
+      unless imgs and img_gif and group_id and uuid
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+
+      user = Meteor.users.findOne({username: uuid})
+      unless user
+        console.log("restapi/workai_autolabel/single: user is null")
+        return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
+
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        console.log("restapi/workai_autolabel/single: userGroups is null")
+        return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
+
+      faceId = new Mongo.ObjectID()._str
+
+      userGroups.forEach((userGroup)->
+        person_name = 'Guest_' + new Mongo.ObjectID()._str;
+        for img in imgs
+          PERSON.setName(
+            userGroup.group_id,
+            uuid,
+            faceId,
+            img.url,
+            person_name
+          )
+          LABLE_DADASET_Handle.insert({
+            group_id: userGroup.group_id,
+            uuid:     uuid,
+            id:       faceId,
+            url:      img.url,
+            name:     person_name,
+            sqlid:    img.sqlid,
+            style:    img.style,
+            action:   'Stranger',
+            faceId:   faceId,
+          })
+
+          insert_msg2(faceId, img.url, uuid, img.img_type, img.accuracy, img.fuzziness, img.sqlid, img.style, null, null, trackerId)
+      )
+
+      #console.log(Strangers.find({}).fetch())
+      this.response.end('{"result": "ok"}\n')
+  )
+
+  #陌生人图片信息
   Router.route('/restapi/updateStrangers', {where: 'server'}).post(()->
       if this.request.body.hasOwnProperty('imgs')
         imgs = this.request.body.imgs
