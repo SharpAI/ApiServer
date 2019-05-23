@@ -93,9 +93,89 @@ function checkFaceData(face) {
   }
 
   if (!Devices.findOne({uuid: uuid})) {
-    throw new Meteor.Error('error-deivce-not-existed', 'Device(' + uuid + ')  do not exist!');
+    return api.failure('Device(' + uuid + ')  not found', 'error-device-not-found', 404);
   }
 }
+
+Api.addRoute('groups/:groupId/strangers/:strangerId/label', {
+  authRequired: false,
+}, {
+  post: function() {
+    try {
+      var groupId = this.urlParams.groupId && this.urlParams.groupId.trim();
+      var strangerId = this.urlParams.strangerId && this.urlParams.strangerId.trim();
+
+      var name = this.bodyParams.name && this.bodyParams.name.trim();
+      if (!name) {
+        throw new Meteor.Error('error-groups-strangers-param-not-provided', 'The parameter "name" is required');
+      }
+
+      var stranger = Strangers.findOne(strangerId);
+
+      Meteor.call('get-id-by-name1', stranger.uuid, name, stranger.group_id, function(err, result) {        
+        var faceId = (result && result.faceId) || stranger.imgs[0].faceid;   
+        var setNames = [];
+
+        _.each(stranger.imgs, function(img) {
+          if (!_.contains(['front', 'human_shape'], img.style) && img.fuzziness >= 100) return;
+
+          var transetObj = {
+            group_id: stranger.group_id,
+            type: 'trainset',
+            url: img.url,
+            person_id: img.faceid,
+            device_id: stranger.uuid,
+            face_id: faceId,
+            drop: false,
+            img_type: 'face',
+            style: img.style,
+            sqlid: img.sqlid
+          };
+          sendMqttMessage('/device/' + stranger.group_id, transetObj);
+
+          setNames.push({
+            uuid: stranger.uuid,
+            id: faceId,
+            url: img.url,
+            name: name,
+            sqlid: img.sqlid,
+            style: img.style
+          });
+
+          var person_info = {
+            'uuid': stranger.uuid,
+            'person_id': img.faceid,
+            'name': name,
+            'group_id': stranger.group_id,
+            'img_url': img.url,
+            'type': 'face',
+            'ts': new Date().getTime(),
+            'accuracy': img.accuracy,
+            'fuzziness': img.fuzziness,
+            'sqlid': img.sqlid,
+            'style': img.style          
+          }
+
+          var data = {
+            face_id: faceId,
+            person_info: person_info,
+            formLabel: true
+          }
+
+          Meteor.call('ai-checkin-out', data, function(err, result) {});
+        });
+
+        Meteor.call('set-person-names', stranger.group_id, setNames, function(err, result) {
+          Strangers.remove({_id: strangerId});
+        }); 
+      })
+
+      return api.success();
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  }
+})
 
 /**
  * 
@@ -120,7 +200,7 @@ function checkFaceData(face) {
  * }
  */
 Api.addRoute('groups/:groupId/faces', {
-  authRequired: false
+  authRequired: true
 }, {
   post: function () {
     try {
@@ -130,7 +210,7 @@ Api.addRoute('groups/:groupId/faces', {
       }
 
       if (!SimpleChat.Groups.findOne(groupId)) {
-        throw new Meteor.Error('error-group-not-existed', 'Group(' + groupId + ') do not exist!');
+        return api.failure('Group(' + groupId + ') not found', 'error-group-not-found', 404);
       }
 
       var params = this.bodyParams;
@@ -171,7 +251,7 @@ Api.addRoute('groups/:groupId/faces', {
  * }
  */
 Api.addRoute('groups/:groupId/faces/batch', {
-  authRequired: false
+  authRequired: true
 }, {
   post: function () {
     try {
@@ -181,7 +261,7 @@ Api.addRoute('groups/:groupId/faces/batch', {
       }
 
       if (!SimpleChat.Groups.findOne(groupId)) {
-        throw new Meteor.Error('error-group-not-existed', 'Group(' + groupId + ') do not exist!');
+        return api.failure('Group(' + groupId + ') not found', 'error-group-not-found', 404);
       }
 
       var params = this.bodyParams;
@@ -293,8 +373,60 @@ Api.addRoute('groups', {
   }
 });
 
+Api.addRoute('groups/:id', {
+  authRequired: true
+}, {
+  patch: function () {
+    try {
+      var name = this.bodyParams.name && this.bodyParams.name.trim();
+      var groupId = this.urlParams.id && this.urlParams.id.trim();
+      var group = SimpleChat.Groups.findOne(groupId);
+
+      if (!name) {
+        throw new Meteor.Error('error-group-param-not-provided', 'The parameter "name" is required');
+      }
+
+      if (!group) {
+        return api.failure('Group(' + groupId + ') not found', 'error-group-not-found', 404);
+      }
+
+      if (group.creator && group.creator.id !== this.userId) {
+        return api.failure('Group(' + groupId + ') failed to update', 'Permission Denied', 403);
+      }
+  
+      Meteor.call('updateGroupName', groupId, name);
+
+      return api.success();
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  },
+  delete: function() {
+    try {
+      var groupId = this.urlParams.id && this.urlParams.id.trim();
+      var group = SimpleChat.Groups.findOne(groupId);
+
+      if (!group) {
+        return api.failure('Group(' + groupId + ') not found', 'error-group-not-found', 404);
+      }
+
+      if (group.creator && group.creator.id !== this.userId) {
+        return api.failure('Group(' + groupId + ') failed to delete', 'Permission Denied', 403);
+      }
+
+      Meteor.call('creator-delete-group', groupId, this.userId);
+      Meteor.call('remove-group-user', groupId, this.userId);
+      
+      return api.success();
+    } catch (e) {
+      return api.failure(e.message, e.error);
+    }
+  }
+})
+
+// 组加新成员
 Api.addRoute('groups/:groupId/users', {
-  authRequired: false
+  authRequired: true
 }, {
   post: function() {
     try {
@@ -306,12 +438,12 @@ Api.addRoute('groups/:groupId/users', {
 
       var group = SimpleChat.Groups.findOne(this.urlParams.groupId);
       if (!group) {
-        throw new Meteor.Error('error-group-not-existed', 'Group(' + this.urlParams.groupId + ') do not exist!');
+        return api.failure('Group(' + this.urlParams.groupId + ') not found', 'error-group-not-found', 404);
       }
 
       var user = Meteor.users.findOne(userId);
       if (!user) {
-        throw new Meteor.Error('error-user-not-existed', 'User(' + userId + ') do not exist!');
+        return api.failure('User(' + userId + ') not found', 'error-user-not-found', 404);      
       }
 
       var groupUser = SimpleChat.GroupUsers.findOne({group_id: group._id, user_id: user._id});
@@ -345,7 +477,7 @@ Api.addRoute('groups/:groupId/person', {
       
       var group = SimpleChat.Groups.findOne(groupId);
       if (!group) {
-        throw new Meteor.Error('error-group-not-existed', 'Group(' + groupId + ') do not exist!');
+        return api.failure('Group(' + groupId + ') not found', 'error-group-not-found', 404);
       }
 
       return Person.find({group_id: groupId}, {fields: {group_id: 1, name: 1, url: 1, faceId: 1, faces: 1}}).fetch();

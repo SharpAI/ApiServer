@@ -1,7 +1,60 @@
 # App Server API
----------
 
-### Auth login（鉴权）
+
+## 目录
+
+- [注册账号](#注册账号)
+- [登陆](#登陆)
+- [退出](#退出)
+- [Person](#person)
+  - [查询persons](#查询persons)
+  - [获取person](#获取person)
+  - [重命名person](#重命名person)
+  - [删除person](#删除person)
+  - [删除被标注person的照片](#删除被标注人的照片)
+- [设备](#设备)
+  - [查询设备](#查询设备)
+  - [删除设备](#删除设备)
+- [Group](#group)
+  - [查询组](#查询组)
+  - [创建组](#创建组)
+  - [重命名组](#重命名组)
+  - [删除组](#删除组)
+  - [组的成员信息](#组的成员信息)
+  - [组加人](#组加人)
+  - [组加设备](#组加设备)
+  - [单张标注](#单张标注)
+  - [批量标注](#批量标注)
+  - [标注陌生人](#标注陌生人)
+- [AI Messages](#ai-message)
+  - [查询Messages](#查询messages)
+
+---------
+### 注册账号
+```
+POST /api/v1/sign-up
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  username       |  string   | yes       | 用户名             |
+|  email       |  string   | yes       | 用户名             |
+|  password    |  string   | yes       | 密码 len > 6         |
+
+```
+curl -X POST -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/sign-up -d '{"username": "test11", "email": "xxxx@xxx.xx", "password": "xxxxxx"}'
+```
+Example respones:
+
+```
+{
+  "success": true
+}
+```
+
+
+### 登陆
+
+登陆后返回authToken和userId,供需要鉴权才能访问的api使用，authToken没有过期时间，可一直使用。如需销毁authToken,请调用[退出](#退出)API。
 
 ```
 POST /api/v1/login
@@ -25,7 +78,8 @@ Example respones:
   }
 }
 ```
-### Auth logout
+### 退出
+退出将销毁authToken，如需要authToken可重新[登陆](#登陆)。
 
 ```
 POST /api/v1/logout
@@ -46,84 +100,8 @@ Example respones:
 ```
 
 
-### 单张标注
-```
-POST /api/v1/groups/:groupId/faces
-```
-| Attribute  | Type | Required | Description |
-|:------------|:------|:----------|:-------------|
-|  uuid       |  string   | yes       | 设备id             |
-|  imgUrl    |  string   | yes       | 人脸图片url(112*112)           |
-|  name    |  string   | yes       | 标注人名 (和faceId 至少存在一个)           |
-|  faceId    |  string   | yes       | 标注faceId  (和name 至少存在一个)           |
-|  type       | string    | yes       | 图片类型 face/human_shape    |
-|  position   |  null     | no       | 设备位置            |
-|  current_ts |  integer    | no       | 当前时间 毫秒   |
-|  accuracy   |  boolean  | no       | 图片精准度            |
-|  fuzziness  | integer   | no       | 图片模糊度            |
-|  sqlid      |  integer  | no       | 本地数据库id            |
-|  style      | string    | no       | 人脸类型(前脸 front, 左脸 left_side, 右脸right_side) 默认：front           |
-|  img_ts     | integer   | no       | 图片拍摄时间            |
-|  tid      | string    | no       | 连续图片ID            |
-|  p_ids      | string    | no       | 同时拍摄的同一人图片id            |
-```
-创建data.json文件
-{
-  "uuid":       "28D6R16C12005885",
-  "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f",
-  “name”:       "TESTNAME",
-  // "faceId":     "xxxx", 使用name或者faceId标注
-  "type":       "face",
-  "current_ts": 1522276593387.0,
-  "accuracy":   1,
-  "fuzziness":  443,
-  "sqlid":      0,
-  "style":      "front",
-  "img_ts":     "1522276708297.0"
-}
-
-curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces
-```
-Example respones:
-```
-{
-  "success": true
-}
-```
-### 多张批量标注
-```
-POST /api/v1/groups/:groupId/faces/batch
-```
-```
-创建data.json文件
-{
-  "create": [
-    {
-      "uuid":       "28D6R16C12005885",
-      "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
-      “name”:       "TESTNAME1",  // 图片1要标注的名字
-      ... // 其他参数和单张标注格式相同
-    },
-    {
-      "uuid":       "28D6R16C12005885",
-      "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c9591", // 图片2
-      “name”:       "TESTNAME2", // 图片2要标注的名字
-      ...
-    }
-    ...
-  ] 
-}
-
-curl -X POST "@data.json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces/batch
-```
-Example respones:
-```
-{
-  "success": true
-}
-```
-
-### 查询person
+### Person
+### 查询persons
 ```
 GET /api/v1/persons
 ```
@@ -152,7 +130,7 @@ Example respones:
 ]
 ```
 
-### show person
+### 获取person
 ```
 GET api/v1/persons/:id
 ```
@@ -170,16 +148,17 @@ Example respones:
 }
 ```
 
-### person重命名
+### 重命名person
 ```
-POST /api/v1/persons/:id
+// 需鉴权
+PATCH /api/v1/persons/:id
 ```
 | Attribute  | Type | Required | Description |
 |:------------|:------|:----------|:-------------|
 |  name    |  string   | yes       | 新标注人名  |
 
 ```
-curl -X POST  http://testworkai.tiegushi.com/api/v1//persons/xxxx -d '{"name":"test2"}'
+curl -X PATCH -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json"  http://testworkai.tiegushi.com/api/v1/persons/xxxx -d '{"name":"test2"}'
 ```
 Example respones:
 ```
@@ -190,11 +169,12 @@ Example respones:
 
 ### 删除person
 ```
+// 需鉴权
 DELETE /api/v1/persons/:id
 ```
 
 ```
-curl -X DELETE http://testworkai.tiegushi.com/api/v1/persons/xxxx
+curl -X DELETE -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/persons/xxxx
 ```
 Example respones:
 ```
@@ -203,6 +183,41 @@ Example respones:
 }
 ```
 
+### 删除被标注人的照片
+```
+// 需鉴权
+PUT /api/v1/persons/:personId/faces/deletion
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  faces    |  Array(object)   | yes       | 要删除照片对象  { faces: [ {id: faceId, url: faceUrl}, ...] }  |
+
+```
+创建data.json文件
+{
+  "faces": [
+    {
+      "id":     "28D6R16C12005885",   // faceId
+      "url":    "http://workaiossqn.tiegushi.co/d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
+ 
+    },
+    {
+      "id":       "28D6R16C12005885",
+      "url":    "http://workaiossqn.tiegushi.co/d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
+    },
+    ......
+  ]
+}
+
+curl -X PUT "@data.json"  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/persons/xxxxxx/faces/deletion
+```
+Example respones:
+```
+{
+  "success": true
+}
+```
+### 设备
 ### 查询设备
 ```
 GET /api/v1/devices
@@ -219,7 +234,7 @@ Example respones:
 [
   {
     "uuid": "xxxx", // 设备id
-    "name": "xxxx", // 标记人名
+    "name": "xxxx", // 设备名称
     "in_out": "inout", // 设备进出类型
     "groupId": "xxxxxxx", // 组id
     "createAt": "2019-02-22T03:23:35.904Z",  // 创建时间
@@ -232,11 +247,12 @@ Example respones:
 
 ### 删除设备
 ```
+// 需鉴权
 DELETE /api/v1/devices/:uuid
 ```
 
 ```
-curl -X DELETE http://testworkai.tiegushi.com/api/v1/devices/xxxx
+curl -X DELETE  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/devices/xxxx
 ```
 Example respones:
 ```
@@ -244,8 +260,8 @@ Example respones:
   "success": true  // 设备成功删除
 }
 ```
-
-### 查询组信息
+### Group
+### 查询组
 ```
 GET /api/v1/groups
 ```
@@ -278,9 +294,10 @@ Example respones:
 }
 ```
 
-### 创建组(需要鉴权)
+### 创建组
 ```
-POST /api/groups
+// 需鉴权
+POST /api/v1/groups
 ```
 | Attribute  | Type | Required | Description |
 |:------------|:------|:----------|:-------------|
@@ -288,7 +305,7 @@ POST /api/groups
 
 ```
 // X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
-curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" http://testworkai.tiegushi.com/api/v1/groups -d "name=xxx"
+curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups -d "name=xxx"
 ```
 Example respones:
 ```
@@ -297,15 +314,18 @@ Example respones:
 }
 ```
 
-### 加入组
+### 重命名组
 ```
-POST /api/groups/:groupId/users
+// 需鉴权
+PATCH /api/v1/groups/:id
 ```
 | Attribute  | Type | Required | Description |
 |:------------|:------|:----------|:-------------|
-|  userId    |  string   | yes    | userId          |
+|  name    |  string   | yes    | 组新名称          |
 ```
-curl -X POST  http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837/users -d "userId=ejxqmx3PDK8yo88F"
+// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
+
+curl -X PATCH  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837 -d '{"name":"test2"}'
 ```
 
 Example respones:
@@ -315,9 +335,30 @@ Example respones:
 }
 ```
 
-### 显示组内被标注的成员信息
+### 删除组
 ```
-GET /api/groups/:groupId/person
+// 需鉴权
+DELETE /api/v1/groups/:id
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  name    |  string   | yes    | 组新名称          |
+```
+// X-Auth-Token 和 X-User-Id 可通过/api/login 获取鉴权信息
+
+curl -X DELETE  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837
+```
+
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### 组的成员信息
+```
+GET /api/v1/groups/:groupId/person
 ```
 ```
 curl -X GET  http://testworkai.tiegushi.com/api/v1/groups/9933aa9c429695857e9d52dd/person 
@@ -343,9 +384,29 @@ Example respones:
 ]
 ```
 
-### 添加盒子(需鉴权)
+### 组加人
 ```
-POST /groups/:groupId/devices
+// 需鉴权
+POST /api/v1/groups/:groupId/users
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  userId    |  string   | yes    | userId          |
+```
+curl -X POST  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/8b129fc47a3fa97cbd6f7837/users -d "userId=ejxqmx3PDK8yo88F"
+```
+
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### 组加设备
+```
+// 需鉴权
+POST /api/v1/groups/:groupId/devices
 ```
 | Attribute  | Type | Required | Description |
 |:------------|:------|:----------|:-------------|
@@ -364,7 +425,106 @@ Example respones:
 }
 ```
 
-### 查询AI Message
+### 单张标注
+```
+//需要鉴权
+POST /api/v1/groups/:groupId/faces
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  uuid       |  string   | yes       | 设备id             |
+|  imgUrl    |  string   | yes       | 人脸图片url(112*112)           |
+|  name    |  string   | yes       | 标注人名 (和faceId 至少存在一个)           |
+|  faceId    |  string   | yes       | 标注faceId  (和name 至少存在一个)           |
+|  type       | string    | yes       | 图片类型 face/human_shape    |
+|  position   |  null     | no       | 设备位置            |
+|  current_ts |  integer    | no       | 当前时间 毫秒   |
+|  accuracy   |  boolean  | no       | 图片精准度            |
+|  fuzziness  | integer   | no       | 图片模糊度            |
+|  sqlid      |  integer  | no       | 本地数据库id            |
+|  style      | string    | no       | 人脸类型(前脸 front, 左脸 left_side, 右脸right_side) 默认：front           |
+|  img_ts     | integer   | no       | 图片拍摄时间            |
+|  tid      | string    | no       | 连续图片ID            |
+|  p_ids      | string    | no       | 同时拍摄的同一人图片id            |
+```
+创建data.json文件
+{
+  "uuid":       "28D6R16C12005885",
+  "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f",
+  “name”:       "TESTNAME",
+  "faceId":     "xxxx", //使用name或者faceId标注
+  "type":       "face",
+  "current_ts": 1522276593387.0,
+  "accuracy":   1,
+  "fuzziness":  443,
+  "sqlid":      0,
+  "style":      "front",
+  "img_ts":     "1522276708297.0"
+}
+
+curl -X POST "@data.json"  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces
+```
+Example respones:
+```
+{
+  "success": true
+}
+```
+### 批量标注
+```
+//需要鉴权
+POST /api/v1/groups/:groupId/faces/batch
+```
+```
+创建data.json文件
+{
+  "create": [
+    {
+      "uuid":       "28D6R16C12005885",
+      "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
+      “name”:       "TESTNAME1",  // 图片1要标注的名字
+      ... // 其他参数和单张标注格式相同
+    },
+    {
+      "uuid":       "28D6R16C12005885",
+      "imgUrl":    "http://workaiossqn.tiegushi.co  d25a07c-32d9-11e8-8756-a4caa09c9591", // 图片2
+      “name”:       "TESTNAME2", // 图片2要标注的名字
+      ...
+    }
+    ...
+  ] 
+}
+
+curl -X POST "@data.json"  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces/batch
+```
+Example respones:
+```
+{
+  "success": true
+}
+```
+### 标注陌生人
+标注AI识别到的陌生人
+```
+POST groups/:groupId/strangers/:strangerId/label
+```
+| Attribute  | Type | Required | Description |
+|:------------|:------|:----------|:-------------|
+|  name    |  string   | yes    | 标注人名            |
+
+```
+curl -X POST -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/xxxxx/strangers/xxxxx/label  -d '{"name": "test"}'
+```
+
+Example respones:
+```
+{
+  "success": true
+}
+```
+
+### Ai Message
+### 查询Messages
 ```
 GET /api/v1/ai-messages
 ```
