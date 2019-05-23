@@ -2714,6 +2714,7 @@ if Meteor.isServer
   )
   #陌生人图片信息
   Router.route('/restapi/workai_autolabel/single', {where: 'server'}).post(()->
+      #console.log('single labelling',this.request.body)
       if this.request.body.hasOwnProperty('imgs')
         imgs = this.request.body.imgs
       if this.request.body.hasOwnProperty('img_gif')
@@ -2730,15 +2731,16 @@ if Meteor.isServer
         uuid = this.request.body.uuid
       if this.request.body.hasOwnProperty('tid')
         trackerId = this.request.body.tid
-
-      unless imgs and img_gif and group_id and uuid
+      unless imgs and group_id and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
+      #console.log('username',uuid)
       user = Meteor.users.findOne({username: uuid})
       unless user
         console.log("restapi/workai_autolabel/single: user is null")
         return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
 
+      #console.log("to label single on device",user)
       userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
       unless userGroups
         console.log("restapi/workai_autolabel/single: userGroups is null")
@@ -2753,22 +2755,21 @@ if Meteor.isServer
             userGroup.group_id,
             uuid,
             faceId,
-            img.url,
+            img,
             person_name
           )
           LABLE_DADASET_Handle.insert({
             group_id: userGroup.group_id,
             uuid:     uuid,
             id:       faceId,
-            url:      img.url,
+            url:      img,
             name:     person_name,
-            sqlid:    img.sqlid,
-            style:    img.style,
+            sqlid:    0,
+            style:    'front',
             action:   'Stranger',
             faceId:   faceId,
           })
-
-          insert_msg2(faceId, img.url, uuid, img.img_type, img.accuracy, img.fuzziness, img.sqlid, img.style, null, null, trackerId)
+          #insert_msg2(faceId, img.url, uuid, img.img_type, img.accuracy, img.fuzziness, img.sqlid, img.style, null, null, trackerId)
       )
 
       #console.log(Strangers.find({}).fetch())
