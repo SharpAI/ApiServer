@@ -2714,7 +2714,7 @@ if Meteor.isServer
   )
   #陌生人图片信息
   Router.route('/restapi/workai_autolabel/single', {where: 'server'}).post(()->
-      console.log('single labelling',this.request.body)
+      #console.log('single labelling',this.request.body)
       if this.request.body.hasOwnProperty('imgs')
         imgs = this.request.body.imgs
       if this.request.body.hasOwnProperty('img_gif')
@@ -2731,17 +2731,16 @@ if Meteor.isServer
         uuid = this.request.body.uuid
       if this.request.body.hasOwnProperty('tid')
         trackerId = this.request.body.tid
-      console.log('hi')
       unless imgs and group_id and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
-      console.log('username',uuid)
+      #console.log('username',uuid)
       user = Meteor.users.findOne({username: uuid})
       unless user
         console.log("restapi/workai_autolabel/single: user is null")
         return this.response.end('{"result": "failed!", "cause": "user is null."}\n')
 
-      console.log("to label single on device",user)
+      #console.log("to label single on device",user)
       userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
       unless userGroups
         console.log("restapi/workai_autolabel/single: userGroups is null")
