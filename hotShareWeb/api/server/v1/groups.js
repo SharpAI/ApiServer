@@ -112,8 +112,8 @@ Api.addRoute('groups/:groupId/strangers/:strangerId/label', {
 
       var stranger = Strangers.findOne(strangerId);
 
-      Meteor.call('get-id-by-name1', stranger.uuid, name, stranger.group_id, function(err, result) {        
-        var faceId = (result && result.faceId) || stranger.imgs[0].faceid;   
+      Meteor.call('get-id-by-name1', stranger.uuid, name, stranger.group_id, function(err, result) {
+        var faceId = (result && result.faceId) || stranger.imgs[0].faceid;
         var setNames = [];
 
         _.each(stranger.imgs, function(img) {
@@ -153,7 +153,7 @@ Api.addRoute('groups/:groupId/strangers/:strangerId/label', {
             'accuracy': img.accuracy,
             'fuzziness': img.fuzziness,
             'sqlid': img.sqlid,
-            'style': img.style          
+            'style': img.style
           }
 
           var data = {
@@ -167,7 +167,7 @@ Api.addRoute('groups/:groupId/strangers/:strangerId/label', {
 
         Meteor.call('set-person-names', stranger.group_id, setNames, function(err, result) {
           Strangers.remove({_id: strangerId});
-        }); 
+        });
       })
 
       return api.success();
@@ -178,7 +178,7 @@ Api.addRoute('groups/:groupId/strangers/:strangerId/label', {
 })
 
 /**
- * 
+ *
  * 标注单张
  * @urlParam groupId {string}
  * @bodyParam
@@ -238,15 +238,15 @@ Api.addRoute('groups/:groupId/faces', {
 });
 
 /**
- * 
+ *
  * batch
  * @urlParam  groupId {string}
- * @bodyParam 
+ * @bodyParam
  * {
  *   "create": [
  *      {obj1(格式同标注单张 bodyParam)},
  *      {obj2(格式同标注单张 bodyParam)},
- *      ... 
+ *      ...
  *   ]
  * }
  */
@@ -286,10 +286,10 @@ Api.addRoute('groups/:groupId/faces/batch', {
         items.push(item);
       });
 
-      Meteor.setTimeout(function() { 
+      Meteor.setTimeout(function() {
         label(groupId, items);
       }, 200);
-      
+
       return api.success();
     } catch (e) {
       return api.failure(e.message, e.error);
@@ -307,11 +307,11 @@ Api.addRoute('groups', {
         var params    = this.queryParams;
         var groupName = params.groupName && params.groupName.trim();
         var creator   = params.creator&& params.creator.trim();
-  
+
         if (!groupName || !creator) {
           throw new Meteor.Error('error-groups-param-not-provided', 'The parameter "groupName" or "creator" is required');
         }
-  
+
         var group = SimpleChat.Groups.findOne({name: groupName, 'creator.name': creator});
         return group || api.success({ result: '未找到对应结果' });
       } catch (e) {
@@ -322,7 +322,7 @@ Api.addRoute('groups', {
   post: function () {
     try {
       var params = this.bodyParams;
-      
+
       var name = params.name && params.name.trim();
       if (!name) {
         throw new Meteor.Error('error-groups-param-not-provided', 'The parameter "name" is required');
@@ -354,7 +354,7 @@ Api.addRoute('groups', {
         if(err) {
           throw new Meteor.Error('error-groups-created-error', 'created failed!');
         }
-        
+
         SimpleChat.GroupUsers.insert({
           group_id: id,
           group_name: name,
@@ -365,7 +365,7 @@ Api.addRoute('groups', {
           create_time: new Date()
         });
       });
-      
+
       return {groupId: id};
     } catch (e) {
       return api.failure(e.message, e.error);
@@ -393,7 +393,7 @@ Api.addRoute('groups/:id', {
       if (group.creator && group.creator.id !== this.userId) {
         return api.failure('Group(' + groupId + ') failed to update', 'Permission Denied', 403);
       }
-  
+
       Meteor.call('updateGroupName', groupId, name);
 
       return api.success();
@@ -416,7 +416,7 @@ Api.addRoute('groups/:id', {
 
       Meteor.call('creator-delete-group', groupId, this.userId);
       Meteor.call('remove-group-user', groupId, this.userId);
-      
+
       return api.success();
     } catch (e) {
       return api.failure(e.message, e.error);
@@ -443,7 +443,7 @@ Api.addRoute('groups/:groupId/users', {
 
       var user = Meteor.users.findOne(userId);
       if (!user) {
-        return api.failure('User(' + userId + ') not found', 'error-user-not-found', 404);      
+        return api.failure('User(' + userId + ') not found', 'error-user-not-found', 404);
       }
 
       var groupUser = SimpleChat.GroupUsers.findOne({group_id: group._id, user_id: user._id});
@@ -474,7 +474,7 @@ Api.addRoute('groups/:groupId/person', {
   get: function() {
     try {
       var groupId = this.urlParams.groupId && this.urlParams.groupId.trim();
-      
+
       var group = SimpleChat.Groups.findOne(groupId);
       if (!group) {
         return api.failure('Group(' + groupId + ') not found', 'error-group-not-found', 404);
@@ -511,4 +511,3 @@ Api.addRoute('groups/:groupId/devices', {
     }
   }
 })
-

@@ -756,6 +756,47 @@ Template.boxMonitorsAlive.events({
   'click .restarMonitor': function (e) {
     var cid = Session.get('monitorBoxId');
     Meteor.call('restartMonitorClient', cid);
+  },
+  'click .btnParamView': function (evt, t) {
+    t.curClientId = $(evt.currentTarget).data('id');
+
+    var peer = peerCollection.findOne({clientID: t.curClientId});
+    if (peer && peer.paramConfigs) {
+      $('#blurythreshold').val(peer.paramConfigs.blury_threhold);
+      $('#score1').val(peer.paramConfigs.score_1);
+      $('#score2').val(peer.paramConfigs.score_2);
+      $('#fuzziness1').val(peer.paramConfigs.fuzziness_1);
+      $('#fuzziness2').val(peer.paramConfigs.fuzziness_2);
+      $('#update_interval').val(peer.paramConfigs._interval);
+    }
+    else {
+      $('#blurythreshold').val('');
+      $('#score1').val('');
+      $('#score2').val('');
+      $('#fuzziness1').val('');
+      $('#fuzziness2').val('');
+      $('#update_interval').val('');
+    }
+
+    $('#boxParamConfigModal').modal('show');
+  },
+  'click #btnParamConfigCancel': function (e) {
+    $('#boxParamConfigModal').modal('hide');
+  },
+  'submit #frmParamConfig': function(evt, t) {
+    evt.preventDefault();
+
+    var blury = $('#blurythreshold').val();
+    var score1 = $('#score1').val();
+    var score2 = $('#score2').val();
+    var fuz1 = $('#fuzziness1').val();
+    var fuz2 = $('#fuzziness2').val();
+    var upInterval = $('#update_interval').val();
+
+    var paramConfig = {paramConfigs: {clientId: t.curClientId, blury_threhold: blury, score_1: score1, score_2: score2, fuzziness_1: fuz1, fuzziness_2: fuz2, _interval: upInterval}}
+    
+    Meteor.call('setDeviceParamConfigs', paramConfig);
+    $('#boxParamConfigModal').modal('hide');
   }
   // ,
   // 'click .update-config, click .check-out': function (e) {

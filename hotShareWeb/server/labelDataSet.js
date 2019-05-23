@@ -34,13 +34,34 @@ LABLE_DADASET_Handle = {
 	      	}
 	    }
       console.log('LableDadaSet is:', JSON.stringify(datasetObj));
-    	LableDadaSet.insert(datasetObj);
+      LableDadaSet.insert(datasetObj);
+      if (doc.faceId) {
+          trainsetObj = {
+                group_id: group_id,
+                type: 'trainset',
+                url: doc.url,
+                device_id: doc.uuid,
+                face_id: doc.faceId,
+                drop: false,
+                img_type: 'face',
+                style:doc.style,
+                sqlid:doc.sqlid
+                };
+          console.log("LABLE_DADASET_Handle.insert: " + JSON.stringify(trainsetObj));
+          sendMqttMessage('/device/'+group_id, trainsetObj);
+      }
     }
     else{
     	LABLE_DADASET_Handle.update(doc);
     }
     Person.update({group_id:group_id, name: name}, {
       $inc: {imgCount: 1}
+    });
+    SimpleChat.Groups.update({_id: group_id},{$set:{last_time: new Date()}}, function(err,result) {
+        if (!err)
+            console.log("Update last_time in group suc: "+group_id)
+        else
+            console.log("Update last_time in group failed: "+group_id)
     });
   },
   update:function(doc){
@@ -88,16 +109,72 @@ LABLE_DADASET_Handle = {
     	doc.name = dataset.name;
     	LABLE_DADASET_Handle.updatePersonWithName(doc);
     }
+    SimpleChat.Groups.update({_id: group_id},{$set:{last_time: new Date()}}, function(err,result){
+        if (!err)
+            console.log("Update last_time in group suc: "+group_id)
+        else
+            console.log("Update last_time in group failed: "+group_id)
+    });
   },
   remove:function(doc){
   	console.log('LableDadaSet remove with :' + JSON.stringify(doc));
     if (!doc || !doc.group_id || !doc.id || !doc.url) {
       return;
     }
+    var dataset = LableDadaSet.findOne({group_id:doc.group_id,url:doc.url});
+    if (!dataset) {
+        return;
+    }
     LableDadaSet.remove({group_id:doc.group_id,url:doc.url});
     LABLE_DADASET_Handle.updatePerson(doc);
+    if (dataset.faceId) {
+        trainsetObj = {
+            group_id: doc.group_id,
+            type: 'trainset',
+            url: doc.url,
+            device_id: doc.uuid,
+            face_id: dataset.faceId,
+            drop: true,
+            img_type: 'face',
+            style:dataset.style,
+            sqlid:dataset.sqlid
+        };
+        console.log("LABLE_DADASET_Handle.remove: " + JSON.stringify(trainsetObj));
+        sendMqttMessage('/device/'+doc.group_id, trainsetObj);
+    }
     Person.update({group_id:doc.group_id, name: doc.name}, {
       $inc: {imgCount: -1}
+    });
+    var group_id = doc.group_id;
+    SimpleChat.Groups.update({_id: group_id},{$set:{last_time: new Date()}}, function(err,result) {
+        if (!err)
+            console.log("Update last_time in group suc: "+group_id)
+        else
+            console.log("Update last_time in group failed: "+group_id)
+    });
+  },
+  removePerson: function(doc){
+    if (!doc || !doc.group_id || !doc.faceId || !doc.name) {
+      return;
+    }
+    var dataset = LableDadaSet.findOne({group_id:doc.group_id, name:doc.name});
+    if (!dataset) {
+        return;
+    }
+    LableDadaSet.remove({group_id:doc.group_id, name: person.name});
+    trainsetObj = {
+        group_id: doc.group_id,
+        face_id: doc.faceId,
+        drop: true,
+        drop_person:true
+    };
+    console.log("LABLE_DADASET_Handle.remove: " + JSON.stringify(trainsetObj));
+    sendMqttMessage('/device/'+doc.group_id, trainsetObj);
+    SimpleChat.Groups.update({_id: doc.group_id},{$set:{last_time: new Date()}}, function(err,result) {
+        if (!err)
+            console.log("Update last_time in group suc: "+group_id)
+        else
+            console.log("Update last_time in group failed: "+group_id)
     });
   },
   updatePersonWithName:function(doc){

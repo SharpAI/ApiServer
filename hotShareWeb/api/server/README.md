@@ -118,7 +118,7 @@ Example respones:
 ```
 [
   {
-    "_id": "02db41813a9513816357444b", 
+    "_id": "02db41813a9513816357444b",
     "group_id": "xxx", // 组id
     "faceId": "xxxxxxxxxx", // 人脸id
     "url": "http://workaiossqn.tiegushi.com/8a89f902-32d8-11e8-8756-a4caa09c959f", // 人脸的url
@@ -199,7 +199,7 @@ PUT /api/v1/persons/:personId/faces/deletion
     {
       "id":     "28D6R16C12005885",   // faceId
       "url":    "http://workaiossqn.tiegushi.co/d25a07c-32d9-11e8-8756-a4caa09c959f", // 图片1
- 
+
     },
     {
       "id":       "28D6R16C12005885",
@@ -361,7 +361,7 @@ Example respones:
 GET /api/v1/groups/:groupId/person
 ```
 ```
-curl -X GET  http://testworkai.tiegushi.com/api/v1/groups/9933aa9c429695857e9d52dd/person 
+curl -X GET  http://testworkai.tiegushi.com/api/v1/groups/9933aa9c429695857e9d52dd/person
 ```
 
 Example respones:
@@ -421,7 +421,7 @@ curl -X POST -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "
 Example respones:
 ```
 {
-  "success": true 
+  "success": true
 }
 ```
 
@@ -492,7 +492,7 @@ POST /api/v1/groups/:groupId/faces/batch
       ...
     }
     ...
-  ] 
+  ]
 }
 
 curl -X POST "@data.json"  -H "X-Auth-Token: P-ybnuSg6pHZJt_kx_nUdy5kEQYww2h3rursj13LkxX" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://testworkai.tiegushi.com/api/v1/groups/xxxxxx/faces/batch
@@ -549,7 +549,3 @@ Example respones:
   }
 ]
 ```
-
-
-
-
