@@ -184,18 +184,25 @@ PERSON = {
         is_read: false,
         is_trigger_train:true
       };
-      try{
-        var now = new Date().getTime();
-        var groupLastTrain = gLastTrainTimestamp[group_id];
-        if (groupLastTrain == undefined || groupLastTrain == null)
-          groupLastTrain = 0;
-        if (now - groupLastTrain > 10*1000) {
-          gLastTrainTimestamp[group_id] = now;
-          sendMqttGroupMessage(group_id,msg);
-        }
-      } catch (e){
-        console.log('try sendMqttGroupMessage Err:',e)
-      }
+      
+      do {
+        Meteor.setTimeout(function() {
+          try{
+            var now = new Date().getTime();
+            var groupLastTrain = gLastTrainTimestamp[group_id];
+            if (groupLastTrain == undefined || groupLastTrain == null)
+              groupLastTrain = 0;
+            if (now - groupLastTrain > 10*1000) {
+              gLastTrainTimestamp[group_id] = now;
+              sendMqttGroupMessage(group_id,msg);
+            }
+          } catch (e){
+            console.log('try sendMqttGroupMessage Err:',e);
+          }
+        }, 5 * 1000 * trainCount);
+
+        ++trainCount;
+      } while (trainCount <= 3);
     }
     //此段代码会导致person表的名字会被篡改
     /*
