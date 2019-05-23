@@ -120,6 +120,7 @@ PERSON = {
     var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
     var device = Devices.findOne({uuid: uuid});
     var personName = PersonNames.findOne({group_id: group_id, name: name});
+    var trainCount = 1;
 
     if (!personName)
       PersonNames.insert({group_id: group_id, url: url, id: id, name: name, createAt: new Date(), updateAt: new Date()});
@@ -172,6 +173,7 @@ PERSON = {
             icon: device_user.profile.icon
           };
       }
+
       var msg = {
         _id: new Mongo.ObjectID()._str,
         form:form,
@@ -183,18 +185,25 @@ PERSON = {
         is_read: false,
         is_trigger_train:true
       };
-      try{
-        var now = new Date().getTime();
-        var groupLastTrain = gLastTrainTimestamp[group_id];
-        if (groupLastTrain == undefined || groupLastTrain == null)
-          groupLastTrain = 0;
-        if (now - groupLastTrain > 10*1000) {
-          gLastTrainTimestamp[group_id] = now;
-          sendMqttGroupMessage(group_id,msg);
-        }
-      } catch (e){
-        console.log('try sendMqttGroupMessage Err:',e)
-      }
+
+      do {
+        Meteor.setTimeout(function() { 
+          try{
+            var now = new Date().getTime();
+            var groupLastTrain = gLastTrainTimestamp[group_id];
+            if (groupLastTrain == undefined || groupLastTrain == null)
+              groupLastTrain = 0;
+            if (now - groupLastTrain > 10*1000) {
+              gLastTrainTimestamp[group_id] = now;
+              sendMqttGroupMessage(group_id,msg);
+            }
+          } catch (e){
+            console.log('try sendMqttGroupMessage Err:',e);
+          } 
+        }, 5 * 1000 * trainCount);
+
+        ++trainCount;
+      } while (trainCount <= 3);
     }
     //此段代码会导致person表的名字会被篡改
     /*
@@ -276,18 +285,25 @@ PERSON = {
         is_read: false,
         is_trigger_train:true
       };
-      try{
-        var now = new Date().getTime();
-        var groupLastTrain = gLastTrainTimestamp[group_id];
-        if (groupLastTrain == undefined || groupLastTrain == null)
-          groupLastTrain = 0;
-        if (now - groupLastTrain > 10*1000) {
-          gLastTrainTimestamp[group_id] = now;
-          sendMqttGroupMessage(group_id,msg);
-        }
-      } catch (e){
-        console.log('try sendMqttGroupMessage Err:',e)
-      }
+
+      do {
+        Meteor.setTimeout(function() { 
+          try{
+            var now = new Date().getTime();
+            var groupLastTrain = gLastTrainTimestamp[group_id];
+            if (groupLastTrain == undefined || groupLastTrain == null)
+              groupLastTrain = 0;
+            if (now - groupLastTrain > 10*1000) {
+              gLastTrainTimestamp[group_id] = now;
+              sendMqttGroupMessage(group_id,msg);
+            }
+          } catch (e){
+            console.log('try sendMqttGroupMessage Err:',e);
+          } 
+        }, 5 * 1000 * trainCount);
+        
+        ++trainCount;
+      } while (trainCount <= 3);
     }
     callback && callback();
     return person;

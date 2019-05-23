@@ -954,7 +954,7 @@ if Meteor.isServer
       unless userGroups
         console.log("restapi/workai_autolabel: userGroups is null")
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')
-
+      
       faceId = if person_id != '' then person_id else new Mongo.ObjectID()._str
 
       #random_id = if person_id != '' then new Mongo.ObjectID()._str+"-autolabel" else faceId
@@ -1064,7 +1064,6 @@ if Meteor.isServer
             name:     person_name,
             sqlid:    person.sqlid,
             style:    person.style,
-
             action:   'AutoLabel',
             faceId:   random_id,
           })
@@ -2758,6 +2757,7 @@ if Meteor.isServer
         return this.response.end('{"result": "failed!", "cause":"userGroups is null."}\n')  
 
       faceId = new Mongo.ObjectID()._str  
+
       userGroups.forEach((userGroup)->
         person_name = 'Guest_' + new Mongo.ObjectID()._str;
         for img in imgs
