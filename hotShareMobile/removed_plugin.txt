@@ -1,2 +1,0 @@
-com.meteor.cordova-update@https://github.com/PluginCordova/cordova-update/tarball/d9d2ab83d475b3498a3d54da57e396737118d22d
-com.rd11.remote-controls@https://github.com/PluginCordova/ios-control-bar/tarball/d2a21848673f31ae3c64a9fa676087a8f3c372a6

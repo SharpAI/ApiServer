@@ -1,8 +1,0 @@
-app_identifier("org.sharpai.everywhere") # The bundle identifier of your app
-apple_id("xundong_km@163.com") # Your Apple email address
-
-itc_team_id("117184877") # App Store Connect Team ID
-team_id("D5Q4CA2T7C") # Developer Portal Team ID
-
-# For more information about the Appfile, see:
-#     https://docs.fastlane.tools/advanced/#appfile
