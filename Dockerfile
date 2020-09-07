@@ -1,5 +1,5 @@
 FROM kadirahq/meteord:base
-ADD hotShareWeb.tar.gz /bundle/
+ADD ApiServer.tar.gz /bundle/
 RUN mv /bundle/bundle /built_app
 WORKDIR /built_app/programs/server
 RUN npm i

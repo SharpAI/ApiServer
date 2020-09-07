@@ -1,11 +1,7 @@
 #!/bin/bash
 
-#cd ../hotShareWeb-StaticJS
-#npm run build
-#cd -
-#git diff .
-rm -rf hotShareWeb.tar.gz
+rm -rf ApiServer.tar.gz
 meteor build --architecture=os.linux.x86_64 ../
-mv ../hotShareWeb.tar.gz ./
+mv ../ApiServer.tar.gz ./
 
-echo "run \"docker build -t lambdazhang/raidcdn:sharpai-version .\""
+echo "run \"docker build -t shareai/api_server:version .\""
