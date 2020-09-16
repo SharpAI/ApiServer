@@ -1,6 +1,14 @@
 # Get started
 
-## [Install Meteor](https://www.meteor.com/install)
+## [Install Meteor(Offical)](https://www.meteor.com/install)
+### Windows
+```
+choco install meteor
+```
+### OSX/Linux
+```
+curl https://install.meteor.com/ | sh
+```
 ## Start API Server
 ```
 git clone https://github.com/SharpAI/ApiServer
