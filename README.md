@@ -1,6 +1,14 @@
+# Get started
+
+## [Install Meteor](https://www.meteor.com/install)
+## Start API Server
+```
+git clone https://github.com/SharpAI/ApiServer
+cd ApiServer
+meteor run
+```
 
 # App Server API
-
 
 ## Content
 
