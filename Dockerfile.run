@@ -3,5 +3,6 @@ RUN apt-get update && apt-get install -y curl
 RUN curl https://install.meteor.com/ | sh
 ADD ./ /root/apiserver
 WORKDIR /root/apiserver
-RUN meteor build --allow-superuser ../ 
+RUN meteor npm install --save jquery wolfy87-eventemitter eventie
+RUN meteor build --allow-superuser ../
 CMD meteor run --allow-superuser
