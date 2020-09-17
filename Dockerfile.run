@@ -11,5 +11,5 @@ ADD ./ /root/apiserver
 WORKDIR /root/apiserver
 
 RUN meteor npm install --save jquery wolfy87-eventemitter eventie
-RUN meteor build ../
-CMD meteor run 
+RUN meteor build ../ && rm ../apiserver.tar.gz
+CMD meteor run
