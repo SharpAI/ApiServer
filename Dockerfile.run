@@ -4,10 +4,9 @@ RUN curl https://install.meteor.com/ | sh
 ADD ./ /root/apiserver
 WORKDIR /root/apiserver
 RUN apt-get install -y python2.7 python-pip build-essential
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
 ENV LC_ALL en_US.UTF-8
 RUN meteor npm install --save jquery wolfy87-eventemitter eventie
 RUN meteor build --allow-superuser ../
