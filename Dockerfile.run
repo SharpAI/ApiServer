@@ -1,0 +1,6 @@
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y curl
+RUN curl https://install.meteor.com/ | sh
+ADD . / /root/apiserver
+WORKDIR /root/apiserver
+CMD meteor run
