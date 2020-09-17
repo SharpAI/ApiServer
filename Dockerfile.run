@@ -3,6 +3,8 @@ RUN apt-get update && apt-get install -y curl
 RUN curl https://install.meteor.com/ | sh
 ADD ./ /root/apiserver
 WORKDIR /root/apiserver
+RUN apt-get install -y python2.7 python-pip build-essential && \
+    npm install -g node-gyp
 RUN meteor npm install --save jquery wolfy87-eventemitter eventie
 RUN meteor build --allow-superuser ../
 CMD meteor run --allow-superuser
