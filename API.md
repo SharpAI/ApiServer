@@ -308,7 +308,7 @@ POST /api/v1/groups
 |  name    |  string   | yes    | group name            |
 
 ```
-curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" -H "Content-type: application/json" http://server_address/api/v1/groups -d "name=xxx"
+curl -X POST -H "X-Auth-Token: GMh-1Dtg3909k5IOxJozqhjFQQPDkQ1FtKOtJ2stbq6" -H "X-User-Id: YxbWum7KPTds8Lmi5" http://server_address/api/v1/groups -d "name=xxx"
 ```
 Example respones:
 ```
