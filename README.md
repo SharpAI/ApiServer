@@ -1,4 +1,4 @@
-# Get started
+# Get started [![Build Status](https://travis-ci.org/SharpAI/ApiServer.svg?branch=master)](https://travis-ci.org/SharpAI/ApiServer)
 
 ## [Install Meteor(Offical)](https://www.meteor.com/install)
 ### Windows
