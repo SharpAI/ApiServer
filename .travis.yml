@@ -8,6 +8,7 @@ before_script:
 # We can then use the faster container infrastructure - http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 - export PATH=$HOME/.meteor:$PATH
 - npm install -g spacejam
+script: meteor build ~/build-sharpai --server=http://workaihost.tiegushi.com
 cache:
 directories:
 - node_modules
