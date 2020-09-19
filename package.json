@@ -6,7 +6,6 @@
   },
   "dependencies": {
     "async": "^2.1.5",
-    "bcrypt": "^0.8.7",
     "eventie": "^1.0.6",
     "jquery": "^3.5.1",
     "wolfy87-eventemitter": "^5.2.9"
