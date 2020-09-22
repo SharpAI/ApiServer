@@ -9,6 +9,7 @@ android:
 node_js:
 # since meteor is now ver1.4 and uses node-v4.4.7
   - "10"
+  - "node"
 env:
   - NODE_VERSION="10"
 addons:
@@ -19,7 +20,8 @@ addons:
       - g++-4.8
 before_script:
   # Install meteor
-  - nvm install -s $NODE_VERSION
+  #- nvm install -s $NODE_VERSION
+  - node --version
   - npm install -g spacejam
   - npm install -g cordova
   - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
