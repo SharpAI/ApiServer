@@ -10,7 +10,6 @@ node_js:
 # since meteor is now ver1.4 and uses node-v4.4.7
   - "4"
 env:
-  - CXX=g++-4.8
   - NODE_VERSION="4.4.7"
 addons:
   apt:
@@ -20,7 +19,7 @@ addons:
       - g++-4.8
 before_script:
   # Install meteor
-  # - nvm install $NODE_VERSION
+  - nvm install -s $NODE_VERSION
   - npm install -g spacejam
   - npm install -g cordova
   - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
