@@ -1,0 +1,206 @@
+.loginForm{
+	// background-image: url(loginbg2.jpg);
+	// background-repeat: no-repeat;
+	// background-size: 100% auto;   
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	.customerServiceBackground{
+	  width:100%;
+	  height:100%;
+	  position:fixed;
+	  top:0px;
+	  left:0px;
+	  z-index: 99998;
+	  display:none;
+	  background: #777777;
+	  opacity: 0.4;
+	}
+	.customerService{
+	  position: fixed;
+	  z-index: 99999;
+	  top: 20%;
+	  left: 25px;
+	  right: 25px;
+	  text-align: center;
+	  color: #000;
+	  background: #fff;
+	  border-radius: 10px;
+	  display: none;
+	  .customerService-head{
+	    position: relative;
+	    text-align: center;
+	    border-bottom: solid 1px #f1f2f4;
+	    .title{
+	      font-weight: bold;
+	      padding: 15px;
+	      margin: 0;
+	      margin-bottom: 1px;
+	      text-align: left;
+	      span{color: #0084ee;}
+	    }
+	    .btnClose{
+	      position: absolute;
+	      top: 0px;
+	      right: 10px;
+	      z-index: 250;
+	      color: #ccc;
+	      font-weight: normal;
+	      font-size: 2em;
+	    }
+	  }
+	  .customer-email{
+	    position: relative;
+	    margin: 10px 15px;
+	    border: 1px solid #ccc;
+	    padding: 10px;
+	    margin-bottom: 0;
+	    input{
+	      width: 100%;
+	      border: none;
+	      line-height: 1.5em;
+	      resize: none;
+	      outline: none;
+	      color: #777;
+	      font-size: 14px;
+	    }
+	  }
+	  .alert-email{
+	    text-align: right;
+	    margin-right: 15px;
+	    font-size: 10px;
+	    margin-bottom: 10px;
+	  }
+	  .content{
+	    position: relative;
+	    margin: 10px 15px;
+	    border: 1px solid #ccc;
+	    padding: 10px;
+	    background:#fff;
+	    textarea{
+			-webkit-user-select: auto;
+			-khtml-user-select: auto;
+			-moz-user-select: auto;
+			-ms-user-select: auto;
+			user-select: auto;
+			width: 100%;
+			border: none;
+			line-height: 1.5em;
+			resize: none;
+			outline: none;
+			color: #777;
+			font-size: 14px;
+	    }
+	  }
+	  .btn-banner{
+	    text-align: right;
+	    margin: 15px;
+	    font-size: 18px;
+	    position: relative;
+	    .send-email-btn{
+	      color: white;
+	      background: #00c4ff;
+	      padding: 4px 14px;
+	      font-weight: normal;
+	    }
+	  }
+	}
+	.avatar{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background: #37a7fe;
+		margin-top: 39px;
+		height: 30%;
+		.circle{
+			width: 100px;
+			height: 100px;
+			border-radius: 50%;
+			background: #ffffff;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+	}
+}
+.loginForm .loginBody{margin-top: 50px;}
+.loginForm .loginBody input{background-color:rgba(255,255,255,0.4);color: #FFF;border: none;}
+.loginForm .loginBody #sub-login{
+	border-radius: 2px !important;
+	margin-top: 10px;
+	margin-left:10%;
+	width: 80%;
+	height: 64px;
+	font-size: 16px;
+}
+.loginForm .loginBody .forgetPwdBtn{
+	color: #555555;
+	font-size: 14px;
+	margin-top: 10px;
+	margin-right: 10%;
+	text-decoration: underline;
+	text-align: right;
+}
+.loginForm .loginBody input::-webkit-input-placeholder{color: #FFF;}
+.loginForm .loginBody input:focus{outline:none;}
+.loginForm .loginBody .newinput,.signupForm .signupBody .newinput{
+	margin-left: 10%;
+	width: 80%;
+	height: 40px !important;
+	line-height: 40px;
+	background: none !important;
+	border: 1px solid #cccccc;
+	padding: 5px 16px;
+	border-radius: 2px !important;
+	font-size: 15px;
+	color: #555555;
+}
+.loginForm .loginBody .noRegister{
+	text-align: center;
+	font-size: 14px;
+	padding-top: 10px;
+	color: #555555;
+	.signup-text{
+		color: #37a7fe;
+		text-decoration: underline;
+	}
+}
+
+.loginForm .loginBody div{border-radius:5px;text-align:left;overflow: hidden; margin-bottom: 10px;}
+.loginForm .loginBody s{display: block; overflow: hidden; padding: 5px 0}
+.loginForm .loginBody div label span{padding: 6px 12px;font-size: 24px;color:#ccc;font-weight: normal;line-height: 1;text-align: center;width: 1%;white-space: nowrap;vertical-align: middle;display: table-cell;}
+.loginForm .loginBody div label{border-bottom: solid 1px #ccc;height:45px;margin-bottom: 3px;width:98%;margin-left: 3px;}
+.loginForm .loginBody div label input{z-index: 2;float: left;width: 93%;height: 30px;padding: 2px 4px;font-size: 14px;line-height: 1.42857143;border: none;margin-top:5px;}
+.loginForm .loginBody div label textarea{z-index: 2;float: left;width: 93%;height: 60px;padding: 2px 4px;font-size: 14px;line-height: 1.42857143;border: none;margin-top:5px;}
+.loginForm .loginBody ol  {margin: 0; padding:10px 0 20px; list-style-type: none}
+.loginForm .loginBody ol li{float: left;width:33%; text-align: left; font-size: 1em}
+.loginForm .loginBody ol li:first-letter{font-size: 1.1em}
+.form-control {height: 34px !important;}
+.loginForm .loginBody .box{text-align: center;}
+.loginForm .loginBody .text-box{font-size: 2em;border:1px solid #74daf3;display: inline;color: #74daf3;padding: 2px 5px}
+
+
+
+
+.recoveryForm{/*background-image: url(loginbg2.jpg);background-repeat: no-repeat;background-size: 100% auto; */  position: fixed;top: 0;bottom: 0;left: 0;right: 0;z-index: 1000}
+.recoveryForm .recoveryBody{background-color:rgba(255,255,255,0);position: fixed;top: 60px;left: 5%;right: 5%;}
+.recoveryForm .recoveryBody input{background-color:rgba(255,255,255,0.4);color: #FFF;border: none;}
+.recoveryForm .recoveryBody #sub-recovery{position: absolute;width: 100%;text-align: center;border: none;border-radius: 8px;padding: 10px;background-color: #00c4ff;margin-top: 10px;font-size: 16px;}
+.recoveryForm .recoveryBody input::-webkit-input-placeholder{color: #FFF;}
+.recoveryForm .recoveryBody input:focus{outline:none;}
+
+
+.recoveryForm .recoveryBody div{border-radius:5px;text-align:left;overflow: hidden; margin-bottom: 10px;}
+.recoveryForm .recoveryBody s{display: block; overflow: hidden; padding: 5px 0}
+.recoveryForm .recoveryBody div label span{padding: 6px 12px;font-size: 24px;color:#ccc;font-weight: normal;line-height: 1;text-align: center;width: 1%;white-space: nowrap;vertical-align: middle;display: table-cell;}
+.recoveryForm .recoveryBody div label{border-bottom: solid 1px #ccc;height:45px;margin-bottom: 3px;width:98%;margin-left: 3px;}
+.recoveryForm .recoveryBody div label input{z-index: 2;float: left;width: 93%;height: 30px;padding: 2px 4px;font-size: 14px;line-height: 1.42857143;border: none;margin-top:5px;}
+.recoveryForm .recoveryBody div label textarea{z-index: 2;float: left;width: 93%;height: 60px;padding: 2px 4px;font-size: 14px;line-height: 1.42857143;border: none;margin-top:5px;}
+.recoveryForm .recoveryBody span{margin-right:5px;color: #FFF;background-color: rgba(255, 255, 255, 0.4);border: none;font-size: 1.4em;padding: 6px 7px;}
+.recoveryForm .recoveryBody ol  {margin: 0; padding:10px 0 20px; list-style-type: none}
+.recoveryForm .recoveryBody ol li{float: left;width:33%; text-align: left; font-size: 1em}
+.recoveryForm .recoveryBody ol li:first-letter{font-size: 1.1em}
+

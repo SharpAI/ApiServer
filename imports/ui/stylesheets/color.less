@@ -1,0 +1,300 @@
+@colorBlue: #37a7fe;
+@colorBlueDeep1: #2196f3;
+@colorWhite: #ffffff;
+@colorGray: #7d7d7d; 
+@colorGrayLight: #eeeeee;
+@colorBlack: #1a1a1a;
+@username: #333333;
+@userdesc: #666666;
+
+// backgroud blue
+div.head, .dashboard div.head{background-color: @colorBlue;}
+.bell {
+  .personalLetterContent .LetterHead {background-color: @colorBlue;}
+  .personalLetterContent .LetterFooter {color: @colorBlue;}
+}
+// background white 
+
+body,#footer, #footer .btn{background-color: @colorWhite !important;}
+
+// footer
+#footer .btn:focus, #footer .focus{color: @colorBlueDeep1 !important;}
+#footer{box-shadow: 0 1px 13px rgba(0, 0, 0, 0.36), 0 1px 13px rgba(0,0,0,0.12) !important;}
+
+// color black
+.content,.user{color: @colorBlack !important;}
+
+.home .content,.timeline .content,.homePage .content,.explore .content,.user .content {
+  position: absolute;
+  top: 40px;
+  bottom: 55px;
+  left: 0px;
+  right: 0px;
+  overflow-y: auto;
+  padding: 0 !important;
+  -webkit-overflow-scrolling: touch;
+  #connection-lost-banner{
+    top: 40px;
+  }
+}
+
+.content_box {
+  -webkit-overflow-scrolling: auto !important;
+}
+
+
+// user 
+.user .line{
+  padding:5px 0 !important;
+}
+.user .draftLeft,.user .draftRight,.user .postLeft, .user .postRight{padding-top: 5px;}
+.user .draftImages{padding-bottom: 0 !important;}
+.user .draftImages ul li{margin-bottom: 24px !important;}
+
+// search 
+.searchForm{
+  background-color: @colorGrayLight;
+  color: @colorGray !important;
+  border: none !important;
+  input,input::-webkit-input-placeholder{color: @colorGray !important;}
+}
+// search people and topic
+.searchPeopleAndTopic div.content {
+  .searchForm{
+    min-height: 30px;background-color: @colorWhite; padding-top: 0;
+    label{height: 30px;}
+    input{height: 30px;}
+    i {padding: 9px 12px;}
+  }
+  padding-top:0 !important;
+  table{
+    height: 48px;
+    background-color: @colorBlue !important;
+    color: @colorWhite !important;
+  }
+  ul{
+    background-color: @colorWhite !important;
+    margin-top: 0 !important;
+    border-color: @colorGrayLight !important;
+    li.on{color: @colorBlue !important;background-color: @colorWhite  !important;}
+    li{background-color: @colorBlue  !important; color: @colorWhite !important;}
+  }
+  .userName{color: @username !important;}
+  .follow{color: @colorBlue !important;}
+}
+
+// search my posts
+.searchMyPosts .content table{margin-top: 0 !important; top: 0 !important; height: 48px; background-color: @colorBlue !important; color: @colorWhite !important;}
+.searchMyPosts .content div.searchForm {min-height: 30px;background-color: @colorWhite;}
+.searchMyPosts .content div.searchForm label{height: 30px;padding-left: 30px;}
+.searchMyPosts .content div.searchForm input{height: 30px;}
+.searchMyPosts .content div.searchForm i {padding: 9px 12px;}
+
+.top .searchForm i.fa{padding: 14px;}
+.top .icon img{border: 4px solid #e6e6e6 !important;}
+// ul li
+ul li{
+  border-style: @colorGray !important;
+}
+
+// line
+.line span{background-color: @colorGrayLight !important;}
+
+// dashboard
+.dashboard .head{
+  .leftButton, .leftButton i ,.rightButton, div{color: @colorWhite !important;}
+  div{text-shadow: none !important;}
+}
+.dashboard .boxCenter,.dashboard .fa-toggle-on,.dashboard .update .right{color: @colorBlue !important;}
+
+// discover
+.content #themeList{
+  color: @colorWhite !important;
+}
+.content #topicList .topic{
+  color: @colorBlueDeep1 !important;
+  border-color: @colorBlueDeep1 !important;
+}
+
+// help 
+.help h3,.help h3 a{
+  color: @colorBlack !important;
+}
+
+// bell
+.bell .content{
+  .alarm{ color: @colorGray !important;}
+}
+
+// home , post lists
+.home .content{
+  background-color: @colorGrayLight !important;
+  div#list{
+    width: 100%; margin: 12px 0;
+    .mainImage{margin-bottom: 0;}
+    .footer{margin-bottom:12px; padding: 12px; background-color: @colorWhite;}
+    .mainImageListItem{background-color: @colorWhite; padding: 0 12px;}
+    .mainImage dl{position: absolute; right: 12px; left: 12px;background-color: @colorWhite !important;}
+    .mainImage dd{color: @colorGray !important;}
+  }
+}
+
+// followers
+.followers .content {
+  .follow{color: @colorBlue !important;}
+  .userName{color: @username !important;}
+  .desc{color: @userdesc !important;}
+}
+// login page 
+.authOverlay #anonymous{
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  background-color: @colorBlue !important;
+  border-radius: 0 !important;
+  height: 50px;
+  line-height: 50px;
+  padding: 0 !important;
+}
+.authOverlay #register{
+  position: relative !important;
+  border: 1px solid @colorBlue !important;
+  width: 100% !important;
+  border-radius: 16px !important;
+  color: @colorBlue !important;
+}
+.authOverlay #login{
+  position: relative !important;
+  padding: 10px;
+  background-color: @colorBlue;
+  color: @colorWhite !important;
+  border-radius: 16px;
+  width: 100% !important;
+  margin-bottom: 12px;
+}
+.authOverlay .loginActionArea{
+  position: fixed;
+  left: 10%;
+  right: 10%;
+  bottom: 50px;
+  height: 50%;
+  color: @colorBlack;
+  text-align: center;
+  .loginWithSocial{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: #999999;
+  }
+  #wechat{
+    position: static !important;
+    bottom: 0 !important;
+    padding: 18px 0 !important;
+    width: 100% !important;
+  }
+  #wechat .fa-stack{color: #4caf50;}
+}
+
+
+.loginForm,.signupForm,.recoveryForm{
+	// background-image: url(/theme_blue/loginbg2.jpg) !important;
+  // background-size: cover !important;
+  color: @colorBlack !important;
+}
+.loginForm .company,.signupForm .company,.recoveryForm .company{
+  position: fixed;
+  bottom: 25px;
+  text-align: center;
+  width: 100%;
+  color: #2f2f2f;
+  text-shadow: -1px 1px #ffffff;
+}
+.signupForm .signupBody .input-group,.loginForm .loginBody .input-group,.recoveryForm .recoveryBody .input-group{
+  display: block;
+  input{
+    background-color: #e6eff6;
+    border-radius: 12px ;
+    padding: 5px 16px ;
+    height: 40px;
+  }
+  input,input::-webkit-input-placeholder{color: #555555 !important;}
+}
+.signupForm .signupBody .form-control,.loginForm .loginBody .form-control,.recoveryForm .recoveryBody .form-control{background-image: none !important;}
+.signupHeader,.signupHeader .leftButton i{
+  color: @colorWhite !important;
+}
+.signupForm .signupBody,.loginForm .loginBody,.recoveryForm .recoveryBody{top: 80px !important;}
+.signupForm #sub-registered,.loginForm #sub-login,.recoveryForm #sub-recovery{
+  border-radius: 16px;
+  background-color: @colorBlue !important;
+}
+// .signupForm .signupBody span{color: @colorBlack !important;}
+#authOverlaybg .agreeDeal{z-index: 9; box-shadow: 1px 1px 5px @colorGray, -1px 0 5px @colorGrayLight;}
+
+// register Follow 
+.registerFollow{color: @colorBlack; padding: 0 16px;}
+.registerFollow hr{border-color: @colorGrayLight !important;}
+.registerFollow .user_head i{color: @colorBlue;top: 14px !important; right: 0 !important;}
+.registerFollow .user_head .user_pic{box-shadow: 1px 1px 3px 1px @colorGray; width: 64px; height: 64px; margin: 0 8px 8px 0;}
+.registerFollow .navbar-default.navbar{background-color: @colorBlue;}
+.registerFollow .container #continue{background: none;}
+
+// search Follow 
+.searchFollow .content{
+  .userName{color: @username !important;}
+  .desc{color: @userdesc !important;}
+  .follow{color: @colorBlue !important;}
+}
+
+// splashScreen 
+// .swiper-container div.swiper-pagination{bottom: 120px !important;}
+span.swiper-pagination-bullet {
+  background: gray !important;
+}
+span.swiper-pagination-bullet:nth-child(1).swiper-pagination-bullet-active{
+    background: #00bcd4 !important;
+}
+span.swiper-pagination-bullet:nth-child(2).swiper-pagination-bullet-active{
+    background: #1a4e82 !important;
+}
+span.swiper-pagination-bullet:nth-child(3).swiper-pagination-bullet-active{
+    background: #ff5722 !important;
+}
+span.swiper-pagination-bullet:nth-child(4).swiper-pagination-bullet-active{
+    background: #c2deeb !important;
+}
+
+//processBar
+.progressBarBg {
+  background-image: url(/processbarbg.jpg) !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  .progressBar {
+    left: 10% !important;
+    width:80% !important;
+    .progressBarIcon{
+      height: 20%;
+      width: 20%;
+      background-image: url(/processbaricon.png);
+      position: absolute;
+      top: 0px;
+      background-repeat: no-repeat;
+      background-size: 100%;
+      text-align: center;
+      bottom: 0;
+      padding-top: 15%;
+      color: #7fcef2;
+    }
+    .progress{
+      margin-top: 12px;
+      #cancelImport{
+        background-color: #7fcef2 !important;
+      }
+    }
+    #delayPublish{
+      background-color: #7fcef2 !important;
+    }
+  }
+}
