@@ -8,16 +8,26 @@ android:
   - android-22
 node_js:
 # since meteor is now ver1.4 and uses node-v4.4.7
-- 4.4.7
+  - "4"
+env:
+  - CXX=g++-4.8
+  - NODE_VERSION="4.4.7"
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 before_script:
-# Install meteor
-- npm install -g spacejam
-- npm install -g cordova
-- curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
-# Add meteor to path (instead of asking for sudo in the Travis container)
-# We can then use the faster container infrastructure - http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-- export PATH=$HOME/.meteor:$PATH
-- npm install -g spacejam
+  # Install meteor
+  - nvm install $NODE_VERSION
+  - npm install -g spacejam
+  - npm install -g cordova
+  - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
+  # Add meteor to path (instead of asking for sudo in the Travis container)
+  # We can then use the faster container infrastructure - http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+  - export PATH=$HOME/.meteor:$PATH
+  - npm install -g spacejam
 services:
 - mongodb
 script: meteor build ~/build-sharpai --server=http://workaihost.tiegushi.com
