@@ -1,14 +1,23 @@
-language: node_js
+sudo: required
+language: android
+android:
+  components:
+  - platform-tools
+  - tools
+  - build-tools-22.0.1
+  - android-22
 node_js:
-- "10"
+# since meteor is now ver1.4 and uses node-v4.4.7
+- 4.4.7
 before_script:
 # Install meteor
+- npm install -g spacejam
+- npm install -g cordova
 - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
 # Add meteor to path (instead of asking for sudo in the Travis container)
 # We can then use the faster container infrastructure - http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 - export PATH=$HOME/.meteor:$PATH
 - npm install -g spacejam
+services:
+- mongodb
 script: meteor build ~/build-sharpai --server=http://workaihost.tiegushi.com
-cache:
-directories:
-- node_modules
