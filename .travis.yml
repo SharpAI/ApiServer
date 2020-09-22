@@ -24,6 +24,7 @@ before_script:
 - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
 - export PATH=$HOME/.meteor:$PATH
 - meteor npm install
+script: ls -alh $HOME/
 services:
 - mongodb
 before_install:
