@@ -1,0 +1,48 @@
+<template name="groupAdd">
+  {{>connectionBanner}}
+  <div class="groupAdd">
+    <div class="head">
+      <strong>选择成员</strong>
+      <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      <div class="rightButton back" style="margin-top:0px;">确定</div>
+    </div>
+
+    <div class="content">
+      <div id="wrapper">
+        <div class="line" style="height: 8px;"></div>
+        <div class="contentList">
+          {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+          {{/if}}
+          {{#if loadError}}
+              <div>{{_ "loadFailNotification"}}</div>
+          {{/if}}
+          {{#each myFollows}}
+            <div id="{{_id}}" class="followItem eachViewer">
+                {{#if is_selected followerId}}
+                <i class="fa fa-circle" aria-hidden="true"></i>
+                {{else}}
+                <i class="fa fa-circle-o" aria-hidden="true"></i>
+                {{/if}}
+                <img class="icon" src="{{followerIcon}}">
+                <span class="groupsName">{{followerName}}</span>
+                <div class="newMessage">{{count}}</div>
+                <!-- {{#if showRedSpot}}
+                  <div class="red_spot"></div>
+                {{/if}} -->
+            </div>
+            <div class="line">
+                <span></span>
+            </div>
+          {{/each}}
+          {{#if moreResults}}
+          <div id="showMoreResults" style="margin-left: 25px;">
+            <span class="loading">{{_ "loading"}}</span>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    {{> footer}}
+  </div>
+</template>

@@ -1,31 +1,39 @@
 <template name="signupForm">
+    {{>connectionBanner}}
 <div class="signupForm">
     <div class="signupHeader">
         <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
-        <span>创建账户</span>
+        <span>{{_ "createAccount"}}</span>
     </div>
     <form  class="signupBody" id="signup-form">
         <div class="input-group margin-bottom-sm">
             <!--<span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>-->
-            <input type="text" id="signup-username" class="form-control" placeholder=用户名 value="{{names}}" maxlength="{{namesMaxLength}}"/>
-            <p class="help-block" id="signup-username-help" style="position:absolute; color:#c7c7c7; right:10px;margin:0;font-size:12px; bottom:0; z-index:9">0/{{namesMaxLength}}</p><br />
+            <input type="text" id="signup-username" class="form-control newinput" placeholder={{_ "userName"}} value="{{names}}" maxlength="{{namesMaxLength}}"/>
+            <p class="help-block" id="signup-username-help" style="position:absolute; color:#c7c7c7; right:10%;margin:0;font-size:12px; bottom:0; z-index:9">0/{{namesMaxLength}}</p><br />
+        </div>
+        <div class="input-group">
+            <input type="text" id="signup-email" class="form-control newinput" placeholder={{_ "emailAddress"}} value="{{email}}"/><br />
         </div>
         <div class="input-group">
             <!--<span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>-->
-            <input type="text" id="signup-email" class="form-control" placeholder=邮箱 value="{{email}}"/><br />
+            
+            <input type="password" id="signup-password" class="form-control newinput" placeholder={{_ "passWord"}}  value="{{pwd}}"/><br />
         </div>
         <div class="input-group">
             <!--<span class="input-group-addon"><i class="fa fa-lock fa-fw"></i></span>-->
-            <input type="password" id="signup-password" class="form-control" placeholder=密码  value="{{pwd}}"/><br />
-        </div>
-        <div class="term_notice_block">
-        	<div class="term_notice">点圈服务告知</div>
-        	<span>如果注册就意味着同意了用户协议</span>
+            <input type="password" id="signup-repassword" class="form-control newinput" placeholder="再次确认密码"  value="{{repwd}}"/><br />
         </div>
         <!--<input type="submit" value={{_ "createAccount"}} id="sub-registered">-->
-        <button type="submit" id="sub-registered" class="ripple-btn" style="color: #fff; border: none;outline: none;">创建账户</button>
+        <button type="submit" id="sub-registered" class="ripple-btn" style="color: #fff; border: none;outline: none;">立即注册</button>
+        <div class="term_notice_block">
+            *注册代表您同意
+            <span class="term_notice">{{_ "gstServiceSpec"}}</span>
+        </div>
     </form>
 <!--    <div class="deal">创建帐户即代表您同意<br>用户条款和隐私政策</div>-->
-<div class="company">昆明讯动科技有限公司</div>
+<!-- <div class="company">{{_ "kmxdkj"}}</div> -->
+    <!-- <div class="bottom-img">
+        <img src="/new_logo.png" height="100%" width="100%">
+    </div> -->
 </div>
 </template>

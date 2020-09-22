@@ -6,11 +6,11 @@
       <div class="disTop">
         <div class="disBg"></div>
         <div class="disLeft">
-          <p class="disname">朋友圈</p>
+          <p class="disname">{{_ "Moments"}}</p>
           {{#if showSuggestPosts}}
-              <p class="disdesc">看过当前帖子的朋友看过的帖子，您都看过了，特意为您推荐以下您没看过帖子...</p>
+              <p class="disdesc">{{_ "RecommendPosts"}}</p>
           {{else}}
-              <p class="disdesc">看过当前帖子的朋友，还看过...</p>
+              <p class="disdesc">{{_ "AlsoRead"}}</p>
           {{/if}}
         </div>
       </div>
@@ -22,7 +22,7 @@
           <div class="discover-bg" style="background:#efeff4;"></div>
           <div class="discover-con" style="background:#efeff4;">
             <img src="/book-icon.png">
-            <span>看过该帖的朋友还看过...</span>
+            <span>{{_ "RecommendReadMore"}}</span>
           </div>
       </div>
       {{> recommends}}
@@ -32,15 +32,12 @@
   </div>
 </template>
 <template name="recommends">
-    {{#if hasRecommends}}
-    <div class="clear-discover-msg"><span>全部标为已读</span></div>
-    {{/if}}
     <div class="recommends">
-        <ul id="wrapper"  class="recommends-swipe-delete">
+        <ul id="wrapper" class="recommends-swipe-delete">
             {{#each recommends}}
                 <li class="elementBox" id="{{recommendPostId}}" style="border-bottom: 1px dashed #d9d9d9;">
                     <div class="behind">
-                        <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">删除</a>
+                        <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">{{_ "delete"}}</a>
                     </div>
                     <a id="list" class="swipeElement">
                     <div class="icon">
@@ -48,16 +45,16 @@
                     </div>
                     <div class="user_name" style="background:#efeff4;">
                         <h2 style="padding-top:2px;">{{recommendUserName}}&nbsp;</h2>
-                        <h3>看过<span>{{targetPostTitle}}</span>后，推荐您阅读</h3>
+                        <h3>{{_ "recommendA"}}<span>{{targetPostTitle}}</span>{{_ "recommendB"}}</h3>
                         <div class="readpost">
                             <dl>
                                 <dt>
                                     <img class="post_pic" src="{{recommendPostMainImage}}" width="64" height="64"/>
                                     <!--<div class="red_spot"></div>-->
                                 </dt>
-                               <dd>
+                                <dd>
                                     <h2>{{recommendPostTitle}}</h2>
-                                    <p>发表：{{time_diff recommendPostCreatedAt}}</p>
+                                    <p>{{_ "publish"}}：{{time_diff recommendPostCreatedAt}}</p>
                                 </dd>
                             </dl>
                         </div>
@@ -68,7 +65,7 @@
             {{/each}}
         </ul>
     </div>
-   <script>
+    <script>
       $(function() {
         var x,elementId;
         touch.on('body', 'swipeup swipedown',function(ev){
@@ -115,28 +112,28 @@
 </template>
 <template name="lpcomments">
     {{#if hasLpcoments}}
+    <div class="showPostsLine"></div>
     <div class="discover-top"  style="background:#fff;">
           <div class="discover-bg"></div>
           <div class="discover-con">
             <img src="/frends-msg.svg">
-            <span>朋友圈消息</span>
+            <span>{{_ "theStoryGroupMsg"}}</span>
           </div>
     </div>
-    <div class="clear-discover-msg"><span>全部标为已读</span></div>
-    <div class="lpcomments">
+    <div class="lpcomments" style="background:#fff;">
         <ul id="wrapper"  class="swipe-delete">
             {{#each lpcomments}}
                 {{#if isShareFeed}}
                     <li class="elementBox">
                       <div class="behind">
-                        <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">删除</a>
+                        <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">{{_ "delete"}}</a>
                       </div>
                       <a id="list" class="swipeElement">
                         <div class="icon">
                             <img src="{{ownerIcon}}" width="40" height="40"/>
                         </div>
                         <div class="user_name">
-                            <h2>{{ownerName}}:&nbsp;<span>{{ReadAfterShare}}人读过您的转发</span></h2>
+                            <h2>{{ownerName}}:&nbsp;<span>{{ReadAfterShare}}{{_ "PersonReadYourForward"}}</span></h2>
                             <div class="readpost">
                                 <dl>
                                     <dt>
@@ -152,82 +149,34 @@
                     </a>
                   </li>
                 {{else}}
-                    {{#if isCommentShare}}
-                        <li class="elementBox">
-                            <div class="behind">
-                                <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">删除</a>
-                            </div>
-                            <a id="list" class="swipeElement">
-                                <div class="icon">
-                                    <img src="{{ownerIcon}}" width="40" height="40"/>
-                                </div>
-                                <div class="user_name">
-                                    {{#if pindexText}}
-                                    <h2>{{ownerName}}&nbsp;<span>点评了您转发的段落：</span></h2>
-                                    <div style="font-sze:10px;">"{{{pindexText}}}"</div>
-                                    {{else}}
-                                    <h2>{{ownerName}}&nbsp;<span>点评了您的转发</span></h2>
-                                    {{/if}}
-                                    <div class="readpost">
-                                        <dl>
-                                            <dt>
-                                                <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
-                                            <div class="red_spot"></div>
-                                            </dt>
-                                            <dd>{{postTitle}}  {{addontitle}}</dd>
-                                        </dl>
-                                    </div>
-                                    <span style="margin:0;">{{time_diff createdAt}}</span>
-                                </div>
-                                <div class="clear"></div>
-                            </a>
-                        </li>
-                    {{else}}
-                        <li class="elementBox">
-                        <div class="behind">
-                          <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">删除</a>
+            <li class="elementBox">
+                <div class="behind">
+                  <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">{{_ "delete"}}</a>
+                </div>
+                <a id="list" class="swipeElement">
+                    <div class="icon">
+                        <img src="{{ownerIcon}}" width="40" height="40"/>
+                    </div>
+                    <div class="user_name">
+                        {{#if commentReply}}
+                            <h2>{{ownerName}}&nbsp;<span>{{_ "CommentPeply"}}</span></h2>
+                        {{else}}
+                            <h2>{{ownerName}}&nbsp;<span>{{_ "AlsoComment"}}</span></h2>
+                        {{/if}}
+                        <div class="readpost">
+                            <dl>
+                                <dt>
+                                    <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                    <div class="red_spot"></div>
+                                </dt>
+                                <dd>{{postTitle}}  {{addontitle}}</dd>
+                            </dl>
                         </div>
-                        <a id="list" class="swipeElement">
-                            <div class="icon">
-                                <img src="{{ownerIcon}}" width="40" height="40"/>
-                            </div>
-                            <div class="user_name">
-                                {{#if pindexText}}
-                                  {{#if meComment}}
-                                    {{#if commentReply}}
-                                        <h2>{{ownerName}}&nbsp;<span>回复了您的评论</span></h2>
-                                        <!--<div style="font-sze:10px;">"{{pindexText}}"</div>-->
-                                    {{else}}
-                                        <h2>{{ownerName}}&nbsp;<span>和您点评了同一段落：</span></h2>
-                                        <div style="font-sze:10px;word-wrap : break-word ;;width: 100%;">"{{{pindexText}}}"</div>
-                                    {{/if}}
-                                  {{else}}
-                                    {{#if commentReply}}
-                                        <h2>{{ownerName}}&nbsp;<span>回复了您的评论</span></h2>
-                                        <!--<div style="font-sze:10px;">"{{pindexText}}"</div>-->
-                                    {{else}}
-                                        <h2>{{ownerName}}&nbsp;<span>也点评了此故事：</span></h2>
-                                        <div style="font-sze:10px;">"{{{pindexText}}}"</div>
-                                    {{/if}}
-                                  {{/if}}
-                                {{else}}
-                                  <h2>{{ownerName}}&nbsp;<span>也点评了此故事</span></h2>
-                                {{/if}}
-                                <div class="readpost">
-                                    <dl>
-                                        <dt>
-                                            <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
-                                            <div class="red_spot"></div>
-                                        </dt>
-                                        <dd>{{postTitle}}  {{addontitle}}</dd>
-                                    </dl>
-                                </div>
-                                <span style="margin:0;">{{time_diff createdAt}}</span>
-                            </div>
-                            <div class="clear"></div>
-                        </a>
-                        </li>
-                    {{/if}}
+                        <span style="margin:0;">{{time_diff createdAt}}</span>
+                    </div>
+                    <div class="clear"></div>
+                </a>
+              </li>
                 {{/if}}
             {{/each}}
         </ul>
@@ -274,12 +223,12 @@
     {{/if}}
 </template>
 <template name="moments">
-      <div class="moments">
+      <div class="moments" style="background:#efeff4;">
             {{#if loading}}
-                <div>正在加载中...</div>
+                <div>{{_ "isLoading"}}</div>
             {{/if}}
             {{#if loadError}}
-                <div>加载失败，请检查网络设置或稍后重试</div>
+                <div>{{_ "FailToLoad"}}</div>
             {{/if}}
             {{#if newLayoutMoment}}
                 {{#newLayoutContainer layoutId=onPostId src="moments" container=".moments"}}
@@ -299,7 +248,7 @@
     <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
                                   <p class="title">{{title}}</p>
                                   <p class="addontitle">{{addontitle}}</p>
-                                  <h1 class="username">{{ownerName}}  <span>发布</span></h1>
+                                  <h1 class="username">{{ownerName}}  <span>{{_ "Publish"}}</span></h1>
     <!--                                  <h2>发布了一个故事</h2>-->
     <!--                                  <b>{{time_diff createdAt}}</b>-->
                                 </div>
@@ -325,7 +274,7 @@
     <!--                                  <h2>阅读了一个故事</h2>-->
     <!--                                  <b>{{time_diff createdAt}}</b>-->
                                 </div>
-                                <h1 class="username">{{username}}  <span>读过</span></h1>
+                                <h1 class="username">{{username}}  <span>{{_ "readed"}}</span></h1>
                             {{/newLayoutElement}}
                         {{/unless}}
                     {{/each}}
@@ -359,7 +308,7 @@
                                         <img src="{{ownerIcon}}" width="40" height="40"/>
                                     </div>
                                     <div class="user_name">
-                                        <h2>{{ownerName}}&nbsp;<span>发布了一个故事</span></h2>
+                                        <h2>{{ownerName}}&nbsp;<span>{{_ "postedastory"}}</span></h2>
                                         <div class="readpost">
                                             <dl>
                                                 <dt>
@@ -381,7 +330,7 @@
                                     <img src="{{userIcon}}" width="40" height="40"/>
                                 </div>
                                 <div class="user_name">
-                                    <h2>{{username}}&nbsp;<span>阅读了一个故事</span></h2>
+                                    <h2>{{username}}&nbsp;<span>{{_ "readedastory"}}</span></h2>
                                     <div class="readpost">
                                         <dl>
                                             <dt>
@@ -399,7 +348,7 @@
                     {{/if}}
                     {{#if moreResults}}
                         <div id="showMoreMomentsResults" style="margin-left: 25px;">
-                            <span class="loading">加载中...</span>
+                            <span class="loading">{{_ "loading"}}</span>
                         </div>
                     {{/if}}
                 </div>

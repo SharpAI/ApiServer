@@ -1,0 +1,323 @@
+<template name="user">
+  <div class="user" id="userPage">
+    <div class="head">
+      <!--<div id="follow" class="leftButton">
+          <span class="fa fa-plus"></span><i class="fa fa-user"></i>
+      </div>-->
+      <div>
+        <strong>{{_ "mySelf"}}</strong>
+      </div>
+      <div id="setting" class="rightButton"><i class="fa fa-cog"></i></div>
+    </div>
+    <div class="content">
+      <div class="top">
+      <!--<div class="searchForm">
+          <i class="fa fa-search"></i>
+          <label><input id="search-box" type="text" placeholder={{_ "searchMyPosts"}}></label>
+      </div>
+      -->
+      <div class="icon">
+        {{#if myProfileIcon}}
+          <img src="{{myProfileIcon}}" width='80' height='80'>
+        {{else}}
+          <i class="fa fa-camera"></i>{{_ "uploadFigure"}}
+        {{/if}}
+      </div>
+        <span class="userName">{{myProfileName}}</span>
+    </div>
+
+    <ul class="set-up comFadeIn" style="margin-top: 10px;margin-bottom: 10px;border: none;">
+      <li class="name bindGroupUser">
+          <label style="position: relative;margin-top: 0px;">群组成员绑定</label>
+          <div class="help-info" style="font-size: 12px;color: #555;">将帐号与对应群组成员绑定，实时查看、更正自己的出现信息</div>
+      </li>
+      <li class="name collect">
+          <label style="position: relative;margin-top: 0px;">收藏</label>
+          <div class="help-info" style="font-size: 12px;color: #555;">查看收藏的消息</div>
+      </li>
+
+      <li class="name enable-follow-notify-only">
+          <label style="position: relative;margin-top: 0px;">只通知关注用户</label>
+          <div class="right-btn" style="background: #fff;">
+            <input id="report_id" class="switch" style="margin-right:5px;outline:none;" type="checkbox" data-checked={{followedOnly}} {{followedOnly}}>
+          </div>
+          <div class="help-info" style="font-size: 12px;color: #555;">只有出现您关注的用户才发推送消息（陌生人仍然通知您）</div>
+      </li>
+    </ul>
+
+    {{#if group}}
+    <div class="userCheckinBox">
+      <div class="header">
+        <div style="float: right; font-size:0;">
+          {{#if hasTwoMore}}
+            {{#if isFirstGroup}}
+            <button style="border: none; width: 40px; height: 40px; background: none;">
+              <i class="fa fa-angle-left" style="font-size: 26px; color:#ccc;"></i>
+            </button>
+            {{else}}
+            <button id="changeToPrevGroup" style="border: none; width: 40px; height: 40px; background: none;">
+              <i class="fa fa-angle-left" style="font-size: 26px; color:#555;"></i>
+            </button>
+            {{/if}}
+            {{#if isLastGroup}}
+            <button style="border: none; width: 40px; height: 40px; background: none;">
+              <i class="fa fa-angle-right" style="font-size: 26px; color:#ccc;"></i>
+            </button>
+            {{else}}
+            <button id="changeToNextGroup" style="border: none; width: 40px; height: 40px; background: none;">
+              <i class="fa fa-angle-right" style="font-size: 26px; color:#555;"></i>
+            </button>
+            {{/if}}
+          {{/if}}
+        </div>
+        <h2 style="margin:0; font-size:18px; line-height:40px;font-weight: 600;">
+          <img src="/img/default-company-logo.png" style="height: 40px;"/>
+          {{group.group_name}}
+        </h2>
+      </div>
+
+      <div class="checkInOutStatus">
+        <div style="position: relative;">
+          <i class="fa fa-circle " style="color: #27d496;font-size: 15px;padding: 10px 0;margin: auto;position: absolute;"></i>
+          {{#if hasIntime group.in_time}}
+          <div  style="display: inline-block;margin-left: 30px;">
+            <div style="color: #868686;font-size: 12px;">上班时间：09:00</div>
+            <div style="font-size: 14px;font-weight: 400;margin-top: 5px;">打卡时间：{{inTime group.in_time group.group_id}}</div>
+          </div>
+          <span  class="reReckInTime" style="right: 0;position: absolute;color: #39a8fe;padding: 10px 0;" data-groupid="{{group.group_id}}">
+            更新打卡 <i class="fa fa-angle-right"></i>
+          </span>
+          {{else}}
+          <div  style="display: inline-block;margin-left: 30px;">
+            <div style="color: #868686;font-size: 12px;">上班时间：09:00</div>
+            <div style="font-size: 14px;font-weight: 400;margin-top: 5px;">打卡时间： 未打卡</div>
+          </div>
+          <span class="checkInTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 0;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group.group_id}}" >上班打卡</span>
+          {{/if}}
+        </div>
+        <div style="position: relative; margin-top: 32px;">
+          <i class="fa fa-circle " style="color: #f1b725;font-size: 15px;padding: 10px 0;margin: auto;position: absolute;"></i>
+          {{#if hasOutTime group.out_time}}
+          <div  style="display: inline-block;margin-left: 30px;">
+            <div style="color: #868686;font-size: 12px;">下班时间:18:00</div>
+            <div style="font-size: 14px;font-weight: 400;margin-top: 5px;">打卡时间：{{outTime group.out_time group.group_id}}</div>
+          </div>
+          <span class="reCheckOutTime" style="right: 0;position: absolute;color: #39a8fe;padding: 10px 0;" data-groupid="{{group.group_id}}">
+            更新打卡 <i class="fa fa-angle-right"></i>
+          </span>
+          {{else}}
+          <div  style="display: inline-block;margin-left: 30px;">
+            <div style="color: #868686;font-size: 12px;">下班时间:18:00</div>
+            <div style="font-size: 14px;font-weight: 400;margin-top: 5px;">打卡时间： 未打卡</div>
+          </div>
+          <span class="checkOutTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 0;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group.group_id}}">下班打卡</span>
+          {{/if}}
+        </div>
+      </div>
+      <div class="editDayTasks" style="border-top: 1px solid #efefef;padding-top: 10px;font-size: 13px;color: #333;" data-groupid="{{group.group_id}}">
+        {{#if group.whats_up}}
+          {{#each group.whats_up}}
+          <p style="word-wrap: break-word;white-space: pre-line; margin: 0;"><strong>{{getShortTime ts group.group_id}}</strong>&nbsp;&nbsp; {{content}}</p>
+          {{/each}}
+        {{else}}
+          添加今日简述...
+        {{/if}}
+      </div>
+    </div>
+    {{/if}}
+    <!--{{#if hasTwoMoreGroup}}
+        {{#each myGroupWorkStatus}}
+        {{#if workstatus group_id}}
+        <div class="panel panel-default" style="margin-bottom: 0px;">
+          <div class="panel-heading">我的出现({{group_name}})</div>
+          {{#each workstatus group_id}}
+          <div style="font-weight: 400;">
+            <div style="position: relative;padding: 10px 0;border: solid 1px #eee;">
+              <i class="fa fa-circle " style="color: #27d496;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>上班</div><div style="color: #868686">09:00</div>
+                </div>
+                {{#if hasIntime in_time}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{inTime in_time group_id}}</span>
+                <span  class="reReckInTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;" data-groupid="{{group_id}}">重打</span>
+                {{else}}
+                <span class="checkInTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group_id}}" >未打卡</span>
+                {{/if}}
+            </div>
+            <div style="position: relative;padding: 10px 0;">
+              <i class="fa fa-circle " style="color: #f1b725;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>下班</div><div style="color: #868686">18:00</div>
+                </div>
+                {{#if hasOutTime out_time}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{outTime out_time group_id}}</span>
+                <span class="reCheckOutTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;" data-groupid="{{group_id}}">重打</span>
+                {{else}}
+                <span class="checkOutTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group_id}}">未打卡</span>
+                {{/if}}
+            </div>
+          </div>
+          {{/each}}
+        </div>
+        {{/if}}
+        {{/each}}
+        {{else}}
+        <div class="panel panel-default" style="margin-bottom: 0px">
+          <div class="panel-heading">我的出现</div>
+          <div style="font-weight: 400;">
+            <div style="position: relative;padding: 10px 0;border: solid 1px #eee;">
+              <i class="fa fa-circle " style="color: #27d496;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>上班</div><div style="color: #868686">09:00</div>
+                </div>
+                {{#if hasIntime}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{inTime}}</span>
+                <span  class="reReckInTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;">重打</span>
+                {{else}}
+                <span class="checkInTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;">未打卡</span>
+                {{/if}}
+            </div>
+            <div style="position: relative;padding: 10px 0;">
+              <i class="fa fa-circle " style="color: #f1b725;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>下班</div><div style="color: #868686">18:00</div>
+                </div>
+                {{#if hasOutTime}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{outTime}}</span>
+                <span class="reCheckOutTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;">重打</span>
+                {{else}}
+                <span class="checkOutTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;">未打卡</span>
+                {{/if}}
+            </div>
+          </div>
+        </div>
+    {{/if}}-->
+    <div class="modal fade" id="selectDevicesInOut" tabindex="-1" role="dialog" aria-labelledby="selectDevicesInOutLabel">
+      <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="selectDevicesInOutLabel">选择设备</h4>
+          </div>
+          <div class="modal-body">
+            <ul class="set-up comFadeIn">
+            {{#each devices}}
+              {{#if uuid}}
+              <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
+                  <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
+                  {{#if name}}
+                  <label style="margin-left:48px;">{{name}}</label>
+                  {{else}}
+                  <label style="margin-left:48px;">未知设备</label>
+                  {{/if}}
+                  <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
+              </li>
+              {{/if}}
+            {{/each}}
+          </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--{{#if showGrayZone draftsCount postsCount}}
+    <div style="height: 20px;background: #eee;"></div>
+    {{/if}}
+    {{#if isLoading}}
+    <div id="loader">
+        <div align="center">{{_ "loading"}}</div>
+    </div>
+    {{/if}}-->
+    <!--{{#if hasJoinGroup}}
+    <div class="groupsList">
+      <div class="item_head">
+        <span>我的监控组</span>
+        {{#if hasTwoMore}}
+        <span class="check_all">查看全部></span>
+        {{/if}}
+      </div>
+      {{#each groupList}}
+        <div id="{{group_id}}" class="groupItem eachViewer"  style="background-color:#fff;">
+            {{#if group_icon}}
+            <img class="icon" src="{{group_icon}}">
+            {{else}}
+            <i class="fa fa-users" aria-hidden="true"></i>
+            {{/if}}
+            <span class="groupsName">{{group_name}}</span>
+        </div>
+        <div class="line">
+            <span></span>
+        </div>
+      {{/each}}
+    </div>
+    <div style="height: 20px;background: #eee;"></div>
+    {{/if}}-->
+    </div>
+  </div>
+  {{> footer}}
+</template>
+
+<template name="searchMyPosts">
+  <div class="searchMyPosts">
+    <div class="home">
+    <div class="content" style="margin: 0;padding: 0;background-color: #111;">
+         <table style="margin-top:6px;">
+           <tr>
+             <td>
+               <div class="searchForm">
+                 <i class="fa fa-search"></i>
+                   <label><input id="search-box" type="text" placeholder="{{_ 'searchMyPosts'}}"></label>
+               </div>
+             </td>
+             <td style="width: 64px;text-align:center;">
+               <div class="back">{{_ "cancel"}}</div>
+             </td>
+          </tr>
+        </table>
+        <div id="wrapper" style="margin-top: 70px; margin-bottom: 50px;">
+            <div id="list">
+              {{#if showSearchStatus}}
+                {{#if noSearchResult}}
+                  <center style="color: gray;">{{_ "NoSearchResults"}}</center>
+                {{/if}}
+                {{#if searchLoading}}
+                  <center style="color: gray;">{{_ "Searching"}}<i class="fa fa-spinner fa-pulse"></i></center>
+                {{/if}}
+              {{/if}}
+              {{#if showSearchItems}}
+                {{#each items}}
+                    {{#if showBigImage}}
+                         <div  id="{{_id}}" class="mainImage">
+                            {{#if mainImage}}
+                              {{>padding noRandomBackgroundColor=true}}
+                            {{/if}}
+                            <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
+                            <header>
+                                <h1 class="title">{{title}}</h1>
+                                <h3 class="addontitle">{{addontitle}}</h3>
+                            </header>
+                        </div>
+                        <div class="footer">
+                            <span><img class="icon" src="{{ownerIcon}}" width='25' height='25' style="margin-top: 0px;"></span>
+                            <span class="name">{{ownerName}}</span>
+                            <span class="right">
+                              {{_ "browse"}}{{getBrowseCount browse}}{{_ "times"}}
+                            </span>
+                        </div>
+                    {{else}}
+                            <div id="{{_id}}" class="mainImage" style="font-size:15px;width: 100%;float: left;margin-right: 2%; height: 56px; overflow: hidden;">
+                                <dl style='background: grey;padding: 5px; margin-top: 6px;min-height: 50px;margin-bottom: 1px;'>
+                                    <dd style="font-size: 18px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;">{{title}}</dd>
+                                    <dd style="font-size: 15px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;color: #ccc">{{addontitle}}</dd>
+                                </dl>
+                            </div>
+                    {{/if}}
+                {{/each}}
+              {{/if}}
+            </div>
+        </div>
+   </div>
+  </div>
+  </div>
+  {{> footer}}
+</template>

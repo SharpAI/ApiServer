@@ -1,0 +1,55 @@
+<template name="companyLists">
+  <div class="content">
+    <div class="companyLists">
+      {{#if isLoading}}
+      <div class="companyLoading" style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+        <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+      </div>
+      {{else}}
+      {{#if companies}}
+      <ul id="company-list">
+        {{#each companies}}
+        <li class="company-item">
+          {{> companyItem}}
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+      <div class="noBoundCompany">
+        <p>您还没有加入任何监控组!</p>
+      </div>
+      {{/if}}
+      {{/if}}
+    </div>
+  </div>
+</template>
+
+
+<template name="companyItem">
+<div class="companyReporterPage">
+    <div class="head">
+      <div class="leftButton back">
+          <i class="fa fa-angle-left fa-fw"></i>
+      </div>
+      <div class="rightButton">
+        <button type="button" class="weekly {{getActiveShow 'weekly'}}">周报</button>
+        <button type="button" class="monthly {{getActiveShow 'monthly'}}">月报</button>
+      </div>
+      <strong>{{data.name}}</strong>
+  </div>
+  <div class="content" style="padding-top: 40px; height: 100%;">
+    <div class="company-content">
+      {{#if isLoading}}
+      <div class="lineChartLoadingLayer">
+      <div class="lineChartLoading">
+          <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+        </div>
+      </div>
+      {{/if}}
+      <div id="lineChartGroup" style="height:100%; width:100%;">
+
+      </div>
+    </div>
+  </div>
+</div>
+</template>

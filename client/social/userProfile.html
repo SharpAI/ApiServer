@@ -30,11 +30,22 @@
           </span>
         <span class="location">{{location}}</span>
         <span class="desc">{{profile.profile.desc}}</span>
+        {{#unless isMyself}}
+            {{#if isFollowedTheAuthor}}
+            <div id="unFollowAuthor" class="followMe" style="border:none;">
+                <div class="followBtn"><i class="fa fa-check"></i>&nbsp;{{_ "unFollow"}}</div>
+            </div>
+            {{else}}
+            <div id="followAuthor" class="followMe">
+                <div class="followBtn"><i class="fa fa-plus"></i>&nbsp;{{_ "follow"}}</div>
+            </div>
+            {{/if}}
+        {{/unless}}
     </div>
     <div class="showPostsLine"></div>
-      <div class="post">
-        <span class="postLeft">最近浏览的故事</span>
-      </div>
+    <div class="post">
+      <span class="postLeft">{{_ "recentlyviewedstories"}}</span>
+    </div>
       {{#if compareViewsCount 0}}
         <div class="postImages swipe-control">
           <ul>
@@ -51,9 +62,9 @@
           </ul>
         </div>
       {{/if}}
-      <div class="showPostsLine"></div>      
+      <div class="showPostsLine"></div>
       <div class="post">
-        <span class="postLeft">喜欢的故事</span>
+          <span class="postLeft">{{_ "FavoriteStory"}}</span>
       </div>
       {{>favoritePosts1}}
   </div>
@@ -85,10 +96,21 @@
           </span>
         <span class="location">{{location}}</span>
         <span class="desc">{{profile.profile.desc}}</span>
+        {{#unless isMyself}}
+            {{#if isFollowedTheAuthor}}
+            <div id="unFollowAuthor" class="followMe" style="border:none;">
+                <div class="followBtn"><i class="fa fa-check"></i>&nbsp;{{_ "unFollow"}}</div>
+            </div>
+            {{else}}
+            <div id="followAuthor" class="followMe">
+                <div class="followBtn"><i class="fa fa-plus"></i>&nbsp;{{_ "follow"}}</div>
+            </div>
+            {{/if}}
+        {{/unless}}
     </div>
     <div class="showPostsLine"></div>
     <div class="post">
-      <span class="postLeft">最近浏览的故事</span>
+      <span class="postLeft">{{_ "recentlyviewedstories"}}</span>
     </div>
       {{#if compareViewsCount 0}}
         <div class="postImages swipe-control">
@@ -106,11 +128,11 @@
           </ul>
         </div>
       {{/if}}
-      <div class="showPostsLine"></div>      
+      <div class="showPostsLine"></div>
       <div class="post">
-      <span class="postLeft">喜欢的故事</span>
-    </div>
-    {{> favoritePosts2}}
+          <span class="postLeft">{{_ "FavoriteStory"}}</span>
+      </div>
+      {{>favoritePosts2}}
   </div>
 </template>
 <template name="userProfilePage3">
@@ -140,10 +162,21 @@
           </span>
         <span class="location">{{location}}</span>
         <span class="desc">{{profile.profile.desc}}</span>
+        {{#unless isMyself}}
+            {{#if isFollowedTheAuthor}}
+            <div id="unFollowAuthor" class="followMe" style="border:none;">
+                <div class="followBtn"><i class="fa fa-check"></i>&nbsp;{{_ "unFollow"}}</div>
+            </div>
+            {{else}}
+            <div id="followAuthor" class="followMe">
+                <div class="followBtn"><i class="fa fa-plus"></i>&nbsp;{{_ "follow"}}</div>
+            </div>
+            {{/if}}
+        {{/unless}}
     </div>
     <div class="showPostsLine"></div>
     <div class="post">
-      <span class="postLeft">最近浏览的故事</span>
+      <span class="postLeft">{{_ "recentlyviewedstories"}}</span>
     </div>
       {{#if compareViewsCount 0}}
         <div class="postImages swipe-control">
@@ -161,11 +194,11 @@
           </ul>
         </div>
       {{/if}}
-      <div class="showPostsLine"></div>      
+      <div class="showPostsLine"></div>
       <div class="post">
-      <span class="postLeft">喜欢的故事</span>
-    </div>
-    {{> favoritePosts3}}
+          <span class="postLeft">{{_ "FavoriteStory"}}</span>
+      </div>
+      {{>favoritePosts3}}
   </div>
 </template>
 <template name="userProfilePage">
@@ -195,10 +228,21 @@
           </span>
             <span class="location">{{location}}</span>
             <span class="desc">{{profile.profile.desc}}</span>
+            {{#unless isMyself}}
+            {{#if isFollowedTheAuthor}}
+            <div id="unFollowAuthor" class="followMe" style="border:none;">
+                <div class="followBtn"><i class="fa fa-check"></i>&nbsp;{{_ "unFollow"}}</div>
+            </div>
+            {{else}}
+            <div id="followAuthor" class="followMe">
+                <div class="followBtn"><i class="fa fa-plus"></i>&nbsp;{{_ "follow"}}</div>
+            </div>
+            {{/if}}
+        {{/unless}}
         </div>
         <div class="showPostsLine"></div>
         <div class="post">
-            <span class="postLeft">最近浏览的故事</span>
+            <span class="postLeft">{{_ "recentlyviewedstories"}}</span>
         </div>
       {{#if compareViewsCount 0}}
           <div class="postImages swipe-control">
@@ -218,52 +262,52 @@
       {{/if}}
         <div class="showPostsLine"></div>
         <div class="post">
-            <span class="postLeft">喜欢的故事</span>
+            <span class="postLeft">{{_ "FavoriteStory"}}</span>
         </div>
       {{>favoritePosts}}
     </div>
 </template>
 <template name="favoritePosts">
     <div class="favoritePosts">
-      {{#if loading}}
-          <div>{{_ "isLoading"}}</div>
-      {{/if}}
-      {{#if loadError}}
-          <div>{{_ "FailToLoad"}}</div>
-      {{/if}}
-      {{#newLayoutContainer layoutId=onPostId src="favoritePosts" container=".favoritePosts"}}
-        {{#each favoritePosts}}
-          {{#newLayoutElement layoutId=onPostId displayId=_id src="favoritePosts" container=".favoritePosts"}}
-              <div class="img_placeholder">
-                  <img class="mainImage" src="{{mainImage}}" />
-              </div>
-              <div class="pin_content">
-                  <p class="title">{{title}}</p>
-                  <p class="addontitle">{{addontitle}}</p>
-              </div>
-          {{/newLayoutElement}}
-        {{/each}}
-      {{/newLayoutContainer}}
-      {{#if isLoading}}
-          <div class="loading-spinner">
-              <div class='spinner-overlay'>
-                  <div class='spinner center'>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                      <div class='spinner-blade'></div>
-                  </div>
-              </div>
-          </div>
-      {{/if}}
+        {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+        {{/if}}
+        {{#if loadError}}
+            <div>{{_ "FailToLoad"}}</div>
+        {{/if}}
+        {{#newLayoutContainer layoutId=onPostId src="favoritePosts" container=".favoritePosts"}}
+            {{#each favoritePosts}}
+                {{#newLayoutElement layoutId=onPostId displayId=_id src="favoritePosts" container=".favoritePosts"}}
+                    <div class="img_placeholder">
+                        <img class="mainImage" src="{{mainImage}}" />
+                    </div>
+                    <div class="pin_content">
+                        <p class="title">{{title}}</p>
+                        <p class="addontitle">{{addontitle}}</p>
+                    </div>
+                {{/newLayoutElement}}
+            {{/each}}
+        {{/newLayoutContainer}}
+        {{#if isLoading}}
+            <div class="loading-spinner">
+                <div class='spinner-overlay'>
+                    <div class='spinner center'>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
     </div>
 </template>
 <template name="favoritePosts1">

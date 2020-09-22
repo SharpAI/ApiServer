@@ -1,7 +1,7 @@
 <template name="socialContent">
   <div class="socialContent">
     <div class="showPostsLine" id="socialContentDivider"></div>
-    <div class="content">
+    <div class="content" style="z-index:6666;position: relative;">
       <div class="chatBox">
         <div class="chatBoxContent">
             <div class="div_contactsList" style="display:none">
@@ -24,36 +24,36 @@
             {{/if}}
           </div>
           -->
-          <div class="postBtn  {{isFocus 'postBtn'}} ripple">
+          <div class="postBtn  {{isFocus 'postBtn'}}">
             <i class="fa fa-file-image-o"></i>
-            <div>故事贴</div>
+            <div>文章</div>
           </div>
-          <div class="contactsBtn {{isFocus 'contactsList'}} ripple">
+          <div class="contactsBtn {{isFocus 'contactsList'}}">
             <i class="fa fa-list">
               {{#if haveNewFriends}}
               <div id="newFriendRedSpot" style="display: none;z-index: 99998;" class="red_spot"></div>
               <div id="newFriendRedSpotReal" class="red_spot">{{newcount}}</div>
-              {{/if}}             
+              {{/if}}
             </i>
-            <div>新朋友</div>
+            <div>{{_ "NewFriends"}}</div>
           </div>
           <div class="chatBtn">
             <div class="chat-icon-wrap"><img src="/img/chat-icon.png" class="chat-icon-img">
             <div class="red_spot" style="{{#if haschats}}display: block;{{else}}display: none;{{/if}}">{{chatcount}}</div>
-            <!--<div style="position: absolute;width: 100%;text-align: center;margin-left: -14%;margin-top: 2px;">阅览室</div>-->
+            <!--<div style="position: absolute;margin: 4px auto;transform: translate(-50%);margin-left: 40%;margin-top: 4px;">{{_ "readingRoom"}}</div>-->
             </div>
-          </div>
-          <div class="discoverBtn {{isFocus 'discover'}} ripple">
+          </div>          
+          <div class="discoverBtn {{isFocus 'discover'}}">
             <i class="fa fa-compass">
               {{#if haveFeeds}}
                   <div class="red_spot">{{feedscount}}</div>
               {{/if}}
             </i>
-            <div>动态</div>
+            <div>{{_ "newInfo"}}</div>
           </div>
-          <div class="meBtn {{isFocus 'me'}} ripple">
+          <div class="meBtn {{isFocus 'me'}}">
             <i class="fa fa-bookmark-o"></i>
-            <div>收藏夹</div>
+            <div>{{_ "favorite"}}</div>
           </div>
         </div>
       </div>

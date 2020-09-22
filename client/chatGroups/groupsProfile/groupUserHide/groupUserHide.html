@@ -1,0 +1,96 @@
+<template name="groupUserHide">
+<div class="groupUserHide">
+  <div class="head">
+    <strong>通知管理</strong>
+    <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+  </div>
+  <div class="content" style="padding-top:40px;">
+    <ul class="userHideLists">
+        <li class="sub_head"><p>请选择通知方式</p></li>
+        {{#with getConfig 'push'}}
+            <li class="userHideItem">
+              <img class="icon" src="/push.png" width="40" height="40">
+              <div class="right-btn" style="background: #fff;"><input id="push" class="switch" style="margin-top:-3px;outline:none;" type="checkbox" {{checkedIf isShow}}></div>
+              <p class="userName">APP推送通知</p>
+              {{#if getIsShow this}}
+              {{/if}}
+            </li>
+        {{/with}}
+        {{#with getConfig 'email'}}
+            <li class="userHideItem">
+              <img class="icon" src="/email.png" width="40" height="40">
+              <div class="right-btn" style="background: #fff;"><input id="email" class="switch" style="margin-top:-3px;outline:none;" type="checkbox" {{checkedIf isShow}}></div>
+              <p class="userName">邮件通知</p>
+              {{#if getIsShow this}}
+              {{/if}}
+            </li>
+        {{/with}}
+        <li class="sub_head"><p>以下事件发生时，通知您</p></li>
+        {{#with getConfig 'report'}}
+            <li class="userHideItem">
+              <img class="icon" src="/active_report.png" width="40" height="40">
+              <div class="right-btn" style="background: #fff;">
+                <input id="report_id" class="switch" style="margin-top:-3px;outline:none;" type="checkbox" {{checkedIf isShow}}>
+              </div>
+              <p class="userName">动静报告</p>
+              {{#if getIsShow this}}
+              {{/if}}
+            </li>
+        {{/with}}
+        {{#with getConfig 'stranger'}}
+            <li class="userHideItem">
+              <img class="icon" src="/user_new.png" width="40" height="40">
+              <div class="right-btn" style="background: #fff;"><input id="stranger_id" class="switch" style="margin-top:-3px;outline:none;" type="checkbox" {{checkedIf isShow}}></div>
+              <p class="userName">不熟悉的人</p>
+              {{#if getIsShow this}}
+              {{/if}}
+            </li>
+        {{/with}}
+        <!-- {{#with getConfig 'gif'}}
+            <li class="userHideItem">
+              <img class="icon" src="/gif.png" width="40" height="40">
+              <div class="right-btn" style="background: #fff;"><input id="gif_id" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
+              <p class="userName">gif动图</p>
+              {{#if getIsShow this}}
+              {{/if}}
+            </li>
+        {{/with}} -->
+
+        <!-- {{#with getConfig 'other'}}
+        <li class="userHideItem">
+          <img class="icon" src="/other.png" width="40" height="40">
+          <div class="right-btn" style="background: #fff;"><input id="other" class="switch" style="margin-top:-3px;" type="checkbox" {{checkedIf isShow}}></div>
+          <p class="userName">其他事件</p>
+          {{#if getIsShow this}}
+          {{/if}}
+        </li>
+        {{/with}} -->
+        <!-- {{#if isLoading}}
+        <div class="loading"><img src="/loading.gif" width="24" height="24"/> &nbsp;加载中</div>
+        {{/if}} -->
+
+
+      <li class="sub_head"><p>以下熟人出现时，通知您</p></li>
+      {{#each lists}}
+      {{#if person_name}}
+      <li class="userHideItem">
+        <img class="icon" src="{{icon}}" width="40" height="40">
+        <div class="right-btn" style="background: #fff;"><input id="{{_id}}" class="switch" style="margin-top:-3px;outline:none;" type="checkbox" {{checkedIf isShow}}></div>
+        <!-- {{#if isHide}}
+        <div id="{{_id}}" class="right-btn btnShow">显示</div>
+        {{else}}
+        <div id="{{_id}}" class="right-btn btnHide">隐藏</div>
+        {{/if}} -->
+        <p class="userName">{{person_name}}</p>
+      </li>
+      {{/if}}
+      {{/each}}
+      {{#if isLoading}}
+      <div class="loading"><img src="/loading.gif" width="24" height="24"/> &nbsp;加载中</div>
+      {{/if}}
+    </ul>
+
+  </div>
+
+</div>
+</template>

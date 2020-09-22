@@ -1,0 +1,39 @@
+<template name="bindGroupUser">
+<div class="bindUserPage">
+  <div class="head">
+    <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+    <strong>群组成员绑定</strong>
+  </div>
+  <div class="content" style="padding-top:40px;">
+    <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">监控组信息</div>
+    <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
+      {{#each groups}}
+      <li class="name editName">
+          <label>{{group_name}}</label>
+          <div class="value"><i class="fa fa-angle-right"></i></div>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+</div>
+</template>
+
+<template name="bindUserPopup">
+<div class="bindUserPopup" style="min-height: 100%; background: #efefef;">
+  <div class="head">
+    <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+    <strong>选择成员</strong>
+  </div>
+  <div class="content" style="padding-top:40px;">
+    <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">监控组信息</div>
+    <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
+      {{#each persons}}
+      <li id="{{_id}}" class="labeled-item group-photo-labeled-item" data-did="{{deviceId}}" data-gid="{{group_id}}" data-fid="{{faceId}}" data-name="{{name}}">
+        <label style="top:20px;"><img src="{{url}}" style="width: 48px;height: 48px;"/></label>
+        <div class="value" style="height: 48px;line-height:48px;">{{name}}<i class="fa fa-angle-right"></i></div>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+</div>
+</template>

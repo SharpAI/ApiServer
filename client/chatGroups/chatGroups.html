@@ -1,0 +1,112 @@
+<template name="chatGroups">
+  {{#if syncing}}
+  {{> sync}}
+  {{/if}}
+  <div class="chatGroups home">
+    <div class="head">
+      <strong>消息</strong>
+    </div>
+    <div class="content">
+    <div class="contentList" id="wrapper" style="overflow: hidden;">
+        <!-- {{#if loading}}
+          <div>{{_ "isLoading"}}</div>
+        {{/if}}
+        {{#if loadError}}
+            <div>{{_ "loadFailNotification"}}</div>
+        {{/if}} -->
+        <ul id="msg-session">
+          {{#if hasSysMessages}}
+            <div id="sysBell" class="eachViewer swiperElem" style="position: relative;">
+              <div>
+                <img class="icon" src="/sysMessages.png">
+                <span class="groupsName">出现提醒</span>
+                {{#if showRedSpot}}
+                  <div class="red_spot" style="width: 14px;height: 14px;line-height: 20px;text-align: center;border-radius: 50%;background-color: red;color: #fff;position: absolute;left: 50px;top: 5px;z-index: 99;"></div>
+                {{/if}}
+              </div>
+              <div class="delBtnContent sysDelBtn">删除</div>
+            </div>
+            <div class="line">
+                  <span></span>
+            </div>
+          {{/if}}
+          {{#each msgSession2}}
+          <li class="swiperElem">
+            {{#if toUserIcon}}
+            <img class="icon" src="{{toUserIcon}}" />
+            {{else}}
+            <i class="fa fa-users" aria-hidden="true"></i>
+            {{/if}}
+            {{#if toUserNames}}
+              <div class="name n1">{{toUserNames}}</div>
+            {{else}}
+              <div class="name n2">{{toUserName}}</div>
+            {{/if}}
+            <div class="text">{{lastText}}</div>
+            <div class="time">{{formatTime updateAt}}</div>
+            {{#if hasCount count}}
+            <!-- {{#if hasNewLabelMsg}} -->
+            <div class="count" id="counts"></div>
+            {{/if}}
+            <div id="{{_id}}" class="delBtnContent" data-type="{{sessionType}}" data-touserid="{{toUserId}}">删除</div>
+          </li>
+          {{/each}}
+        </ul>
+        <!-- {{#if moreResults}}
+        <div id="showMoreResults" style="margin-left: 25px;">
+          <span class="loading">{{_ "loading"}}</span>
+        </div>
+        {{/if}} -->
+    </div>
+    </div>
+    {{> footer}}
+  </div>
+  {{#if showBubbleTipHintTemplate}}
+    {{> bubbleTipHintTemplate}}
+  {{/if}}
+  <script>
+  $(function() {
+    touch.on('body', 'swipeup swipedown', function(ev){
+      console.log("swipe: ",ev.type );
+      $('.swiperElem').animate({left: '0px'},100);
+    });
+    touch.live('#msg-session', 'swipeup swipedown','.swiperElem', function(ev){
+      $('.swiperElem').animate({left: '0px'},100);
+    });
+    touch.live('#msg-session', 'swipeleft swipeing','.swiperElem', function(ev){
+      $('.swiperElem').animate({left: '0px'},100);
+      var x = ev.x;
+      if(x < -40){
+        x = -100;
+      } else {
+        x = 0;
+      }
+      console.log($(ev.target))
+      $(ev.target).parents('.swiperElem').animate({left: x+'px'},100);
+    });
+    touch.live('#msg-session', 'swiperight swipeing','.swiperElem', function(ev){
+      $(ev.target).parents('.swiperElem').animate({left: '0px'},100);
+    });
+
+    //解决消息列表红点问题
+    var listCount = $("#counts").each(function(i,v){return i});
+    if(listCount.html() == undefined || listCount.html() == ""){
+      Session.set('hasNewLabelMsg',false);
+    }else{
+      Session.set('hasNewLabelMsg',true);
+    }
+
+  })
+  </script>
+</template>
+
+<template name="sync">
+  <div class="modaling">
+      <div class="syncing">
+          <div class="icon"><i class="fa fa-refresh" aria-hidden="true"></i></div>
+          <div class="tip">正在同步离线消息</div>
+      </div>
+      
+  </div>
+
+</template>

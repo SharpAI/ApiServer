@@ -1,0 +1,30 @@
+<template name="bubbleTipHintTemplate">
+  <div class="bubbleTip-layer">
+    <svg style="width: 100%;height: 100%;" viewBox="0,0,100%,100%">
+      <defs>
+        <filter id="bubbleTipFilter" x="-0.1" y="-0.1">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+        </filter>
+        <mask id="bubbleTipMask">
+          <rect x="0" y="0" width="100%" height="100%" style="stroke:none;fill: #ffffff;opacity: 0.6;"></rect>
+          <ellipse cx="92%" cy="8%" rx="25" ry="22" fill="#000" transform="translate(0,-32)" filter="url(#bubbleTipFilter)"></ellipse>
+        </mask>
+      </defs>
+      <rect x="0" y="0" width="100%" height="100%" style="stroke: none;fill: #000; mask: url(#bubbleTipMask);"></rect>
+    </svg>
+    <div class="bubbleTip-container">
+      <div> <img src="/bubbleTip/bubblehint1.png" style="width: 16%;margin-left: 60%;" /></div>
+      <div style="margin-top: 80px;"><img src="/bubbleTip/bubblehint2.png" style="width: 16%;"/></div>
+      <div style="margin-top: 10px;"><img src="/bubbleTip/bubblehint3.png" style="width: 60%;"/></div>
+    </div>
+  </div>
+  <script>
+    $('.bubbleTip-layer').on('click touchstart',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      $('body').removeClass('bubbleTip-html-body');
+      $(this).remove();
+      Session.set('needShowBubble','false');
+    });
+  </script>
+</template>

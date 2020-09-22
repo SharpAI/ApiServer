@@ -1,0 +1,166 @@
+/*---------------------------------------------------------*/
+/*  cropper styling begins here...
+/*---------------------------------------------------------*/
+.crop {
+	display:block;
+	width:100%;
+	text-align:center;
+	position:relative;
+}
+
+div[data-imgcrop] {
+	position:relative;
+	display:inline-block
+}
+
+div[data-mask='true'] .crop-container {
+	overflow:hidden;
+	position:relative
+}
+
+.cropMain .crop-img {
+	position:absolute
+}
+.cropMain .crop-overlay {
+	position:relative;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	cursor: grab;
+	cursor: -webkit-grab;
+	cursor: -moz-grab
+}
+.grabcursor,
+.cropMain .crop-overlay:active {
+	cursor: grabbing;
+	cursor: -webkit-grabbing;
+	cursor: -moz-grabbing
+}
+.cropMain .crop-container {
+	overflow:hidden
+}
+.cropMain .crop-shadow {
+    position:absolute;
+    width:100%;
+    height:100%;
+    box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
+    -moz-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
+    -webkit-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
+    -khtml-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
+    -ms-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
+    background-image: url('img/move.png'); 
+	background-size: 48px 48px;
+	background-repeat: no-repeat;
+        background-position: center;
+	
+}
+/*
+.cropMain .crop-container:after {
+	content:"";
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	z-index:5999;
+
+	 this box shadow is the mask effect 
+	box-shadow:0 0 0 2000px rgba(255, 255, 255, .85);
+}
+*/
+
+
+/*---------------------------------------------------------*/
+/*  zoom slider: input[type="range"] styling
+/*---------------------------------------------------------*/
+
+div[data-imgcrop] input[type="range"] {
+	-webkit-appearance: none;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+
+	margin: 0;
+	border: none;
+	padding: 0;
+	border-radius: 0;
+	outline: none; /* no focus outline */
+
+	width:100%;
+	height:4px;
+	background:#eee;
+
+	bottom:calc(50% - 2px);
+	left:calc(50% + 2px);
+	position:absolute;
+	z-index:6001;
+	-webkit-transform:rotate(270deg);
+	-ms-transform:rotate(270deg);
+	transform:rotate(270deg);
+	cursor: ns-resize
+}
+div[data-imgcrop] input[type="range"]:active {
+	cursor:ns-resize
+}
+div[data-imgcrop] input[type="range"]::-moz-range-track {
+	border: inherit;
+	background: transparent
+}
+
+div[data-imgcrop] input[type="range"]::-ms-track {
+	border: inherit;
+	color: transparent; /* don't drawn vertical reference line */
+	background: transparent
+}
+/* removes dotted border in firefox */
+div[data-imgcrop] input[type=range]::-moz-focus-outer { border: 0 }
+
+
+div[data-imgcrop] input[type="range"]::-ms-fill-lower,
+div[data-imgcrop] input[type="range"]::-ms-fill-upper {
+	background: transparent
+}
+
+div[data-imgcrop] input[type="range"]::-ms-tooltip {
+	display: none
+}
+
+/* thumb */
+div[data-imgcrop] input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width:15px;
+	height:20px;
+	border-radius:5px;
+	background:#fff;
+	box-shadow:-1px 0 3px rgba(0, 0, 0, .2), inset 4px 0 8px rgba(0, 0, 0, .1);
+	border:none
+}
+div[data-imgcrop] input[type="range"]::-moz-range-thumb {
+	width:15px;
+	height:20px;
+	border-radius:5px;
+	background:#fff;
+	box-shadow:-1px 0 3px rgba(0, 0, 0, .2), inset 4px 0 8px rgba(0, 0, 0, .1);
+	border:none
+}
+div[data-imgcrop] input[type="range"]::-ms-thumb {
+	width:15px;
+	height:20px;
+	border-radius:5px;
+	background:#fbc93d;
+	border:none
+}
+
+.imgMask div {
+    width: 33.33%;
+    height: 33.33%;
+    float: left;
+}
+.imgMask div:nth-child(-n+3) {
+    border-bottom: 1px solid #fff;
+}
+.imgMask div:nth-child(-n+6) {
+    border-bottom: 1px solid #fff;
+}
+.imgMask div:nth-child(1), .imgMask div:nth-child(2), .imgMask div:nth-child(4), .imgMask div:nth-child(5), .imgMask div:nth-child(7), .imgMask div:nth-child(8) {
+    border-right: 1px solid #fff;
+}

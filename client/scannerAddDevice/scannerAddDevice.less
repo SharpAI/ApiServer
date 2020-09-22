@@ -1,0 +1,70 @@
+/*
+scannerAddDevice Page 
+*/
+.boxDeviceLists {
+  margin: 0; padding: 0;
+  .ul-line{
+    list-style: none;
+    line-height: 20px;
+    padding: 10px 5px;
+    background: #efefef;
+    font-size: 12px;
+  }
+  .boxDeviceItem{
+    list-style: none; overflow: hidden;padding: 10px 0; border-bottom: 1px solid #efefef; margin: 0 5px;
+    h2 {margin: 0; font-size: 14px; line-height: 20px;}
+    p{margin: 0; font-size: 12px; line-height: 20px;}
+  }
+  .boxDeviceIcon {
+    height: 40px;
+    width: 40px;
+    margin-right: 10px;
+    float: left;
+    text-align: center;
+    line-height: 40px;
+    i { font-size: 40px;}
+  }
+  .boxDeviceCheckedIcon {
+    height: 40px;
+    width: 40px;
+    right: 0px;
+    line-height: 40px;
+    position: absolute;
+    i.fa-plus { font-size: 20px; color: red;}
+    i.fa-pencil-square-o { font-size: 20px;}
+  }
+}
+
+
+// selectCreateGroup
+.selectCreateGroup{
+  background: #efefef;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99990;
+  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  -webkit-touch-callout: none; // 禁止长按菜单
+}
+
+// deviceSetting
+
+.deviceSetting{
+  background: #efefef; min-height: 100%;
+}
+.deleteDevice{
+  position: relative;
+  left: 2.5%;
+  width: 95%;
+  text-align: center;
+  font-size: 16px;
+  background-color: #f56262;
+  color: #ffffff !important;
+  height: 40px;
+  border-radius: 5px;
+  padding-top: 10px;
+}

@@ -126,7 +126,7 @@ class @newLayout
 
       wookmark_debug&&console.log('image outside width is ' + img.offsetHeight)
       if img.offsetHeight is 0
-        Meteor.setTimeout ()->
+        setTimeout ()->
           wookmark_debug&&console.log('Got error layout ' + img.offsetHeight);
           if img.offsetHeight is 0
             $element.remove()
@@ -155,18 +155,14 @@ Template.newLayoutContainer.events =
     if postId is undefined
       postId = this._id
     scrollTop = $(window).scrollTop()
-    currentPostId = Session.get("postContent")._id
-    postBack = Session.get("postBack")
-    postBack.push(currentPostId)
-    Session.set("postForward",[])
-    Session.set("postBack",postBack)
     Session.set("lastPost",postId)
-    Session.set('postContentTwo', postId)
     $(window).children().off()
     $(window).unbind('scroll')
     if typeof PopUpBox isnt "undefined"
       PopUpBox.close()
-    PUB.openPost postId
+      # $('.popUpBox, .b-modal').hide()
+    Session.set("readMomentsPost",true);
+    Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
     if this.data and this.data.displayId
@@ -227,7 +223,7 @@ Template.newLayoutElement.onDestroyed ()->
     if instance
       wookmark_debug&&console.log('Need remove item');
       $('.newLayout_element_'+ this.data.src + '_' + this.data.layoutId + '#' + this.data.displayId).removeClass('loaded');
-      Meteor.setTimeout ()->
+      setTimeout ()->
         instance.initItems();
         instance.layout(true);
       ,1000

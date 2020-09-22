@@ -2,7 +2,7 @@ $.extend({
   rippleButton:function() {
     
     
-    $('.ripple').on('click', function (event) {
+    $('.ripple-elem').on('click', function (event) {
       event.preventDefault();
       
       var $div = $('<div/>'),

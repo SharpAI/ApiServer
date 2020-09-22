@@ -1,0 +1,26 @@
+<template name="scanTipHintTemplate">
+  {{#with maskDesc}}
+  <div class="scantip-layer">
+    <svg style="width: 100%;height: 100%;" viewBox="0,0,100%,100%">
+      <defs>
+        <filter id="scantipFilter" x="-0.1" y="-0.1">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+        </filter>
+        <mask id="scantipMask">
+          <rect x="0" y="0" width="100%" height="100%" style="stroke:none;fill: #ffffff;opacity: 0.8;"></rect>
+          {{#if maskEllipse}}
+          <ellipse cx={{cx}} cy={{cy}} rx={{rx}} ry={{ry}} fill="#000" transform="translate({{trsx}},{{trsy}})" filter="url(#scantipFilter)"></ellipse>
+          {{else}}
+          <rect x={{x}} y={{y}} width={{width}} height={{height}} fill="#000" transform="translate({{trsx}},{{trsy}})" filter="url(#scantipFilter)"></rect>
+          {{/if}} 
+        </mask>
+      </defs>
+      <rect x="0" y="0" width="100%" height="100%" style="stroke: none;fill: #000; mask: url(#scantipMask);"></rect>
+    </svg>
+  <div class="scantip-container" style={{scantipContainerStyle}}>
+      <i class={{iconClass}} style={{iconStyle}}></i>
+      <span style={{spanStyle}}>{{spanContent}}</span>
+    </div>
+  </div>
+  {{/with}}
+</template>

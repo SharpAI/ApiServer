@@ -1,7 +1,4 @@
 if Meteor.isClient
-  Meteor.startup ()->
-    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
-    return
   hasMoreResult = ()->
     if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
       !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
@@ -12,7 +9,7 @@ if Meteor.isClient
   hasMoreResult2 = ()->
     !(FavouritePosts.find({userId: Session.get("ProfileUserId2")}).count() < Session.get("favouritepostsLimit2"))
   hasMoreResult3 = ()->
-    !(FavouritePosts.find({userId: Session.get("ProfileUserId3")}).count() < Session.get("favouritepostsLimit3"))
+    !(FavouritePosts.find({userId: Session.get("ProfileUserId3")}).count() < Session.get("favouritepostsLimit3"))     
   updateMeetsCount = (userId)->
     meetInfo = PostFriends.findOne({me:Meteor.userId(),ta:userId})
     if(meetInfo)
@@ -80,8 +77,9 @@ if Meteor.isClient
     UserProfile = PostFriends.findOne({ta:Session.get(userId)})
     requestee = UserProfile.displayName
     UserProfile._id = UserProfile.ta
+    console.log  'addToContactList！！！'
     if Follower.findOne({"userId":UserProfile._id,"followerId":Meteor.userId()})
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         userName: username
         userIcon: Meteor.user().profile.icon
@@ -92,6 +90,7 @@ if Meteor.isClient
         followerDesc: ''
         createAt: new Date()
       }
+      addFollower(insertObj)
       return
     if Feeds.findOne({"requesteeId":Meteor.userId(),"requesterId":UserProfile._id})
       Follower.insert {
@@ -139,6 +138,10 @@ if Meteor.isClient
       requesterIcon:Meteor.user().profile.icon
       requesterId:Meteor.userId()
     }
+  # Initialize the Swiper
+  Meteor.startup ()->
+    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    #@UserProfilesSwiper = new Swipe(['userProfilePage'])
   Template.userProfile.helpers
     Swiper: -> UserProfilesSwiper
   Template.userProfile.onRendered ->
@@ -260,29 +263,11 @@ if Meteor.isClient
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     $('.page').addClass('scrollable')
-    # Session.set('upanddown','fa-angle-down')
-    # Session.set('upanddown1','fa-angle-down')
-    # new jQueryCollapse($('#custom-show-hide-example'),
-    #  open: ->
-    #   this.slideDown 150
-    #   if $('.page1Updonw').parent().parent().hasClass('close')
-    #     Session.set('upanddown','fa-angle-up')
-    #   if $('.page1Updonw1').parent().parent().hasClass('close')
-    #     Session.set('upanddown1','fa-angle-up')
-    #   return
-    #  close: ->
-    #   this.slideUp 150
-    #   if $('.page1Updonw').parent().parent().hasClass('open')
-    #     Session.set('upanddown','fa-angle-down')
-    #   if $('.page1Updonw1').parent().parent().hasClass('open')
-    #     Session.set('upanddown1','fa-angle-down')
-    #   return
-    #  )
+    if PostFriends.find({ta: Session.get("ProfileUserId1")}).count() is 0
+      Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId1")
   Template.userProfilePage1.helpers
-    upOrDown: ()->
-      Session.get('upanddown')
-    upOrDown1: ()->
-      Session.get('upanddown1')
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId1"), userId: Meteor.userId()}).count()>0
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -314,7 +299,13 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      PostFriends.findOne {ta: Session.get("ProfileUserId1")}
+      if Session.get("ProfileUserId1") is Meteor.userId()
+        Meteor.user()
+      else
+        if PostFriends.findOne {ta: Session.get("ProfileUserId1")}
+          PostFriends.findOne {ta: Session.get("ProfileUserId1")}
+        else
+          Meteor.users.findOne {_id: Session.get("ProfileUserId1")}
     location:->
       getLocation(Session.get("ProfileUserId1"))
     isFollowed:()->
@@ -345,6 +336,36 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage1.events
+    'click #followAuthor': (e)->
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage1.__helpers.get('profile')()
+      followerName = ''
+      if profile and profile.profile and profile.profile.fullname
+        followerName = profile.profile.fullname
+      else if profile
+        followerName = profile.username
+      insertObj = {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId1")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      }
+      addFollower(insertObj)
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId1"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      }
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -352,69 +373,32 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
-    'click #suggestCurrentPost': ()->
-      suggestCurrentPost("ProfileUserId1")
-    'click #sendChatMessage': ()->
-      Session.set("messageDialog_to", {id: Session.get("ProfileUserId1"), type: 'user'})
-      Session.set("Social.LevelOne.Menu", 'messageDialog')
-    ###
+        # $('.popUpBox, .b-modal').hide()
+    # 'click #suggestCurrentPost': ()->
+    #   suggestCurrentPost("ProfileUserId1")
+    # 'click #sendChatMessage': ()->
+    #   Session.set("messageDialog_to", {id: Session.get("ProfileUserId1"), type: 'user'})
+    #   Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
-      postId = e.currentTarget.id
-      if PopUpBox
-        PopUpBox.close()
-      if postId isnt Session.get('postContent')._id
-        $(window).children().off()
-        $(window).unbind('scroll')
-        #Meteor.setTimeout ()->
-        PUB.openPost postId
-        #,300
-    ###
-    'click .postImages ul li':(e)->
-      PUB.openPost e.currentTarget.id
-      ###
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
-      currentPostId = Session.get("postContent")._id
-      postBack = Session.get("postBack")
-      postBack.push(currentPostId)
-      Session.set("postForward",[])
-      Session.set("postBack",postBack)
       if PopUpBox
         PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
+        
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
       ,300
-      ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId1")
   Template.userProfilePage2.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
-    # Session.set('upanddown','fa-angle-down')
-    # Session.set('upanddown1','fa-angle-down')
-    # new jQueryCollapse($('#custom-show-hide-example2'),
-    #  open: ->
-    #   this.slideDown 150
-    #   if $('.page1Updonw').parent().parent().hasClass('close')
-    #     Session.set('upanddown','fa-angle-up')
-    #   if $('.page1Updonw1').parent().parent().hasClass('close')
-    #     Session.set('upanddown1','fa-angle-up')
-    #   return
-    #  close: ->
-    #   this.slideUp 150
-    #   if $('.page1Updonw').parent().parent().hasClass('open')
-    #     Session.set('upanddown','fa-angle-down')
-    #   if $('.page1Updonw1').parent().parent().hasClass('open')
-    #     Session.set('upanddown1','fa-angle-down')
-    #   return
-    #  )
   Template.userProfilePage2.helpers
-    upOrDown: ()->
-      Session.get('upanddown')
-    upOrDown1: ()->
-      Session.get('upanddown1')
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId2"), userId: Meteor.userId()}).count()>0
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -440,11 +424,15 @@ if Meteor.isClient
             addstr = '已发送邀请'
         else
           addstr = '已发送邀请'
+
       addstr
     withChat:->
       withChat
     profile:->
-      PostFriends.findOne {ta: Session.get("ProfileUserId2")}
+      if Session.get("ProfileUserId2") is Meteor.userId()
+        Meteor.user()
+      else
+        PostFriends.findOne {ta: Session.get("ProfileUserId2")}
     location:->
       getLocation(Session.get("ProfileUserId2"))
     isFollowed:()->
@@ -475,6 +463,36 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage2.events
+    'click #followAuthor': (e)->
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage2.__helpers.get('profile')()
+      followerName = ''
+      if profile and profile.profile and profile.profile.fullname
+        followerName = profile.profile.fullname
+      else if profile
+        followerName = profile.username
+      insertObj = {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId2")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      }
+      addFollower(insertObj)
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId2"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      }
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -482,70 +500,32 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
-    'click #suggestCurrentPost': ()->
-      suggestCurrentPost("ProfileUserId2")
-    'click #sendChatMessage': ()->
-      Session.set("messageDialog_to", {id: Session.get("ProfileUserId2"), type: 'user'})
-      Session.set("Social.LevelOne.Menu", 'messageDialog')
-    ###
+        # $('.popUpBox, .b-modal').hide()
+    # 'click #suggestCurrentPost': ()->
+    #   suggestCurrentPost("ProfileUserId2")
+    # 'click #sendChatMessage': ()->
+    #   Session.set("messageDialog_to", {id: Session.get("ProfileUserId2"), type: 'user'})
+    #   Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
-      postId = e.currentTarget.id
-      if PopUpBox
-        PopUpBox.close()
-      if postId isnt Session.get('postContent')._id
-        $(window).children().off()
-        $(window).unbind('scroll')
-        #Meteor.setTimeout ()->
-        PUB.openPost postId
-        #,300
-    ###
-    'click .postImages ul li':(e)->
-      PUB.openPost e.currentTarget.id
-      ###
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
-      currentPostId = Session.get("postContent")._id
-      postBack = Session.get("postBack")
-      postBack.push(currentPostId)
-      Session.set("postForward",[])
-      Session.set("postBack",postBack)
       if PopUpBox
         PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
       ,300
-      ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId2")
 
   Template.userProfilePage3.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
-    # Session.set('upanddown','fa-angle-down')
-    # Session.set('upanddown1','fa-angle-down')
-    # new jQueryCollapse($('#custom-show-hide-example3'),
-    #  open: ->
-    #   this.slideDown 150
-    #   if $('.page1Updonw').parent().parent().hasClass('close')
-    #     Session.set('upanddown','fa-angle-up')
-    #   if $('.page1Updonw1').parent().parent().hasClass('close')
-    #     Session.set('upanddown1','fa-angle-up')
-    #   return
-    #  close: ->
-    #   this.slideUp 150
-    #   if $('.page1Updonw').parent().parent().hasClass('open')
-    #     Session.set('upanddown','fa-angle-down')
-    #   if $('.page1Updonw1').parent().parent().hasClass('open')
-    #     Session.set('upanddown1','fa-angle-down')
-    #   return
-    #  )
   Template.userProfilePage3.helpers
-    upOrDown: ()->
-      Session.get('upanddown')
-    upOrDown1: ()->
-      Session.get('upanddown1')
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId3"), userId: Meteor.userId()}).count()>0
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -575,7 +555,10 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      PostFriends.findOne {ta: Session.get("ProfileUserId3")}
+      if Session.get("ProfileUserId3") is Meteor.userId()
+        Meteor.user()
+      else
+        PostFriends.findOne {ta: Session.get("ProfileUserId3")}
     location:->
       getLocation(Session.get("ProfileUserId3"))
     isFollowed:()->
@@ -606,6 +589,36 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage3.events
+    'click #followAuthor': (e)->
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage3.__helpers.get('profile')()
+      followerName = ''
+      if profile and profile.profile and profile.profile.fullname
+        followerName = profile.profile.fullname
+      else if profile
+        followerName = profile.username
+      insertObj = {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId3")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      }
+      addFollower(insertObj)
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId3"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      }
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -613,41 +626,23 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
-    'click #suggestCurrentPost': ()->
-      suggestCurrentPost("ProfileUserId3")
-    'click #sendChatMessage': ()->
-      Session.set("messageDialog_to", {id: Session.get("ProfileUserId3"), type: 'user'})
-      Session.set("Social.LevelOne.Menu", 'messageDialog')
-    ###
+        # $('.popUpBox, .b-modal').hide()
+    # 'click #suggestCurrentPost': ()->
+    #   suggestCurrentPost("ProfileUserId3")
+    # 'click #sendChatMessage': ()->
+    #   Session.set("messageDialog_to", {id: Session.get("ProfileUserId3"), type: 'user'})
+    #   Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
-      postId = e.currentTarget.id
-      if PopUpBox
-        PopUpBox.close()
-      if postId isnt Session.get('postContent')._id
-        $(window).children().off()
-        $(window).unbind('scroll')
-        #Meteor.setTimeout ()->
-        PUB.openPost postId
-        #,300
-    ###
-    'click .postImages ul li':(e)->
-      PUB.openPost e.currentTarget.id
-      ###
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
-      currentPostId = Session.get("postContent")._id
-      postBack = Session.get("postBack")
-      postBack.push(currentPostId)
-      Session.set("postForward",[])
-      Session.set("postBack",postBack)
       if PopUpBox
         PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
       ,300
-      ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")
 
@@ -657,6 +652,8 @@ if Meteor.isClient
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     $('.page').addClass('scrollable')
   Template.userProfilePage.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId"), userId: Meteor.userId()}).count()>0
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -686,7 +683,10 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      UserDetail.findOne {_id: Session.get("ProfileUserId")}
+      if Session.get("ProfileUserId") is Meteor.userId()
+        Meteor.user()
+      else
+        UserDetail.findOne {_id: Session.get("ProfileUserId")}
     location:->
       getLocation(Session.get("ProfileUserId"))
     isFollowed:()->
@@ -717,6 +717,36 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage.events
+    'click #followAuthor': (e)->
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage.__helpers.get('profile')()
+      followerName = ''
+      if profile and profile.profile and profile.profile.fullname
+        followerName = profile.profile.fullname
+      else if profile
+        followerName = profile.username
+      insertObj = {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      }
+      addFollower(insertObj)
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      }
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -724,24 +754,18 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
     'click .postImages ul li':(e)->
-      PUB.openPost e.currentTarget.id
-      ###
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
-      currentPostId = Session.get("postContent")._id
-      postBack = Session.get("postBack")
-      postBack.push(currentPostId)
-      Session.set("postForward",[])
-      Session.set("postBack",postBack)
       if PopUpBox
         PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
       ,300
-      ###
   Template.favoritePosts.rendered=->
     $(window).scroll (event)->
       if Session.get("Social.LevelOne.Menu") is 'contactsList'
@@ -772,6 +796,7 @@ if Meteor.isClient
         if !~postIds.indexOf(item.postId)
           postIds.push(item.postId)
       )
+      console.log(postIds)
       Posts.find({_id: {$in: postIds}})
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
@@ -818,7 +843,7 @@ if Meteor.isClient
       posts.sort((p1, p2)->
         return -(FavouritePosts.findOne({postId: p1._id, userId: Session.get("ProfileUserId1")}).createdAt - FavouritePosts.findOne({postId: p2._id, userId: Session.get("ProfileUserId1")}).createdAt)
       )
-      posts
+      posts         
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
     loading:()->
@@ -907,7 +932,7 @@ if Meteor.isClient
       posts.sort((p1, p2)->
         return -(FavouritePosts.findOne({postId: p1._id, userId: Session.get("ProfileUserId3")}).createdAt - FavouritePosts.findOne({postId: p2._id, userId: Session.get("ProfileUserId3")}).createdAt)
       )
-      posts      
+      posts
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
     loading:()->

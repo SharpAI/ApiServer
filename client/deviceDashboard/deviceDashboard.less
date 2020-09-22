@@ -1,0 +1,238 @@
+.deviceDashboard{
+  .lists{
+    margin: 0;
+    padding: 16px;
+    // margin-top: 40px;
+    color: #555;
+    .tip {
+      text-align: center;
+      font-size: 12px;
+    }
+    .listsItem{
+      list-style: none;
+      float: left;
+      width: 33.3%;
+      text-align: center;
+      margin: 16px 0;
+      transition: all .75s ease-in-out;
+      img{
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        margin-bottom: 5px;
+      }
+      p{
+        font-size: 12px;
+        white-space: nowrap;
+        height: 20px;
+        line-height: 20px;
+        margin: 0;
+        padding: 0px;
+        text-align: center;
+      }
+      span.time {
+        font-size: 10px;
+        background: #ececec;
+        border-radius: 8px;
+        padding: 2px 6px;
+      }
+    }
+  }
+  .date-head{
+    position: relative;
+    overflow: hidden;
+    padding: 10px 10px 0px;
+    color: rgb(116, 173, 199);
+    margin-top:40px;
+    text-align: center;
+    // text-shadow: 1px 1px #333;
+    .imgHelper{
+      float: left;
+      width: 80px;
+      margin-right: 16px;
+      img{ width: 100%; height: 100%; object-fit: contain;}
+    }
+    .time{ margin: 10px 0;padding: 0;font-size: 18px;}
+    .navigation{
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 40px;
+      margin-top: -20px;
+      line-height: 40px;
+      li{
+        list-style: none;
+        padding: 0 10px;
+        position: absolute;
+        cursor: pointer;
+        width: 64px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 30px;
+        text-shadow: 1px 1px #656565;
+      }
+      li.prevDay{left: 0; text-align: left;}
+      li.nextDay{right: 0; text-align: right;}
+    }
+  }
+  .loading{
+    text-align: center;
+    img{width: 50px;
+    height: 50px;}
+  }
+}
+
+.deviceDashPoppage {
+    background: rgba(0, 0, 0, 0.14);
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    display: none;
+}
+
+.dd-dialog {
+    background: #fff;
+    width: 300px;
+    min-height: 200px;
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    margin-top: -200px;
+    margin-left: -150px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.dd-content, .dd-header{
+  padding:0 16px;
+}
+.dd-header {
+  background: #455a64;
+  height: 80px;
+  position: relative;
+  .name {
+    margin: 0;
+    margin-top: 52px;
+    display: inline-block;
+    font-size: 20px;
+    margin-left: 15px;
+  }
+  .follow {
+    position: absolute;
+    margin: 0;
+    right: 15px;
+    margin-top: 52px;
+    display: inline-block;
+    font-size: 20px;
+    margin-right: 15px;
+  }
+  #closeDDPop {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    text-align: right;
+    padding: 10px;
+  }
+}
+.dd-header .icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto;
+    border: 4px solid #ccc;
+    border-radius: 50%;
+    overflow: hidden;
+    float: left;
+    margin-top: 32px;
+    margin-left: 8px;
+}
+
+.dd-header .icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dd-content{
+  color: #555;
+  padding-bottom: 16px;
+  .inCompanyTime {
+    font-size: 20px;
+    text-align: center;
+    color: #455a64;
+    margin: 20px 0;
+  }
+}
+
+.dd-foot {
+  font-size: 0; overflow: hidden;border-top: 1px solid #efefef;
+  button {
+    color: #555;
+    border: none;
+    background: none;
+    width: 100%;
+    height: 48px;
+    text-align: center;
+    font-size: 14px;
+  }
+}
+#slideDate >ul{
+  padding: 0px;
+  margin: 0px;
+  border-radius: 10px;
+  .selected{
+    margin-left: -1px;
+    z-index: 1;
+    color: #39A8FE;
+  }
+  .back_bottom{
+    border-bottom: 1px solid #39A8FE;
+  }
+}
+#slideDate >ul>li{
+  color: #333333;
+  width: 100px;
+  height: 60px;
+  font-size: 14px !important;
+  position: relative;
+  border-bottom: 1px solid #CCCCCC;
+}
+
+#slideDate >ul>li:not(.selected):not(:last-child):after{
+  content: "";
+  position: absolute;
+  bottom:15px;
+  width: 1px;
+  height: 30px;
+  background: #F0FFFF;
+  right: 0px;
+}
+
+
+.Sign-fa{
+  display: inline-block;
+  width: 5rem;
+  height: 25px;
+  text-align: center;
+  line-height: 25px;
+  background-color: #148CE9;
+  color: #ffffff;
+  border-radius: 2px;
+}
+.SignNo{
+  margin-right: -3px;
+  display: inline-block
+}
+.SignYes{
+  margin-left: 0px;
+  background-color: #ffffff;
+  color: #39A8FE;  
+}

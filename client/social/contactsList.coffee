@@ -10,7 +10,12 @@ if Meteor.isClient
         Meteor.subscribe 'followToWithLimit', 9999
     ###
   onUserProfile = ->
-    #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId"), 10)
+    #Router.go '/userProfilePage'
+    Session.set("momentsitemsLimit", 10)
+    #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId"), Session.get("momentsitemsLimit"))
+    #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
+    #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
+    #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
     @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
       position: [0, 0]
@@ -28,6 +33,11 @@ if Meteor.isClient
       else
         false
   Template.contactsList.events
+     'click .contactsList .back' :->
+      $(window).children().off()
+      $(window).unbind('scroll')
+      Meteor.setTimeout ()->
+        PUB.postPageBack()
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     "click .oldFriends":(e)->
@@ -60,14 +70,14 @@ if Meteor.isClient
         target = $("#showMorePostFriendsResults");
         POSTFRIENDS_ITEMS_INCREMENT = 10;
         console.log "target.length: " + target.length
-        if $('#newFriendRedSpotReal').is(":hidden") and parseInt($('#newFriendRedSpotReal').html()) > 0
-          $('#newFriendRedSpotReal').show()
-          $('#newFriendRedSpot').hide()
         if (!target.length)
           return;
         threshold = $(window).scrollTop() + $(window).height() - target.height();
         console.log "threshold: " + threshold
         console.log "target.top: " + target.offset().top
+        if $('#newFriendRedSpotReal').is(":hidden") and parseInt($('#newFriendRedSpotReal').html()) > 0
+          $('#newFriendRedSpotReal').show()
+          $('#newFriendRedSpot').hide()
         if target.offset().top < threshold
           if (!target.data("visible"))
             target.data("visible", true);
@@ -76,7 +86,6 @@ if Meteor.isClient
           if (target.data("visible"))
             target.data("visible", false);
   Template.addNewFriends.helpers
-    hasFriendMeet:()->
     meeter:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,ta:{$ne:null}},{sort:{createdAt:-1}})
     isMyself:()->
@@ -104,7 +113,8 @@ if Meteor.isClient
       else
         true
     moreResults:()->
-      !(PostFriends.find({meetOnPostId:Session.get("postContent")._id}).count()+1 < Session.get("postfriendsitemsLimit"))
+      return PostFriendsCount.findOne({_id:Meteor.userId()+'_'+Session.get("postContent")._id})?.count > Session.get("postfriendsitemsLimit")
+      # !(PostFriends.find({meetOnPostId:Session.get("postContent")._id}).count()+1 < Session.get("postfriendsitemsLimit"))
     loading:()->
       Session.equals('postfriendsCollection','loading')
     loadError:()->
@@ -157,7 +167,8 @@ if Meteor.isClient
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
-      Follower.insert {
+      console.log  'contactsList addFollow!'
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -169,3 +180,4 @@ if Meteor.isClient
         followerIcon: this.userIcon
         createAt: new Date()
       }
+      addFollower(insertObj)

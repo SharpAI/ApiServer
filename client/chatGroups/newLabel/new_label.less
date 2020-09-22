@@ -1,0 +1,129 @@
+.newLabel-wrap {
+  min-height: 100%;
+  background: linear-gradient(to bottom, #0A85C9, #ADFFFF);
+  ul {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .newLabel-head {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    position: fixed;
+    width: 100%;
+    .leftButton {
+      width: 40px;
+      font-size: 32px;
+    }
+    .head-text {
+      flex: 1;
+      text-align: center;
+      margin-bottom: 0;
+      font-size: 16px;
+    }
+    .newLabel-head-right {
+      position: relative;
+      margin-right: 15px;
+    }
+    .right-handle-btn {
+      width: 23px;
+      height: 6px;
+      background: url(icon/icon-head-handle.png) no-repeat;
+      background-size: contain;
+    }
+    .no-person-btn {
+      position: absolute;
+      width: 130px;
+      text-align: center;
+      right: 0;
+      top: -14px;
+      background: #fff;
+      border-radius: 4px;
+      padding: 6px 5px;
+      color: #333;
+    }
+  }
+  .content {
+    padding-top: 100px;
+  }
+  .content-person-photos {
+    width: 84%;
+    max-width: 315px;
+    margin: 0 auto;
+    .person-photos-main {
+      position: relative;
+      .person-photos-big {
+        border-radius: 6px 6px 0 0;
+        min-height: 100px;
+        background: #305982;
+        img {
+          width: 100%;
+        }
+      }
+      .person-photos-head-wrap {
+        position: absolute;
+        bottom: -50%;
+        width: 100%;
+        height: 69px;
+        text-align: center;
+        li {
+          display: inline-block;
+          margin-left: 20px;
+          width: 66px;
+          height: 66px;
+          border-radius: 50%;
+          border: 3px solid #fff;
+          overflow: hidden;
+          img {
+            width: 100%;
+          }
+        }
+        li:first-child {
+          margin-left: 0;
+        }
+      }
+      
+    }
+    .person-photos-footer {
+      background: #fff;
+      border-radius: 0 0 6px 6px;
+      height: 128px;
+    }
+  }
+  .content-label {
+    margin-top: 50px;
+    text-align: center;
+    color: #45A2FF;
+    .label-title {
+      font-size: 22px;
+      margin-bottom: 30px;
+    }
+    .label-handle {
+      li {
+        display: inline-block;
+        margin-left: 50px;
+      }
+      li:first-child {
+        margin-left: 0;
+      }
+      .handle-btn {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        margin-bottom: 20px;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+      }
+      .handle-unknow {
+        background: url(icon/icon-no.png);
+      }
+      .handle-know {
+        width: 28px;
+        background: url(icon/icon-yes.png);
+      }
+      .handle-text {
+        font-size: 14px;
+      }
+    }
+  }
+}
