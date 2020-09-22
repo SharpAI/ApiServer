@@ -33,6 +33,8 @@ before_install:
 before_deploy:
 - meteor build $HOME --server=$API_SERVER_ADDRESS
 - cp $TRAVIS_BUILD_DIR/.keystore $HOME
+- ls $HOME/build/outputs/apk/ -alh
+- find $HOME/build/
 - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 $HOME/android/release-unsigned.apk
   sharpai-app -keystore $HOME/.keystore -storepass $storepass -keypass $keypass
 - "${ANDROID_HOME}/build-tools/22.0.1/zipalign 4 $HOME/android/release-unsigned.apk
