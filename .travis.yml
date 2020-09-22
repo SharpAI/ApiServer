@@ -9,21 +9,37 @@ android:
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - g++-4.8
+    - g++-4.8
+env:
+  global:
+  - secure: BD5u5i7Q/dg09+jy8zdS0Jhiwk+PoQPJj3NV5Tkzws2wMs5oqPrp81y6QvKifi8fximP2/exEtVi+sI8EQ3i8ul2QjOqhCaEDrrRls5rEolIt0dWQgYm98xWAIGA6KBg9eyIuv4zTZD0BA9hdP1cPzS2lK9V2k21s5S1MnwrmdNC7d67jUQdrUziWi9TJPgjryKb0EE6Y2+ILVbhCKgszgpNUtUyk0S0mORdALW4scdsXAuHrAO6aswklEZtpgMBLi2jMel0xmvpzi+i6Pwf2GzyTWm2+LrGaWIRlSOCFkOH++NLFrytlTmFMY4X1rpu0yAgI7FGdf6/6/vIo60hXIXIELfNA2kkla1cpcaqoX3UwvoNYhybN/jCG5Ggbkh+DH8TGc+oB94QO8TBpB7TjSSOfEPs1UeqIpXT2ckYPQv8IDmkxdkVoL5UzUAor98UO++gTzQHDt+ClD2mmMmipaX1ogAC1s5Wj1DxrzjHuRlAXEZqkOWELjwk+OmSa1SFfuVeL/efoW2Ap2hYQVVRhTY2zi3mQFIo7ywfBF/dZxDTQKUJ/jfj9UgfHm3jS3vFroNJ6XkPF9hOKr/9b8PRdBBld78VllLFJrqnVCQbXjaCWITaTTSfkjf1yZqx/GoYvLRjGMFuBabUmMHoAzhDM05F7KbXkRSuvJ6h98bmXx0=
+  - secure: V/0309DooGjMXhToNV+AGgye2w6clEGS3mmnbSFVmtABJtxpPExvkR5I8h5wuTTF5mtkyRx7lr8m1YN1DQSAKh28+4FZOA9etvSuAWZwQGxi4cjP3gMPytd/qvT8Mdm1H0KN6uJ9BsWSlU4v2Y5KXXk73EkXh3ZkTRWwyV5+5sE6qVMWwEIh+RCr7F98Y9o8quA3w/A2eb6ZhQHb/JctEs5WT+KboBlguHlzZn1ipiKnRqLxjSeOh+b0a55co3/msJAU5B4VHRqWaiqF1QA0hMi/9kRIrvh47/YWCzUOZiKAzNDtLMEzYP3soxd9nxMSI0gtWjpgnZRnYa81BB5IlWKFuIYU0krj2BszJvZpFLt3BAJmIlTbnWVuOLwnGbh+5snP9RivXzIsZ8i23r+s/HQygP4/+DTD22RF/KH6Q92oa+LA9Py2LwPhFwImo7WbAxrrYTdTWpD+aDTHhe8cXjADU4DurbAvxvB2IiTAmJpVExEmPJKeSFEOvpij3OO9+DUf8XZR/88U1FYniKWqNbEjC7itYEqFmCg8pXHNSnl6E0aBYoAKYYO49+10iLky+ZJUUu8f8Sgpstp+Y/Jj5X/9S3zJwuAbRV1AR1zDAZp7s1GS/YI7XAobhQbFR8c1bdN9w0ZnGZIMSc47zo93inSaBw63FTd+5gxuOM5aozw=
 before_script:
-  # Install meteor
-  #- nvm install -s $NODE_VERSION
-  - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-  - sudo apt-get install -y nodejs
-  - node --version
-  - sudo npm install -g cordova
-  - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
-  # Add meteor to path (instead of asking for sudo in the Travis container)
-  # We can then use the faster container infrastructure - http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-  - export PATH=$HOME/.meteor:$PATH
-  - meteor npm install
+- curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+- sudo apt-get install -y nodejs
+- node --version
+- sudo npm install -g cordova
+- curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
+- export PATH=$HOME/.meteor:$PATH
+- meteor npm install
 services:
 - mongodb
 script: meteor build ~/build-sharpai --server=$API_SERVER_ADDRESS
+before_install:
+- openssl aes-256-cbc -K $encrypted_7aeb965aa3bd_key -iv $encrypted_7aeb965aa3bd_iv
+  -in .keystore.enc -out .keystore -d
+before_deploy:
+- meteor build $HOME --server=$API_SERVER_ADDRESS
+- cp $TRAVIS_BUILD_DIR/.keystore $HOME
+- jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 $HOME/android/release-unsigned.apk sharpai-app.apk -keystore $HOME/.keystore -storepass $storepass -keypass $keypass
+- "${ANDROID_HOME}/build-tools/22.0.1/zipalign 4 $HOME/android/release-unsigned.apk $HOME/android/sharpai-app.apk"
+deploy:
+  provider: releases
+  api_key: $GITHUB_API_KEY
+  # replace your-apk-name
+  file: "$HOME/android/sharpai-app.apk"
+  skip_cleanup: true
+  on:
+    tags: true

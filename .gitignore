@@ -5,3 +5,4 @@
 .vscode
 node_modules
 .eslintrc.js
+*.keystore
