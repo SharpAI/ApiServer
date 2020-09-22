@@ -6,41 +6,36 @@
 <template name="information">
   <div class="contactsList comFadeIn"><div class="head" style="display:block;">
     <div class="socialTitle">
-      <span class="Contacts">收藏夹</span>
+      <span class="Contacts">{{_ "favorite"}}</span>
     </div>
   </div></div>
   <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9;padding-bottom: 7px;margin-bottom: 0px;">读者小档案</p>
   <ul class="set-up comFadeIn" style="margin-top: 0px;">
     <li class="nickname">
-      <label>昵称</label>
+      <label>{{_ "NickName"}}</label>
       <div class="value">{{nickname}}<i class="fa fa-angle-right"></i></div>
     </li>
     <li class="sex">
-      <label>性别</label>
+      <label>{{_ "Gender"}}</label>
       <div class="value">{{sex}}<i class="fa fa-angle-right"></i></div>
     </li>
-    <li class="bell">
-      <label>我的消息</label>
-      <div class="value">查看<i class="fa fa-angle-right"></i></div>
-    </li>
   </ul>
-  {{> myPubPosts}}
   {{> myFavouritePosts}}
 </template>
 <template name="setNickname">
   <div class="setNickname comFadeIn">
-    <div class="head">
-      <div class="socialTitle">
-        <div class="left-btn">取消</div>
-        <span class="Contacts">昵称</span>
-        <div class="right-btn">保存</div>
+    <div class="head" style="position: fixed;">
+      <div class="socialTitle" style="position:relative;">
+        <div class="left-btn">{{_ "cancel"}}</div>
+        <span class="Contacts">{{_ "NickName"}}</span>
+        <div class="right-btn">{{_ "Save"}}</div>
       </div>
     </div>
   </div>
 
-  <ul class="set-up">
+  <ul class="set-up comFadeIn" style="position: fixed; top:60px; left:0; right:0;">
     <li>
-      <div class="input"><form class="setNickname-form"><input maxlength="10" class="text" type="text" id="text" placeholder="输入新昵称" value="{{nickname}}"/></form></div>
+      <div class="input"><form class="setNickname-form"><input maxlength="10" class="text" type="text" id="text" placeholder="{{_ "enteranewnickname"}}" value="{{nickname}}"/></form></div>
     </li>
   </ul>
 </template>
@@ -49,52 +44,29 @@
   <div class="contactsList comFadeIn">
     <div class="head" style="display:block;">
       <div class="socialTitle">
-        <div class="left-btn">取消</div>
-        <span class="Contacts">性别</span>
+        <div class="left-btn">{{_ "cancel"}}</div>
+        <span class="Contacts">{{_ "Gender"}}</span>
       </div>
     </div>
   </div>
   
   <ul class="set-up comFadeIn">
     <li class="nickname setMale">
-      <label>男</label>
+      <label>{{_ "Male"}}</label>
       <div class="value select">{{#if isMale}}<i class="fa fa-check"></i>{{/if}}</div>
     </li>
     <li class="sex setFemale">
-      <label>女</label>
+      <label>{{_ "Female"}}</label>
       <div class="value select">{{#if isFemale}}<i class="fa fa-check"></i>{{/if}}</div>
     </li>
   </ul>
 </template>
 
-<template name="myPubPosts">
-  <div class="myPubPosts">
-    <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">我的故事</p> 
-    <ul>
-        {{#each myPubPosts}}
-        <li>
-          <div class="img" style="background-image: url({{mainImage}});"></div>
-          <h1>{{title}}</h1>
-        </li>
-        {{/each}}
-        <div class="clear"></div>
-    </ul>
-    {{#if loading}}
-      <div class="more">加载中，请稍候...</div>
-    {{else}}
-      {{#if hasMore}}
-      <div class="more">点击加载更多</div>
-      {{/if}}
-    {{/if}}
-  </div>
-</template>
-
 <template name="myFavouritePosts">
-  <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">喜欢的故事</p>
-  <div class="favposts">
-  {{#newLayoutContainer layoutId=onPostId src="favposts" container='.favposts'}}
+  <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">{{_ "FavoriteStory"}}</p>
+  {{#newLayoutContainer layoutId=onPostId src="me" container='.me'}}
     {{#each favposts}}
-      {{#newLayoutElement layoutId=onPostId displayId=_id src="favposts" container='.favposts'}}
+      {{#newLayoutElement layoutId=onPostId displayId=_id src="me" container='.me'}}
         <div class="img_placeholder">
           <img class="mainImage" src="{{mainImage}}" />
           <button data-id="{{_id}}" class="removefavp"><i class="fa fa-circle-o"></i></button>
@@ -102,12 +74,11 @@
         <div class="pin_content">
           <p class="title">{{title}}</p>
           <p class="addontitle">{{addontitle}}</p>
-          <h1 class="username">{{ownerName}}  <span>发布</span></h1>
+          <h1 class="username">{{ownerName}}  <span>{{_ "Publish"}}</span></h1>
         </div>
       {{/newLayoutElement}}
     {{/each}}
   {{/newLayoutContainer}}
-  </div>
   {{#if isLoading}}
       <div class="loading-spinner">
           <div class='spinner-overlay'>

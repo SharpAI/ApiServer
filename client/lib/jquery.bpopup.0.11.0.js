@@ -133,7 +133,8 @@
             if (o.modal) {
                 $('.b-modal.'+$popup.data('id'))
 	                .fadeTo(o.speed, 0, function() {
-	                    $(this).remove();
+	                	// 如果使用remove方法后，在点击下一次router.go时出现了黑屏情况，故使用hide
+	                	$(this).hide();
 	                });
             }
 			// Clean up

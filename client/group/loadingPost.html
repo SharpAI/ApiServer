@@ -1,0 +1,36 @@
+<template name="loadingPost">
+  <div class="showPosts">
+    <div class="head">
+      {{#if isMobile}}
+        <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{/if}}
+    </div>
+    <div class="content">
+      <div class="loading">
+        {{>spinner}}
+      </div>
+    </div>
+    <div class="contentList">
+    </div>
+  </div>
+</template>
+
+<template name="kgPost">
+  <!-- <div class="kgBox"> -->
+  <div>
+    <!-- <div class="post-head head">
+      {{#if isMobile}}
+        <div class="post-head-left leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{/if}}
+    </div> -->
+    {{#if isIOS}}
+    <div style="overflow:auto;-webkit-overflow-scrolling:touch;width:100%;height:100%">
+        <iframe height="100%" width="100%" src="{{fromUrl}}" frameborder="0" scrolling='no' allowfullscreen style="width:1px;min-width:100%;*width: 100%"></iframe>
+    </div>
+    {{else}}
+    <div>
+      <iframe height="100%" width="100%" src="{{fromUrl}}" frameborder="0" scrolling='no' allowfullscreen onload="this.height=this.contentWindow.document.body.scrollHeight"></iframe>
+    </div>
+    {{/if}}
+  </div>
+</template>

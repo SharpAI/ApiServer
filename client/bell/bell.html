@@ -2,43 +2,52 @@
   <div class="bell">
     <div class="bellAlertBackground"></div>
     <div class="head">
-      <strong>我的消息</strong>
-      <div id="follow" class="leftButton"><i class="fa fa-angle-left"></i></div>
+      {{#if loading}}
+        <!--<img class="icon" src="/swiper.gif" width='16' height='16'> <strong>{{_ "receiving"}}</strong>-->
+        <img class="icon" src="/loading-2.gif" width='16' height='16'> <strong>{{_ "receiving"}}</strong>
+      {{else}}
+        <strong>系统消息</strong>
+      {{/if}}
+      <div id="bellPageback" class="leftButton back">
+        <i class="fa fa-angle-left fa-fw"></i>
+      </div>
+      <!-- <div id="follow" class="leftButton"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div> -->
     </div>
-    <div class="content" id="content_msgs">
-      {{#each eventFeeds}}
-        {{#if isPCommentReply eventType}}
-            <a href="/posts/{{postId}}" class="contentList">
-                {{#if notRead isRead checked @index createdAt}}
-                  <div class="readTips"></div>
-                {{/if}}
-                <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-                <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您在《{{postTitle}}》的评论： "{{commentMsg}}"</div>
-                <div class="createAt">{{time_diff createdAt}}</div>
-            </a>
-            <div class="line">
-                <span></span>
-            </div>
+    <div class="content">
+      <!--
+      {{#if loading}}
+          <div>正在加载中...</div>
+      {{/if}}
+      -->
+      {{#if loadError}}
+          <div>{{_ "loadFailNotification"}}</div>
+      {{else}}
+        {{#if noMessages}}
+          <div style="text-align: center; padding-top:50%;">{{_ "noMessages"}}</div>
         {{/if}}
+      {{/if}}
+      {{#unless noMessages}}
+      {{#each eventFeeds}}
         {{#if isAlsoComment eventType}}
             <a href="/posts/{{postId}}" class="contentList">
                 {{#if notRead isRead checked @index createdAt}}
                 <div class="readTips"></div>
                 {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-                {{#if isPComment subType}}
-                    <div id="{{postId}}" class="alarm">{{ownerName}} 也点评了此故事 《{{postTitle}}》: "{{commentMsg}}"</div>
-                {{else}}
-                    {{#if isPLike subType}}
-                        <div id="{{postId}}" class="alarm">{{ownerName}} 赞了 《{{postTitle}}》</div>
-                    {{else}}
-                        {{#if isPDislike subType}}
-                            <div id="{{postId}}" class="alarm">{{ownerName}} 踩了 《{{postTitle}}》</div>
-                        {{else}}
-                            <div id="{{postId}}" class="alarm">{{ownerName}} 也点评了此故事 《{{postTitle}}》</div>
-                        {{/if}}
-                    {{/if}}
+                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
+                <div class="createAt">{{time_diff createdAt}}</div>
+            </a>
+            <div class="line">
+                <span></span>
+            </div>
+        {{/if}}
+        {{#if isPCommentReply eventType}}
+            <a href="/posts/{{postId}}" class="contentList">
+                {{#if notRead isRead checked @index createdAt}}
+                <div class="readTips"></div>
                 {{/if}}
+                <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "pCommentReplyThisStory"}} 《{{postTitle}}》 {{_ "pCommentReplyThisStoryEnd"}}</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
             <div class="line">
@@ -72,7 +81,7 @@
                 <div class="readTips"></div>
                 {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-                <div id="{{postId}}" class="alarm">{{ownerName}} 也赞了此故事 《{{postTitle}}》</div>
+                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoFavouriteThisStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
             <div class="line">
@@ -85,7 +94,7 @@
                 <div class="readTips"></div>
                 {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-                <div id="{{postId}}" class="alarm">{{ownerName}} 点评了您的故事 《{{postTitle}}》</div>
+                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "commentYourStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
             <div class="line">
@@ -98,7 +107,7 @@
                 <div class="readTips" style="background: green; width:10px; height:10px;"></div>
                 {{/if}}
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您参与讨论的故事 《{{postTitle}}》</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyStoryYouJoin"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -111,7 +120,7 @@
                 <div class="readTips"></div>
                 {{/if}}
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您的故事 《{{postTitle}}》</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyYourStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -124,7 +133,7 @@
                 <div class="readTips"></div>
                 {{/if}}
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 发布了新故事 《{{postTitle}}》</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "publishNewStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -137,7 +146,7 @@
                 <div class="readTips"></div>
                 {{/if}}
             <img class="icon" src="{{recommanderIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{recommander}} 推荐您一个新故事 《{{postTitle}}》</div>
+            <div id="{{postId}}" class="alarm">{{recommander}} {{_ "recommendAStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -150,12 +159,12 @@
                 <div class="readTips"></div>
                 {{/if}}
             <img class="icon" src="{{requesterIcon}}" width='30' height='30'>
-            <div id="{{requesterId}}" class="alarm">{{requester}} 邀请您加为好友!</div>
+            <div id="{{requesterId}}" class="alarm">{{requester}}{{_ "askFriends"}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
             {{#if isFriend requesterId}}
-            <div class='button'>已添加</div>
+            <div class='button'>{{_ "alreadyAdded"}}</div>
             {{else}}
-            <div class='button acceptrequest'>接受邀请</div>
+            <div class='button acceptrequest'>{{_ "acceptInvitation"}}</div>
             {{/if}}
           </div>
           <div class="line">
@@ -171,9 +180,9 @@
             <div id="{{requesteeId}}" class="alarm">{{requestee}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
             {{#if isFriend requesteeId}}
-            <div class='button'>已添加</div>
+            <div class='button'>{{_ "alreadyAdded"}}</div>
             {{else}}
-            <div class='button'>已发送邀请</div>
+            <div class='button'>{{_ "alreadySendInvitation"}}</div>
             {{/if}}
           </div>
           <div class="line">
@@ -181,11 +190,51 @@
           </div>
         {{/if}}
       {{/each}}
+      {{/unless}}
       {{#if moreResults}}
       <div id="showMoreFeedsResults" style="margin-left: 25px;">
-        <span class="loading">加载中...</span>
+        <span class="loading">{{_ "loading"}}</span>
       </div>
       {{/if}}
     </div>
+    <!--朋友圈 start
+    <div class="bellTop">
+      <div class="bellBg"></div>
+      <div class="bellRight">
+        <p class="bellname">DreamTime</p>
+        <div class="bellpic"><img src="img/demo-1.jpg"> </div>
+
+      </div>
+    </div>
+    <div class="bellrelease">
+        <div class="bellrelease-left"><img src="img/48X48follow_60.png"> </div>
+        <div class="bellrelease-right">
+          <p><a href="#">DreamTime</a> </p>
+          <p>一个卖火柴的小女孩在街上走着，她的衣服又旧又破，打着许多补丁，脚上穿着一双妈妈的大拖鞋，但是这又有什么用呢？她还是又冷又饿，风吹得她瑟瑟发抖.她的口袋里装着许多盒火柴，一路上不住口地叫着：“卖火柴呀，卖火柴呀！”人们都在买节日的食品和礼物，又有谁会理她呢？</p>
+          <p><a href="#">全文</a> </p>
+          <div class="bellImg"></div>
+          <p>2小时前<span>评论</span></p>
+          <div class="dz">
+            <p class="bod"><a href="#">点赞</a> <a href="#">路人甲</a> <a href="#">路人乙</a> </p>
+            <p><a href="#">路人甲：</a>默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞</p>
+          </div>
+        </div>
+    </div>
+    <div class="bellrelease">
+      <div class="bellrelease-left"><img src="img/48X48follow_60.png"> </div>
+      <div class="bellrelease-right">
+        <p><a href="#">DreamTime</a> </p>
+        <p>一个卖火柴的小女孩在街上走着，她的衣服又旧又破，打着许多补丁，脚上穿着一双妈妈的大拖鞋，但是这又有什么用呢？她还是又冷又饿，风吹得她瑟瑟发抖.她的口袋里装着许多盒火柴，一路上不住口地叫着：“卖火柴呀，卖火柴呀！”人们都在买节日的食品和礼物，又有谁会理她呢？</p>
+        <p><a href="#">全文</a> </p>
+        <div class="bellImg"></div>
+        <p>2小时前<span>评论</span></p>
+        <div class="dz">
+          <p class="bod"><a href="#">点赞</a> <a href="#">路人甲</a> <a href="#">路人乙</a> </p>
+          <p><a href="#">路人甲：</a>默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞</p>
+        </div>
+      </div>
+    </div>
+    朋友圈 end-->
   </div>
+<!--   {{> footer}} -->
 </template>

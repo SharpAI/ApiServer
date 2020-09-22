@@ -9,9 +9,9 @@ Template.deal_page.events
       #   $('#login').css('display',"none")
       # ,10
     else if Session.get("dealBack") is "anonymous"
-      Router.go '/authOverlay'
+      Router.go '/loginForm'
       Meteor.setTimeout ->
         $('.agreeDeal').css('display',"block")
       ,10
     else
-      Router.go '/authOverlay'
+      Router.go '/loginForm'

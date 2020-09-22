@@ -1,0 +1,272 @@
+<template name="dashboard">
+  <div class="dashboard">
+    <div class="head">
+      <div>{{_ "setting"}}</div>
+      <div class="rightButton back" style="margin-top:0px;">{{_ "done"}}</div>
+    </div>
+    <div class="content">
+      <div class="userInfo box">
+        <div class='accounts-management bottomBorder boxTitle ripple-label'>{{_ "Account"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        {{#unless anonymous}}
+          <!--<div class="emailPasswd">-->
+            <div class='email bottomBorder boxTitle ripple-label'>{{_ "email"}}<span>{{userEmail}}<i class="fa fa-angle-right fa-fw"></i></span></div>
+            <div class='changePasswd bottomBorder boxTitle ripple-label'>{{_ "changePass"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+          <!--</div>-->
+        {{/unless}}
+        <!--<div class="blacklist boxTitle ripple-label">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
+      </div>
+      <div class="appSetting box">
+        <!-- <div class="readFollowTips  bottomBorder boxTitle">{{_ "readFollowTips"}}
+          <span class="right" style="margin-right: 18px;color: #a1a1a1;">
+            {{#if showFollowTips}}
+            <i class="fa fa-toggle-on" aria-hidden="true" style="font-size:40px; color:#00c4ff"></i>
+            {{else}}
+            <i class="fa fa-toggle-off" aria-hidden="true" style="font-size:40px;"></i>
+            {{/if}}
+          </span>
+        </div> -->
+
+        <!--
+        <div class='info bottomBorder boxTitle'>编辑个人资料<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='accounts bottomBorder boxTitle'>已连接的账户<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        -->
+        <div class='notice bottomBorder boxTitle ripple-label'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+
+        <!--<div class="blacklist box boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
+        {{#if allowLanguageSetting}}
+          <div class='language bottomBorder boxTitle'>{{_ "language"}}
+            {{#if isEnglish}}
+              <span class="right" style="margin-right: 28px;color: #a1a1a1;">English</span>
+            {{else}}
+              <span class="right" style="margin-right: 28px;color: #a1a1a1;">中文</span>
+            {{/if}}
+            <span><i class="fa fa-angle-right fa-fw"></i></span>
+          </div>
+        {{/if}}
+        {{#unless isLatestVersion}}
+        <div class="update  bottomBorder boxTitle ripple-label">{{_ "version"}}
+            <!--<span class="right" style="margin-right: 28px;color: #a1a1a1;">{{_ "latestversion"}}</span>-->
+            <span class="right" style="margin-right: 28px;color: red;">{{_ "Newversion"}}</span>
+            <span ><i class="fa fa-angle-right fa-fw"></i></span>
+        </div>
+        {{/unless}}
+        {{#if inDevMode}}
+        <div class='devmode bottomBorder boxTitle ripple-label'>{{_ "devMode"}}<span><i class="fa fa-check-square-o fa-fw"></i></span></div>
+        {{else}}
+        <div class='devmode bottomBorder boxTitle ripple-label'>{{_ "devMode"}}<span><i class="fa fa-square-o fa-fw"></i></span></div>
+        {{/if}}
+        <div class='about boxTitle ripple-label'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+       </div>
+      <!--<div class="clear box boxTitle boxCenter">清除缓存</div>-->
+      <div class="logout box boxTitle boxCenter ripple-label">{{_ "logOut"}}</div>
+    </div>
+  </div>
+  <div class="modal fade" id="updateToLatestVersion" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!--<h4 class="modal-title">新版本已准备好</h4>-->
+          <div>
+            <img src="/logo.png" />
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="update-content-box">
+            <h4 class="modal-title">发现新版本</h4>
+          </div>
+          <h5 class="modal-title">亲，故事贴有新版本了．　诚邀您参与故事贴{{newVersion}}版本的优先体验！</h5>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">稍后再说</button>
+          <button type="button" class="btn btn-primary">立刻下载</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<template name="my_email">
+  <div class="dashboard">
+    <div class="head">
+      <div>{{_ "email"}}</div>
+      <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+      <div id="btn_save" class="rightButton" style="margin-top:0px;">{{_ "save"}}</div>
+    </div>
+    <div class="content">
+      <div class="box">
+        <div class='boxTitle'>{{_ "email"}}<span class="input"><input type="text" id="my_edit_email" placeholder="{{_ 'enterEmail'}}" value="{{userEmail}}"/></span></div>
+
+        <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
+      </div>
+    </div>
+  </div>
+</template>
+<template name="my_password">
+  <div class="dashboard">
+    <div class="head afterchangepassword">
+      <div>{{_ "changePass"}}</div>
+      <div id="pass_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{#if showSaveBtn}}
+      <div id="pass_btn_save" class="rightButton" style="margin-top:0px;">{{_ "save"}}</div>
+      {{else}}
+      <div class="rightButton" style="margin-top:0px;color:#ccc;">{{_ "save"}}</div>
+      {{/if}}
+    </div>
+    <div class="content afterchangepassword">
+      <div class="box">
+        <div class='boxTitle bottomBorder'>{{_ "currentPass"}}<span class="input"><input autofocus="autofocus" type="password" id="my_old_password" placeholder="{{_ 'currentPass'}}" value=""/></span></div>
+        <div class='boxTitle bottomBorder'>{{_ "newPass"}}<span class="input"><input type="password" id="my_edit_password" placeholder="{{_ 'newPass'}}" value=""/></span></div>
+        <div class='boxTitle'>{{_ "confirmPass"}}<span class="input"><input type="password" id="my_edit_password_confirm" placeholder="{{_ 'confirmPass'}}" value=""/></span></div>
+      <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
+      </div>
+    </div>
+    <div class="showChangePwdInfo show-change-userinfo" style="display:none;">
+      <div class="title">修改成功！请妥善保存您的信息</div>
+      <div class="user-info-content">
+        <div>{{_ "userName"}}：{{currentuser.username}}</div>
+        {{#if hasnick}}
+        <div>{{_ "NickName"}}：{{currentuser.profile.fullname}}</div>
+        {{/if}}
+        {{#if hasemail}}
+        <div>{{_ "emailAddress"}}：{{userEmail}}</div>
+        {{/if}}
+        <div>{{_ "newPass"}}：<span class="shownewpassword"></span></div>
+      </div>
+      <div id="save-user-info-btn" style="padding: 5px;margin: 10px;">确认已保存</div>
+    </div>
+    <div class="changePwdInfoBackground show-change-userinfo" style="background: rgba(0, 0, 0, 0.5);"></div>
+  </div>
+
+</template>
+<template name="my_notice">
+  <div class="dashboard">
+    <div class="head">
+      <div>{{_ "notification"}}</div>
+      <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+    </div>
+    <div class="content">
+      {{#if isIOS}}
+        <div class="box">
+          <div class='boxTitle ripple-label'>{{_ "notifiButton"}}</div>
+        </div>
+        <div class="smallcontent">如果你要关闭或开启来了吗的新消息通知，请在“设置”-“通知”功能中，找到应用程序“来了吗”更改。</div>
+        <!--
+        <div class="box">
+          <div class='boxTitle'>通知显示消息详情
+            <div class="switchkk">
+              <input type="checkbox" id="controlkk" class="controlkk">
+              <label for="controlkk" class="checkboxkk"></label>
+            </div>
+          </div>
+        </div>
+        <div class="smallcontent">若关闭，当收到故事贴消息时，通知提示将不显示发信人和内容摘要。</div>
+        -->
+      {{else}}
+        <div class="box">
+            <div class='boxTitle ripple-label'>{{_ "notifiButton"}}</div>
+        </div>
+        <div class="smallcontent">如果你要关闭或开启来了吗的新消息通知，请在系统设置中，找到应用程序“来了吗”更改}</div>
+        <!--
+        <div class="box">
+          <div class='bottomBorder boxTitle'>接收新消息通知
+            <div class="switchkk">
+              <input type="checkbox" id="controlkk" class="controlkk">
+              <label for="controlkk" class="checkboxkk"></label>
+            </div>
+          </div>
+          <div class='boxTitle'>通知显示消息详情
+            <div class="switchkk">
+              <input type="checkbox" id="controlkk" class="controlkk">
+              <label for="controlkk" class="checkboxkk"></label>
+            </div>
+          </div>
+        </div>
+        <div class="smallcontent">若关闭，当收到故事贴消息时，通知提示将不显示发信人和内容摘要。</div>
+        -->
+      {{/if}}
+    </div>
+  </div>
+</template>
+<template name="my_blacklist">
+  <div class="dashboard">
+    <div class="head">
+      <div>{{_ "blacklist"}}</div>
+      <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+    </div>
+    <div class="content">
+      <ul class="blackListUl">
+        {{#each myBlackers}}
+				{{> my_blacklist_item}}
+	   		{{/each}}
+      </ul>
+    </div>
+  </div>
+</template>
+<template name="my_blacklist_item">
+    <li>
+      <img class="icon" src="{{profile.icon}}" width="30" height="30">
+      <div class="userName">{{thisUserName}}</div>
+      <div id={{_id}} class="remove">移除黑名单</div>
+    </li>
+    <div class="line">
+      <span></span>
+    </div>
+</template>
+
+<template name="my_about">
+  <div class="dashboard" style="background-color: #fff;">
+    <div class="head">
+      <div>{{_ "aboutTitle"}}</div>
+      <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+    </div>
+    <div class="content">
+      <div class="about-icon"></div>
+      <h4 class="app-name">来了吗</h4>
+      <div class="ver">V{{version}}</div>
+      <div class="textpadding">&nbsp;&nbsp;&nbsp;&nbsp;第一款开放式深度学习APP，提供手机上所见所得的深度学习训练环境，一点一圈，完成训练；远程对接嵌入式AI深瞳集群，运行结果一目了然；独创多人协作的AI训练群，协同工作，互相激励；灵活可配置的人工智能视觉出现，提高效率，圈住商机。</div>
+      <!-- <h4 class="textpadding">&nbsp;&nbsp;&nbsp;&nbsp;一贴一故事，分享朋友圈</h4> -->
+      <!-- <div class="textpadding">微博： @我们爱用故事贴</div>
+      <div class="textpadding">微信公众号： 故事贴</div> -->
+      <div class="bottom-image"></div>
+    </div>
+  </div>
+</template>
+
+<template name="display_lang">
+  <div class="dashboard">
+    <div class="head">
+      <div>{{_ "language"}}</div>
+      <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+    </div>
+    <div class="content" style="position: absolute; top:0; right:0; bottom:0; left:0; background:#efeff4;">
+      <div class="box">
+        {{#if isEnglish}}
+          <div class="boxTitle bottomBorder" id="english" >{{_ "English"}}<span class="value"><i class="fa fa-check"></i></span></div>
+          <div class="boxTitle" id="chinese">{{_ "Chinese"}}<span class="value"></span></div>
+        {{else}}
+          <div class="boxTitle bottomBorder" id="english">{{_ "English"}}<span class="value"></span></div>
+          <div class="boxTitle" id="chinese">{{_ "Chinese"}}<span class="value"><i class="fa fa-check"></i></span></div>
+        {{/if}}
+      </div>
+       <div class="ver"></div>
+    </div>
+  </div>
+</template>
+
+<template name="SubscribeAuthor">
+  <div class="subscribeAutorPage">
+    <div class="subscribeAutorPage_bg"></div>
+    <div class="subscribeAutorPage_content">
+        <div class="subscribeAutorPage_header">
+          <h1><img src="/tips.png" width="48" height="48"/></h1>
+          <p>想获取该作者的最新动态吗?</p>
+        </div>
+        <div class="subscribeAutorPage_body">
+          <p>一键关注，您将实时收到作者最新文章</p>
+        </div>
+        <div class="subscribeAutorPage_footer">
+          <div class="subscribeAutorPage_btn subscribeAutorPage_cannelBtn">取消</div>
+          <div class="subscribeAutorPage_btn subscribeAutorPage_okBtn">关注作者</div>
+        </div>
+    </div>
+  </div>
+</template>

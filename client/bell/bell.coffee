@@ -17,14 +17,6 @@ if Meteor.isClient
         else
             if (target.data("visible"))
                 target.data("visible", false);
-    ctt_msgs = $('#content_msgs')
-    if (Feeds.find().count() > 3)
-      ctt_msgs.css('overflow', 'hidden')
-      ctt_msgs.css('minHeight', '50px')
-      ctt_msgs.css('maxHeight', '240px')
-      ctt_msgs.css('position', 'relative')
-      ctt_msgs.after('<div style="cursor: pointer;" class="readmore"><div class="readMoreContent"><i class="fa fa-chevron-down"></i>查看更多</div></div>')
-
   Template.bell.helpers
     notReadCount: ()->
       Feeds.find({isRead:{$ne: true}, checked:{$ne: true}}).count()
@@ -33,7 +25,7 @@ if Meteor.isClient
       if (new Date() - new Date(createAt).getTime() ) > (7 * 24 * 3600 * 1000)
         return false
       if index > 20
-        return false
+        return false      
       if check or read
         return false
       else if arguments.length is 2
@@ -55,16 +47,10 @@ if Meteor.isClient
         return feeds
       else
         Session.get('persistentFeedsForMe')
-    isPComment:(eventType)->
-      eventType is 'pcomments'
-    isPLike:(eventType)->
-      eventType is 'like'
-    isPDislike:(eventType)->
-      eventType is 'dislike'
-    isPCommentReply:(eventType)->
-      eventType is 'pcommentReply'
     isAlsoComment:(eventType)->
       eventType is 'pcomment'
+    isPCommentReply:(eventType)->
+      eventType is 'pcommentReply'
     isAlsoFavourite:(eventType)->
       eventType is 'pfavourite'
     isPcommentOwner:(eventType)->
@@ -94,16 +80,9 @@ if Meteor.isClient
     noMessages:->
       if Feeds.find().count() > 0 or Session.equals('feedsCollection','loading')
          return false
-      else
+      else 
          return true
   Template.bell.events
-    'click .readmore': (e, t)->
-      ctt_msgs = $('#content_msgs')
-      ctt_msgs.css('overflow', '')
-      ctt_msgs.css('minHeight', '')
-      ctt_msgs.css('maxHeight', '')
-      ctt_msgs.css('position', '')
-      $('.readmore').remove()
     'click .closePersonalLetter': ()->
       Session.set('inPersonalLetterView',false)
       $('body').css('overflow-y','auto')
@@ -114,7 +93,12 @@ if Meteor.isClient
       document.getElementById(this._id + 'content').style.display='block'
       $(".bellAlertBackground").fadeIn 300
     'click .contentList': (e)->
-      trackEvent("blackMsgBox", "BlkMsgClickEachPost")
+      history = []
+      history.push {
+          view: 'bell'
+          scrollTop: document.body.scrollTop
+      }
+      Session.set "history_view", history
       if this.pindex?
         Session.set("pcurrentIndex",this.pindex)
         Session.set("pcommetsId",this.owner)
@@ -151,4 +135,9 @@ if Meteor.isClient
          createAt: new Date()
        }
     'click #follow': (event)->
-       history.go(-1)
+       Router.go '/searchFollow'
+    'click #search': (event)->
+       Router.go '/searchPeopleAndTopic'
+    'click #bellPageback':(event)->
+       PUB.back()
+

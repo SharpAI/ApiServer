@@ -1,0 +1,31 @@
+<template name="clusteringFixPerson">
+<div class="clustering">
+  <div class="head">
+    <div class="leftButton back">
+      <i class="fa fa-angle-left fa-fw"></i>
+    </div>
+    <div class="title">聚类挑错</div>
+  </div>
+  <ul class="clusteringLists">
+    {{#if isLoaded}}
+    {{#each lists}}
+    <li id="{{_id}}" class="clusteringItem">
+      <img class="lazy" data-original="{{url}}" />
+    </li>
+    {{/each}}
+    {{else}}
+    <div style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+      <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+    </div>
+    {{/if}}
+  </ul>
+  {{#if lists}}
+  <div id="clusteringDel">完成标注</div>
+  {{/if}}
+  {{#if isLoadingMore}}
+  <div style="width:100%;text-align: center; margin:10px 0; color: black; font-size: 16px;">
+    <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+  </div>
+  {{/if}}
+</div>
+</template>

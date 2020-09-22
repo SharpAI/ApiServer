@@ -1,15 +1,149 @@
 <template name="authOverlay">
+    {{>connectionBanner}}
   <div id="authOverlaybg" class="authOverlay">
+<!--    <div class="agreeDeal">-->
+  <div class="agreeDeal" style="display:none">
+    <span>{{_ "anonymousAgree"}}</span>&nbsp;&nbsp;&nbsp;<a href="/deal_page">{{_ "gstServiceSpec"}}</a>&nbsp;&nbsp;&nbsp;
+      <br>
+      <br>
+      <span>{{_ "anonymousWarn"}}</span>
+      <br>
+      <button id="agree" style="border: 1px solid #e7e7e7;margin: 0 15px;" class="leftButton btn btn-default">{{_ "kownIt"}}</button>
+    </div>
     {{#if isLoggingIn}}
       <div>{{>spinner}}</div>
       <div id="loggingIn">{{_ "funnyLogin"}}</div>
     {{else}}
-    <div class="loginActionArea">
-      <div id="login" class="ripple-btn">登录</div>
-      <div id="register" class="ripple-btn">注册</div>
-      
+    <!--<div id="register"><i class="fa fa-envelope"></i>&nbsp;{{_ "regWithEmail"}}</div>
+    <div id="anonymous"><i class="fa fa-user"></i>&nbsp;{{_ "anonymous"}}</div>-->  
+    <!--
+    <div id="weibo"><i class="fa fa-weibo"></i>&nbsp;使用新浪微博登录</div>
+    -->
+    <div class="iconArea">
+      <img src="/sign.png" width="100%">
     </div>
+    <div class="loginActionArea">
+      <div id="login" class="ripple-btn">{{_ "theme_blue_loginWithAccount"}}</div>
+      <div id="register" class="ripple-btn">{{_ "theme_blue_regWithEmail"}}</div>
+      <!-- <div id="wechatBtn"><img class="" src="/wechat.png" height="50px"/>&nbsp;{{_ "loginByWechat"}}</div> -->
+      <!-- {{#if isWXAppInstalled}}
+      <div class="loginWithSocial">
+        <div class="socialLoginTips">{{_ "theme_blue_socialLoginTips"}}</div>
+        <div id="wechat">
+          <span class="fa-stack fa-2x ripple-btn" aria-hidden="true">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-weixin fa-stack-1x fa-inverse"></i>
+          </span>
+        </div>
+      </div>
+      {{/if}} -->
+    </div>
+    <!-- <div id="anonymous" class="ripple-btn">{{_ "theme_blue_anonymous"}}&nbsp;<i class="fa fa-angle-right"></i></div> -->
+    <!-- {{#if isWXAppInstalled}} -->
+    <!-- <div id="wechat"><img class="" src="/wechat.png" />&nbsp;{{_ "loginByWechat"}}</div> -->
+    <!-- {{/if}} -->
+    
+    <!--
+    <div id="qq"><i class="fa fa-qq"></i>&nbsp;使用QQ登录</div>
+    -->
+    <!--<div id="login">{{_ "loginWithAccount"}}</div>-->
     {{/if}}
+    <!--<div class="company">{{_ "kmxdkj"}}</div>-->
   </div>
+  <!--<div class="register" style="display:none">
+    {{> signupForm}}
+  </div>
+  <div class="login" style="display:none">
+    {{> loginForm}}
+  </div>
+  <div class="recovery" style="display:none">
+    {{> recoveryForm}}
+  </div>-->
 </template>
 
+<template name="webHome">
+  <div class="webHome">
+  {{#if resetPassword}}
+    <div class="resetPwdTopbar">
+      {{_ "gstSecurity"}}
+    </div>
+    <div class="resetPwddiv">
+          <div style="width:100%;height:40px;background:#f0f0f0;padding-left: 5%;padding-top: 2px;">
+              <h4>{{_ "resetPassword"}}</h4>
+          </div>
+        <form id="new-password" action="action">
+          <div class="row">
+            <div class="col-md-3 col-lg-3"></div>
+            <div class="col-md-6 col-lg-6" style="padding:20px;">
+                {{#if resetPasswordSuccess}}
+                  <div class="row">
+                      <div class="col-md-1 col-lg-1"></div>
+                      <div class="col-md-2 col-lg-2" style="padding:20px;">
+                          <div style="color:#44b549;text-align:center;">
+                              <i class="fa fa-check-circle fa-4x"></i>
+                          </div>
+                      </div>
+                      <div class="col-md-8 col-lg-8" style="padding:20px;">
+                          <div><label>{{_ "resetPasswordSuc"}}</label></div>
+                          <div>{{_ "loginWithNewPassword"}}</div>
+                      </div>
+                      <div class="col-md-1 col-lg-1"></div>
+                  </div>
+                {{else}}
+                  <div>{{_ "canSetNewPassword"}}</div>
+                  <br>
+                  <div class="errorInfo" style="color:red;display:none;"><i class="fa fa-exclamation-circle"></i>  {{pwdErrorInfo}}</div>
+                  <br>
+                  <p>
+                  <label>{{_ "newPassword"}}</label>
+                  <input type="password" class="form-control" id="new-password-password" />
+                  <label style="color:grey;">{{_ "sixToSixteenCh"}}</label>
+                  </p>
+                  <br>
+                  <p>
+                  <label>{{_ "inputPasswordAgain"}}</label>
+                  <input type="password" class="form-control" id="new-password-repeat" />
+                  <label style="color:grey;">{{_ "sixToSixteenCh"}}</label>
+                  </p>
+                {{/if}}
+            </div>
+            <div class="col-md-3 col-lg-3"></div>
+          </div>
+          <div class="sureReset">
+              {{#if resetPasswordSuccess}}
+                <input id="finishReset" type="button" class="form-control" value="完成" />
+              {{else}}
+                <input type="submit" class="form-control" value="确定" />
+              {{/if}}
+          </div>
+        </form>
+    </div>
+  {{else}}
+    <br>
+    <br>
+    <br>
+    <center><h2>{{_ "gst"}}</h2></center>
+    <br>
+    <center><h4>{{_ "gstAdWord"}}</h4></center>
+    <br>
+    <br>
+    <br>
+    <div class="downloadBtn">
+        <a href="http://www.pgyer.com/Yp07/" target="_blank" class="iosBtn download"><i class="fa fa-apple"></i> {{_ "linkDownloadIPhone"}}</a>
+        <a href="http://www.pgyer.com/tiegushi/" target="_blank" class="androidBtn download"><i class="fa fa-android"></i> {{_ "linkDownloadAndroid"}}</a>
+    </div>
+  {{/if}}
+    <div class="webFooter">
+      <div class="companyInfo">
+        <div class="company">
+          <span>{{_ "gstPrivacy"}}</span>
+          <span class="dot">·</span>
+          <span>{{_ "kmxdkj"}}</span>
+        </div>
+        <div class="miibeian">
+          <a href="http://www.miibeian.gov.cn/" target="_blank">{{_ "gstProductSerial"}}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

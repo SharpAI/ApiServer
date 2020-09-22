@@ -1,0 +1,46 @@
+<template name="groupsList">
+ <!--  {{>connectionBanner}} -->
+  <div class="groupsList">
+    <div class="head">
+      <strong>监控组</strong>
+      <div id="groupsListPageback" class="leftButton back">
+        <i class="fa fa-angle-left fa-fw"></i>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="wrapper">
+        <div class="contentList">
+          {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+          {{/if}}
+          {{#if loadError}}
+              <div>{{_ "loadFailNotification"}}</div>
+          {{/if}}
+          {{#each myGroups}}
+            <div id="{{group_id}}" class="groupItem eachViewer"  style="background-color:#fff;">
+                {{#if group_icon}}
+                <img class="icon" src="{{group_icon}}">
+                {{else}}
+                <i class="fa fa-users" aria-hidden="true"></i>
+                {{/if}}
+                <span class="groupsName">{{group_name}}</span>
+                <!-- <div class="newMessage">{{count}}</div> -->
+                <!-- {{#if showRedSpot}}
+                  <div class="red_spot"></div>
+                {{/if}} -->
+            </div>
+            <div class="line">
+                <span></span>
+            </div>
+          {{/each}}
+          {{#if moreResults}}
+          <div id="showMoreResults" style="margin-left: 25px;">
+            <span class="loading">{{_ "loading"}}</span>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

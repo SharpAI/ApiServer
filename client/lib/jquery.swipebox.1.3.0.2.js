@@ -328,7 +328,10 @@
 					$( this ).addClass( 'touching' );
           
           //scale
-          var img_style = $('#swipebox-slider .current img')[0].style['-webkit-transform'];
+					var $swipebox_slider = $('#swipebox-slider .current img');
+          var img_style = null;//$('#swipebox-slider .current img')[0].style['-webkit-transform'];
+					if($swipebox_slider.length > 0 && $swipebox_slider[0].style)
+						img_style = $swipebox_slider[0].style['-webkit-transform'];
           if(img_style && img_style != '' && img_style != 'scale(1)'){
             var transform_style = $('#swipebox-slider .current .img-box')[0].style['-webkit-transform'];
             if(transform_style != ''){
@@ -386,7 +389,10 @@
             endCoords = event.originalEvent.targetTouches[0];
             
             //scale
-            var img_style = $('#swipebox-slider .current img')[0].style['-webkit-transform'];
+						var $swipebox_slider = $('#swipebox-slider .current img');
+            var img_style = null;//$('#swipebox-slider .current img')[0].style['-webkit-transform'];
+						if($swipebox_slider.length > 0 && $swipebox_slider[0].style)
+							img_style = $swipebox_slider[0].style['-webkit-transform'];
             if(img_style && img_style != '' && img_style != 'scale(1)'){
               var pageX = event.originalEvent.targetTouches[0].pageX - scaleCoords.pageX + scaleCoords.x;
               var pageY = event.originalEvent.targetTouches[0].pageY - scaleCoords.pageY + scaleCoords.y;
@@ -489,7 +495,10 @@
 					event.preventDefault();
 					event.stopPropagation();
           
-          var img_style = $('#swipebox-slider .current img')[0].style['-webkit-transform'];
+          var $swipebox_slider = $('#swipebox-slider .current img');
+					var img_style = null;//$('#swipebox-slider .current img')[0].style['-webkit-transform'];
+					if($swipebox_slider.length > 0 && $swipebox_slider[0].style)
+						img_style = $swipebox_slider[0].style['-webkit-transform'];
           if(img_style && img_style != '' && img_style != 'scale(1)'){
             //console.log(img_style.split('(')[1].split(')')[0]);
             var scale = parseInt(img_style.split('(')[1].split(')')[0]);
@@ -1086,11 +1095,40 @@
 			 */
 			loadMedia : function ( src, callback ) {
 				if ( ! this.isVideo( src ) ) {
-					var img = $( '<img>' ).on( 'load', function() {
-						callback.call( img );
-					} );
+					var $img = $( '<img>' );
+					var timeInterval = null;
+					var isReload = false;
 
-					img.attr( 'src', src );
+					$img.error(function(){
+						isReload = false;
+						if(timeInterval === null){
+							timeInterval = setInterval(function(){
+								if($('#swipebox-overlay').length <= 0){
+									clearInterval(timeInterval);
+									return timeInterval = null;
+								}
+
+								if(isReload)
+									return;
+
+								$img.attr( 'src', src );
+								console.log('reload image:', src);
+								isReload = true;
+							}, 1000);
+						}
+					});
+					$img.on( 'load', function(){
+						if(timeInterval != null){
+							clearInterval(timeInterval);
+							timeInterval = null;
+						}
+						callback.call( $img );
+					});
+					// var img = $( '<img>' ).on( 'load', function() {
+					// 	callback.call( img );
+					// } );
+
+					$img.attr( 'src', src );
 				}
 			},
 

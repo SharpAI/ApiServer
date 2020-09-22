@@ -1,0 +1,120 @@
+.simpleUserProfile{
+	background-color:#efeff4;
+	color: black;
+	.head{
+		background:#37a7fe !important;
+		div{font-size: 16px;font-weight: bold;color:white;}
+	}
+	.userProfileTop{
+		background: #fff;
+		padding: 10px;
+		position: relative;
+		.icon{
+			border-radius: 5px;
+			margin-right: 10px;
+		}
+		.userName{
+			font-size: large;
+			position: absolute;
+			display: inline-block;
+			left: 90px;
+			right: 10px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			img{margin-left: 5px;}
+		}
+		.location{position: absolute;top: 38px;color: grey;}
+		.desc{position: absolute;bottom: 18px;color: grey;}
+	}
+	.post{
+		position: relative;
+		margin:0 !important; 
+		padding: 10px 0;
+		.postLeft{margin: 0 20px;color: grey;}
+		.postRight{float: right;margin: 0 20px;color: deepskyblue}
+	}
+	.postImages{
+		padding-bottom: 15px;
+		ul{
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			list-style-type: none;
+			li{
+				color: grey;
+				line-height: 24px;
+				text-align: left;
+				margin-left: 2%;
+				float: left;
+				width: 30%;
+				margin-bottom: 8px;
+				padding-bottom: 8px;
+				box-shadow: 1px 1px 5px gray, 1px 1px 3px gray;
+				word-break: break-all; 
+				overflow:hidden;
+				able-layout:fixed;
+				.postMainImage{height: 120px;margin: 8px;background-repeat: no-repeat;background-position: center;background-size: cover;}
+				.title{margin-left: 10px;margin-right: 0;margin-top: 0;margin-bottom: 0;}
+				.addontitle{margin-left:10px;margin-bottom: 0;margin-top: 0;}
+				.postInfo{
+					font-size: 12px;
+					margin-left: 10px;
+					i{margin-right: 5px;}
+				}
+			}
+		}
+	}
+	.viewPostImages ul{
+		margin: 0;
+		padding: 0 2%;
+		overflow: hidden;
+		list-style-type: none;
+		li{margin-left: 2%;float: left;width: 17.5%;margin-bottom: 8px;padding-bottom: 8px;background-position: center;background-size: cover;}
+	}
+	.userProfileBottom{
+		background: #efeff4;
+		.botton_btn{
+			position: relative;
+		    left: 2.5%;
+		    width: 95%;
+		    text-align: center;
+		    font-size: 18px;
+		    background-color: #37a7fe;
+		    color: #ffffff !important;
+		    height: 45px;
+		    border-radius: 5px;
+		    /* padding-left: 5%; */
+		    padding-top: 10px;
+		}
+	}
+	.dropdown {
+	    cursor: pointer;
+	    #btn-more{
+	            top: -45px;
+	          }
+	    .dropdown-backdrop{
+	        background-color: rgba(0, 0, 0, 0.1)
+	    }
+	    .dropdown-menu {
+	        padding: 0;
+	        right: 5px;
+	        left: auto;
+	        border-radius: 5px;
+	        li {
+	            background-color: transparent !important;
+	            text-align: center;
+	            padding: 12px;
+	        }
+	        a {
+	            font-size: 15px;
+	        }
+	    }
+	}
+}
+
+.userProfileMarginTop {margin-top: 40px;}
+
+.userProfileCenter{
+	background: #fff;
+}

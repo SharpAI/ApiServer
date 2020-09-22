@@ -1,0 +1,39 @@
+<template name="groupPerson">
+<div class="_group-photo">
+    <div class="head">
+      <strong>成员管理</strong>
+      <div id="groupsProfilePageback" class="leftButton back">
+        <i class="fa fa-angle-left fa-fw"></i>
+      </div>
+      <div class="check_img_type">
+        {{#if is_human_shape}}
+          <span class="human_bth type_on">人形</span>
+          <span class="face_bth">人脸</span>
+        {{else}}
+          <span class="human_bth">人形</span>
+          <span class="face_bth type_on">人脸</span>
+        {{/if}}
+      </div>
+    </div>
+    <div class="con-main" style="bottom: 40px;">
+      <div class="photos hover">
+        {{#if isLoading}}
+        <div style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+          <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+        </div>
+        {{else}}
+        <ul id="labeledLists" data-type="已标注">
+          {{#each list id}}
+            {{> groupPhotoImg1}}
+          {{/each}}
+        </ul>
+        {{/if}}
+      </div>
+    </div>
+    <div class="foot-tips">
+      <p style="text-align:jsutify; line-height:20px">点击头像进行操作</p>
+    </div>
+  </div>
+
+  {{> _checkGroupDevice}}
+</template>

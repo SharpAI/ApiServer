@@ -83,6 +83,8 @@
         });
     }), $("body").on("click", ".linkified", function() {
         var $link = $(this), url = $link.attr("href"), isEmail = /^mailto:/i.test(url), target = $link.attr("target");
-        return isEmail ? window.location.href = url : window.open(url, target), !1;
+        cordova.InAppBrowser.open(url, '_system');
+        return false;
+        // return isEmail ? window.location.href = url : window.open(url, target), !1;
     });
 }(jQuery, window, document);
