@@ -18,13 +18,12 @@ before_script:
   - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
   - sudo apt-get install -y nodejs
   - node --version
-  - npm install -g spacejam
-  - npm install -g cordova
+  - sudo npm install -g spacejam
+  - sudo npm install -g cordova
   - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
   # Add meteor to path (instead of asking for sudo in the Travis container)
   # We can then use the faster container infrastructure - http://docs.travis-ci.com/user/workers/container-based-infrastructure/
   - export PATH=$HOME/.meteor:$PATH
-  - npm install -g spacejam
   - meteor npm install
 services:
 - mongodb
