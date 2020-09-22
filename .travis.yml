@@ -20,7 +20,7 @@ addons:
       - g++-4.8
 before_script:
   # Install meteor
-  - nvm install $NODE_VERSION
+  # - nvm install $NODE_VERSION
   - npm install -g spacejam
   - npm install -g cordova
   - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
@@ -28,6 +28,7 @@ before_script:
   # We can then use the faster container infrastructure - http://docs.travis-ci.com/user/workers/container-based-infrastructure/
   - export PATH=$HOME/.meteor:$PATH
   - npm install -g spacejam
+  - meteor npm install
 services:
 - mongodb
 script: meteor build ~/build-sharpai --server=http://workaihost.tiegushi.com
