@@ -1,0 +1,150 @@
+.addPost{background-color:white;overflow-x: hidden}
+.addPost .head{background-color: #F0F0F0;color: gray !important;opacity: 0.9;}
+.addPost .head i{color: gray !important;}
+.addPost .content{position:relative;top: 40px;}
+.addPost .content .gridster {padding-left:5%; padding-right:5%;}
+.addPost .content #display{}
+.addPost .content #display .resortitem .gs-resize-handle-both{background-image: none}
+.addPost .content #display .resortitem .imgContainer{width: 100%;height: 100%;position: absolute;overflow: hidden;}
+.addPost .content #display .pressed .isImage{border: 2px solid #00c4ff;position: relative}
+.addPost .content #display .pressed .isImage i{font-size: 18px;color: #00c4ff;opacity: 10 !important;}
+.addPost .content .mainImage{position: relative;overflow: hidden;margin-bottom: 5px;}
+.addPost .content .title{margin: 0;text-shadow: 0 1px 0 black;color: white;font-weight:bold;white-space: pre-line;word-wrap: break-word;font-size:30px ;background:none;border:1px dotted #fff;overflow-y: hidden;width: 100%; height:50px}
+.addPost .content .addontitle{margin: 0;text-shadow: 0 1px 0 black;color: white;white-space: pre-line;word-wrap: break-word;font-size: 18px;background:none;border:1px dotted #fff;overflow-y: hidden;width: 100%; height:30px}
+.addPost .contentList{position:relative;}
+.addPost .content .img{clear: both; display: block; margin:auto;}
+.addPost .content #addText{position: absolute; left: 50%;margin-left: -30px;font-size: 80px;bottom: 1px;color: #00c4ff}
+.addPost .content #addmore{position: absolute; left: 25%;margin-left: -30px;font-size: 80px;bottom: 1px;color: #00c4ff}
+.addPost .content #addLink{position: absolute; left: 75%;margin-left: -30px;font-size: 80px;bottom: 1px;color: #00c4ff}
+.addPost .content .remove{position: absolute;right: 15px;font-size: 20px;bottom: 2px;color: yellow}
+.addPost .content .gridster .textdiv{height:100%; width:100%; }
+.addPost .content .gridster .textdiv textarea{-webkit-appearance: none; vertical-align: middle; display: inline-block; font-size:large; margin: 0;color: black;word-wrap: break-word;font-size:medium ;background :none; line-height: 30px; overflow-y: hidden; resize:vertical;height:100%;width:100%;box-sizing:border-box; border: 1px solid white;}
+.addPost #show_hyperlink{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    z-index: 9999;
+    display: none;
+    div.hyperlink_content{
+        padding-top: 100px;
+        text-align: center;
+        div.hyperlink_input{
+            background-color: #fff;
+            padding-bottom: 10px;
+            color: #7d7d7d;
+            border: none;
+            span{font-weight: bold;}
+            label{
+                border-bottom: 1px solid #eee;
+                font-weight: normal;
+                input{
+                    border: none;
+                    color: #7d7d7d;
+                }
+            }
+        }
+        div#add_hyperlink_btn{
+            background-color: #37a7fe;
+            width: 30%;
+            margin: auto;
+            padding: 8px;
+            margin-top: 25px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    }
+
+}
+.addPost #postFooter {
+    width:100%;
+    height:40px;
+    font-size:16px; 
+    line-height:40px; 
+    position:fixed; 
+    left:0; 
+    bottom:0; 
+    border:none; 
+    text-align:center; 
+    background:  #F0F0F0; 
+    z-index: 999;
+    opacity: 0.9;
+    div{
+        width: 25%; 
+        height: 40px; 
+        line-height: 40px; 
+        float: left; 
+        text-align: center;
+        i{
+            display: block; 
+            width: 100%; 
+            height: 40px; 
+            line-height: 40px; 
+            font-size: 26px;
+            color: #aeaeae;
+        }
+    }
+    div.clear{clear: both;}
+    div#addHyperlink{
+        position: relative;
+        top: -75px;
+        font-size: .6em;
+        float: right;
+        border-radius: 20px;
+        background-color: #37a7fe;
+        height: 30px;
+        margin-right: 5px;
+        line-height: 30px;
+        
+        i{
+            font-size: 1.2em;
+            height: 30px;
+            line-height: 30px;
+            color: #fff;
+        }
+    }
+
+}
+.addPost #postFooter{width:100%; height:40px;font-size:16px; line-height:40px; position:fixed; left:0; bottom:0; border:none; text-align:center; background:  #F0F0F0; z-index: 999;opacity: 0.9;}
+.addPost #postFooter div{width: 20%; height: 40px; line-height: 40px; float: left; text-align: center;}
+.addPost #postFooter div i{display: block; width: 100%; height: 40px; line-height: 40px; font-size: 26px;color: #aeaeae;}
+.addPost #postFooter div.clear{clear: both;}
+
+.addPost .content #display .pressed .textdiv textarea{border: 1px dotted #00c4ff;position: relative}
+.addPost .content #display .edit .textdiv textarea{border: 1px dotted #00c4ff;position: relative}
+
+.addPost .linkInputBox { display:none; min-width: 100%;position: absolute;background-color: #fff;}
+
+.addPost .imgMask{position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 1;}
+.addPost .content #display .resortitem .imgMask {border: 2px solid #00c4ff;}
+
+.addPost .head .leftButton { padding-top: 0;}
+.addPost .head .pullright {
+    position: absolute;
+    right: 10px;
+    top: 0;
+
+    .secondRightButton {
+        position: relative;
+        display: inline-block;
+        // margin-right: 3px;
+        right: 0;
+        float: left;
+    }
+
+    .rightButton {
+        // position: static;
+        position: relative !important;
+        display: inline-block;
+        padding: 0;
+        text-align: center;
+    }
+}
+
+.addPost #text-toolbar-options #delEnd img, .tool-container .tool-items #delEnd img {
+    position: relative;
+    top: 4.5px;
+    height: 18px;
+}

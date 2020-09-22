@@ -24,17 +24,18 @@ before_script:
 - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
 - export PATH=$HOME/.meteor:$PATH
 - meteor npm install
-script: ls -alh $HOME/
+script: 
+- ls -alh $HOME/
+- meteor build $HOME --server=$API_SERVER_ADDRESS
+- find $HOME/build/
+- ls $HOME/build/outputs/apk/ -alh
 services:
 - mongodb
 before_install:
 - openssl aes-256-cbc -K $encrypted_66e97601dc46_key -iv $encrypted_66e97601dc46_iv
   -in .keystore.enc -out .keystore -d
 before_deploy:
-- meteor build $HOME --server=$API_SERVER_ADDRESS
 - cp $TRAVIS_BUILD_DIR/.keystore $HOME
-- find $HOME/build/
-- ls $HOME/build/outputs/apk/ -alh
 - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 $HOME/android/release-unsigned.apk
   sharpai-app -keystore $HOME/.keystore -storepass $storepass -keypass $keypass
 - "${ANDROID_HOME}/build-tools/22.0.1/zipalign 4 $HOME/android/release-unsigned.apk
