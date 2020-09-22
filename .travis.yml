@@ -26,4 +26,4 @@ before_script:
   - meteor npm install
 services:
 - mongodb
-script: meteor build ~/build-sharpai --server=http://workaihost.tiegushi.com
+script: meteor build ~/build-sharpai --server=$API_SERVER_ADDRESS
