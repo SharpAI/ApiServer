@@ -29,7 +29,6 @@ cordova-plugin-themeablebrowser@https://github.com/PluginCordova/cordova-plugin-
 cordova-plugin-wkwebview-engine@1.1.0
 cordova-plugin-x-socialsharing@https://github.com/PluginCordova/SocialSharing-PhoneGap-Plugin/tarball/22a83973a1ca46265a96197e29195c899223c7d1
 cordova-plugin-zeroconf@https://github.com/PluginCordova/cordova-plugin-zeroconf/tarball/a6cc00ad27e518213201aefcaee0e1751fe28952
-cordova-universal-links-plugin@https://github.com/PluginCordova/cordova-universal-links-plugin/tarball/5fb26f7afd108075e528dd99a04b1de50f9ac601
 ionic-plugin-keyboard@2.2.1
 jpush-phonegap-plugin@3.3.2
 meteor-ios10-csp-fix@0.1.0
