@@ -29,6 +29,7 @@ before_script:
 script:
 - ls -alh $HOME/
 - meteor build $HOME --server=$API_SERVER_ADDRESS
+- cat $TRAVIS_BUILD_DIR/.meteor/local/cordova-build/platforms/android/build.gradle
 - ls $HOME/ -alh
 - ls $HOME/android -alh
 services:
