@@ -23,7 +23,7 @@ before_script:
 - sudo apt-get install -y nodejs
 - node --version
 - sudo npm install -g cordova
-- curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
+- curl https://install.meteor.com | /bin/sh
 - export PATH=$HOME/.meteor:$PATH
 - meteor npm install
 script:
