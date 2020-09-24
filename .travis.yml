@@ -45,7 +45,9 @@ before_script:
   - export PATH=$HOME/.meteor:$PATH
   - meteor npm install
 script:
-  - cd $TRAVIS_BUILD_DIR && meteor build $HOME --server=$API_SERVER_ADDRESS
+  #- cd $TRAVIS_BUILD_DIR && meteor build $HOME --server=$API_SERVER_ADDRESS
+  - cd $HOME && git clone https://github.com/SharpAI/mobile_app_server
+  - cd $HOME/mobile_app_server/hotShareMobile && meteor build $HOME --server=$API_SERVER_ADDRESS
 services:
   - mongodb
 before_deploy:
