@@ -21,6 +21,7 @@
     width: 100%;
     overflow: hidden;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .va-foot{
@@ -40,8 +41,8 @@
       cursor: pointer;
       list-style: none;
       float: left;
-      // width: 25%;
-      width: 33.3%;
+      width: 25%;
+      // width: 33.3%;
       text-align: center;
       i,p{display: inline-block; width: 100%;font-size: 16px;line-height: 20px; margin: 0}
       p{font-size: 12px;}
@@ -106,27 +107,56 @@
   p{margin: 5px 0;}
   img {width: 100%; height: 100%; object-fit: cover;}
   .va-his-lists{
+    background: #efefef;
     margin: 0;
     padding: 0;
+    overflow: hidden;
   }
   .va-his-item{
     list-style: none;
-    margin: 10px;
     position: relative;
     overflow: hidden;
+    width: 50%;
+    float: left;
+    .va-his-content{
+      margin: 5px;
+      padding: 5px;
+      background: #fff;
+    }
     .pull-right{
       float: right;
       margin-left: 90px;
     }
     .va-imgHelper{
       height: 90px;
+      width: 90px;
+      margin-right: 10px;
     }
+    .va-his-title{
+      font-size: 12px;
+      font-variant:small-caps;
+      color: #37a7fe;
+      margin: 5px 0;
+      height: 30px;
+      line-height: 30px;
+      strong{font-size: 20px;}
+    }
+    .va-his-status{
+      font-size: 12px;
+      font-variant:small-caps;
+      position: absolute;
+      color: #fff;
+      margin-top: -20px;
+      padding: 0 10px;
+      text-shadow: 1px 1px #000;
+      background: gray;
+    }
+    .va-status-progress{ background: orangered;}
+    .va-status-done{ background: mediumseagreen;}
+    .va-status-fail{ background: red;}
   }
   .va-his-time{
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 90px;
+    font-size: 12px; color: #555;
   }
 }
 
@@ -179,6 +209,7 @@
   .va-vid-result-lists{
     overflow: hidden;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     position: absolute;
     bottom: 0;
     top: 330px;
@@ -395,7 +426,7 @@
 
   // device lists 
   .va-dev-lists{
-    margin: 0;padding: 0;position: absolute;top: 40px;bottom: 0;width: 100%;background: #efefef;overflow: hidden;overflow-y: auto;
+    margin: 0;padding: 0;position: absolute;top: 40px;bottom: 0;width: 100%;background: #efefef;overflow: hidden;overflow-y: auto;-webkit-overflow-scrolling: touch;
   }
   .va-dev-scanlists{top: 264px;}
   .va-dev-item{
@@ -457,30 +488,30 @@
     list-style: none;
     float: left;
     width: 50%;
-    height: 90px;
+    // height: 90px;
     padding: 5px;
     .va-video-helper{
       width: 100%;
-      height: 100%;
+      height: 90px;
       position: relative;
       border-radius: 4px;
       background: #efefef;
       img{width: 100%; height: 100%; object-fit: cover; object-position: center;}
     }
     .va-video-title {
-      position: absolute;
+      // position: absolute;
       font-size: 12px;
-      bottom: 0;
-      color: #fff;
+      // bottom: 0;
+      // color: #fff;
       padding: 5px;
       margin: 0;
-      text-shadow: 1px 1px #000;
-      background: rgba(0, 0, 0, 0.1);
+      // text-shadow: 1px 1px #000;
+      // background: rgba(0, 0, 0, 0.1);
       width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
-      box-sizing: border-box;
-      border-radius: 0 0 4px 4px;
+      // box-sizing: border-box;
+      // border-radius: 0 0 4px 4px;
     }
   }
 }
@@ -503,6 +534,55 @@
   }
 }
 
+// va-tabnav
+.va-tabnav{
+  margin: 0; padding: 0; border-bottom: 1px solid #efefef; overflow: hidden;
+}
+.va-tabitem{
+  width: 50%;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+  list-style: none;
+  float: left;
+  span{ display: inline-block; height: 40px; line-height: 40px;}
+}
+.va-tabitem.current {
+  color: #37a7fe;
+  span{ border-bottom: 2px solid #37a7fe; }
+}
+.va-tabcontent{
+  padding: 10px;
+  table{
+    table-layout: fixed; width: 100%;
+    th{ width: 64px;vertical-align: top;}
+    th,td{ padding: 5px 0;}
+    p{font-size: 14px; height: 20px; line-height: 20px; margin: 0; color: #000; }
+    small{ font-size: 12px; color: #6d6d6d;}
+  }
+}
+.va-tabframes{margin: 0; padding: 0;}
+.va-tabframeitem{
+  list-style: none;
+  overflow: hidden;
+  padding: 0 5px;
+  border-bottom: 1px solid #efefef;
+  .va-imageHelper{
+    width: 80px; height: 80px; float: left; margin-right: 10px;
+  }
+  h2{ font-size: 14px; margin: 0; padding: 0; height: 26px; line-height: 26px;}
+  .va-tf-foot{
+    margin-top: 10px;
+    span {display: inline-block; min-width: 80px;}
+    img{width: 20px; height: 20px; margin: 5px; margin-left: 0; float: left;}
+    small{
+    font-size: 9px;
+    display: block;
+    line-height: 15px;
+    height: 15px;}
+  }
+}
 
 @-webkit-keyframes radar_swing {
   0% {

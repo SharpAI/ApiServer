@@ -8,14 +8,12 @@ Package.describe({
 
 Npm.depends({
 	"mqtt": "2.9.0"
-	
 })
 
 Package.onUse(function(api) {
   api.export("mqtt", "server");
   api.versionsFrom('1.0.3.1');
   api.addFiles('server.js', ["server"]);
-  api.addFiles(['browserMqtt.js'], "client");
 });
 
 Package.onTest(function(api) {

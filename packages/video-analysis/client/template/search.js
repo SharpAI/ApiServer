@@ -99,6 +99,10 @@ var sendSearchFunc = function() {
         console.log('ajax xhr = ', JSON.stringify(xhr));
         console.log('ajax status ==' , status);
         console.log('ajax error'+ error);
+        try{
+          selectedPicture.set(null);
+        } catch (error) {}
+        DVA_QueueLists.remove({_id: query_task_id});
         PUB.toast('查询失败，请重试');
       },
       success: function (response, status, xhr) {
