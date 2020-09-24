@@ -31,7 +31,7 @@ before_script:
   #- wget https://downloads.gradle.org/distributions/gradle-2.2.1-all.zip
 script:
   - ls -alh $HOME/
-  - docker run --rm -it -e APP_SERVER=http://10.168.1.221:3000/ -v $TRAVIS_BUILD_DIR:/app -v $(pwd):/build agmangas/meteor-android-build
+  - docker run --rm -it -e APP_SERVER=http://10.168.1.221:3000/ -v $TRAVIS_BUILD_DIR:/app -v $(pwd):/build shareai/meteor-android-build
   - ls ./ -alh
   - ls ./android -alh
   #- meteor build $HOME --server=$API_SERVER_ADDRESS
