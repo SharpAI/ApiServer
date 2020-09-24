@@ -19,24 +19,28 @@ env:
   - secure: P2clWXCVh5m3rDBLKVO+t1A3E6lpMhIZuEQ3EfYwr5YNLR3rHCsGQuuHhBVcdogR1c2+q2BgGmidQP9A25rY+W/peSC4qwWlpyKQ4cvkyhUGwHYfArB/lCehQr4DdrWUjrrvw/glSvdLpEqEOqVMnvpibwTiHtleowjx5SCUNz0LlvbGYqP78EhYB6NQHUm1osEYrEQ4cEPiYPVOW/erWlRqxeU2AXfgHvq+Bbmbk2iZDRhX2vo3vCDirmANgb1VXOidP2VlPCfyO9euFUvKBMKaHH+3Tvdq9YCv3Oael/2YzJOR4P2zpmmM8JBnQlPcGISiE8/B4JJGimaQ7D8R0tDgHCbYDK6PC36Ux/1idCa+TnQUTyG3kkOb/MNG5e+rhNXU0e82cmcDOJJBBWAMj5HmOzSyRb+BRQu4j8Fi5/9cezBQEMuMU6F4N5b6FvUrPeUmMNOsKL+djWlcwuLF7XlyDn0vggyt5tCNkGqQz/rGiLQKYEZ0Xem0uzxS5EdvUc24KRtyZ5VJbPmuiJnrJIC2WWoj4RpAh1hd5h6te8ydzpUCTTKrzC4Na+ffDXNFVvK8Q2/nd9FN6kwnbkI5ogTlywqbSYLzHc3n3ISHu/teHeqGJN1dYagzM3A3p8MjgK4SK3+5r7jj+E6b4VBlpdwqNri97zK2ikn+q/K5qCc=
   - secure: lDfLSzTHNQ7AYPcj5TCk+1PgVdBJW3NXvWaVgkPkunWG8wvQz8EajsQunKtspEvU9Rgwl1E7nKJlx2XpLsgoWp18wqlPBCywWl71Pto10BggP5eXw4m+t6pWZ/B8nYQYqydwsmDlwQ+uQV4SzSEmDYTP67EyFCNJ88Yebowd0RdqJu2SRQ+HmEmgUPCT24NJqLb5sbjujGjnEsTm0/+CYwV03/3vX7zbzVck2DY5icOX9QjwneUcKmZL1cHK+hfHME7fpG+fjE25fZ6VH+24GtcUr7VwG1kABeciBKdpse5Juc4G91a3Emzu3IVFZlwOI4YWwtgRIU8/kJlaAx7C1NAIeujOmnqXRJPbcMKlX8EM/1ox+xo4OcWN2oPL7moojFzbEhiG2HcZYWHa7mRVpEo4Ohj7DXXlNghAYH2lQYqY3g/xRePIqmMM3UNwaZQ3MLj9KxneD0V/wKTMh12FBiag2FYllRbkvt7FkweO89MMe3lnklswZTKTB8ybElsouZlhBLdZii4fafvVzFqM4XNQnrBz+YDzkaDvom403lpH6wDQyPX3SNoyGSsjXk5CsqriMs9kod60qGhRIm+Yy+pmwKBvnHXj2453QwZD+3U2y5r+i7bn/KRkrYPZd0AhAgqJ4raEqWc00pNWAYC3Opq929zOzhbCsgMEAmtieX4=
 before_script:
-- curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-- sudo apt-get install -y nodejs
-- node --version
-- sudo npm install -g cordova
-- curl https://install.meteor.com | /bin/sh
-- export PATH=$HOME/.meteor:$PATH
-- meteor npm install
-- cd $HOME
-- mkdir .gradle/wrapper/dists && cd .gradle/wrapper/dists
-- wget https://downloads.gradle.org/distributions/gradle-2.2.1-all.zip
+  #- curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+  #- sudo apt-get install -y nodejs
+  #- node --version
+  #- sudo npm install -g cordova
+  #- curl https://install.meteor.com | /bin/sh
+  #- export PATH=$HOME/.meteor:$PATH
+  #- meteor npm install
+  #- cd $HOME
+  #- mkdir .gradle/wrapper/dists && cd .gradle/wrapper/dists
+  #- wget https://downloads.gradle.org/distributions/gradle-2.2.1-all.zip
 script:
-- ls -alh $HOME/
-- meteor build $HOME --server=$API_SERVER_ADDRESS
-- cat $TRAVIS_BUILD_DIR/.meteor/local/cordova-build/platforms/android/build.gradle
-- ls $HOME/ -alh
-- ls $HOME/android -alh
+  - ls -alh $HOME/
+  - docker run --rm -it -e APP_SERVER=http://10.168.1.221:3000/ -v $(PWD):/app -v $(pwd):/build agmangas/meteor-android-build
+  - ls ./ -alh
+  - ls ./android -alh
+  #- meteor build $HOME --server=$API_SERVER_ADDRESS
+  #- cat $TRAVIS_BUILD_DIR/.meteor/local/cordova-build/platforms/android/build.gradle
+  #- ls $HOME/ -alh
+  #- ls $HOME/android -alh
 services:
-- mongodb
+  - docker
+  - mongodb
 before_install:
 - openssl aes-256-cbc -K $encrypted_66e97601dc46_key -iv $encrypted_66e97601dc46_iv
   -in .keystore.enc -out .keystore -d
