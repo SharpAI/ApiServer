@@ -26,8 +26,7 @@ before_script:
 - curl https://install.meteor.com | /bin/sh
 - export PATH=$HOME/.meteor:$PATH
 - meteor npm install
-- cd $HOME
-- mkdir .gradle/wrapper/dists && cd .gradle/wrapper/dists
+- cd $HOME && mkdir .gradle/wrapper/dists && cd .gradle/wrapper/dists
 - wget https://downloads.gradle.org/distributions/gradle-2.2.1-all.zip
 script:
 - ls -alh $HOME/
