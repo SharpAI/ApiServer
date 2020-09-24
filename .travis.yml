@@ -46,7 +46,6 @@ before_script:
   - meteor npm install
 script:
   - cd $TRAVIS_BUILD_DIR && meteor build $HOME --server=$API_SERVER_ADDRESS
-  - cat $TRAVIS_BUILD_DIR/.meteor/local/cordova-build/platforms/android/build.gradle
 services:
   - mongodb
 before_deploy:
