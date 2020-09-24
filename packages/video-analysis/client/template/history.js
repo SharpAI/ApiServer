@@ -19,7 +19,7 @@ Template.dvaHistory.helpers({
   },
   getDate: function() {
     var d = new Date(this.createdAt);
-    return d.parseDate('YYYY-MM-DD');
+    return d.parseDate('YYYY-MM-DD hh:ss');
   },
   getTime: function() {
     var d = new Date(this.createdAt);

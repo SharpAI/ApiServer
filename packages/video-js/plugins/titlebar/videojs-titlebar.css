@@ -1,0 +1,59 @@
+/**
+ * videojs-titlebar
+ * @version 2.0.0
+ * @copyright 2017 Brooks Lyrette <brooks@dotsub.com>
+ * @license Apache-2.0
+ */
+.video-js.vjs-titlebar{display:block}
+.video-js .vjs-titlebar-content{
+  opacity:0.99;
+  position:absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding:0;
+  background: rgba(0,0,0,.18);
+  -webkit-transition:visibility 1s,opacity 1s;
+  -moz-transition:visibility 1s,opacity 1s;
+  -ms-transition:visibility 1s,opacity 1s;
+  -o-transition:visibility 1s,opacity 1s;
+  transition:visibility 1s,opacity 1s
+}
+.video-js .vjs-titlebar-back{
+  height: 30px;
+  width: 30px;
+  text-align: left;
+  outline: none;
+}
+.video-js .vjs-titlebar-back .fa{
+  font-size: 26px;
+  line-height: 30px;
+}
+.video-js .vjs-titlebar-title{
+  font-size: 14px;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 40px;
+  right: 80px;
+  height: 30px;
+  line-height: 30px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.video-js .vjs-titlebar-rightbuttons {
+  display: inline-block;
+  float: right;
+}
+.video-js .vjs-titlebar-right-btn{
+  height: 30px;
+  line-height: 30px;
+  width: 30px;
+  text-align: center;
+}
+.video-js .vjs-titlebar-right-btn i{
+  font-size: 20px;
+  line-height: 30px;
+}
+.video-js.vjs-user-inactive.vjs-playing .vjs-titlebar-fade{opacity:0}

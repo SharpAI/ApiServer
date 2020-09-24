@@ -66,6 +66,41 @@ Router.route('/api/dva/task', {where: 'server'})
 
 Meteor.startup(function() {
   Meteor.methods({
-    
+    'upsetDeepVideoDevices': function(obj) {
+      if(!this.userId) {
+        return false;
+      }
+      var action = obj.action;
+      var service = obj.service;
+      var macAddress = (service.txtRecord && service.txtRecord.macAddress) ? service.txtRecord.macAddress:'';
+      if (!macAddress) {
+        console.log('can not get deep video device mac address');
+        return false;
+      }
+
+      var device = DVA_Devices.findOne({macAddress: macAddress});
+      var ts = new Date();
+      service.latestUpdateAt = ts;
+      if( device ) { // device aleardy in db
+        if (action == 'added') {
+          service.status = 'online';
+          DVA_Devices.update({
+            _id: device._id
+          }, {
+            $set: service
+          });
+        } else {
+          DVA_Devices.update({
+            _id: device._id
+          }, {
+            $set: {
+              latestUpdateAt: ts,
+              status: 'offline'
+            }
+          });
+        }
+      }
+      return true;
+    }
   });
 });

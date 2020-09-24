@@ -77,15 +77,28 @@ Template.dvaDevices.events({
       var action = result.action;
       var service = result.service;
 
+      var index = ids.indexOf(macAddress);
+      var macAddress = (service.txtRecord && service.txtRecord.macAddress) ? service.txtRecord.macAddress:'';
+
       if( action == 'added' ) {
         console.log('service added', JSON.stringify(service));
         // TODO check is device in db
-        if(service && service.name && service.ipv4Addresses && service.ipv4Addresses.length > 0){
+        if(index < 0 && service && service.name && service.ipv4Addresses && service.ipv4Addresses.length > 0){
           lists.push(service);
-          ids.push(service.name);
+          ids.push(macAddress);
+        }
+        // watch device ipv4Addresses change , if is changed , update
+        var device = DVA_Devices.findOne({macAddress: macAddress});
+        if( device && device.ipv4Addresses && device.ipv4Addresses[0] && service.ipv4Addresses && service.ipv4Addresses[0] ) {
+          if(device.ipv4Addresses[0] != service.ipv4Addresses[0]){
+            DVA_Devices.update({_id: device._id},{
+              $set:{
+                ipv4Addresses: service.ipv4Addresses
+              }
+            });
+          }
         }
       } else {
-        var index = ids.indexOf(service.name);
         if(index > -1){
           ids.splice(index,1);
           lists.splice(index,1);
@@ -131,6 +144,8 @@ Template.dvaDevices.events({
         obj.userName = user.profile.fullname ? user.profile.fullname: user.username;
         obj.userIcon = user.profile.icon;
         obj.macAddress = macAddress;
+        obj.latestUpdateAt = new Date();
+        obj.status = 'online';
         
         DVA_Devices.insert(obj, function(error , result){
           PUB.hideWaitLoading();

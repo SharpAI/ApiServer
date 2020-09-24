@@ -60,3 +60,19 @@ DVA_WaitImportVideo = {
   createdAt: new Date()
 }
 ```
+
+4. 存储 DVA 设备上的视频列表
+```javascript
+DVA_Videos = {
+  device_mac: '',
+  uuid: '', // 对应设备唯一识别码
+
+  videoId: '',
+  name: '',
+  poster: '', // 视频封面
+  width: 800,
+  height: 480, 
+  framesCount: 100
+}
+
+```
