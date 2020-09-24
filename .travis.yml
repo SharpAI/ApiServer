@@ -8,6 +8,7 @@ android:
   - android-22
   - build-tools-23.0.1
   - android-23
+  - android-28
 addons:
   apt:
     sources:
@@ -23,7 +24,7 @@ before_script:
 - sudo apt-get install -y nodejs
 - node --version
 - sudo npm install -g cordova
-- curl https://install.meteor.com | /bin/sh
+- curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
 - export PATH=$HOME/.meteor:$PATH
 - meteor npm install
 - cd $HOME && mkdir -p .gradle/wrapper/dists && cd .gradle/wrapper/dists
