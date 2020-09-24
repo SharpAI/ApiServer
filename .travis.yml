@@ -4,11 +4,12 @@ android:
   components:
   - platform-tools
   - tools
-  - build-tools-22.0.1
-  - android-22
-  - build-tools-23.0.1
+  #- build-tools-22.0.1
+  #- android-22
   - android-23
+  - build-tools-23.0.1
   - android-28
+  - build-tools-28.0.3
 addons:
   apt:
     sources:
@@ -27,8 +28,6 @@ before_script:
 - curl https://install.meteor.com?release=1.4.1.2 | /bin/sh
 - export PATH=$HOME/.meteor:$PATH
 - meteor npm install
-- cd $HOME && mkdir -p .gradle/wrapper/dists && cd .gradle/wrapper/dists
-- wget https://downloads.gradle.org/distributions/gradle-2.2.1-all.zip
 script:
 - ls -alh $HOME/
 - cd $TRAVIS_BUILD_DIR && meteor build $HOME --server=$API_SERVER_ADDRESS
