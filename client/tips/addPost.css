@@ -1,7 +1,0 @@
-._tips_addPost_page{background-color: #fff; border-radius: 20px; padding: 20px 10px; margin: 10%; transform: translateY(50%);}
-._tips_addPost_page img{width: 100%;}
-._tips_addPost_page .title{font-size: 24px; color: #00c4ff; text-align: center; padding-bottom: 10px;}
-._tips_addPost_page .desc{font-size: 16px; text-align: center; color: #9e9e9e; padding-bottom: 10px;}
-._tips_addPost_status{ text-align: center; margin: 0; padding: 0;}
-._tips_addPost_status li{ width: 5px; height: 5px; border-radius: 50%; background-color: #707070; display: inline-block; margin: 0px 5px;}
-._tips_addPost_status li.hover{background-color: #00c4ff;}
