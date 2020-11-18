@@ -375,7 +375,7 @@ if Meteor.isServer
             ]
             to_type: "group"
             type: "text"
-            text: if !name then 'Work AI发现有人在活动' else 'AI观察到 ' + name + ':'
+            text: if !name then  TAPi18n.__('aiSawSomeone') else  TAPi18n.__('aiSaw')+' ' + name + ':'
             create_time: create_time
             people_id: id
             people_uuid: uuid
@@ -1505,12 +1505,13 @@ if Meteor.isServer
   Router.route('/restapi/workai-getgroupid', {where: 'server'}).get(()->
       uuid = this.params.query.uuid
 
-      #console.log '/restapi/workai-getgroupid get request, uuid:' + uuid
+      console.log '/restapi/workai-getgroupid get request, uuid:' + uuid
       unless uuid
         console.log '/restapi/workai-getgroupid get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
       user = Meteor.users.findOne({username: uuid})
+      console.log 'user: ' + user
       device_group = ''
       if user
         groupUser = SimpleChat.GroupUsers.find({user_id: user._id})
