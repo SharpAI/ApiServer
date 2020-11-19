@@ -24,3 +24,4 @@
 @withEnableHomeAI = false
 @withDefaultAccuracy = 0.85 #默认最低识别准确度
 @withNativeMQTTLIB = true
+@languageSetup = 'en' # 'en' or 'cn'

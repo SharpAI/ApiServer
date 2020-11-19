@@ -393,37 +393,53 @@ if Meteor.isServer
     console.log "sharpai_pushnotification: type:"+type
     if type is "notify_stranger"
       group_notify = true
-      group_name = if doc.group_name then doc.group_name else "监控组"
-      content = 'SharpAI '+'在'+group_name+'发现了'+'陌生人。' + '\n30分钟内不重复推送'
+      group_name = if doc.group_name then doc.group_name else "Group"
+      if languageSetup is 'cn'
+        content = 'SharpAI '+'在'+group_name+'发现了'+'陌生人。'+'\n30分钟内不重复推送'
+      else
+        content = 'SharpAI '+'saw unfamiliar face in '+group_name+'.\n Will not send same notification in 30 minutes'
       extras = {
         type: "notify_stranger"
       }
       toUserId = userId
     else if type is "notify_knownPeople"
       group_notify = true
-      group_name = if doc.group_name then doc.group_name else "监控组"
-      person_name = if doc.person_name then doc.person_name else "多个人"
-      content = 'SharpAI '+'在'+group_name+'看到了'+person_name+'。' + '\n30分钟内不重复推送'
+      group_name = if doc.group_name then doc.group_name else "Group"
+      person_name = if doc.person_name then doc.person_name else "Multiple Persons"
+
+      if languageSetup is 'cn'
+        content = 'SharpAI '+'在'+group_name+'看到了'+person_name+'。' + '\n30分钟内不重复推送'
+      else
+        content = 'SharpAI '+'saw '+person_name+' in '+group_name+'.\n Will not send same notification in 30 minutes'
       extras = {
         type: "notify_known_people"
       }
       toUserId = userId
     else if type is "device_offline"
       group_notify = true
-      group_name = if doc.group_name then doc.group_name else "监控组"
-      content = group_name+'：您的设备('+userId+')已经离线，请检查'
+      group_name = if doc.group_name then doc.group_name else "Group"
+      if languageSetup is 'cn'
+        content = group_name+'：您的设备('+userId+')已经离线，请检查'
+      else
+        content = group_name+': Your device('+userId+') is offline, please check'
       extras = {
         type: "device_offline"
       }
     else if type is "device_online"
       group_notify = true
-      group_name = if doc.group_name then doc.group_name else "监控组"
-      content = group_name+'：您的设备('+userId+')已经在线'
+      group_name = if doc.group_name then doc.group_name else "Group"
+      if languageSetup is 'cn'
+        content = group_name+'：您的设备('+userId+')已经在线'
+      else
+        content = group_name+': Your device ('+userId+') is online'
       extras = {
         type: "device_online"
       }
     else
-      content = 'SharpAI欢迎您！'
+      if languageSetup is 'cn'
+        content = 'SharpAI欢迎您！'
+      else
+        content = 'SharpAI welcome you!'
       extras = {
         type: "recomment"
       }
