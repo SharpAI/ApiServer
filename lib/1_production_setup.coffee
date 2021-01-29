@@ -23,5 +23,6 @@
 @withShowGroupsUserMaxCount = 10
 @withEnableHomeAI = false
 @withDefaultAccuracy = 0.85 #默认最低识别准确度
-@withNativeMQTTLIB = true
+@withNativeMQTTLIB = false
 @languageSetup = 'en' # 'en' or 'cn'
+@withLiteVersion = true

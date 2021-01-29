@@ -840,7 +840,19 @@ if Meteor.isServer
     else
       this.response.end('{"result": "ok", "reason": "invalid params"}\n')
   )
-
+  Router.route('/api/v3/person_detected', {where: 'server'}).post(()->
+    uuid = this.request.body.device_uuid
+    console.log this.request.body
+    if uuid
+      #ModelParam.upsert({groupid: group_id, uuid: uuid}, {$set: this.request.body})
+      device=Devices.findOne({uuid : uuid})
+      if device
+        Devices.upsert({_id:device._id},{$set:{last_person_ts:new Date().getTime()}})
+      console.log device
+      this.response.end('{"result": "ok"}\n')
+    else
+      this.response.end('{"result": "ok", "reason": "invalid params"}\n')
+  )
   Router.route('/restapi/workai/group/:_id/last_time', {where: 'server'}).get(()->
     result = SimpleChat.Groups.findOne({_id: this.params._id}, {fields:{'last_time':1}})
     if (result and result != {})
